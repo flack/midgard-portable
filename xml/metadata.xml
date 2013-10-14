@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Schema xmlns="http://www.midgard-project.org/repligard/1.4">
+    <mixin name="midgard_metadata">
+        <property name="creator" type="guid">
+        </property>
+        <property name="created" type="datetime">
+        </property>
+        <property name="revisor" type="guid">
+        </property>
+        <property name="revised" type="datetime">
+        </property>
+        <property name="revision" type="integer">
+        </property>
+        <property name="locker" type="guid">
+        </property>
+        <property name="locked" type="datetime">
+        </property>
+        <property name="approver" type="guid">
+        </property>
+        <property name="approved" type="datetime">
+        </property>
+        <property name="authors" type="text">
+        </property>
+        <property name="owner" type="guid">
+        </property>
+        <property name="schedule_start" type="datetime">
+        </property>
+        <property name="schedule_end" type="datetime">
+        </property>
+        <property name="hidden" type="boolean">
+        </property>
+        <property name="nav_noentry" type="boolean">
+        </property>
+        <property name="size" type="integer">
+        </property>
+        <property name="published" type="datetime">
+        </property>
+        <property name="score" type="integer">
+        </property>
+        <property name="imported" type="datetime">
+        </property>
+        <property name="exported" type="datetime">
+        </property>
+        <property name="deleted" type="boolean">
+        </property>
+        <property name="islocked" type="boolean">
+        </property>
+        <property name="isapproved" type="boolean">
+        </property>
+    </mixin>
+</Schema>

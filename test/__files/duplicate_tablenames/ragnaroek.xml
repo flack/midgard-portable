@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Schema xmlns="http://www.midgard-project.org/repligard/1.4">
+    <type name="openpsa_person" extends="midgard_person" table="person">
+        <property name="username" type="string" index="yes">
+            <description>Username (legacy Midgard1) of the person</description>
+        </property>
+        <property name="password" type="string">
+            <description> Password (legacy Midgard1) of the person</description>
+        </property>
+        <property name="homephone" type="string">
+            <description>Home phone number of the person</description>
+        </property>
+        <property name="handphone" type="string">
+            <description>Cell phone number of the person</description>
+        </property>
+        <property name="workphone" type="string">
+            <description>Work phone name of the person</description>
+        </property>
+        <property name="homepage" type="string">
+            <description>Homepage URL of the person</description>
+        </property>
+        <property name="email"    type="string" index="yes">
+            <description>Email address of the person</description>
+        </property>
+        <property name="street"   type="string">
+            <description>Street address of the person</description>
+        </property>
+        <property name="postcode" type="string">
+            <description>Zip code of the person</description>
+        </property>
+        <property name="city"     type="string">
+            <description>City of the person</description>
+        </property>
+        <property name="extra"    type="text">
+            <description>Additional information about the person</description>
+        </property>
+    </type>
+
+    <type name="midgard_group" table="grp">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="name"     type="string" index="yes" unique="yes">
+            <description>Path name of the group</description>
+        </property>
+        <property name="official" type="string">
+            <description>Official name of the group</description>
+        </property>
+        <property name="street"   type="string">
+            <description>Street address of the group</description>
+        </property>
+        <property name="postcode" type="string">
+            <description>Zip code of the group</description>
+        </property>
+        <property name="city"     type="string">
+            <description>City of the group</description>
+        </property>
+        <property name="country"  type="string">
+            <description>Country of the group</description>
+        </property>
+        <property name="homepage" type="string">
+            <description>Homepage URL of the group</description>
+        </property>
+        <property name="email"    type="string">
+            <description>Email of the group</description>
+        </property>
+        <property name="phone"    type="string">
+            <description>Phone number of the group</description>
+        </property>
+        <property name="fax"      type="string">
+            <description>Fax number of the group</description>
+        </property>
+        <property name="extra"    type="text">
+            <description>Additional information about the group</description>
+        </property>
+        <property name="owner"    link="midgard_group:id" type="unsigned integer" upfield="owner">
+            <description>Group the group is under</description>
+        </property>
+    </type>
+
+    <type name="midgard_member" table="member">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="uid"      type="unsigned integer" link="midgard_person:id">
+            <description>Identifier of the user that belongs to a group</description>
+        </property>
+        <property name="gid"      type="unsigned integer" link="midgard_group:id" parentfield="gid">
+            <description>Identifier of the group that the user belongs to</description>
+        </property>
+        <property name="extra"    type="string">
+            <description>Additional information about the membership</description>
+        </property>
+    </type>
+
+</Schema>

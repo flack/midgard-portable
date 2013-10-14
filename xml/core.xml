@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Schema xmlns="http://www.midgard-project.org/repligard/1.4">
+
+    <type name="midgard_repligard" table="repligard" metadata="false">
+        <property name="id" type="unsigned integer" primaryfield="id">
+        </property>
+        <property name="guid" type="guid">
+        </property>
+        <property name="typename" type="string">
+        </property>
+        <property name="object_action" type="integer">
+        </property>
+    </type>
+
+    <type name="midgard_person" table="person">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="firstname" type="string" index="yes">
+            <description>First name of the person</description>
+        </property>
+        <property name="lastname" type="string" index="yes">
+            <description>Last name of the person</description>
+        </property>
+    </type>
+
+    <type name="midgard_user" table="midgard_user" metadata="false">
+        <property name="id" type="unsigned integer" primaryfield="guid">
+        </property>
+        <property name="login" type="string">
+        </property>
+        <property name="password" type="string">
+        </property>
+        <property name="active" type="boolean">
+        </property>
+        <property name="authtype" field="auth_type" type="string">
+        </property>
+        <property name="authtypeid" field="auth_type_id" type="integer">
+        </property>
+        <property name="usertype" field="user_type" type="integer">
+        </property>
+        <property name="person" field="person_guid" type="guid" link="midgard_person:guid">
+        </property>
+    </type>
+    
+    <type name="midgard_attachment" table="blobs">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="name"     type="string" index="yes">
+            <description>Filename of the attachment</description>
+        </property>
+        <property name="title"    type="string">
+            <description>Title of the attachment</description>
+        </property>
+        <property name="location" type="string" index="yes">
+            <description>Location of the attachment in the blob directory structure</description>
+        </property>
+        <property name="mimetype" type="string" index="yes">
+            <description>MIME type of the attachment</description>
+        </property>
+        <property name="parentguid" type="guid" field="parent_guid" parentfield="parent_guid">
+            <description>GUID of the object the attachment is attached to</description>
+        </property>
+    </type>
+
+    <type name="midgard_parameter" table="record_extension">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="domain"   type="string" index="yes">
+            <description>Namespace of the parameter</description>
+        </property>
+        <property name="name"     type="string" index="yes">
+            <description>Key of the parameter</description>
+        </property>
+        <property name="value"    type="text">
+            <description>Value of the parameter</description>
+        </property>
+        <property name="parentguid" type="guid" field="parent_guid" parentfield="parent_guid">
+            <description>GUID of the object the parameter extends</description>
+        </property>
+    </type>
+    
+</Schema>

@@ -1,0 +1,22 @@
+{
+    "name": "openpsa/midgard-portable",
+    "description": "Pure PHP implementation of (parts of) the Midgard2 API",
+    "license": "LGPL",
+    "authors": [
+        {
+            "name": "Andreas Flack",
+            "email": "flack@contentcontrol-berlin.de",
+            "homepage": "http://www.contentcontrol-berlin.de/"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "doctrine/orm": "2.4.*",
+        "symfony/console": "~2.3.0@stable"
+    },
+    "bin": ["bin/midgard-portable"],
+    "autoload": {
+    	"classmap": ["api/"],
+        "psr-0": { "midgard\\portable": "src/" }
+    }
+}
