@@ -6,18 +6,18 @@ use Doctrine\ORM\EntityManager;
 
 require_once "vendor/autoload.php";
 
-$driver = new driver(array('/Users/sonic/git/openpsa/schemas/'), sys_get_temp_dir());
+$schema_dirs = array
+(
+    // ADD YOUR SCHEMA DIR(S) HERE    
+);
 
-$dbfile = '/Users/sonic/db.sqlite';
-if (file_exists($dbfile))
-{
-    unlink($dbfile);
-}
+$driver = new driver($schema_dirs, sys_get_temp_dir());
+
+// CHANGE PARAMETERS AS REQUIRED:
 $db_config = array
 (
-//            'memory' => true,
+    'memory' => true,
     'driver' => 'pdo_sqlite',
-    'path' => $dbfile,
 );
 
 connection::initialize($driver, $db_config);
