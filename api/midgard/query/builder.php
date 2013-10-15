@@ -15,7 +15,7 @@ class midgard_query_builder
     private $groups = array();
     private $count_groups = 0;
     private $actual_group = 0;
-    
+
     private $include_deleted = false;
 
     /**
@@ -122,7 +122,7 @@ class midgard_query_builder
                     'constraints' => array()
             );
         }
-        
+
         $parent = $this->actual_group;
         $this->count_groups++;
         //stat this group is child
@@ -134,13 +134,13 @@ class midgard_query_builder
                 'childs' => array(),
                 'constraints' => array()
         );
-        
+
         $this->actual_group = $this->count_groups;
     }
 
     public function end_group()
     {
-        //no group to end.... error ? notice ? 
+        //no group to end.... error ? notice ?
         if ($this->actual_group < 1)
         {
             return true;
@@ -158,7 +158,7 @@ class midgard_query_builder
         }
         $this->actual_group = $parent;
     }
-    
+
     private function resolve_group($count)
     {
         //get dql of child-groups
@@ -204,12 +204,13 @@ class midgard_query_builder
         {
             $dql = '(' . $dql . ')';
         }
-        
+
         return $dql;
     }
-    public function close_all_groups()
+
+    private function close_all_groups()
     {
-        while($this->actual_group > 0)
+        while ($this->actual_group > 0)
         {
             $this->end_group();
         }
