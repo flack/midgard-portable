@@ -29,10 +29,10 @@ Known Issues & Limitations
  - Links to non-ID fields are not supported in Doctrine. So any GUID-based links are currently not working, but a
    workaround for this will get implemented eventually 
    
- - Currently, it is not possible to run midgard-portable when the original Midgard extenstion is loaded. This is
+ - Currently, it is not possible to run midgard-portable when the original Midgard extension is loaded. This is
    also a temporary problem that will get addressed
 
- - the MySQL ``SET`` column type used in some MgdSchemas is not yet implmented. midgard-portable will fall back to 
+ - the MySQL ``SET`` column type used in some MgdSchemas is not yet implemented. midgard-portable will fall back to 
    the ``type`` value from the property definition. Implementing ``SET``/``ENUM`` support in Doctrine is not too hard to do,
    but it is not a priority right now
    
@@ -42,6 +42,6 @@ Known Issues & Limitations
  - Doctrine does not support value objects currently, so Metadata simulation is somewhat imperfect in the sense 
    that the metadata columns are accessible through the object itself (e.g. ``$topic->metadata_deleted``). The 
    next planned Doctrine release (2.5) may contain support for embedded objects, so this issue can be revisited
-   once this is released
+   once that is released
 
 ...and of course, much of the API provided still only consists of stubs. It is a prototype, after all :)
