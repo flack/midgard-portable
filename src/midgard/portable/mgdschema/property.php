@@ -5,7 +5,7 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
 
-namespace midgard\portable\schema;
+namespace midgard\portable\mgdschema;
 
 use SimpleXMLElement;
 use Doctrine\DBAL\Types\BooleanType;

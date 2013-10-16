@@ -18,7 +18,7 @@ class xmlreaderTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($types));
         $this->assertArrayHasKey('midgard_topic', $types);
         $type = $types['midgard_topic'];
-        $this->assertInstanceOf('midgard\\portable\\schema\\type', $type);
+        $this->assertInstanceOf('midgard\\portable\\mgdschema\\type', $type);
         $this->assertEquals('midgard_topic', $type->name);
         $this->assertEquals('topic', $type->table);
         $this->assertEquals('midgard_object', $type->extends);

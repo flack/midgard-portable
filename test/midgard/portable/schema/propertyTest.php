@@ -7,8 +7,8 @@
 
 namespace midgard\portable\test\schema;
 
-use midgard\portable\schema\property;
-use midgard\portable\schema\type;
+use midgard\portable\mgdschema\property;
+use midgard\portable\mgdschema\type;
 use SimpleXMLElement;
 
 class propertyTest extends \PHPUnit_Framework_TestCase

@@ -5,13 +5,13 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
 
-namespace midgard\portable\storage;
+namespace midgard\portable;
 
 use midgard\portable\xmlreader;
 use midgard\portable\classgenerator;
-use midgard\portable\schema\translator;
-use midgard\portable\schema\type;
-use midgard\portable\schema\property;
+use midgard\portable\mgdschema\translator;
+use midgard\portable\mgdschema\type;
+use midgard\portable\mgdschema\property;
 use midgard\portable\storage\type\datetime;
 use SimpleXMLCElement;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver as driver_interface;
@@ -63,7 +63,7 @@ class driver implements driver_interface
     private function initialize()
     {
         $reader = new xmlreader;
-        $this->process_file($reader, dirname(dirname(dirname(dirname(__DIR__)))) . '/xml/core.xml');
+        $this->process_file($reader, dirname(dirname(dirname(__DIR__))) . '/xml/core.xml');
 
         foreach ($this->schemadirs as $schemadir)
         {
