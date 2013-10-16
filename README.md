@@ -16,7 +16,19 @@ Goals
 For the moment, the goal is to implement enough of the Midgard API to run openpsa on. This means that both older
 features (like MultiLang or Sitegroups) and newer features (like Workspaces) are out of scope. But Pull Requests 
 are of course welcome, so if anyone feels motivated to work on those areas, go right ahead!
- 
+
+Structure
+--------
+
+Basically, the adapter consists of three parts: The XML reader, which transforms MgdSchema files into an intermediate 
+representation, the class generator, which converts it into PHP classes that correspond to Midgard DB object classes 
+(and that are used by Doctrine as entity classes) and lastly, the Metadata driver, which builds the ClassMetadata 
+information Doctrine uses for querying and hydrating data.
+
+Apart from that, there is a bunch of helper classes that provide special Midgard behaviors for Doctrine in the form
+of a Query Filter, an Event Subscriber and one special Type currently. And of course there are versions of (most of) 
+Midgard's PHP classes, which provide the actual API emulation.
+
 Known Issues & Limitations
 --------------------------
 
