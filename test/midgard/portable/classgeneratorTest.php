@@ -16,14 +16,14 @@ class classgeneratorTest extends testcase
 
 	public function setUp()
 	{
-        parent::setUp();
-		$this->directory = TESTDIR . '__output';
-		if (is_dir($this->directory))
-		{
-		    system("rm -rf " . escapeshellarg($this->directory));
-		}
-		mkdir($this->directory);
-	}
+        self::$ns = uniqid(get_called_class());
+        $this->directory = TESTDIR . '__output';
+        if (is_dir($this->directory))
+        {
+            system("rm -rf " . escapeshellarg($this->directory));
+        }
+        mkdir($this->directory);
+    }
 
     public function test_multiple()
     {
@@ -33,7 +33,7 @@ class classgeneratorTest extends testcase
         $types = array_merge($types, $reader->parse(TESTDIR . '__files/midgard_snippetdir.xml'));
 
         $classgenerator = new classgenerator($this->directory . '/midgard_dbobjects.php');
-        $classgenerator->write($types);
+        $classgenerator->write($types, array(), self::$ns);
 
         $this->assertFileExists($this->directory . '/midgard_dbobjects.php');
         include $this->directory . '/midgard_dbobjects.php';
