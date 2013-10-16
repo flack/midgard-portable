@@ -32,6 +32,7 @@ class midgard_query_builder
 
     public function add_constraint($name, $operator, $value)
     {
+        $name = $this->build_constraint_name($name);
         //we are in a group
         if ($this->count_groups > 0)
         {
@@ -58,32 +59,28 @@ class midgard_query_builder
 
     public function add_order($name, $direction = 'ASC')
     {
-
+        $name = $this->build_constraint_name($name);
+        $this->qb->orderBy('c.' . $name, $direction);
     }
 
     public function execute()
     {
-        if($this->actual_group > 0)
-        {
-            //debug ? throw error ? notice ?
-            $this->close_all_groups();
-        }
+        $this->check_groups();
         $this->qb->select('c');
-        if ($this->include_deleted)
-        {
-            connection::get_em()->getFilters()->disable('softdelete');
-        }
+        $this->pre_execution();
         $result = $this->qb->getQuery()->getResult();
-        if ($this->include_deleted)
-        {
-            connection::get_em()->getFilters()->enable('softdelete');
-        }
+        $this->post_execution();
         return $result;
     }
 
     public function count()
     {
-
+        $this->check_groups();
+        $this->qb->select("count(c.id)");
+        $this->pre_execution();
+        $count = intval($this->qb->getQuery()->getSingleScalarResult());
+        $this->post_execution();
+        return $count;
     }
 
     public function include_deleted()
@@ -93,11 +90,12 @@ class midgard_query_builder
 
     public function set_lang($language)
     {
-
+        throw new midgard_error_exception('Not implemented');
     }
 
     public function toggle_read_only($toggle = false)
     {
+        throw new midgard_error_exception('Not implemented');
     }
 
     public function set_limit($limit)
@@ -107,7 +105,7 @@ class midgard_query_builder
 
     function set_offset($offset)
     {
-
+        $this->qb->setFirstResult($offset);
     }
 
     public function begin_group($operator)
@@ -157,6 +155,37 @@ class midgard_query_builder
             $this->groups = array();
         }
         $this->actual_group = $parent;
+    }
+
+    private function build_constraint_name($name)
+    {
+        // eg metadata.revision => metadata_revision
+        return str_replace(".", "_", $name);
+    }
+
+    private function pre_execution()
+    {
+        if ($this->include_deleted)
+        {
+            connection::get_em()->getFilters()->disable('softdelete');
+        }
+    }
+
+    private function post_execution()
+    {
+        if ($this->include_deleted)
+        {
+            connection::get_em()->getFilters()->enable('softdelete');
+        }
+    }
+
+    private function check_groups()
+    {
+        if($this->actual_group > 0)
+        {
+            //debug ? throw error ? notice ?
+            $this->close_all_groups();
+        }
     }
 
     private function resolve_group($count)

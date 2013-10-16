@@ -26,6 +26,28 @@ class testcase extends \PHPUnit_Framework_TestCase
         self::$em = connection::get_em();
     }
 
+    /**
+     * purge all records for the given classname
+     *
+     * @param string $classname
+     * @return number the number of deleted rows
+     */
+    protected function purge_all($classname)
+    {
+        // delete all, no matter what
+        self::$em->getFilters()->disable('softdelete');
+        $q = self::$em->createQuery('DELETE FROM ' . $classname);
+        $count = $q->execute();
+        self::$em->getFilters()->enable('softdelete');
+        return $count;
+    }
+
+    /**
+     *
+     * @param string $classname
+     * @param boolean $include_deleted
+     * @return number the total number of records for this classname
+     */
     protected function count_results($classname, $include_deleted = false)
     {
         self::$em->clear();
