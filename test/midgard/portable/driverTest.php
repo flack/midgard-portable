@@ -7,7 +7,7 @@
 
 namespace midgard\portable\test;
 
-use midgard\portable\storage\driver;
+use midgard\portable\driver;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 class driverTest extends \PHPUnit_Framework_TestCase

@@ -6,7 +6,7 @@
  */
 
 use midgard\portable\storage\subscriber;
-use midgard\portable\schema\translator;
+use midgard\portable\mgdschema\translator;
 
 define('MGD_OBJECT_ACTION_NONE', subscriber::ACTION_NONE);
 define('MGD_OBJECT_ACTION_DELETE', subscriber::ACTION_DELETE);

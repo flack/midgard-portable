@@ -17,27 +17,22 @@ class classgeneratorTest extends testcase
 	public function setUp()
 	{
         parent::setUp();
-		$this->directory = TESTDIR . '__output';
-		if (is_dir($this->directory))
-		{
-		    system("rm -rf " . escapeshellarg($this->directory));
-		}
-		mkdir($this->directory);
-	}
+
+        $this->directory = TESTDIR . '__output';
+        if (is_dir($this->directory))
+        {
+            system("rm -rf " . escapeshellarg($this->directory));
+        }
+        mkdir($this->directory);
+    }
 
     public function test_multiple()
     {
+        // TODO: the setup is done implicitly by the parent class, we can't
+        // do it individually in place right now, since the driver setup
+        // is a bit too tangled
         $classname = self::$ns . '\\midgard_topic';
-        $reader = new xmlreader;
-        $types = $reader->parse(TESTDIR . '__files/midgard_topic.xml');
-        $types = array_merge($types, $reader->parse(TESTDIR . '__files/midgard_snippetdir.xml'));
-
-        $classgenerator = new classgenerator($this->directory . '/midgard_dbobjects.php');
-        $classgenerator->write($types);
-
-        $this->assertFileExists($this->directory . '/midgard_dbobjects.php');
-        include $this->directory . '/midgard_dbobjects.php';
-        $this->assertTrue(class_exists('midgard_topic'));
+        $this->assertTrue(class_exists($classname));
 
         $topic = new $classname;
 

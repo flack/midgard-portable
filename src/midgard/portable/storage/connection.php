@@ -7,7 +7,7 @@
 
 namespace midgard\portable\storage;
 
-use midgard\portable\storage\driver;
+use midgard\portable\driver;
 use midgard\portable\storage\type\datetime;
 use midgard\portable\storage\subscriber;
 use Doctrine\ORM\EntityManagerInterface;

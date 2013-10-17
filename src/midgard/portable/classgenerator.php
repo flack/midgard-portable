@@ -7,10 +7,10 @@
 
 namespace midgard\portable;
 
-use midgard\portable\schema\type;
-use midgard\portable\schema\mixin;
-use midgard\portable\schema\property;
-use midgard\portable\schema\translator;
+use midgard\portable\mgdschema\type;
+use midgard\portable\mgdschema\mixin;
+use midgard\portable\mgdschema\property;
+use midgard\portable\mgdschema\translator;
 
 class classgenerator
 {
