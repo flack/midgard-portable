@@ -7,6 +7,7 @@
 
 namespace midgard\portable;
 
+use midgard\portable\mgdschema\manager;
 use midgard\portable\mgdschema\type;
 use midgard\portable\mgdschema\mixin;
 use midgard\portable\mgdschema\property;
@@ -32,17 +33,21 @@ class classgenerator
      */
     private $filename;
 
-    public function __construct($filename)
+    private $manager;
+
+    public function __construct(manager $manager, $filename)
     {
+    	$this->manager = $manager;
     	$this->filename = $filename;
     }
 
-    public function write(array $types, array $inherited_mapping = array(), $namespace = '')
+    public function write($namespace = '')
     {
         if (file_exists($this->filename))
         {
             unlink($this->filename);
         }
+        $types = $this->manager->get_types();
         $this->output = '<?php ';
 
         uasort($types, function($a, $b)
@@ -78,7 +83,7 @@ class classgenerator
             $this->convert_type($type);
         }
 
-        foreach ($inherited_mapping as $child => $parent)
+        foreach ($this->manager->get_inherited_mapping() as $child => $parent)
         {
             $this->write_inherited_mapping($child, $parent);
         }
@@ -89,6 +94,7 @@ class classgenerator
         }
 
         //todo: midgard_blob special handling
+
         file_put_contents($this->filename, $this->output);
     }
 
@@ -147,13 +153,11 @@ class classgenerator
             	    break;
             }
             if (   $default !== null
-                && !$property->link)
+                   // we need to skip working links because in this case, Doctrine expects objects as values
+                && (   !$property->link
+                    || $this->manager->resolve_targetclass($property) === false))
             {
                 $this->output .= ' = ' . $default;
-            }
-            else if ($name == 'score')
-            {
-                var_dump($property->type, $default, $name);
             }
             $this->output .= ';';
         }

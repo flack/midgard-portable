@@ -7,8 +7,6 @@
 
 namespace midgard\portable\mgdschema;
 
-use SimpleXMLElement;
-
 class mixin extends type implements node
 {
 

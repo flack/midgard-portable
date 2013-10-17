@@ -27,6 +27,8 @@ class type
 
     public $has_metadata = true;
 
+    public $subtypes = array();
+
     private $dbfields = array();
 
     /**
