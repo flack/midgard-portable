@@ -17,6 +17,7 @@ class midgard_query_builderTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $classes = array(
             self::$em->getClassMetadata('midgard:midgard_topic'),
+            self::$em->getClassMetadata('midgard:midgard_language'),
             self::$em->getClassMetadata('midgard:midgard_repligard'),
         );
         $tool->dropSchema($classes);
@@ -116,8 +117,9 @@ class midgard_query_builderTest extends testcase
         $classname = self::$ns . '\\midgard_topic';
         $this->purge_all($classname);
 
+        // test single constraint
         $topic = new $classname;
-        $topic->name = __FUNCTION__ . "testOne";
+        $topic->name = "A_" . __FUNCTION__ . "testOne";
         $topic->extra = "special";
         $topic->create();
 
@@ -130,11 +132,10 @@ class midgard_query_builderTest extends testcase
 
         // test metadata constraint
         $topic2 = new $classname;
-        $topic2->name = __FUNCTION__ . "testTwo";
+        $topic2->name = "B_" . __FUNCTION__ . "testTwo";
         $topic2->metadata_revision = 7;
         $topic2->extra = "";
         $topic2->create();
-
         $qb = new \midgard_query_builder($classname);
         $qb->add_constraint('metadata.revision', '=', 7);
         $results = $qb->execute();
@@ -144,7 +145,7 @@ class midgard_query_builderTest extends testcase
 
         // test multiple constraints
         $topic3 = new $classname;
-        $topic3->name = __FUNCTION__ . "testThee";
+        $topic3->name = "C_" . __FUNCTION__ . "testThee";
         $topic3->metadata_revision = 7;
         $topic3->extra = "special";
         $topic3->create();
@@ -156,6 +157,53 @@ class midgard_query_builderTest extends testcase
 
         $this->assertEquals(1, count($results));
         $this->assertEquals($topic3->id, $results[0]->id);
+
+        // test join
+        // create two languages and link them to the topics
+        // then we query for topics with a certain language id
+        $lang_classname = self::$ns . '\\midgard_language';
+        $lang = new $lang_classname;
+        $lang->name = "german";
+        $lang->code = "de";
+        $lang->metadata_revision = 7;
+        $lang->create();
+
+        $lang2 = new $lang_classname;
+        $lang2->name = "english";
+        $lang2->code = "en";
+        $lang2->create();
+
+        $topic->lang = $lang->id;
+        $topic->update();
+
+        $topic2->lang = $lang->id;
+        $topic2->update();
+
+        $topic3->lang = $lang2->id;
+        $topic3->update();
+
+        // we should find just one topic (topic3) for lang2
+        /*
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('lang.id', '=', $lang2->id);
+        $results = $qb->execute();
+
+        $this->assertEquals(1, count($results));
+        $this->assertEquals($topic3->id, $results[0]->id);
+        */
+
+        // test with join (with metadata)
+        /*
+        $qb = new \midgard_query_builder($classname);
+        // this should find the german topics (topic1+topic2)
+        $qb->add_constraint("lang.metadata.revision", "=", 7);
+        $qb->add_order("name");
+        $results = $qb->execute();
+
+        $this->assertEquals(2, count($results));
+        $this->assertEquals($topic->id, $results[0]->id);
+        $this->assertEquals($topic2->id, $results[1]->id);
+        */
     }
 
     public function test_limit()
