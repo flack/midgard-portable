@@ -8,7 +8,6 @@
 namespace midgard\portable\test;
 
 use midgard\portable\storage\connection;
-use midgard_user;
 
 class userTest extends testcase
 {

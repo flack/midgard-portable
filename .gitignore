@@ -1,3 +1,5 @@
 /vendor
 /bootstrap.php
 /test/__output
+.directory
+*.*~

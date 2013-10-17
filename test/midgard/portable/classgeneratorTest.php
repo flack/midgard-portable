@@ -37,6 +37,9 @@ class classgeneratorTest extends testcase
         $topic = new $classname;
 
         $this->assertInstanceOf('midgard_dbobject', $topic);
+        $this->assertInstanceOf('midgard_object', $topic);
+        $this->assertInstanceOf('\\midgard\\portable\\api\\object', $topic);
+        $this->assertInstanceOf($classname, $topic);
         $this->assertInstanceOf('midgard_metadata', $topic->metadata);
         $this->assertInstanceOf('midgard_datetime', $topic->metadata->created);
         $this->assertInstanceOf('\\midgard\\portable\\storage\\metadata\\entity', $topic);

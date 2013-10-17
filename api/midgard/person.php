@@ -1,5 +1,7 @@
 <?php
-class midgard_person extends midgard_object
+use midgard\portable\api\object;
+
+class midgard_person extends object
 {
     private $id = 0;
 

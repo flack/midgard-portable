@@ -7,8 +7,6 @@
 
 namespace midgard\portable\test;
 
-use midgard_dbobject;
-
 class metadataTest extends testcase
 {
     protected static $person;

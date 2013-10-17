@@ -71,13 +71,16 @@ class classgenerator
         if (!empty($namespace))
         {
             $this->output .= 'namespace ' . $namespace . '; ';
-            $this->output .= 'use midgard_object; ';
+            $this->output .= 'use \\midgard\\portable\\api\\object as midgard_object; ';
             $this->output .= 'use midgard_metadata; ';
-            $this->output .= 'use midgard_user as base_user; ';
-            $this->output .= 'use midgard_person as base_person; ';
+            $this->output .= 'use \\midgard\\portable\\api\\user as base_user; ';
+            $this->output .= 'use \\midgard\\portable\\api\\person as base_person; ';
             $this->output .= 'use midgard_datetime; { ';
         }
-
+        else
+        {
+            $this->output .= 'use \midgard\portable\api\object; ';
+        }
         foreach ($types as $type)
         {
             $this->convert_type($type);
@@ -168,6 +171,7 @@ class classgenerator
     {
         foreach ($type->get_mixins() as $name => $mixin)
         {
+            //TODO: A magic getter should be configured with this somehow
             //$objects[$name] = 'new ' . $mixin->name . '($this)';
         }
 
