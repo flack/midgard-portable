@@ -8,7 +8,7 @@
 namespace midgard\portable\test;
 
 use midgard\portable\classgenerator;
-use midgard\portable\xmlreader;
+use midgard\portable\mgdschema\manager;
 
 class classgeneratorTest extends testcase
 {
@@ -16,8 +16,6 @@ class classgeneratorTest extends testcase
 
 	public function setUp()
 	{
-        parent::setUp();
-
         $this->directory = TESTDIR . '__output';
         if (is_dir($this->directory))
         {
@@ -26,12 +24,12 @@ class classgeneratorTest extends testcase
         mkdir($this->directory);
     }
 
-    public function test_multiple()
+    public function test_standard()
     {
-        // TODO: the setup is done implicitly by the parent class, we can't
-        // do it individually in place right now, since the driver setup
-        // is a bit too tangled
-        $classname = self::$ns . '\\midgard_topic';
+        $ns = uniqid(__CLASS__ . '__' . __FUNCTION__);
+        self::prepare_connection(array(TESTDIR . '__files/'), $this->directory, $ns);
+
+        $classname = $ns . '\\midgard_topic';
         $this->assertTrue(class_exists($classname));
 
         $topic = new $classname;
@@ -44,5 +42,38 @@ class classgeneratorTest extends testcase
         $this->assertInstanceOf('midgard_datetime', $topic->metadata->created);
         $this->assertInstanceOf('\\midgard\\portable\\storage\\metadata\\entity', $topic);
         $this->assertEquals(0, $topic->score);
+    }
+
+    public function test_duplicate_tablenames()
+    {
+        $ns = uniqid(__CLASS__ . '__' . __FUNCTION__);
+        self::prepare_connection(array(TESTDIR . '__files/duplicate_tablenames/'), $this->directory, $ns);
+
+        $classname = $ns . '\\midgard_group';
+        $this->assertTrue(class_exists($classname));
+
+        $group = new $classname;
+
+        $this->assertInstanceOf('midgard_dbobject', $group);
+        $this->assertInstanceOf('midgard_object', $group);
+        $this->assertInstanceOf('\\midgard\\portable\\api\\object', $group);
+        $this->assertInstanceOf($classname, $group);
+        $this->assertInstanceOf('midgard_metadata', $group->metadata);
+        $this->assertInstanceOf('midgard_datetime', $group->metadata->created);
+        $this->assertInstanceOf('\\midgard\\portable\\storage\\metadata\\entity', $group);
+        $this->assertEquals(0, $group->owner);
+
+        $classname = $ns . '\\org_openpsa_organization';
+        $this->assertTrue(class_exists($classname));
+
+        $org = new $classname;
+        $this->assertInstanceOf('midgard_dbobject', $org);
+        $this->assertInstanceOf('midgard_object', $org);
+        $this->assertInstanceOf('\\midgard\\portable\\api\\object', $org);
+        $this->assertInstanceOf($classname, $org);
+        $this->assertInstanceOf('midgard_metadata', $org->metadata);
+        $this->assertInstanceOf('midgard_datetime', $org->metadata->created);
+        $this->assertInstanceOf('\\midgard\\portable\\storage\\metadata\\entity', $org);
+        $this->assertEquals(0, $org->invoiceDue);
     }
 }

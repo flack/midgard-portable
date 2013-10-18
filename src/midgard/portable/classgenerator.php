@@ -88,7 +88,7 @@ class classgenerator
 
         foreach ($this->manager->get_inherited_mapping() as $child => $parent)
         {
-            $this->write_inherited_mapping($child, $parent);
+            $this->write_inherited_mapping($child, $parent, $namespace);
         }
 
         if (!empty($namespace))
@@ -101,9 +101,20 @@ class classgenerator
         file_put_contents($this->filename, $this->output);
     }
 
-    private function write_inherited_mapping($child, $parent)
+    private function write_inherited_mapping($child, $parent, $namespace)
     {
-        $this->output .= 'class ' . $child . ' extends ' . $parent . ' {}';
+        $parent = $this->get_class_prefix($namespace) . $parent;
+        $child = $this->get_class_prefix($namespace) . $child;
+        $this->output .= 'class_alias( "' . $parent . '", "' . $child . '"); ';
+    }
+
+    private function get_class_prefix($namespace)
+    {
+        if ($namespace === '')
+        {
+            return '';
+        }
+        return str_replace('\\', '\\\\', $namespace) . '\\\\';
     }
 
     private function convert_type(type $type)
