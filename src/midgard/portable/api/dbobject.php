@@ -58,7 +58,8 @@ abstract class dbobject implements ObjectManagerAware
 
         // mgd api only allows returning link identifiers, doctrine has objects,
         // so it seems we need a pretty useless conversion..
-        if ($this->cm->isSingleValuedAssociation($field))
+        if (   $this->cm->isSingleValuedAssociation($field)
+            && is_object($this->$field))
         {
             return $this->$field->id;
         }
