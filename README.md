@@ -6,7 +6,7 @@ It is very much in a prototype state and currently provides the following:
 
  - Creating Doctrine ClassMetadata from MgdSchema XML files
  - Creating Doctrine Entity classes that provide access to some of the ``midgard_db_object`` API
- - Partial support for ``midgard_query_builder``
+ - Partial support for ``midgard_query_builder`` and ``midgard_collector``
  - Metadata + Soft Delete
  - Repligard table + midgard_datetime
 
@@ -34,10 +34,10 @@ Known Issues & Limitations
 
  - Entities in Doctrine can only share the same table if there is a discriminator column which tells them apart.
    Currently, midgard-portable works around this by only registering one of the colliding classes which contains
-   all properties of all affected classes. The others are then converted into empty child classes. This means that 
+   all properties of all affected classes. The others are then converted into aliases. This means that 
    if you have e.g. ``midgard_person`` and ``org_openpsa_person`` schemas, you only get one entity class containing 
-   the properties of both classes, and an otherwise empty class extending it. Which class becomes an entity depends
-   on the order the files are read, so for all practical purposes, it's random right now
+   the properties of both classes, and an a class alias for the second name. Which class becomes the actual class 
+   depends on the order the files are read, so for all practical purposes, it's random right now
    
  - Links to non-ID fields are not supported in Doctrine. So any GUID-based links are currently not working, but a
    workaround for this will get implemented eventually 
