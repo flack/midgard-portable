@@ -10,15 +10,14 @@ use midgard\portable\storage\connection;
 use Doctrine\Common\Persistence\ObjectManagerAware;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use midgard_dbobject;
 
-abstract class dbobject extends midgard_dbobject implements ObjectManagerAware
+abstract class dbobject implements ObjectManagerAware
 {
     /**
      *
      * @var Doctrine\Common\Persistence\Mapping\ClassMetadata
      */
-    private $cm;
+    protected $cm;
 
     /**
      * {@inheritDoc}

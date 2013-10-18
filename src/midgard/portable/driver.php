@@ -53,6 +53,17 @@ class driver implements driver_interface
         $this->manager = new manager($schemadirs, $namespace);
         $this->cachedir = $cachedir . '/';
         $this->namespace = $namespace;
+        $this->register_aliases();
+    }
+
+    private function register_aliases()
+    {
+        // TODO: this should be moved into an autoloader function at some point
+        if (!class_exists('midgard_dbobject'))
+        {
+            class_alias('\\midgard\\portable\\api\\dbobject', 'midgard_dbobject');
+            class_alias('\\midgard\\portable\\api\\object', 'midgard_object');
+        }
     }
 
     public function get_namespace()
