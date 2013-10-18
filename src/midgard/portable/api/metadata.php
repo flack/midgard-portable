@@ -6,9 +6,7 @@
  */
 namespace midgard\portable\api;
 
-use midgard_metadata;
-
-class metadata extends midgard_metadata
+class metadata
 {
     private $object;
 

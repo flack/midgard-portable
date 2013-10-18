@@ -63,6 +63,7 @@ class driver implements driver_interface
         {
             class_alias('\\midgard\\portable\\api\\dbobject', 'midgard_dbobject');
             class_alias('\\midgard\\portable\\api\\object', 'midgard_object');
+            class_alias('\\midgard\\portable\\api\\metadata', 'midgard_metadata');
         }
     }
 
