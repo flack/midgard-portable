@@ -7,10 +7,7 @@
 
 namespace midgard\portable\api;
 
-use midgard_person;
-use midgard\portable\api\object;
-
-class person extends midgard_person
+class person extends object
 {
     private $id = 0;
 

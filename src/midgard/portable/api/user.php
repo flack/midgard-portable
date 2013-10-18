@@ -8,11 +8,9 @@
 namespace midgard\portable\api;
 
 use midgard\portable\storage\connection;
-use midgard_user;
-use midgard_person;
 use midgard_error_exception;
 
-class user extends midgard_user
+class user extends dbobject
 {
     private $person_object;
 
@@ -100,7 +98,7 @@ class user extends midgard_user
         return false;
     }
 
-    public function set_person(midgard_person $person)
+    public function set_person(person $person)
     {
         $this->person_object = $person;
         $this->person = $person->guid;

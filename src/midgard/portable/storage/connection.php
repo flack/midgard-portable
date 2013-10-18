@@ -8,11 +8,11 @@
 namespace midgard\portable\storage;
 
 use midgard\portable\driver;
+use midgard\portable\api\user;
 use midgard\portable\storage\type\datetime;
 use midgard\portable\storage\subscriber;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Types\Type;
-use midgard_user;
 
 class connection
 {
@@ -50,7 +50,7 @@ class connection
         return self::$instance->user;
     }
 
-    public static function set_user(midgard_user $user = null)
+    public static function set_user(user $user = null)
     {
         self::$instance->user = $user;
     }
