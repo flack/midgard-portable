@@ -9,6 +9,7 @@ namespace midgard\portable\api;
 
 use midgard\portable\storage\connection;
 use midgard_user;
+use midgard_person;
 use midgard_error_exception;
 
 class user extends midgard_user
@@ -35,12 +36,12 @@ class user extends midgard_user
 
     protected $usertype = 0;
 
-    public static function get(array $properties)
+    public static function &get($properties)
     {
 
     }
 
-    public static function query(array $properties)
+    public static function &query($properties)
     {
 
     }
@@ -99,13 +100,13 @@ class user extends midgard_user
         return false;
     }
 
-    public function set_person(person $person)
+    public function set_person(midgard_person $person)
     {
         $this->person_object = $person;
         $this->person = $person->guid;
     }
 
-    public function get_person()
+    public function &get_person()
     {
         if (   $this->person_object === null
             && $this->person !== null)
