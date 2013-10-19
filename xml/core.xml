@@ -42,7 +42,7 @@
         <property name="person" field="person_guid" type="guid" link="midgard_person:guid">
         </property>
     </type>
-    
+
     <type name="midgard_attachment" table="blobs">
         <property name="id" type="unsigned integer" primaryfield="id">
             <description>Local non-replication-safe database identifier</description>
@@ -81,5 +81,5 @@
             <description>GUID of the object the parameter extends</description>
         </property>
     </type>
-    
+
 </Schema>

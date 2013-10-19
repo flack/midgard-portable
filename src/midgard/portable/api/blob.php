@@ -4,12 +4,13 @@
  * @copyright CONTENT CONTROL http://www.contentcontrol-berlin.de/
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
+namespace midgard\portable\api;
 
-class midgard_blob extends midgard_object
+class blob
 {
-    protected $parentguid;
+    public $parentguid;
 
-    protected $content; // <== ??
+    public $content; // <== ??
 
     public function __construct($attachment, $encoding = '??')
     {
