@@ -83,13 +83,10 @@ class classgenerator
         }
         foreach ($types as $type)
         {
-            $this->convert_type($type);
+            $this->convert_type($type, $namespace);
         }
 
-        foreach ($this->manager->get_inherited_mapping() as $child => $parent)
-        {
-            $this->write_inherited_mapping($child, $parent, $namespace);
-        }
+        $this->register_aliases($namespace);
 
         if (!empty($namespace))
         {
@@ -101,11 +98,28 @@ class classgenerator
         file_put_contents($this->filename, $this->output);
     }
 
-    private function write_inherited_mapping($child, $parent, $namespace)
+    private function register_aliases($namespace)
     {
-        $parent = $this->get_class_prefix($namespace) . $parent;
-        $child = $this->get_class_prefix($namespace) . $child;
-        $this->output .= 'class_alias( "' . $parent . '", "' . $child . '"); ';
+        $prefix = $this->get_class_prefix($namespace);
+
+        foreach ($this->manager->get_types() as $name => $type)
+        {
+            if (   $prefix !== ''
+                && !class_exists($type->name))
+            {
+                $this->output .= 'class_alias( "' . $prefix . $type->name . '", "' . $type->name . '"); ';
+            }
+        }
+
+        foreach ($this->manager->get_inherited_mapping() as $child => $parent)
+        {
+            $this->output .= 'class_alias( "' . $prefix . $parent . '", "' . $prefix . $child . '"); ';
+            if (   $prefix !== ''
+                && !class_exists($child))
+            {
+                $this->output .= 'class_alias( "' . $prefix . $parent . '", "' . $child . '"); ';
+            }
+        }
     }
 
     private function get_class_prefix($namespace)
@@ -117,7 +131,7 @@ class classgenerator
         return str_replace('\\', '\\\\', $namespace) . '\\\\';
     }
 
-    private function convert_type(type $type)
+    private function convert_type(type $type, $namespace)
     {
         $this->begin_class($type);
         $objects = $this->write_properties($type);

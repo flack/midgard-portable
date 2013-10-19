@@ -58,6 +58,7 @@ class classgeneratorTest extends testcase
         $this->assertInstanceOf('midgard_object', $group);
         $this->assertInstanceOf('\\midgard\\portable\\api\\object', $group);
         $this->assertInstanceOf($classname, $group);
+        $this->assertInstanceOf('midgard_group', $group);
         $this->assertInstanceOf('midgard_metadata', $group->metadata);
         $this->assertInstanceOf('midgard_datetime', $group->metadata->created);
         $this->assertInstanceOf('\\midgard\\portable\\storage\\metadata\\entity', $group);
@@ -70,7 +71,8 @@ class classgeneratorTest extends testcase
         $this->assertInstanceOf('midgard_dbobject', $org);
         $this->assertInstanceOf('midgard_object', $org);
         $this->assertInstanceOf('\\midgard\\portable\\api\\object', $org);
-        $this->assertInstanceOf($classname, $org);
+        $this->assertInstanceOf('org_openpsa_organization', $org);
+        $this->assertInstanceOf('midgard_group', $group);
         $this->assertInstanceOf('midgard_metadata', $org->metadata);
         $this->assertInstanceOf('midgard_datetime', $org->metadata->created);
         $this->assertInstanceOf('\\midgard\\portable\\storage\\metadata\\entity', $org);

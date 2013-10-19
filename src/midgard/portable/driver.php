@@ -48,7 +48,7 @@ class driver implements driver_interface
 
     private $manager;
 
-    public function __construct(array $schemadirs, $cachedir, $namespace = '')
+    public function __construct(array $schemadirs, $cachedir, $namespace = 'midgard\\portable\\entities')
     {
         $this->manager = new manager($schemadirs, $namespace);
         $this->cachedir = $cachedir . '/';
