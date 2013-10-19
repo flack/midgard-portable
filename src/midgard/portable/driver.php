@@ -53,19 +53,15 @@ class driver implements driver_interface
         $this->manager = new manager($schemadirs, $namespace);
         $this->cachedir = $cachedir . '/';
         $this->namespace = $namespace;
-        $this->register_aliases();
+        $this->export_api();
     }
 
-    private function register_aliases()
+    private function export_api()
     {
-        // TODO: this should be moved into an autoloader function at some point
-        if (!class_exists('midgard_dbobject'))
+        if (   !extension_loaded('midgard')
+            && !extension_loaded('midgard2'))
         {
-            class_alias('\\midgard\\portable\\api\\dbobject', 'midgard_dbobject');
-            class_alias('\\midgard\\portable\\api\\object', 'midgard_object');
-            class_alias('\\midgard\\portable\\api\\metadata', 'midgard_metadata');
-            class_alias('\\midgard\\portable\\api\\user', 'midgard_user');
-            class_alias('\\midgard\\portable\\api\\person', 'midgard_person');
+            require_once dirname(dirname(dirname(__DIR__))) . '/api/bootstrap.php';
         }
     }
 
