@@ -130,8 +130,6 @@ class driver implements driver_interface
 
         $metadata->setPrimaryTable($table);
 
-        $translator = new translator;
-
         foreach ($type->get_properties() as $name => $property)
         {
             if (   $property->link
@@ -148,7 +146,9 @@ class driver implements driver_interface
                             'name' => $property->field,
                             'referencedColumnName' => $property->link['field']
                         )
-                    )
+                    ),
+                    'midgard:link_target' => $property->link['field'],
+                    'midgard:link_name' => $property->link['target'],
                 );
 
                 if ($link_mapping['fieldName'] == 'id')
@@ -170,6 +170,7 @@ class driver implements driver_interface
             }
             $mapping['unique'] = $property->unique;
             $mapping['columnName'] = $property->field;
+            $mapping['midgard:midgard_type'] = translator::to_constant($property->type);
 
             // @todo: use primaryfield?
             if ($property->name == 'id')

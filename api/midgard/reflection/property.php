@@ -5,43 +5,64 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
 
-use midgard\portable\factory;
+use midgard\portable\storage\connection;
+use midgard\portable\mgdschema\translator;
 
 class midgard_reflection_property
 {
     /**
      *
-     * @var type
+     * @var Doctrine\Common\Persistence\Mapping\ClassMetadata
      */
-    private $type;
+    private $cm;
 
     public function __construct($mgdschema_class)
     {
-        $this->type = factory::get_type($mgdschema_class);
+        $this->cm = connection::get_em()->getClassMetadata('midgard:' . $mgdschema_class);
     }
 
     public function description($property)
     {
-        return $this->type->get_property($property)->description;
+        throw new \exception('not implemented yet');
     }
 
     public function is_link($property)
     {
-        return $this->type->get_property($property)->is_link;
+        return $this->cm->hasAssociation($property);
     }
 
     public function get_link_name($property)
     {
-        return $this->type->get_property($property)->link_name;
+        if (!$this->cm->hasAssociation($property))
+        {
+            return null;
+        }
+        $mapping = $this->cm->getAssociationMapping($property);
+        return $mapping['midgard:link_name'];
     }
 
     public function get_link_target($property)
     {
-        return $this->type->get_property($property)->link_target;
+        if (!$this->cm->hasAssociation($property))
+        {
+            return null;
+        }
+        $mapping = $this->cm->getAssociationMapping($property);
+        return $mapping['midgard:link_target'];
     }
 
     public function get_midgard_type($property)
     {
-        return $this->type->get_property($property)->midgard_type;
+        if ($this->cm->hasField($property))
+        {
+            $mapping = $this->cm->getFieldMapping($property);
+            return $mapping['midgard:midgard_type'];
+        }
+        else if ($this->cm->hasAssociation($property))
+        {
+            // for now, only PK fields are supported, which are always IDs, so..
+            return translator::TYPE_UINT;
+        }
+        return translator::TYPE_NONE;
     }
 }
