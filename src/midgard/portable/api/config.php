@@ -4,8 +4,9 @@
  * @copyright CONTENT CONTROL http://www.contentcontrol-berlin.de/
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
+namespace midgard\portable\api;
 
-class midgard_config
+class config
 {
     public $dbtype = 'MySQL';
     public $database = 'midgard';
@@ -29,15 +30,15 @@ class midgard_config
     public $cachedir = '/var/cache/midgard2';
     public $gdathreads = false;
 
-	public function read_file_at_path($path)
-	{
+    public function read_file_at_path($path)
+    {
 
-	}
+    }
 
-	public function read_file($name, $user = true) // <== TODO: check
-	{
+    public function read_file($name, $user = true) // <== TODO: check
+    {
 
-	}
+    }
 
     public function save_file($name, $user = true) // <== TODO: check
     {
@@ -59,4 +60,3 @@ class midgard_config
 
     }
 }
-?>
