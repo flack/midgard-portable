@@ -7,12 +7,4 @@
 
 class midgard_datetime extends DateTime
 {
-    public function __construct($time = null, $object = null)
-    {
-        if ($time === null)
-        {
-            $time = '0000-01-01 00:00:00';
-        }
-        parent::__construct($time, $object);
-    }
 }

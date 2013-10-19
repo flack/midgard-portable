@@ -37,8 +37,8 @@ class classgenerator
 
     public function __construct(manager $manager, $filename)
     {
-    	$this->manager = $manager;
-    	$this->filename = $filename;
+        $this->manager = $manager;
+        $this->filename = $filename;
     }
 
     public function write($namespace = '')
@@ -52,20 +52,20 @@ class classgenerator
 
         uasort($types, function($a, $b)
         {
-        	if (   !empty($a->extends)
+            if (   !empty($a->extends)
                 && !empty($b->extends))
-        	{
-        	    return strnatcmp($a->extends, $b->extends);
-        	}
-        	else if (!empty($a->extends))
-        	{
-        	    return -1;
-        	}
-        	else if (!empty($b->extends))
-        	{
-        	    return 1;
-        	}
-        	return 0;
+            {
+                return strnatcmp($a->extends, $b->extends);
+            }
+            else if (!empty($a->extends))
+            {
+                return -1;
+            }
+            else if (!empty($b->extends))
+            {
+                return 1;
+            }
+            return 0;
         });
 
         if (!empty($namespace))
@@ -161,24 +161,24 @@ class classgenerator
             $default = null;
             switch (translator::to_constant($property->type))
             {
-            	case translator::TYPE_BOOLEAN:
-            	    $default = 'false';
-            	    break;
-            	case translator::TYPE_FLOAT:
-            	    $default = '0.0';
-            	    break;
-            	case translator::TYPE_UINT:
-            	case translator::TYPE_INT:
-            	    $default = '0';
-            	    break;
-            	case translator::TYPE_GUID:
-            	case translator::TYPE_STRING:
-            	case translator::TYPE_LONGTEXT:
-            	    $default = "''";
-            	    break;
-            	case translator::TYPE_TIMESTAMP:
-            	    $objects[$name] = 'new midgard_datetime';
-            	    break;
+                case translator::TYPE_BOOLEAN:
+                    $default = 'false';
+                    break;
+                case translator::TYPE_FLOAT:
+                    $default = '0.0';
+                    break;
+                case translator::TYPE_UINT:
+                case translator::TYPE_INT:
+                    $default = '0';
+                    break;
+                case translator::TYPE_GUID:
+                case translator::TYPE_STRING:
+                case translator::TYPE_LONGTEXT:
+                    $default = "''";
+                    break;
+                case translator::TYPE_TIMESTAMP:
+                    $objects[$name] = 'new midgard_datetime("0001-01-01 00:00:00")';
+                    break;
             }
             if (   $default !== null
                    // we need to skip working links because in this case, Doctrine expects objects as values

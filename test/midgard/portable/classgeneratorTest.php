@@ -42,6 +42,7 @@ class classgeneratorTest extends testcase
         $this->assertInstanceOf('midgard_datetime', $topic->metadata->created);
         $this->assertInstanceOf('\\midgard\\portable\\storage\\metadata\\entity', $topic);
         $this->assertEquals(0, $topic->score);
+        $this->assertEquals('0001-01-01 00:00:00', $topic->metadata->created->format('Y-m-d H:i:s'));
     }
 
     public function test_duplicate_tablenames()
@@ -68,14 +69,9 @@ class classgeneratorTest extends testcase
         $this->assertTrue(class_exists($classname));
 
         $org = new $classname;
-        $this->assertInstanceOf('midgard_dbobject', $org);
-        $this->assertInstanceOf('midgard_object', $org);
-        $this->assertInstanceOf('\\midgard\\portable\\api\\object', $org);
+        $this->assertInstanceOf($classname, $org);
         $this->assertInstanceOf('org_openpsa_organization', $org);
         $this->assertInstanceOf('midgard_group', $group);
-        $this->assertInstanceOf('midgard_metadata', $org->metadata);
-        $this->assertInstanceOf('midgard_datetime', $org->metadata->created);
-        $this->assertInstanceOf('\\midgard\\portable\\storage\\metadata\\entity', $org);
         $this->assertEquals(0, $org->invoiceDue);
     }
 }
