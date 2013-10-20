@@ -5,6 +5,8 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
 
+use midgard\portable\storage\connection;
+
 class midgard_connection
 {
     public $config;
