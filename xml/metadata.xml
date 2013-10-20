@@ -23,13 +23,13 @@
         </property>
         <property name="owner" type="guid">
         </property>
-        <property name="schedule_start" type="datetime">
+        <property name="schedulestart" field="schedule_start" type="datetime">
         </property>
         <property name="schedule_end" type="datetime">
         </property>
         <property name="hidden" type="boolean">
         </property>
-        <property name="nav_noentry" type="boolean">
+        <property name="navnoentry" field="nav_noentry" type="boolean">
         </property>
         <property name="size" type="integer">
         </property>
