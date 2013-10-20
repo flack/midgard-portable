@@ -18,7 +18,12 @@ class midgard_reflection_property
 
     public function __construct($mgdschema_class)
     {
-        $this->cm = connection::get_em()->getClassMetadata('midgard:' . $mgdschema_class);
+        $cmf = connection::get_em()->getMetadataFactory();
+        if (!$cmf->hasMetadataFor($mgdschema_class))
+        {
+            $mgdschema_class = 'midgard:' . $mgdschema_class;
+        }
+        $this->cm = $cmf->getMetadataFor($mgdschema_class);
     }
 
     public function description($property)
