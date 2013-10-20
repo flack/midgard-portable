@@ -66,6 +66,15 @@ class objectTest extends testcase
         $loaded = new $classname($topic->id);
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function test_load_invalid_guid()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname('xxx');
+    }
+
     public function test_get_by_id()
     {
         $classname = self::$ns . '\\midgard_topic';
