@@ -76,6 +76,10 @@ abstract class object extends dbobject
 
     public function get_by_guid($guid)
     {
+        if (!mgd_is_guid($guid))
+        {
+            throw new \InvalidArgumentException("'$guid' is not a valid guid");
+        }
         $entity = connection::get_em()->getRepository(get_class($this))->findOneBy(array('guid' => $guid));
         if ($entity === null)
         {
