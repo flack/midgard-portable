@@ -156,7 +156,7 @@ class driver implements driver_interface
                     $link_mapping['id'] = true;
                 }
 
-                $metadata->mapOneToOne($link_mapping);
+                $metadata->mapManyToOne($link_mapping);
                 continue;
             }
 

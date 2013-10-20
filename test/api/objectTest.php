@@ -34,19 +34,16 @@ class objectTest extends testcase
         $classname = self::$ns . '\\midgard_topic';
         $topic = new $classname;
         $topic->name = __FUNCTION__;
-        //self::$em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
 
         $topic->create();
         self::$em->clear();
 
         $loaded = new $classname($topic->id);
-        //self::$em->getConfiguration()->setSQLLogger(null);
         $this->assertEquals($topic->id, $loaded->id);
         $this->assertNotEquals('', $loaded->guid);
         $this->assertEquals($topic->name, $loaded->name);
 
         $loaded2 = new $classname($topic->guid);
-        //self::$em->getConfiguration()->setSQLLogger(null);
         $this->assertEquals($topic->id, $loaded2->id);
         $this->assertEquals($topic->name, $loaded2->name);
     }
@@ -108,6 +105,7 @@ class objectTest extends testcase
         $this->assertGreaterThan($initial, $topic->id);
 
         $topic2 = new $classname;
+        $topic2->up = $topic->id;
         $topic2->name = __FUNCTION__ . '-2';
         $stat = $topic2->create();
         $this->assertTrue($stat);
@@ -115,6 +113,12 @@ class objectTest extends testcase
         $this->assertFalse($stat);
         $this->assertEquals($initial + 2, $this->count_results($classname));
         $this->assertEquals($topic->id + 1, $topic2->id);
+
+        $topic3 = new $classname;
+        $topic3->up = $topic->id;
+        $topic3->name = __FUNCTION__ . '-3';
+        $stat = $topic3->create();
+        $this->assertTrue($stat);
     }
 
     public function test_update()
