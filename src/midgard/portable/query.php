@@ -9,6 +9,7 @@ namespace midgard\portable;
 
 use midgard\portable\storage\connection;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query\Expr;
 
 abstract class query
 {
@@ -32,27 +33,15 @@ abstract class query
 
     /**
      *
-     * @var array
-     */
-    protected $groups = array();
-
-    /**
-     *
-     * @var int
-     */
-    protected $count_groups = 0;
-
-    /**
-     *
-     * @var int
-     */
-    protected $actual_group = 0;
-
-    /**
-     *
      * @var string
      */
     protected $classname = null;
+
+    /**
+     *
+     * @var array
+     */
+    protected $groupstack = array();
 
     public function __construct($class)
     {
@@ -72,27 +61,10 @@ abstract class query
             $targetclass = $mapping['midgard:link_name'];
             $value = $this->get_child_ids('midgard:' . $targetclass, $name, $value);
         }
-        // we are in a group
-        if ($this->count_groups > 0)
-        {
-            $this->groups[$this->count_groups]['constraints'][] = array(
-                'name' => $name,
-                'operator' => $operator,
-                'value' => $value
-            );
-            return true;
-        }
-        $this->parameters++;
-        $where = $this->build_where($name, $operator);
 
-        if ($this->parameters == 1)
-        {
-            $this->qb->where($where);
-        }
-        else
-        {
-            $this->qb->andWhere($where);
-        }
+        $this->parameters++;
+        $this->get_current_group()->add($this->build_where($name, $operator));
+
         $this->qb->setParameter($this->parameters, $value);
         return true;
     }
@@ -142,51 +114,41 @@ abstract class query
 
     public function begin_group($operator)
     {
-        //set start group
-        if ($this->count_groups === 0)
+        if ($operator === 'OR')
         {
-            $this->groups[$this->count_groups] = array(
-                'parent' => $this->count_groups,
-                'operator' => 'AND',
-                'childs' => array(),
-                'constraints' => array()
-            );
+            $this->groupstack[] = $this->qb->expr()->orX();
         }
-
-        $parent = $this->actual_group;
-        $this->count_groups++;
-        //stat this group is child
-        $this->groups[$parent]['childs'][] = $this->count_groups;
-        //add this group
-        $this->groups[$this->count_groups] = array(
-            'parent' => $parent,
-            'operator' => $operator,
-            'childs' => array(),
-            'constraints' => array()
-        );
-
-        $this->actual_group = $this->count_groups;
+        else
+        {
+            $this->groupstack[] = $this->qb->expr()->andX();
+        }
     }
 
     public function end_group()
     {
-        //no group to end.... error ? notice ?
-        if ($this->actual_group < 1)
+        $group = array_pop($this->groupstack);
+        if (!empty($this->groupstack))
         {
-            return true;
+            $this->get_current_group()->add($group);
         }
-        //get actual_group parent
-        $parent = $this->groups[$this->actual_group]['parent'];
-        //if all groups were ended get dql-statement
-        if ($parent === 0 && !empty($this->groups))
+        else
         {
-            $dql = $this->resolve_group($this->actual_group);
-            //add the dql
-            $this->qb->andWhere($dql);
-            //clean groups
-            $this->groups = array();
+            $this->qb->andWhere($group);
         }
-        $this->actual_group = $parent;
+    }
+
+    /**
+     *
+     * @return Doctrine\ORM\Query\Expr:
+     */
+    protected function get_current_group()
+    {
+        if (empty($this->groupstack))
+        {
+            $this->begin_group('AND');
+        }
+
+        return $this->groupstack[(count($this->groupstack) - 1)];
     }
 
     protected function pre_execution()
@@ -246,67 +208,7 @@ abstract class query
 
     protected function check_groups()
     {
-        if($this->actual_group > 0)
-        {
-            //debug ? throw error ? notice ?
-            $this->close_all_groups();
-        }
-    }
-
-    protected function resolve_group($count)
-    {
-        // get dql of child-groups
-        $child_dql = '';
-        if (!empty($this->groups[$count]['childs']))
-        {
-            foreach ($this->groups[$count]['childs'] as $child_count)
-            {
-                if (!empty($child_dql))
-                {
-                    $child_dql .= ' ' . $this->groups[$count]['operator'] . ' ';
-                }
-                $child_dql .= $this->resolve_group($child_count);
-            }
-        }
-        // get dql of this groups contraints
-        $constraint_dql = '';
-        foreach ($this->groups[$count]['constraints'] as $constraint)
-        {
-            if (!empty($constraint_dql))
-            {
-                $constraint_dql .= ' ' . $this->groups[$count]['operator'] . ' ';
-            }
-            $this->parameters++;
-            //$constraint_dql .= 'c.' . $constraint['name'] . ' ' . $constraint['operator'] . ' ?' . $this->parameters;
-            $constraint_dql .= $this->build_where($constraint['name'], $constraint['operator']);
-
-            $this->qb->setParameter($this->parameters, $constraint['value']);
-        }
-        // build final dql
-        $dql = '';
-        if ($constraint_dql !== '')
-        {
-            $dql .= $constraint_dql;
-            if (!empty($child_dql))
-            {
-                $dql .= ' ' . $this->groups[$count]['operator'] . ' ';
-            }
-        }
-        if ($child_dql !== '')
-        {
-            $dql .=  $child_dql;
-        }
-        if ($dql !== '')
-        {
-            $dql = '(' . $dql . ')';
-        }
-
-        return $dql;
-    }
-
-    protected function close_all_groups()
-    {
-        while ($this->actual_group > 0)
+        while (!empty($this->groupstack))
         {
             $this->end_group();
         }
