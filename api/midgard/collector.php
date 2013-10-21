@@ -23,9 +23,10 @@ class midgard_collector extends midgard_query_builder
      */
     private $_key_property = "guid";
 
-    function __construct($class)
+    function __construct($class, $field, $value)
     {
         parent::__construct($class);
+        $this->add_constraint($field, '=', $value);
     }
 
     public function set_key_property($property)

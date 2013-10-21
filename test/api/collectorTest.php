@@ -36,8 +36,7 @@ class midgard_collectorTest extends testcase
         $classname = self::$ns . '\\midgard_topic';
 
         // call without calling execute, this should return an empty array
-        $mc = new \midgard_collector($classname);
-        $mc->add_constraint('id', '=', self::$_topic->id);
+        $mc = new \midgard_collector($classname, 'id', self::$_topic->id);
         $keys = $mc->list_keys();
 
         $this->assertEquals(0, count($keys));
@@ -54,8 +53,7 @@ class midgard_collectorTest extends testcase
     {
         $classname = self::$ns . '\\midgard_topic';
 
-        $mc = new \midgard_collector($classname);
-        $mc->add_constraint('id', '=', self::$_topic->id);
+        $mc = new \midgard_collector($classname, 'id', self::$_topic->id);
         $mc->execute();
         $keys = $mc->list_keys();
 
@@ -74,8 +72,7 @@ class midgard_collectorTest extends testcase
     {
         $classname = self::$ns . '\\midgard_topic';
 
-        $mc = new \midgard_collector($classname);
-        $mc->add_constraint('id', '=', self::$_topic->id);
+        $mc = new \midgard_collector($classname, 'id', self::$_topic->id);
         $mc->execute();
         $keys = $mc->list_keys();
         $key = key($keys);
