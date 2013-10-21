@@ -126,7 +126,8 @@ class midgard_query_builderTest extends testcase
         $topic->create();
 
         $qb = new \midgard_query_builder($classname);
-        $qb->add_constraint('guid', '=', $topic->guid);
+        $stat = $qb->add_constraint('guid', '=', $topic->guid);
+        $this->assertTrue($stat);
         $results = $qb->execute();
 
         $this->assertEquals(1, count($results));

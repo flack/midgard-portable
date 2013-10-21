@@ -94,6 +94,7 @@ abstract class query
             $this->qb->andWhere($where);
         }
         $this->qb->setParameter($this->parameters, $value);
+        return true;
     }
 
     public function add_order($name, $direction = 'ASC')
