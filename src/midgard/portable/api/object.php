@@ -287,7 +287,7 @@ abstract class object extends dbobject
         return new \midgard_collector(get_called_class());
     }
 
-    public static function new_collector()
+    public static function new_collector($field, $value)
     {
         return new \midgard_collector(get_called_class(), $field, $value);
     }
