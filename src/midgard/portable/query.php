@@ -65,6 +65,13 @@ abstract class query
 
     public function add_constraint($name, $operator, $value)
     {
+        if ($operator === 'INTREE')
+        {
+            $operator = 'IN';
+            $mapping = connection::get_em()->getClassMetadata($this->classname)->getAssociationMapping($name);
+            $targetclass = $mapping['midgard:link_name'];
+            $value = $this->get_child_ids('midgard:' . $targetclass, $name, $value);
+        }
         // we are in a group
         if ($this->count_groups > 0)
         {
@@ -101,6 +108,7 @@ abstract class query
         $this->qb->select("count(c.id)");
         $this->pre_execution();
         $count = intval($this->qb->getQuery()->getSingleScalarResult());
+
         $this->post_execution();
         return $count;
     }
@@ -300,5 +308,26 @@ abstract class query
         {
             $this->end_group();
         }
+    }
+
+    private function get_child_ids($targetclass, $fieldname, $parent_value)
+    {
+        $ids = array($parent_value);
+
+        $qb = connection::get_em()->createQueryBuilder();
+        $qb->from($targetclass, 'c')
+            ->where('c.' . $fieldname . ' = ?0')
+            ->setParameter(0, $parent_value)
+            ->select("c.id");
+        $this->pre_execution();
+        $results = $qb->getQuery()->getScalarResult();
+        $this->post_execution();
+
+        foreach ($results as $row)
+        {
+            $ids = array_merge($ids, $this->get_child_ids($targetclass, $fieldname, $row['id']));
+        }
+
+        return $ids;
     }
 }

@@ -401,4 +401,23 @@ class midgard_query_builderTest extends testcase
         $results = $qb->execute();
         $this->assertEquals($topics[2]->id, $results[0]->id);
     }
+
+    public function test_intree_constraint()
+    {
+        self::$em->clear();
+        $classname = self::$ns . '\\midgard_topic';
+        $this->purge_all($classname);
+        $topics = $this->_create_topics(__FUNCTION__);
+        self::$em->clear();
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('up', 'INTREE', $topics[0]->id);
+        $this->assertEquals(2, $qb->count());
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('up', 'INTREE', $topics[1]->id);
+        $this->assertEquals(1, $qb->count());
+        $results = $qb->execute();
+        $this->assertEquals($topics[2]->id, $results[0]->id);
+    }
 }
