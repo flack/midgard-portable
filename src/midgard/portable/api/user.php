@@ -141,12 +141,44 @@ class user extends dbobject
 
     public function update()
     {
+        if (empty($this->id))
+        {
+            return false;
+        }
 
+        try
+        {
+            connection::get_em()->persist($this);
+            connection::get_em()->flush();
+        }
+        catch (Exception $e)
+        {
+            throw $e;
+            var_dump($e->getMessage());
+            return false;
+        }
+	    return true;
     }
 
     public function delete()
     {
+        if (empty($this->id))
+        {
+            return false;
+        }
 
+        try
+        {
+            connection::get_em()->remove($this);
+            connection::get_em()->flush();
+        }
+        catch (Exception $e)
+        {
+            throw $e;
+            var_dump($e->getMessage());
+            return false;
+        }
+	    return true;
     }
 }
 ?>
