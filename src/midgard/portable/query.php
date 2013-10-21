@@ -101,6 +101,7 @@ abstract class query
     {
         $name = $this->build_constraint_name($name);
         $this->qb->orderBy('c.' . $name, $direction);
+        return true;
     }
 
     public function count()

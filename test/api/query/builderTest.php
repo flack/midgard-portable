@@ -101,7 +101,8 @@ class midgard_query_builderTest extends testcase
 
         // test order desc
         $qb = new \midgard_query_builder($classname);
-        $qb->add_order('name', 'DESC');
+        $stat = $qb->add_order('name', 'DESC');
+        $this->assertTrue($stat);
         $results = $qb->execute();
         $first = array_shift($results);
         $this->assertEquals($topics[2]->name, $first->name);
