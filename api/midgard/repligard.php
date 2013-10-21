@@ -6,8 +6,9 @@
  */
 
 use midgard\portable\storage\subscriber;
+use midgard\portable\api\dbobject;
 
-class midgard_repligard extends midgard_dbobject
+class midgard_repligard extends dbobject
 {
     protected $id = 0;
 
