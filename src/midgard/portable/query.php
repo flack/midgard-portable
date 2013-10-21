@@ -202,21 +202,22 @@ abstract class query
 
     protected function build_where($name, $operator)
     {
-        if (strpos($name, ".") === false)
-        {
-            return 'c.' . $name . ' ' . $operator . ' ?' . $this->parameters;
-        }
-
-        $parts = explode(".", $name);
         // metadata
-        if (count($parts) == 2 && $parts[0] == "metadata")
-        {
-            $name = $parts[0] . "_" . $parts[1];
-            return 'c.' . $name . ' ' . $operator . ' ?' . $this->parameters;
-        }
+        $name = str_replace('metadata.', 'metadata_', $name);
 
-        // TODO
-        return 'c.' . $this->build_constraint_name($name) . ' ' . $operator . ' ?' . $this->parameters;
+        $expression = $operator . ' ?' . $this->parameters;
+
+        if (   $operator === 'IN'
+            || $operator === 'NOT IN')
+        {
+            $expression = $operator . '( ?' . $this->parameters . ')';
+        }
+        if (strpos($name, ".") !== false)
+        {
+            // TODO
+            $name = 'c.' . $this->build_constraint_name($name);
+        }
+        return 'c.' . $name . ' ' . $expression;
 
         /*
         $property = array_shift($parts); // eg lang

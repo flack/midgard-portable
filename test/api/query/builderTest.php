@@ -40,10 +40,12 @@ class midgard_query_builderTest extends testcase
         $topics[0]->create();
 
         $topics[1] = new $classname;
+        $topics[1]->up = $topics[0]->id;
         $topics[1]->name = 'B_' . $name_prefix . 'testTwo';
         $topics[1]->create();
 
         $topics[2] = new $classname;
+        $topics[2]->up = $topics[1]->id;
         $topics[2]->name = 'C_' . $name_prefix . 'testThree';
         $topics[2]->create();
 
@@ -379,5 +381,24 @@ class midgard_query_builderTest extends testcase
         $qb_count = $qb->count();
 
         $this->assertEquals($orig_topic_count, $qb_count);
+    }
+
+    public function test_in_constraint()
+    {
+        self::$em->clear();
+        $classname = self::$ns . '\\midgard_topic';
+        $this->purge_all($classname);
+        $topics = $this->_create_topics(__FUNCTION__);
+        self::$em->clear();
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('id', 'IN', array($topics[0]->id, $topics[1]->id));
+        $this->assertEquals(2, $qb->count());
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('id', 'NOT IN', array($topics[0]->id, $topics[1]->id));
+        $this->assertEquals(1, $qb->count());
+        $results = $qb->execute();
+        $this->assertEquals($topics[2]->id, $results[0]->id);
     }
 }
