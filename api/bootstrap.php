@@ -61,8 +61,6 @@ class_alias('midgard\\portable\\api\\dbobject', 'midgard_dbobject');
 class_alias('midgard\\portable\\api\\object', 'midgard_object');
 class_alias('midgard\\portable\\api\\metadata', 'midgard_metadata');
 class_alias('midgard\\portable\\api\\blob', 'midgard_blob');
-class_alias('midgard\\portable\\api\\user', 'midgard_user');
-class_alias('midgard\\portable\\api\\person', 'midgard_person');
 
 require 'functions.php';
 ?>
