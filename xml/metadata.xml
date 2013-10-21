@@ -25,7 +25,7 @@
         </property>
         <property name="schedulestart" field="schedule_start" type="datetime">
         </property>
-        <property name="schedule_end" type="datetime">
+        <property name="scheduleend" field="schedule_end" type="datetime">
         </property>
         <property name="hidden" type="boolean">
         </property>
