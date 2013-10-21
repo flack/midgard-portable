@@ -284,17 +284,17 @@ abstract class object extends dbobject
 
     public static function new_query_builder()
     {
-        return false;
+        return new \midgard_collector(get_called_class());
     }
 
     public static function new_collector()
     {
-        return false;
+        return new \midgard_collector(get_called_class(), $field, $value);
     }
 
     public static function new_reflection_property()
     {
-        return false;
+        return new \midgard_reflection_property(get_called_class());
     }
 
     public function set_guid($guid)
