@@ -18,6 +18,8 @@ abstract class object extends dbobject
 {
     protected $guid = '';
 
+    protected $action = ''; // <== does this need to do anything?
+
     protected $schema_type;
 
     /**
