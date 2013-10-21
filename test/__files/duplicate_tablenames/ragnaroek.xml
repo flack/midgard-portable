@@ -1,5 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Schema xmlns="http://www.midgard-project.org/repligard/1.4">
+
+    <type name="midgard_language" table="midgard_language">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="code"        type="string" dbtype="varchar(2)" index="yes">
+            <description>ISO 639-1 two-letter language code</description>
+        </property>
+        <property name="name"        type="string" index="yes" unique="yes">
+            <description>Name of the language in English</description>
+        </property>
+        <property name="native"        type="string">
+            <description>Name of the language in the language itself</description>
+        </property>
+        <property name="locale"        type="string">
+            <description>System locale for the language</description>
+        </property>
+        <property name="description"    type="text">
+            <description>Description of the language</description>
+        </property>
+    </type>
+
+    <type name="midgard_topic" table="topic">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="name"     type="string" index="yes">
+            <description>URL name of the topic</description>
+        </property>
+        <property name="code"     type="text">
+            <description>Executable PHP code for topic display</description>
+        </property>
+        <property name="up"       link="midgard_topic:id" type="unsigned integer" upfield="up">
+            <description>Topic the topic is under</description>
+        </property>
+        <!-- MidCOM properties -->
+        <property name="component"    type="string" index="yes">
+            <description>MidCOM component responsible for the topic</description>
+        </property>
+        <property name="style"    type="string" index="yes">
+            <description>MidCOM style path for the topic</description>
+        </property>
+        <property name="styleInherit"    type="boolean" field="style_inherit" index="yes">
+            <description>Whether the MidCOM style should be inherited to subtopics</description>
+        </property>
+        <property name="symlink"    link="midgard_topic:id" type="unsigned integer" index="yes">
+            <description>MidCOM topic symlink</description>
+        </property>
+        <property name="title"    type="string">
+            <description>Title of the topic</description>
+        </property>
+        <property name="extra"    type="text">
+            <description>Extra information about the topic</description>
+        </property>
+        <property name="description" type="text">
+            <description>Topic description</description>
+        </property>
+        <property name="lang"     type="unsigned integer" link="midgard_language:id">
+            <description>Language the article is in</description>
+        </property>
+        <!-- Legacy -->
+        <property name="score"    type="integer">
+            <description>Arrangement score of the topic (legacy field)</description>
+        </property>
+    </type>
+
     <type name="openpsa_person" extends="midgard_person" table="person">
         <property name="username" type="string" index="yes">
             <description>Username (legacy Midgard1) of the person</description>

@@ -43,17 +43,24 @@ class manager
     {
         $this->initialize();
 
-        $target_class = $property->link['target'];
-        if (   !array_key_exists($target_class, $this->types)
-            && $target_class !== $property->get_parent()->name)
+        $fqcn = $property->link['target'];
+        if (!empty($this->namespace))
         {
-            if (!array_key_exists($target_class, $this->inherited_mapping))
+            $fqcn = $this->namespace . '\\' . $fqcn;
+        }
+
+        if (   array_key_exists($fqcn, $this->types)
+            || $property->link['target'] === $property->get_parent()->name)
+        {
+            $target_class = $property->link['target'];
+        }
+        else
+        {
+            if (!array_key_exists($property->link['target'], $this->inherited_mapping))
             {
-                //TODO: This happens when loading classes individually, f.x. in unit tests. Should we care?
-                return false;
-                throw new \Exception('Link to unknown class ' . $target_class);
+                throw new \Exception('Link to unknown class ' . $property->link['target']);
             }
-            $target_class = $this->inherited_mapping[$target_class];
+            $target_class = $this->inherited_mapping[$property->link['target']];
         }
         return $target_class;
     }
