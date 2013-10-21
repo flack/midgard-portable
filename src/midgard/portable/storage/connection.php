@@ -70,6 +70,7 @@ class connection
         $driver->getAllClassNames();
         $config->setMetadataDriverImpl($driver);
         $config->addEntityNamespace('midgard', $driver->get_namespace());
+        $config->setClassMetadataFactoryName('\\midgard\\portable\\mapping\\factory');
 
         $em = \Doctrine\ORM\EntityManager::create($db_config, $config);
         $em->getFilters()->enable('softdelete');

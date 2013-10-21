@@ -17,6 +17,7 @@ class objectTest extends testcase
         $classes = array(
             $factory->getMetadataFor('midgard:midgard_language'),
             $factory->getMetadataFor('midgard:midgard_topic'),
+            $factory->getMetadataFor('midgard:midgard_snippetdir'),
             $factory->getMetadataFor('midgard:midgard_repligard'),
         );
         $tool->dropSchema($classes);
@@ -191,5 +192,32 @@ class objectTest extends testcase
 
         $this->assertInstanceOf($classname, $parent);
         $this->assertEquals($topic->guid, $parent->guid);
+    }
+
+    public function test_uniquenames()
+    {
+        $classname = self::$ns . '\\midgard_snippetdir';
+        $sd = new $classname;
+        $sd->name = __FUNCTION__;
+        $sd->create();
+
+        $sd2 = new $classname;
+        $sd2->name = __FUNCTION__;
+        $stat = $sd2->create();
+        $this->assertFalse($stat);
+
+        $sd->delete();
+
+        $stat = $sd2->create();
+        $this->assertTrue($stat);
+
+        $sd3 = new $classname;
+        $sd3->name = __FUNCTION__;
+        $stat = $sd3->create();
+        $this->assertFalse($stat);
+
+        $sd3->up = $sd2->id;
+        $stat = $sd3->create();
+        $this->assertTrue($stat);
     }
 }

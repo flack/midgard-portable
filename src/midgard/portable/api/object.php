@@ -109,7 +109,8 @@ abstract class object extends dbobject
 
     public function create()
     {
-        if (!empty($this->id))
+        if (   !empty($this->id)
+            || !$this->is_unique())
         {
             return false;
         }
@@ -126,6 +127,54 @@ abstract class object extends dbobject
             return false;
         }
         return ($this->id != 0);
+    }
+
+    private function is_unique()
+    {
+        $this->initialize();
+
+        if (empty($this->cm->midgard['unique_fields']))
+        {
+            return true;
+        }
+
+        $qb = connection::get_em()->createQueryBuilder();
+        $qb->from(get_class($this), 'c');
+        $conditions = $qb->expr()->andX();
+        if ($this->id)
+        {
+            $parameters = array
+            (
+                'id' => $this->id
+            );
+            $conditions->add($qb->expr()->neq('c.id', ':id'));
+        }
+        foreach ($this->cm->midgard['unique_fields'] as $field)
+        {
+            $conditions->add($qb->expr()->eq('c.' . $field, ':' . $field));
+            $parameters[$field] = $this->$field;
+        }
+
+        if (!empty($this->cm->midgard['upfield']))
+        {
+            // TODO: This needs to be changed so that value is always numeric, since this is how midgard does it
+            if ($this->{$this->cm->midgard['upfield']} === null)
+            {
+                $conditions->add($qb->expr()->isNull('c.' . $this->cm->midgard['upfield']));
+            }
+            else
+            {
+                $conditions->add($qb->expr()->eq('c.' . $this->cm->midgard['upfield'], ':' . $this->cm->midgard['upfield']));
+                $parameters[$this->cm->midgard['upfield']] = $this->{$this->cm->midgard['upfield']};
+            }
+        }
+        $qb->where($conditions)
+            ->setParameters($parameters);
+
+        $qb->select("count(c)");
+        $count = intval($qb->getQuery()->getSingleScalarResult());
+
+        return ($count === 0);
     }
 
     public function is_in_parent_tree($root_id, $id)

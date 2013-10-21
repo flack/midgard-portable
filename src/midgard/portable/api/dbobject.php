@@ -81,7 +81,7 @@ abstract class dbobject implements ObjectManagerAware
         }
     }
 
-    private function initialize()
+    protected function initialize()
     {
         if ($this->cm === null)
         {

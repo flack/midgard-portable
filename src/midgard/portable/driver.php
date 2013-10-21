@@ -130,6 +130,10 @@ class driver implements driver_interface
 
         $metadata->setPrimaryTable($table);
 
+        $metadata->midgard['parent'] = $type->parent;
+        $metadata->midgard['parentfield'] = $type->parentfield;
+        $metadata->midgard['upfield'] = $type->upfield;
+
         foreach ($type->get_properties() as $name => $property)
         {
             if (   $property->link
@@ -168,7 +172,12 @@ class driver implements driver_interface
             {
                 $mapping = $this->dbtypemap[$property->dbtype];
             }
-            $mapping['unique'] = $property->unique;
+            if ($property->unique)
+            {
+                //we can't set this as a real DB constraint because of softdelete and tree hierarchies
+                $metadata->midgard['unique_fields'][] = $property->name;
+            }
+
             $mapping['columnName'] = $property->field;
             $mapping['midgard:midgard_type'] = translator::to_constant($property->type);
 
