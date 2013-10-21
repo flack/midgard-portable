@@ -59,19 +59,21 @@ class classgeneratorTest extends testcase
         $this->assertInstanceOf('midgard_object', $group);
         $this->assertInstanceOf('\\midgard\\portable\\api\\object', $group);
         $this->assertInstanceOf($classname, $group);
-        $this->assertInstanceOf('midgard_group', $group);
+        // we can't test for non-namespaced classname, since some other test might have registered the alias already..
+        //$this->assertInstanceOf('midgard_group', $group);
         $this->assertInstanceOf('midgard_metadata', $group->metadata);
         $this->assertInstanceOf('midgard_datetime', $group->metadata->created);
         $this->assertInstanceOf('\\midgard\\portable\\storage\\metadata\\entity', $group);
         $this->assertEquals(0, $group->owner);
 
-        $classname = $ns . '\\org_openpsa_organization';
-        $this->assertTrue(class_exists($classname));
+        $org_classname = $ns . '\\org_openpsa_organization';
+        $this->assertTrue(class_exists($org_classname));
 
-        $org = new $classname;
+        $org = new $org_classname;
+        $this->assertInstanceOf($org_classname, $org);
         $this->assertInstanceOf($classname, $org);
-        $this->assertInstanceOf('org_openpsa_organization', $org);
-        $this->assertInstanceOf('midgard_group', $group);
+        //$this->assertInstanceOf('org_openpsa_organization', $org);
+        //$this->assertInstanceOf('midgard_group', $group);
         $this->assertEquals(0, $org->invoiceDue);
     }
 }
