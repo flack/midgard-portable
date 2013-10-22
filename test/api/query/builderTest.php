@@ -187,17 +187,14 @@ class midgard_query_builderTest extends testcase
         $topic3->update();
 
         // we should find just one topic (topic3) for lang2
-        /*
         $qb = new \midgard_query_builder($classname);
         $qb->add_constraint('lang.id', '=', $lang2->id);
         $results = $qb->execute();
 
         $this->assertEquals(1, count($results));
         $this->assertEquals($topic3->id, $results[0]->id);
-        */
 
         // test with join (with metadata)
-        /*
         $qb = new \midgard_query_builder($classname);
         // this should find the german topics (topic1+topic2)
         $qb->add_constraint("lang.metadata.revision", "=", 7);
@@ -207,7 +204,6 @@ class midgard_query_builderTest extends testcase
         $this->assertEquals(2, count($results));
         $this->assertEquals($topic->id, $results[0]->id);
         $this->assertEquals($topic2->id, $results[1]->id);
-        */
     }
 
     public function test_limit()

@@ -43,6 +43,12 @@ abstract class query
      */
     protected $groupstack = array();
 
+    /**
+     *
+     * @var array
+     */
+    protected $join_tables = array();
+
     public function __construct($class)
     {
         $this->classname = $class;
@@ -72,7 +78,7 @@ abstract class query
     public function add_order($name, $direction = 'ASC')
     {
         $name = $this->build_constraint_name($name);
-        $this->qb->orderBy('c.' . $name, $direction);
+        $this->qb->orderBy($name, $direction);
         return true;
     }
 
@@ -169,14 +175,41 @@ abstract class query
 
     protected function build_constraint_name($name)
     {
-        return str_replace(".", "_", $name);
+        $current_table = 'c';
+
+        // metadata
+        $name = str_replace('metadata.', 'metadata_', $name);
+        $column = $name;
+        if (strpos($name, ".") !== false)
+        {
+            $mrp = new \midgard_reflection_property($this->classname);
+
+            $parts = explode('.', $name);
+            $column = array_pop($parts);
+            foreach ($parts as $part)
+            {
+                if (!$mrp->is_link($part))
+                {
+                    throw new \Exception($part . ' is not a link');
+                }
+
+                $targetclass = $mrp->get_link_name($part);
+
+                if (!array_key_exists($targetclass, $this->join_tables))
+                {
+                    $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
+                    $this->qb->join($current_table . '.' . $part, $this->join_tables[$targetclass]);
+                }
+                $current_table = $this->join_tables[$targetclass];
+                $mrp = new \midgard_reflection_property($targetclass);
+            }
+        }
+        return $current_table . '.' . $column;
     }
 
     protected function build_where($name, $operator)
     {
-        // metadata
-        $name = str_replace('metadata.', 'metadata_', $name);
-
+        $name = $this->build_constraint_name($name);
         $expression = $operator . ' ?' . $this->parameters;
 
         if (   $operator === 'IN'
@@ -184,25 +217,7 @@ abstract class query
         {
             $expression = $operator . '( ?' . $this->parameters . ')';
         }
-        if (strpos($name, ".") !== false)
-        {
-            // TODO
-            $name = 'c.' . $this->build_constraint_name($name);
-        }
-        return 'c.' . $name . ' ' . $expression;
-
-        /*
-        $property = array_shift($parts); // eg lang
-
-        //$class = connection::get_em()->getMetadataFactory()->getMetadataFor($this->classname);
-        //var_dump($class->getReflectionProperty($property));
-
-        // eg person.metadata.deleted
-        $this->qb->addSelect(array('j'))->leftJoin('c.' . $property, 'j');
-        $name = "j." . $this->build_constraint_name(implode(".", $parts));
-
-        return $name . ' ' .$operator . ' ?' . $this->parameters;
-        */
+        return $name . ' ' . $expression;
     }
 
 
