@@ -55,6 +55,7 @@ class xmlreader
             $this->add_property($type, $property);
         }
         $guid = new property($type, 'guid', 'guid');
+        $guid->unique = true;
         $type->add_property($guid);
         if ($type->has_metadata)
         {

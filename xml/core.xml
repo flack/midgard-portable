@@ -4,7 +4,7 @@
     <type name="midgard_repligard" table="repligard" metadata="false">
         <property name="id" type="unsigned integer" primaryfield="id">
         </property>
-        <property name="guid" type="guid">
+        <property name="guid" type="guid" unique="yes">
         </property>
         <property name="typename" type="string">
         </property>

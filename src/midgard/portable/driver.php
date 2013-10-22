@@ -172,10 +172,18 @@ class driver implements driver_interface
             {
                 $mapping = $this->dbtypemap[$property->dbtype];
             }
+
             if ($property->unique)
             {
-                //we can't set this as a real DB constraint because of softdelete and tree hierarchies
-                $metadata->midgard['unique_fields'][] = $property->name;
+                if ($property->name == 'guid')
+                {
+                    $mapping['unique'] = true;
+                }
+                else
+                {
+                    //we can't set this as a real DB constraint because of softdelete and tree hierarchies
+                    $metadata->midgard['unique_fields'][] = $property->name;
+                }
             }
 
             $mapping['columnName'] = $property->field;
