@@ -40,6 +40,11 @@ abstract class dbobject implements ObjectManagerAware
     {
         $this->initialize();
 
+        if (   !$this->cm->hasField($field)
+            && array_key_exists($field, $this->cm->midgard['field_aliases']))
+        {
+            $field = $this->cm->midgard['field_aliases'][$field];
+        }
         // mgd api only allows setting links identifiers, doctrine wants objects,
         // so it seems we need an expensive and pretty useless conversion..
         if (   $this->cm->isSingleValuedAssociation($field)
@@ -56,6 +61,12 @@ abstract class dbobject implements ObjectManagerAware
     public function __get($field)
     {
         $this->initialize();
+
+        if (   !$this->cm->hasField($field)
+            && array_key_exists($field, $this->cm->midgard['field_aliases']))
+        {
+            $field = $this->cm->midgard['field_aliases'][$field];
+        }
 
         // mgd api only allows returning link identifiers, doctrine has objects,
         // so it seems we need a pretty useless conversion..

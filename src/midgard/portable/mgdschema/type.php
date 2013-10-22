@@ -31,6 +31,8 @@ class type
 
     private $dbfields = array();
 
+    public $field_aliases = array();
+
     /**
      *
      * @var array
@@ -74,9 +76,12 @@ class type
             if (!array_key_exists($property->field, $this->dbfields))
             {
                 $this->properties[$name] = $property;
-                $this->dbfields[$property->field] = true;
+                $this->dbfields[$property->field] = $property->name;
             }
-            //TODO: Can we create an alias?
+            else if (!array_key_exists($property->name, $this->properties))
+            {
+                $this->field_aliases[$property->name] = $this->dbfields[$property->field];
+            }
         }
     }
 

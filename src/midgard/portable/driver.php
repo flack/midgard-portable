@@ -134,6 +134,7 @@ class driver implements driver_interface
         $metadata->midgard['parentfield'] = $type->parentfield;
         $metadata->midgard['upfield'] = $type->upfield;
         $metadata->midgard['childtypes'] = $this->manager->get_child_classes($type->name);
+        $metadata->midgard['field_aliases'] = $type->field_aliases;
 
         foreach ($type->get_properties() as $name => $property)
         {
