@@ -64,8 +64,15 @@ abstract class query
         {
             $operator = 'IN';
             $mapping = connection::get_em()->getClassMetadata($this->classname)->getAssociationMapping($name);
-            $targetclass = $mapping['midgard:link_name'];
-            $value = $this->get_child_ids('midgard:' . $targetclass, $name, $value);
+            $parentfield = $name;
+
+            if ($mapping['targetEntity'] !== get_class($this))
+            {
+                $cm = connection::get_em()->getClassMetadata($mapping['targetEntity']);
+                $parentfield = $cm->midgard['upfield'];
+            }
+
+            $value = $this->get_child_ids($mapping['targetEntity'], $parentfield, $value);
         }
 
         $this->parameters++;

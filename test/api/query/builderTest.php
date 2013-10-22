@@ -407,6 +407,12 @@ class midgard_query_builderTest extends testcase
         $classname = self::$ns . '\\midgard_topic';
         $this->purge_all($classname);
         $topics = $this->_create_topics(__FUNCTION__);
+
+        $article_class = self::$ns . '\\midgard_article';
+
+        $article = new $article_class;
+        $article->topic = $topics[2]->id;
+        $article->create();
         self::$em->clear();
 
         $qb = new \midgard_query_builder($classname);
@@ -418,5 +424,11 @@ class midgard_query_builderTest extends testcase
         $this->assertEquals(1, $qb->count());
         $results = $qb->execute();
         $this->assertEquals($topics[2]->id, $results[0]->id);
+
+        $qb = new \midgard_query_builder($article_class);
+        $qb->add_constraint('topic', 'INTREE', $topics[0]->id);
+        $this->assertEquals(1, $qb->count());
+        $results = $qb->execute();
+        $this->assertEquals($article->id, $results[0]->id);
     }
 }
