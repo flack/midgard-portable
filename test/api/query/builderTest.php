@@ -362,7 +362,7 @@ class midgard_query_builderTest extends testcase
         $this->assertEquals(1, $qb_count);
 
         // test count with a soft-deleted topic
-        $topic = array_shift($topics);
+        $topic = array_pop($topics);
         $topic->delete();
 
         // count undeleted results
@@ -370,7 +370,7 @@ class midgard_query_builderTest extends testcase
         $qb = new \midgard_query_builder($classname);
         $qb_count = $qb->count();
 
-        $this->assertEquals($orig_topic_count-1, $qb_count);
+        $this->assertEquals($orig_topic_count - 1, $qb_count);
 
         // count all results
         self::$em->clear();

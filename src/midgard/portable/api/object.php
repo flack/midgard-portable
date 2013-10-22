@@ -189,6 +189,18 @@ abstract class object extends dbobject
 
     public function has_dependents()
     {
+        $this->initialize();
+
+        if (!empty($this->cm->midgard['upfield']))
+        {
+            $qb = connection::get_em()->createQueryBuilder();
+            $qb->from(get_class($this), 'c')
+                ->where('c.' . $this->cm->midgard['upfield'] . ' = ?0')
+                ->setParameter(0, $this->id)
+                ->select("COUNT(c)");
+            $results = intval($qb->getQuery()->getSingleScalarResult());
+            return ($results > 0);
+        }
         return false;
     }
 
@@ -197,6 +209,7 @@ abstract class object extends dbobject
         if (   $check_dependencies
             && $this->has_dependents())
         {
+            \midgard_connection::get_instance()->set_error(MGD_ERR_HAS_DEPENDANTS);
             return false;
         }
         if (!($this instanceof metadata_interface))
