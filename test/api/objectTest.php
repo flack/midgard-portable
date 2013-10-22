@@ -192,6 +192,15 @@ class objectTest extends testcase
 
         $this->assertInstanceOf($classname, $parent);
         $this->assertEquals($topic->guid, $parent->guid);
+
+        $child->up = $topic->up;
+        $child->update();
+        self::$em->clear();
+
+        $child = self::$em->find('midgard:midgard_topic', $child->id);
+        $parent = $child->get_parent();
+
+        $this->assertNull($parent);
     }
 
     public function test_uniquenames()

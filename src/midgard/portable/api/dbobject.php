@@ -42,7 +42,8 @@ abstract class dbobject implements ObjectManagerAware
 
         // mgd api only allows setting links identifiers, doctrine wants objects,
         // so it seems we need an expensive and pretty useless conversion..
-        if ($this->cm->isSingleValuedAssociation($field))
+        if (   $this->cm->isSingleValuedAssociation($field)
+            && $value !== null)
         {
             $classname = $this->cm->getAssociationTargetClass($field);
             $target = connection::get_em()->find($classname, $value);
