@@ -18,6 +18,7 @@ class metadataTest extends testcase
         $factory = self::$em->getMetadataFactory();
         $classes = array(
             $factory->getMetadataFor('midgard:midgard_topic'),
+            $factory->getMetadataFor('midgard:midgard_article'),
             $factory->getMetadataFor('midgard:midgard_user'),
             $factory->getMetadataFor('midgard:midgard_person'),
             $factory->getMetadataFor('midgard:midgard_repligard'),

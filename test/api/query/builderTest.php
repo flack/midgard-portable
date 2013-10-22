@@ -17,6 +17,7 @@ class midgard_query_builderTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $classes = array(
             self::$em->getClassMetadata('midgard:midgard_topic'),
+            self::$em->getClassMetadata('midgard:midgard_article'),
             self::$em->getClassMetadata('midgard:midgard_language'),
             self::$em->getClassMetadata('midgard:midgard_repligard'),
         );

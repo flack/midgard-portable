@@ -19,7 +19,7 @@ class driverTest extends \PHPUnit_Framework_TestCase
         $driver = new driver(array(TESTDIR . '__files/'), $d, $ns);
         $classnames = $driver->getAllClassNames();
         $this->assertInternalType('array', $classnames);
-        $this->assertEquals(8, count($classnames));
+        $this->assertEquals(9, count($classnames));
 
         foreach ($classnames as $classname)
         {

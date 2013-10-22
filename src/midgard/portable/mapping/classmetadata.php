@@ -15,7 +15,8 @@ class classmetadata extends base_metadata
         'parent' => null,
         'parentfield' => null,
         'upfield' => null,
-        'unique_fields' => array()
+        'unique_fields' => array(),
+        'childtypes' => array()
     );
 
     public function __sleep()

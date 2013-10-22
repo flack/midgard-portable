@@ -17,6 +17,7 @@ class objectTest extends testcase
         $classes = array(
             $factory->getMetadataFor('midgard:midgard_language'),
             $factory->getMetadataFor('midgard:midgard_topic'),
+            $factory->getMetadataFor('midgard:midgard_article'),
             $factory->getMetadataFor('midgard:midgard_snippetdir'),
             $factory->getMetadataFor('midgard:midgard_repligard'),
         );
@@ -239,6 +240,24 @@ class objectTest extends testcase
         $parent = $child->get_parent();
 
         $this->assertNull($parent);
+    }
+
+    public function test_get_childtype()
+    {
+        $topic_class = self::$ns . '\\midgard_topic';
+        $article_class = self::$ns . '\\midgard_article';
+        $topic = new $topic_class;
+        $topic->create();
+
+        $article = new $article_class;
+        $this->assertFalse($article->create());
+        $article->topic = $topic->id;
+        $this->assertTrue($article->create());
+
+        $this->assertEquals($topic->guid, $article->get_parent()->guid);
+        $this->assertFalse($topic->delete());
+        $this->assertTrue($article->delete());
+        $this->assertTrue($topic->delete());
     }
 
     public function test_uniquenames()

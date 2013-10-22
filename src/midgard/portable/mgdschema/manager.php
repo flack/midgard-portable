@@ -21,6 +21,8 @@ class manager
 
     private $inherited_mapping = array();
 
+    private $child_classes = array();
+
     public function __construct(array $schemadirs, $namespace)
     {
         $this->schemadirs = $schemadirs;
@@ -37,6 +39,16 @@ class manager
     {
         $this->initialize();
         return $this->inherited_mapping;
+    }
+
+    public function get_child_classes($typename)
+    {
+        $this->initialize();
+        if (array_key_exists($typename, $this->child_classes))
+        {
+            return $this->child_classes[$typename];
+        }
+        return array();
     }
 
     public function resolve_targetclass(property $property)
@@ -85,6 +97,11 @@ class manager
         $tablemap = array();
         foreach ($types as $name => $type)
         {
+            if ($type->parent)
+            {
+                $this->register_child_class($type);
+            }
+
             if (!array_key_exists($type->table, $tablemap))
             {
                 $tablemap[$type->table] = array();
@@ -103,6 +120,15 @@ class manager
                 $this->create_inherited_types($types);
             }
         }
+    }
+
+    private function register_child_class(type $type)
+    {
+        if (!array_key_exists($type->parent, $this->child_classes))
+        {
+            $this->child_classes[$type->parent] = array();
+        }
+        $this->child_classes[$type->parent][$type->name] = $type->parentfield;
     }
 
     /**

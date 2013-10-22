@@ -110,7 +110,8 @@ abstract class object extends dbobject
     public function create()
     {
         if (   !empty($this->id)
-            || !$this->is_unique())
+            || !$this->is_unique()
+            || !$this->check_parent())
         {
             return false;
         }
@@ -177,6 +178,19 @@ abstract class object extends dbobject
         return ($count === 0);
     }
 
+    private function check_parent()
+    {
+        $this->initialize();
+
+        if (   empty($this->cm->midgard['parentfield'])
+            || empty($this->cm->midgard['parent']))
+        {
+            return true;
+        }
+
+        return (!empty($this->{$this->cm->midgard['parentfield']}));
+    }
+
     public function is_in_parent_tree($root_id, $id)
     {
         return false;
@@ -191,6 +205,8 @@ abstract class object extends dbobject
     {
         $this->initialize();
 
+        $stat = false;
+
         if (!empty($this->cm->midgard['upfield']))
         {
             $qb = connection::get_em()->createQueryBuilder();
@@ -199,9 +215,30 @@ abstract class object extends dbobject
                 ->setParameter(0, $this->id)
                 ->select("COUNT(c)");
             $results = intval($qb->getQuery()->getSingleScalarResult());
-            return ($results > 0);
+            $stat = ($results > 0);
         }
-        return false;
+
+        if (   !$stat
+            && !empty($this->cm->midgard['childtypes']))
+        {
+            foreach ($this->cm->midgard['childtypes'] as $typename => $parentfield)
+            {
+                $qb = connection::get_em()->createQueryBuilder();
+                $qb->from('midgard:' . $typename, 'c')
+                    ->where('c.' . $parentfield . ' = ?0')
+                    ->setParameter(0, $this->id)
+                    ->select("COUNT(c)");
+
+                $results = intval($qb->getQuery()->getSingleScalarResult());
+                $stat = ($results > 0);
+                if ($stat)
+                {
+                    break;
+                }
+            }
+        }
+
+        return $stat;
     }
 
     public function delete($check_dependencies = true)
