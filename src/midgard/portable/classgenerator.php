@@ -71,15 +71,17 @@ class classgenerator
         if (!empty($namespace))
         {
             $this->output .= 'namespace ' . $namespace . '; ';
-            $this->output .= 'use \\midgard\\portable\\api\\object as midgard_object; ';
+            $this->output .= 'use midgard\\portable\\api\\object as midgard_object; ';
             $this->output .= 'use midgard_metadata; ';
-            $this->output .= 'use \\midgard\\portable\\api\\user as base_user; ';
-            $this->output .= 'use \\midgard\\portable\\api\\person as base_person; ';
+            $this->output .= 'use midgard\\portable\\api\\user as base_user; ';
+            $this->output .= 'use midgard\\portable\\api\\person as base_person; ';
             $this->output .= 'use midgard_datetime; { ';
         }
         else
         {
             $this->output .= 'use \midgard\portable\api\object; ';
+            $this->output .= 'use midgard\\portable\\api\\user as base_user; ';
+            $this->output .= 'use midgard\\portable\\api\\person as base_person; ';
         }
         foreach ($types as $type)
         {
