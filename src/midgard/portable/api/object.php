@@ -95,8 +95,17 @@ abstract class object extends dbobject
     {
         try
         {
-            connection::get_em()->persist($this);
-            connection::get_em()->flush();
+            if (!connection::get_em()->contains($this))
+            {
+                $entity = connection::get_em()->merge($this);
+                connection::get_em()->persist($entity);
+                connection::get_em()->flush($entity);
+            }
+            else
+            {
+                connection::get_em()->persist($this);
+                connection::get_em()->flush($this);
+            }
         }
         catch (Exception $e)
         {
@@ -119,7 +128,7 @@ abstract class object extends dbobject
         try
         {
             connection::get_em()->persist($this);
-            connection::get_em()->flush();
+            connection::get_em()->flush($this);
         }
         catch (Exception $e)
         {
@@ -359,8 +368,17 @@ abstract class object extends dbobject
     {
         try
         {
-            connection::get_em()->remove($this);
-            connection::get_em()->flush();
+            if (!connection::get_em()->contains($this))
+            {
+                $entity = connection::get_em()->merge($this);
+                connection::get_em()->remove($entity);
+                connection::get_em()->flush($entity);
+            }
+            else
+            {
+                connection::get_em()->remove($this);
+                connection::get_em()->flush($this);
+            }
         }
         catch (Exception $e)
         {
