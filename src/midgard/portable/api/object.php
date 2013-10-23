@@ -113,6 +113,8 @@ abstract class object extends dbobject
             var_dump($e->getMessage());
             return false;
         }
+        \midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+
         return true;
     }
 
@@ -386,6 +388,8 @@ abstract class object extends dbobject
             var_dump($e->getMessage());
             return false;
         }
+        \midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+
         return true;
     }
 

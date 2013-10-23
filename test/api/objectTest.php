@@ -60,6 +60,7 @@ class objectTest extends testcase
         $topic->name = __FUNCTION__;
         $topic->create();
         $topic->delete();
+        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
         self::$em->clear();
 
         $loaded = new $classname($topic->id);
@@ -201,6 +202,10 @@ class objectTest extends testcase
         $stat = $topic->delete();
         $this->assertFalse($stat);
         $this->assertEquals(MGD_ERR_HAS_DEPENDANTS, \midgard_connection::get_instance()->get_error());
+
+        $stat = $topic2->delete();
+        $this->assertTrue($stat);
+        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
     }
 
     public function test_purge()
@@ -242,7 +247,7 @@ class objectTest extends testcase
         $this->assertNull($parent);
     }
 
-    public function test_get_childtype()
+    public function test_childtype()
     {
         $topic_class = self::$ns . '\\midgard_topic';
         $article_class = self::$ns . '\\midgard_article';
@@ -256,7 +261,9 @@ class objectTest extends testcase
 
         $this->assertEquals($topic->guid, $article->get_parent()->guid);
         $this->assertFalse($topic->delete());
+        $this->assertEquals(MGD_ERR_HAS_DEPENDANTS, \midgard_connection::get_instance()->get_error());
         $this->assertTrue($article->delete());
+        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
         $this->assertTrue($topic->delete());
     }
 
