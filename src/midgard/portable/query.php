@@ -64,7 +64,17 @@ abstract class query
         if ($operator === 'INTREE')
         {
             $operator = 'IN';
-            $mapping = connection::get_em()->getClassMetadata($this->classname)->getAssociationMapping($name);
+            $targetclass = $this->classname;
+            $fieldname = $name;
+
+            if (strpos($name, '.') !== false)
+            {
+                $a_name = $this->build_constraint_name($name);
+                list ($targetclass, $fieldname) = explode('.', $a_name);
+                $targetclass = 'midgard:' . array_search($targetclass, $this->join_tables);
+            }
+
+            $mapping = connection::get_em()->getClassMetadata($targetclass)->getAssociationMapping($fieldname);
             $parentfield = $name;
 
             if ($mapping['targetEntity'] !== get_class($this))

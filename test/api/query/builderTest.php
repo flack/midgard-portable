@@ -481,5 +481,11 @@ class midgard_query_builderTest extends testcase
         $this->assertEquals(1, $qb->count());
         $results = $qb->execute();
         $this->assertEquals($article->id, $results[0]->id);
+
+        $qb = new \midgard_query_builder($article_class);
+        $qb->add_constraint('topic.up', 'INTREE', $topics[0]->id);
+        $this->assertEquals(1, $qb->count());
+        $results = $qb->execute();
+        $this->assertEquals($article->id, $results[0]->id);
     }
 }
