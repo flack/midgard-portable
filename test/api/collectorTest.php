@@ -27,7 +27,9 @@ class midgard_collectorTest extends testcase
         // create topic
         $classname = self::$ns . '\\midgard_topic';
         self::$_topic = new $classname;
-        self::$_topic->name = __FUNCTION__;
+        self::$_topic->name = uniqid("cT_mainTopic");
+        self::$_topic->title = uniqid("cT_mainTopic");
+        self::$_topic->metadata_revision = 1;
         self::$_topic->create();
     }
 
@@ -49,23 +51,77 @@ class midgard_collectorTest extends testcase
         $this->assertTrue(array_key_exists(self::$_topic->guid, $keys));
     }
 
+    public function test_add_value_property()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        // create child topic for main topic
+        $child_topic = new $classname;
+        $child_topic->name = uniqid("cT_childTopic");
+        $child_topic->title = uniqid("cT_childTopic");
+        $child_topic->up = self::$_topic->id;
+        $child_topic->metadata_revision = 4;
+        $child_topic->create();
+
+        // without adding a value property
+        $mc = new \midgard_collector($classname, 'id', $child_topic->id);
+        $mc->add_value_property("name");
+        $mc->add_value_property("metadata.revision");
+
+        $mc->add_value_property("up");
+        $mc->add_value_property("up.name");
+        $mc->add_value_property("up.metadata.revision");
+        $mc->execute();
+
+        $keys = $mc->list_keys();
+        $result = $mc->get(key($keys));
+
+        // existing property
+        $this->assertTrue(array_key_exists("name", $result));
+        $this->assertEquals($result["name"], $child_topic->name);
+
+        // non existing property
+        $this->assertFalse(array_key_exists("extra", $result));
+
+        // metadata property
+        $this->assertTrue(array_key_exists("revision", $result));
+        $this->assertEquals($result["revision"], $child_topic->metadata_revision);
+
+        // join field
+        $this->assertTrue(array_key_exists("up", $result));
+        $this->assertEquals($result["up"], self::$_topic->id);
+
+        // properties of the linked object
+        // in midgard this would have totally messed up the results
+        $this->assertTrue(array_key_exists("up_name", $result));
+        $this->assertEquals($result["up_name"], self::$_topic->name);
+
+        // combined with metadata property
+        $this->assertTrue(array_key_exists("up_revision", $result));
+        $this->assertEquals($result["up_revision"], self::$_topic->metadata_revision);
+    }
+
     public function test_get()
     {
         $classname = self::$ns . '\\midgard_topic';
 
         $mc = new \midgard_collector($classname, 'id', self::$_topic->id);
+        $mc->add_value_property("name");
+        $mc->add_value_property("id");
         $mc->execute();
         $keys = $mc->list_keys();
 
         // try getting an invalid key
-        $data = $mc->get('hello');
-        $this->assertFalse($data);
+        $result = $mc->get('hello');
+        $this->assertFalse($result);
 
         // try getting a valid key
-        $data = $mc->get(key($keys));
+        $result = $mc->get(key($keys));
 
-        $this->assertEquals($data["id"], self::$_topic->id);
-        $this->assertEquals($data["name"], self::$_topic->name);
+        $this->assertEquals($result["id"], self::$_topic->id);
+        $this->assertEquals($result["name"], self::$_topic->name);
+        // was not added as value property
+        $this->assertFalse(array_key_exists("title", $result));
     }
 
     public function test_get_subkey()
@@ -73,6 +129,7 @@ class midgard_collectorTest extends testcase
         $classname = self::$ns . '\\midgard_topic';
 
         $mc = new \midgard_collector($classname, 'id', self::$_topic->id);
+        $mc->add_value_property("name");
         $mc->execute();
         $keys = $mc->list_keys();
         $key = key($keys);

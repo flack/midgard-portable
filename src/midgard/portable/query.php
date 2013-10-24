@@ -180,6 +180,16 @@ abstract class query
         }
     }
 
+    protected function add_join($current_table, $targetclass, $property)
+    {
+        if (!array_key_exists($targetclass, $this->join_tables))
+        {
+            $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
+            $this->qb->join($current_table . '.' . $property, $this->join_tables[$targetclass]);
+        }
+        return $this->join_tables[$targetclass];
+    }
+
     protected function build_constraint_name($name)
     {
         $current_table = 'c';
@@ -199,15 +209,8 @@ abstract class query
                 {
                     throw new \Exception($part . ' is not a link');
                 }
-
                 $targetclass = $mrp->get_link_name($part);
-
-                if (!array_key_exists($targetclass, $this->join_tables))
-                {
-                    $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
-                    $this->qb->join($current_table . '.' . $part, $this->join_tables[$targetclass]);
-                }
-                $current_table = $this->join_tables[$targetclass];
+                $current_table = $this->add_join($current_table, $targetclass, $part);
                 $mrp = new \midgard_reflection_property($targetclass);
             }
         }

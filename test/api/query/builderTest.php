@@ -148,13 +148,23 @@ class midgard_query_builderTest extends testcase
         $this->assertEquals(1, count($results));
         $this->assertEquals($topic2->id, $results[0]->id);
 
-        // test multiple constraints
+        // test constraint on join field
         $topic3 = new $classname;
         $topic3->name = "C_" . __FUNCTION__ . "testThee";
         $topic3->metadata_revision = 7;
         $topic3->extra = "special";
+        $topic3->up = $topic2->id;
         $topic3->create();
 
+        // this should find topic3
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('up', '=', $topic2->id);
+        $results = $qb->execute();
+
+        $this->assertEquals(1, count($results));
+        $this->assertEquals($topic3->id, $results[0]->id);
+
+        // test multiple constraints
         $qb = new \midgard_query_builder($classname);
         $qb->add_constraint('metadata.revision', '=', 7);
         $qb->add_constraint('extra', '=', 'special');
