@@ -39,8 +39,8 @@ Known Issues & Limitations
    the properties of both classes, and an a class alias for the second name. Which class becomes the actual class 
    depends on the order the files are read, so for all practical purposes, it's random right now
    
- - Links to non-ID fields are not supported in Doctrine. So any GUID-based links are currently not working, but a
-   workaround for this will get implemented eventually 
+ - Links to non-PK fields are not supported in Doctrine. So GUID-based link functionality is implemented in the adapter,
+   which entails a performance penalty. Also, some cases (like parent GUID links) are not supported yet
    
  - Currently, it is not possible to run midgard-portable when the original Midgard extension is loaded. This is
    also a temporary problem that will get addressed
@@ -56,5 +56,15 @@ Known Issues & Limitations
    that the metadata columns are accessible through the object itself (e.g. ``$topic->metadata_deleted``). The 
    next planned Doctrine release (2.5) may contain support for embedded objects, so this issue can be revisited
    once that is released
+
+ - Doctrine is somewhat stricter when it comes to referential integrity. So some of the more quirky behaviors of
+   Midgard (like being able to purge parents while deleted children are still in the database) are more or less
+   impossible to implement with reasonable effort. Unfortunately, the exception thrown in those cases is rather 
+   cryptic, and normally says something like 
+
+   ```
+   A new entity was found through the relationship 'classname#link_property' that was not configured 
+   to cascade persist operations for entity
+   ```
 
 ...and of course, much of the API provided still only consists of stubs. It is a prototype, after all :)
