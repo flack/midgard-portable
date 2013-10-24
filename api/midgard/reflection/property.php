@@ -31,29 +31,70 @@ class midgard_reflection_property
         throw new \exception('not implemented yet');
     }
 
+    public function get_mapping($property)
+    {
+        if (!$this->cm->hasField($property))
+        {
+            return null;
+        }
+        return $this->cm->getFieldMapping($property);
+    }
+
     public function is_link($property)
     {
-        return $this->cm->hasAssociation($property);
+        if ($this->cm->hasAssociation($property))
+        {
+            return true;
+        }
+        return $this->is_special_link($property);
+    }
+
+    public function is_special_link($property)
+    {
+        $mapping = $this->get_mapping($property);
+        if ($this->cm->hasAssociation($property) || is_null($mapping))
+        {
+            return false;
+        }
+        return isset($mapping["noidlink"]);
     }
 
     public function get_link_name($property)
     {
-        if (!$this->cm->hasAssociation($property))
+        if ($this->cm->hasAssociation($property))
+        {
+            $mapping = $this->cm->getAssociationMapping($property);
+            return $mapping['midgard:link_name'];
+        }
+        $mapping = $this->get_mapping($property);
+        if (is_null($mapping))
         {
             return null;
         }
-        $mapping = $this->cm->getAssociationMapping($property);
-        return $mapping['midgard:link_name'];
+        if (isset($mapping["noidlink"]["target"]))
+        {
+            return $mapping["noidlink"]["target"];
+        }
+        return null;
     }
 
     public function get_link_target($property)
     {
-        if (!$this->cm->hasAssociation($property))
+        if ($this->cm->hasAssociation($property))
+        {
+            $mapping = $this->cm->getAssociationMapping($property);
+            return $mapping['midgard:link_target'];
+        }
+        $mapping = $this->get_mapping($property);
+        if (is_null($mapping))
         {
             return null;
         }
-        $mapping = $this->cm->getAssociationMapping($property);
-        return $mapping['midgard:link_target'];
+        if (isset($mapping["noidlink"]["field"]))
+        {
+            return $mapping["noidlink"]["field"];
+        }
+        return null;
     }
 
     public function get_midgard_type($property)

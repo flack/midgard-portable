@@ -14,6 +14,8 @@ class property implements node
 {
 	public $link;
 
+	public $noidlink;
+
 	/**
 	 * DB column name (defaults to $this->name)
 	 *
@@ -99,7 +101,7 @@ class property implements node
                 $value['field'] = $tmp[1];
                 if ($value['field'] !== 'id')
                 {
-                    //doctrine doesn't support links on non-ID columns...
+                    $this->noidlink = $value;
                     $value = null;
                 }
                 break;

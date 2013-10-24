@@ -9,6 +9,7 @@ namespace midgard\portable;
 
 use midgard\portable\storage\connection;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\Expr;
 
 abstract class query
@@ -180,6 +181,27 @@ abstract class query
         }
     }
 
+    protected function add_join($current_table, $mrp, $property)
+    {
+        $targetclass = $mrp->get_link_name($property);
+        if (!array_key_exists($targetclass, $this->join_tables))
+        {
+            $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
+
+            // custom join
+            if ($mrp->is_special_link($property))
+            {
+                $c = $this->join_tables[$targetclass] . "." . $mrp->get_link_target($property) . " = " . $current_table . "." . $property;
+                $this->qb->innerJoin("midgard:" . $targetclass, $this->join_tables[$targetclass], Join::WITH, $c);
+            }
+            else
+            {
+                $this->qb->join($current_table . '.' . $property, $this->join_tables[$targetclass]);
+            }
+        }
+        return $this->join_tables[$targetclass];
+    }
+
     protected function build_constraint_name($name)
     {
         $current_table = 'c';
@@ -199,15 +221,8 @@ abstract class query
                 {
                     throw new \Exception($part . ' is not a link');
                 }
-
                 $targetclass = $mrp->get_link_name($part);
-
-                if (!array_key_exists($targetclass, $this->join_tables))
-                {
-                    $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
-                    $this->qb->join($current_table . '.' . $part, $this->join_tables[$targetclass]);
-                }
-                $current_table = $this->join_tables[$targetclass];
+                $current_table = $this->add_join($current_table, $mrp, $part);
                 $mrp = new \midgard_reflection_property($targetclass);
             }
         }

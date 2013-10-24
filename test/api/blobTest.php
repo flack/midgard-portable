@@ -12,10 +12,12 @@ use midgard\portable\api\blob;
 
 class blobTest extends testcase
 {
+
     public function test_construct()
     {
         $att = new attachment;
         $blob = new blob($att);
         $this->assertEquals('', $blob->content);
     }
+
 }
