@@ -70,9 +70,18 @@ abstract class object extends dbobject
         $entity = connection::get_em()->find(get_class($this), $id);
         if ($entity === null)
         {
+            \midgard_connection::get_instance()->set_error(MGD_ERR_NOT_EXISTS);
             throw new \midgard_error_exception('cannot load object ' . $id);
         }
+        if ($entity->metadata_deleted)
+        {
+            // This can happen when the "deleted" entity is still in EM's identity map
+            \midgard_connection::get_instance()->set_error(MGD_ERR_NOT_EXISTS);
+
+            throw new \midgard_error_exception(' object ' . $id . ' was deleted');
+        }
         $this->populate_from_entity($entity);
+        \midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return $this; // <== is this right?
     }
 

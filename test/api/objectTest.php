@@ -50,9 +50,6 @@ class objectTest extends testcase
         $this->assertEquals($topic->name, $loaded2->name);
     }
 
-    /**
-     * @expectedException midgard_error_exception
-     */
     public function test_load_deleted()
     {
         $classname = self::$ns . '\\midgard_topic';
@@ -61,9 +58,16 @@ class objectTest extends testcase
         $topic->create();
         $topic->delete();
         $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
-        self::$em->clear();
 
-        $loaded = new $classname($topic->id);
+        $e = null;
+        try
+        {
+            $loaded = new $classname($topic->id);
+        }
+        catch ( \midgard_error_exception $e){}
+
+        $this->assertInstanceOf('midgard_error_exception', $e);
+        $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
     }
 
     /**
