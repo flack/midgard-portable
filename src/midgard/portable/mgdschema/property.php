@@ -24,6 +24,13 @@ class property implements node
 	public $field;
 
 	/**
+	 * Does this field point to a parent
+	 *
+	 * @var string
+	 */
+	public $parentfield;
+
+	/**
 	 * Field name for MdgSchema object
 	 *
 	 * @var string

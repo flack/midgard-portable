@@ -16,12 +16,7 @@ class personTest extends testcase
 
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
-        $classes = array(
-            $factory->getMetadataFor('midgard:midgard_person'),
-            $factory->getMetadataFor('midgard:midgard_group'),
-            $factory->getMetadataFor('midgard:midgard_member'),
-            $factory->getMetadataFor('midgard:midgard_repligard'),
-        );
+        $classes = $factory->getAllMetadata();
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
     }
@@ -48,5 +43,7 @@ class personTest extends testcase
         $parent = $member->get_parent();
         $this->assertInternalType('object', $parent);
         $this->assertEquals($grp->guid, $parent->guid);
+
+        $this->assertTrue($grp->has_dependents());
     }
 }

@@ -81,7 +81,6 @@ class xmlreader
             {
                 case 'primaryfield':
                 case 'upfield':
-                case 'parentfield':
                     $type->$name = (string) $value;
                     break;
                 case 'name':

@@ -73,6 +73,15 @@ class type
         }
         else
         {
+            if ($property->parentfield)
+            {
+                $this->parentfield = $property->name;
+                if (   empty($this->parent)
+                    && $property->link)
+                {
+                    $this->parent = $property->link['target'];
+                }
+            }
             if (!array_key_exists($property->field, $this->dbfields))
             {
                 $this->properties[$name] = $property;

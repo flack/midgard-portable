@@ -8,7 +8,7 @@
 namespace midgard\portable\test;
 
 use midgard\portable\driver;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use midgard\portable\mapping\classmetadata;
 
 class driverTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,21 +32,30 @@ class driverTest extends \PHPUnit_Framework_TestCase
         $ns = uniqid(__CLASS__ . '\\' . __FUNCTION__);
         $d = sys_get_temp_dir();
         $driver = new driver(array(TESTDIR . '__files/'), $d, $ns);
-        $metadata = new ClassMetadata($ns . '\\midgard_topic');
+        $metadata = new classmetadata($ns . '\\midgard_topic');
         $driver->loadMetadataForClass($ns . '\\midgard_topic', $metadata);
 
         $this->assertArrayHasKey('metadata_deleted', $metadata->fieldMappings);
         $this->assertArrayHasKey('score', $metadata->fieldMappings);
     }
 
-    public function test_duplicate_tablename()
+    public function test_duplicate_tablenames()
     {
         $ns = uniqid(__CLASS__ . '\\' . __FUNCTION__);
         $d = sys_get_temp_dir();
         $driver = new driver(array(TESTDIR . '__files/duplicate_tablenames/'), $d, $ns);
+        $driver->getAllClassNames();
 
-        //TODO: Get this to work somehow (or at least QB and such)
-        //$metadata = new ClassMetadata($ns . '\\midgard_group');
-        //$driver->loadMetadataForClass($ns . '\\midgard_group', $metadata);
+        $classname = $ns . '\\midgard_member';
+        $classname = get_class(new $classname);
+        $metadata_member = new classmetadata($classname);
+        $driver->loadMetadataForClass($classname, $metadata_member);
+        $this->assertEquals('gid', $metadata_member->midgard['parentfield']);
+
+        $classname = $ns . '\\midgard_group';
+        $classname = get_class(new $classname);
+        $metadata_group = new classmetadata($classname);
+        $driver->loadMetadataForClass($classname, $metadata_group);
+        $this->assertEquals(1, count($metadata_group->midgard['childtypes']));
     }
 }
