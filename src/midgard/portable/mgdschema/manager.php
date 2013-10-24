@@ -169,17 +169,17 @@ class manager
     private function add_type(type $type)
     {
         $classname = $type->name;
+        // TODO: This should probably be in classgenerator
+        if ($classname === 'midgard_user')
+        {
+            $type->extends = 'base_user';
+        }
+        if ($classname === 'midgard_person')
+        {
+            $type->extends = 'base_person';
+        }
         if (!empty($this->namespace))
         {
-            // TODO: This should be in classgenerator
-            if ($classname === 'midgard_user')
-            {
-                $type->extends = 'base_user';
-            }
-            if ($classname === 'midgard_person')
-            {
-                $type->extends = 'base_person';
-            }
             $classname = $this->namespace . '\\' . $classname;
         }
         $this->types[$classname] = $type;
