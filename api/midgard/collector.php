@@ -76,8 +76,7 @@ class midgard_collector extends midgard_query_builder
             return $constraint_name;
         }
 
-        $targetclass = $mrp->get_link_name($property);
-        $join_table = $this->add_join("c", $targetclass, $property);
+        $join_table = $this->add_join("c", $mrp, $property);
         return $join_table . ".id as " . $property;
     }
 

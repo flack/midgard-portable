@@ -138,6 +138,7 @@ class driver implements driver_interface
 
         foreach ($type->get_properties() as $name => $property)
         {
+            // doctrine can handle id links only
             if (   $property->link
                 && $target_class = $this->manager->resolve_targetclass($property))
             {
@@ -190,6 +191,12 @@ class driver implements driver_interface
 
             $mapping['columnName'] = $property->field;
             $mapping['midgard:midgard_type'] = translator::to_constant($property->type);
+
+            // its some other link (like guid link)
+            if ($property->noidlink)
+            {
+                $mapping['noidlink'] = $property->noidlink;
+            }
 
             // @todo: use primaryfield?
             if ($property->name == 'id')

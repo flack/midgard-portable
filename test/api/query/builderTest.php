@@ -20,6 +20,8 @@ class midgard_query_builderTest extends testcase
             self::$em->getClassMetadata('midgard:midgard_article'),
             self::$em->getClassMetadata('midgard:midgard_language'),
             self::$em->getClassMetadata('midgard:midgard_repligard'),
+            self::$em->getClassMetadata('midgard:midgard_person'),
+            self::$em->getClassMetadata('midgard:midgard_user')
         );
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
@@ -108,11 +110,50 @@ class midgard_query_builderTest extends testcase
         $first = array_shift($results);
         $this->assertEquals($topics[2]->name, $first->name);
 
+        // test order ASC
         $qb = new \midgard_query_builder($classname);
         $qb->add_order('name', 'ASC');
         $results = $qb->execute();
         $first = array_shift($results);
         $this->assertEquals($topics[0]->name, $first->name);
+
+        // test order with guid link field
+        self::$em->clear();
+
+        $classname = self::$ns . '\\midgard_person';
+        $this->purge_all($classname);
+
+        $person = new $classname;
+        $person->firstname = "John";
+        $person->create();
+
+        $person2 = new $classname;
+        $person2->firstname = "Bob";
+        $person2->create();
+
+        $classname = self::$ns . '\\midgard_user';
+        $this->purge_all($classname);
+
+        $user = new $classname;
+        $user->authtype = 'Legacy';
+        $user->person = $person->guid;
+        $user->create();
+
+        $user2 = new $classname;
+        $user2->authtype = 'Legacy';
+        $user2->person = $person2->guid;
+        $user2->create();
+
+        $qb = new \midgard_query_builder($classname);
+        $stat = $qb->add_order('person.firstname', 'ASC');
+        $this->assertTrue($stat);
+
+        $results = $qb->execute();
+        $this->assertEquals(2, count($results));
+        $first = array_shift($results);
+
+        // first result should be user2 (Bob)
+        $this->assertEquals($user2->id, $first->id);
     }
 
     public function test_add_constraint()
