@@ -377,6 +377,12 @@ abstract class object extends dbobject
      */
     public function purge($check_dependencies = false)
     {
+        if (empty($this->id))
+        {
+            // This usually means that the object has been purged already
+            \midgard_connection::get_instance()->set_error(MGD_ERR_NOT_EXISTS);
+            return false;
+        }
         try
         {
             if (!connection::get_em()->contains($this))
