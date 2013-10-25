@@ -39,6 +39,7 @@ class midgard_collector extends midgard_query_builder
             return false;
         }
         $this->_key_property = $property;
+        $this->add_value_property($this->_key_property);
         return true;
     }
 
@@ -105,7 +106,9 @@ class midgard_collector extends midgard_query_builder
                     unset($result[$key]);
                 }
             }
-            $results_map[$result[$this->_key_property]] = $result;
+            $key = $result[$this->_key_property];
+            unset($result[$this->_key_property]);
+            $results_map[$key] = $result;
         }
 
         $this->_results = $results_map;
@@ -164,9 +167,9 @@ class midgard_collector extends midgard_query_builder
         }
 
         $keys = array();
-        foreach ($this->_results as $result)
+        foreach ($this->_results as $key => $result)
         {
-            $keys[$result[$this->_key_property]] = '';
+            $keys[$key] = '';
         }
         return $keys;
     }

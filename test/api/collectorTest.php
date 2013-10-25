@@ -101,6 +101,22 @@ class midgard_collectorTest extends testcase
         $this->assertEquals($result["up_revision"], self::$_topic->metadata_revision);
     }
 
+    public function test_set_key_property()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        // create child topic for main topic
+        $topic = new $classname;
+        $topic->name = __FUNCTION__;
+        $topic->create();
+        $mc = new \midgard_collector($classname, 'id', $topic->id);
+        $mc->set_key_property('id');
+        $mc->execute();
+        $keys = $mc->list_keys();
+        $this->assertEquals(1, count($keys));
+        $this->assertEquals($topic->id, key($keys));
+    }
+
     public function test_get()
     {
         $classname = self::$ns . '\\midgard_topic';
