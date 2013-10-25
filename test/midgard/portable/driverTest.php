@@ -56,6 +56,7 @@ class driverTest extends \PHPUnit_Framework_TestCase
         $classname = get_class(new $classname);
         $metadata_group = new classmetadata($classname);
         $driver->loadMetadataForClass($classname, $metadata_group);
-        $this->assertEquals(1, count($metadata_group->midgard['childtypes']));
+
+        $this->assertEquals(2, count($metadata_group->midgard['childtypes']));
     }
 }

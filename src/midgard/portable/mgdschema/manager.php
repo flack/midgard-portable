@@ -19,7 +19,7 @@ class manager
 
     private $namespace;
 
-    private $inherited_mapping = array();
+    private $merged_types = array();
 
     private $child_classes = array();
 
@@ -38,7 +38,7 @@ class manager
     public function get_inherited_mapping()
     {
         $this->initialize();
-        return $this->inherited_mapping;
+        return $this->merged_types;
     }
 
     public function get_child_classes($typename)
@@ -68,11 +68,11 @@ class manager
         }
         else
         {
-            if (!array_key_exists($property->link['target'], $this->inherited_mapping))
+            if (!array_key_exists($property->link['target'], $this->merged_types))
             {
                 throw new \Exception('Link to unknown class ' . $property->link['target']);
             }
-            $target_class = $this->inherited_mapping[$property->link['target']];
+            $target_class = $this->merged_types[$property->link['target']];
         }
         return $target_class;
     }
@@ -114,10 +114,16 @@ class manager
             if (count($types) == 1)
             {
                 $this->add_type($types[0]);
+                unset($tablemap[$name]);
             }
-            else
+        }
+
+        // We need to process those separately, to be sure the targets for rewriting links are present
+        while ($types = array_pop($tablemap))
+        {
+            if (!$this->create_merged_types($types))
             {
-                $this->create_inherited_types($types);
+                array_push($types, $tablemap);
             }
         }
     }
@@ -134,7 +140,7 @@ class manager
     /**
      * This sort of provides a workaround for situations where two tables use the same name
      */
-    private function create_inherited_types(array $types)
+    private function create_merged_types(array $types)
     {
         $root_type = null;
         foreach ($types as $i => $type)
@@ -149,7 +155,7 @@ class manager
         }
         if (empty($root_type))
         {
-            throw new \Exception('could not determine root type of inheritance group');
+            throw new \Exception('could not determine root type of merged group');
         }
 
         foreach ($types as $type)
@@ -161,9 +167,49 @@ class manager
                     $root_type->add_property($property);
                 }
             }
-            $this->inherited_mapping[$type->name] = $root_type->name;
+
+            if (array_key_exists($type->name, $this->child_classes))
+            {
+                foreach ($this->child_classes[$type->name] as $childname => $parentfield)
+                {
+                    $child_type = $this->get_type_by_shortname($childname);
+                    if ($child_type === null)
+                    {
+                        return false;
+                    }
+
+                    $child_type->parent = $root_type->name;
+                    $this->register_child_class($child_type);
+                }
+                unset($this->child_classes[$type->name]);
+            }
+            $this->merged_types[$type->name] = $root_type->name;
         }
         $this->add_type($root_type);
+        return true;
+    }
+
+    private function get_type_by_shortname($classname)
+    {
+        $fqcn = $classname;
+        if (!empty($this->namespace))
+        {
+            $fqcn = $this->namespace . '\\' . $classname;
+        }
+        if (array_key_exists($fqcn, $this->types))
+        {
+            return $this->types[$fqcn];
+        }
+        else if (array_key_exists($classname, $this->merged_types))
+        {
+            $fqcn = $this->merged_types[$classname];
+            if (!empty($this->namespace))
+            {
+                $fqcn = $this->namespace . '\\' . $fqcn;
+            }
+            return $this->types[$fqcn];
+        }
+        return null;
     }
 
     private function add_type(type $type)

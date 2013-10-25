@@ -159,4 +159,13 @@
         </property>
     </type>
 
+    <type name="midgard_test_child" table="test_child" parent="midgard_group">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="gid"      type="unsigned integer" link="midgard_group:id" parentfield="gid">
+            <description>Identifier of the group that the user belongs to</description>
+        </property>
+    </type>
+
 </Schema>
