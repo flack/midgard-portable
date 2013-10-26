@@ -35,7 +35,9 @@ class personTest extends testcase
         $member->uid = $person->id;
         $member->gid = $grp->id;
         $this->assertTrue($member->create());
-        self::$em->clear();
+
+        // disabled because of http://www.doctrine-project.org/jira/browse/DDC-2761
+        //self::$em->clear();
 
         $member = new $member_class($member->id);
         $this->assertEquals($person->id, $member->uid);
@@ -45,5 +47,9 @@ class personTest extends testcase
         $this->assertEquals($grp->guid, $parent->guid);
 
         $this->assertTrue($grp->has_dependents());
+
+        $this->assertTrue($person->delete());
+        $this->assertTrue($person->purge());
+        $this->assertTrue($member->delete());
     }
 }

@@ -7,10 +7,9 @@
 namespace midgard\portable\api;
 
 use midgard\portable\storage\connection;
+use \midgard\portable\storage\objectmanager;
 use midgard\portable\storage\metadata\entity as metadata_interface;
 use midgard\portable\api\metadata;
-use Doctrine\Common\Persistence\ObjectManagerAware;
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 
@@ -104,17 +103,8 @@ abstract class object extends dbobject
     {
         try
         {
-            if (!connection::get_em()->contains($this))
-            {
-                $entity = connection::get_em()->merge($this);
-                connection::get_em()->persist($entity);
-                connection::get_em()->flush($entity);
-            }
-            else
-            {
-                connection::get_em()->persist($this);
-                connection::get_em()->flush($this);
-            }
+            $om = new objectmanager(connection::get_em());
+            $om->update($this);
         }
         catch (Exception $e)
         {
@@ -273,8 +263,21 @@ abstract class object extends dbobject
         {
             return $this->purge();
         }
-        $this->metadata_deleted = true;
-        return $this->update();
+
+        try
+        {
+            $om = new objectmanager(connection::get_em());
+            $om->delete($this);
+        }
+        catch (Exception $e)
+        {
+            throw $e;
+            var_dump($e->getMessage());
+            return false;
+        }
+
+        \midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+        return true;
     }
 
     public function get_parent()
@@ -385,17 +388,8 @@ abstract class object extends dbobject
         }
         try
         {
-            if (!connection::get_em()->contains($this))
-            {
-                $entity = connection::get_em()->merge($this);
-                connection::get_em()->remove($entity);
-                connection::get_em()->flush($entity);
-            }
-            else
-            {
-                connection::get_em()->remove($this);
-                connection::get_em()->flush($this);
-            }
+            $om = new objectmanager(connection::get_em());
+            $om->purge($this);
         }
         catch (Exception $e)
         {

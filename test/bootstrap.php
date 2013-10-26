@@ -1,7 +1,7 @@
 <?php
 use midgard\portable\storage\connection;
 
-require_once "vendor/autoload.php";
+require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 $db_config = array
 (
