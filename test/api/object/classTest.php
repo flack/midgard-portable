@@ -51,4 +51,24 @@ class classTest extends testcase
         $object = midgard_object_class::get_object_by_guid($topic->guid);
         $this->assertInstanceOf($classname, $object);
     }
+
+    public function test_get_property_up()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $topic = new $classname;
+
+        $up = midgard_object_class::get_property_up($topic);
+        $this->assertEquals('up', $up);
+    }
+
+    public function test_get_property_parent()
+    {
+        $classname = self::$ns . '\\midgard_article';
+
+        $article = new $classname;
+
+        $parentfield = midgard_object_class::get_property_parent($article);
+        $this->assertEquals('topic', $parentfield);
+    }
 }

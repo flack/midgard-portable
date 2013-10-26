@@ -34,12 +34,22 @@ class midgard_object_class
 
     public static function get_property_up($classname)
     {
-
+        if (is_object($classname))
+        {
+            $classname = get_class($classname);
+        }
+        $cm = connection::get_em()->getClassMetadata($classname);
+        return $cm->midgard['upfield'];
     }
 
     public static function get_property_parent($classname)
     {
-
+        if (is_object($classname))
+        {
+            $classname = get_class($classname);
+        }
+        $cm = connection::get_em()->getClassMetadata($classname);
+        return $cm->midgard['parentfield'];
     }
 
     public static function connect_default($classname, $signal, $callback, $userdata = null) // <== check!
