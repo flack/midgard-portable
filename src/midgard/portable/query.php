@@ -151,13 +151,16 @@ abstract class query
     public function end_group()
     {
         $group = array_pop($this->groupstack);
-        if (!empty($this->groupstack))
+        if ($group->count() > 0)
         {
-            $this->get_current_group()->add($group);
-        }
-        else
-        {
-            $this->qb->andWhere($group);
+            if (!empty($this->groupstack))
+            {
+                $this->get_current_group()->add($group);
+            }
+            else
+            {
+                $this->qb->andWhere($group);
+            }
         }
     }
 

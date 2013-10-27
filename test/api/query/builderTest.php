@@ -433,6 +433,18 @@ class midgard_query_builderTest extends testcase
         $this->assertEquals($orig_topic_count, $qb_count);
     }
 
+    public function test_empty_group()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $this->purge_all($classname);
+        self::$em->clear();
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->begin_group('OR');
+        $qb->end_group();
+        $this->assertEquals(0, $qb->count());
+    }
+
     public function test_in_constraint()
     {
         self::$em->clear();
