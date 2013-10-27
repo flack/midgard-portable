@@ -70,6 +70,39 @@ class objectTest extends testcase
         $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
     }
 
+    public function test_load_purged()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $topic->name = __FUNCTION__;
+        $topic->create();
+        $id = $topic->id;
+        $topic->delete();
+        $topic->purge();
+        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
+
+        $e = null;
+        try
+        {
+            $loaded = new $classname($id);
+        }
+        catch ( \midgard_error_exception $e){}
+
+        $this->assertInstanceOf('midgard_error_exception', $e);
+        $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
+
+        $e = null;
+        try
+        {
+            $proxy = self::$em->getReference($classname, $id);
+            $loaded = new $classname($id);
+        }
+        catch ( \midgard_error_exception $e){}
+
+        $this->assertInstanceOf('midgard_error_exception', $e);
+        $this->assertEquals(MGD_ERR_OBJECT_PURGED, \midgard_connection::get_instance()->get_error());
+    }
+
     /**
      * @expectedException InvalidArgumentException
      */

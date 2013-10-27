@@ -79,6 +79,14 @@ abstract class object extends dbobject
 
             throw new \midgard_error_exception(' object ' . $id . ' was deleted');
         }
+        if (empty($entity->guid))
+        {
+            // This can happen when a reference proxy to a purged entity is still in EM's identity map
+            \midgard_connection::get_instance()->set_error(MGD_ERR_OBJECT_PURGED);
+
+            throw new \midgard_error_exception(' object ' . $id . ' was purged');
+        }
+
         $this->populate_from_entity($entity);
         \midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return $this; // <== is this right?
