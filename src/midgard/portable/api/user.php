@@ -8,6 +8,7 @@
 namespace midgard\portable\api;
 
 use midgard\portable\storage\connection;
+use midgard\portable\storage\objectmanager;
 use midgard_error_exception;
 
 class user extends dbobject
@@ -128,7 +129,7 @@ class user extends dbobject
         try
         {
             connection::get_em()->persist($this);
-            connection::get_em()->flush();
+            connection::get_em()->flush($this);
         }
         catch (Exception $e)
         {
@@ -148,8 +149,8 @@ class user extends dbobject
 
         try
         {
-            connection::get_em()->persist($this);
-            connection::get_em()->flush();
+            $om = new objectmanager(connection::get_em());
+            $om->update($this);
         }
         catch (Exception $e)
         {
@@ -169,8 +170,8 @@ class user extends dbobject
 
         try
         {
-            connection::get_em()->remove($this);
-            connection::get_em()->flush();
+            $om = new objectmanager(connection::get_em());
+            $om->purge($this);
         }
         catch (Exception $e)
         {
