@@ -7,7 +7,7 @@
 
 namespace midgard\portable\storage;
 
-use midgard\portable\api\object;
+use midgard\portable\api\dbobject;
 use Doctrine\ORM\EntityManager;
 
 class objectmanager
@@ -19,7 +19,7 @@ class objectmanager
         $this->em = $em;
     }
 
-    public function update(object $entity)
+    public function update(dbobject $entity)
     {
         if (!$this->em->contains($entity))
         {
@@ -29,7 +29,7 @@ class objectmanager
         $this->em->flush($entity);
     }
 
-    public function delete(object $entity)
+    public function delete(dbobject $entity)
     {
         if (!$this->em->contains($entity))
         {
@@ -45,7 +45,7 @@ class objectmanager
         $this->em->flush($entity);
     }
 
-    public function purge(object $entity)
+    public function purge(dbobject $entity)
     {
         if (!$this->em->contains($entity))
         {

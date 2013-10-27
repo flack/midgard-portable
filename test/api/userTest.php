@@ -40,6 +40,24 @@ class userTest extends testcase
         $this->assertEquals($initial + 1, $this->count_results('midgard:midgard_user'));
     }
 
+    public function test_update()
+    {
+        $classname = self::$ns . '\\midgard_user';
+        $user = new $classname;
+        $user->authtype = 'Legacy';
+        $stat = $user->create();
+
+        $user->login = uniqid();
+        $user->password = 'x';
+        $stat = $user->update();
+        $this->assertTrue($stat);
+
+        self::$em->clear();
+        $tokens = array('authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password);
+        $loaded = new $classname($tokens);
+        $this->assertEquals($loaded->login, $user->login);
+    }
+
     public function test_login()
     {
         $classname = self::$ns . '\\midgard_user';

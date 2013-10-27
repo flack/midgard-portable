@@ -61,7 +61,8 @@ class subscriber implements EventSubscriber
         {
             $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $entity->guid));
 
-            if ($entity->metadata->deleted)
+            if (   $entity instanceof entity
+                && $entity->metadata->deleted)
             {
                 $repligard_entry->object_action = self::ACTION_DELETE;
             }
