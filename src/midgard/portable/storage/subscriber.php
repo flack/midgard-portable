@@ -10,8 +10,10 @@ namespace midgard\portable\storage;
 use midgard\portable\storage\conection;
 use midgard\portable\storage\metadata\entity;
 use Doctrine\Common\EventSubscriber;
-use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\DBAL\Events as dbal_events;
+use Doctrine\DBAL\Event\SchemaCreateTableEventArgs;
 use midgard_repligard;
 
 class subscriber implements EventSubscriber
@@ -99,8 +101,69 @@ class subscriber implements EventSubscriber
         }
     }
 
+    /**
+     * This is essentially a workaround for http://www.doctrine-project.org/jira/browse/DBAL-642
+     * It makes sure we get auto increment behavior similar to msyql (i.e. IDs unique during table' lifetime)
+     */
+    public function onSchemaCreateTable(SchemaCreateTableEventArgs $args)
+    {
+        $platform = $args->getPlatform();
+        if ($platform->getName() !== 'sqlite')
+        {
+            return;
+        }
+        $table = $args->getTable();
+        $columns = $args->getColumns();
+        $options = $args->getOptions();
+        $args->preventDefault();
+
+        $name = str_replace('.', '__', $table->getName());
+        $queryFields = $platform->getColumnDeclarationListSQL($columns);
+        $queryFields = preg_replace('/^id INTEGER DEFAULT 0 NOT NULL/', 'id INTEGER PRIMARY KEY AUTOINCREMENT', $queryFields);
+
+        if (isset($options['uniqueConstraints']) && ! empty($options['uniqueConstraints']))
+        {
+            foreach ($options['uniqueConstraints'] as $name => $definition)
+            {
+                $queryFields .= ', ' . $this->getUniqueConstraintDeclarationSQL($name, $definition);
+            }
+        }
+
+        if (isset($options['foreignKeys']))
+        {
+            foreach ($options['foreignKeys'] as $foreignKey)
+            {
+                $queryFields .= ', ' . $platform->getForeignKeyDeclarationSQL($foreignKey);
+            }
+        }
+
+        $args->addSql('CREATE TABLE ' . $name . ' (' . $queryFields . ')');
+
+        if (isset($options['alter']) && true === $options['alter'])
+        {
+            return;
+        }
+
+        if (isset($options['indexes']) && ! empty($options['indexes']))
+        {
+            foreach ($options['indexes'] as $indexDef)
+            {
+                $args->addSql($platform->getCreateIndexSQL($indexDef, $name));
+            }
+        }
+
+        if (isset($options['unique']) && ! empty($options['unique']))
+        {
+            foreach ($options['unique'] as $indexDef)
+            {
+                $args->addSql($platform->getCreateIndexSQL($indexDef, $name));
+            }
+        }
+        return;
+    }
+
     public function getSubscribedEvents()
     {
-        return array(Events::prePersist, Events::preUpdate, Events::preRemove);
+        return array(Events::prePersist, Events::preUpdate, Events::preRemove, dbal_events::onSchemaCreateTable);
     }
 }

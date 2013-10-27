@@ -253,6 +253,7 @@ class objectTest extends testcase
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $topic->create();
+        $id = $topic->id;
         $stat = $topic->purge();
         $this->assertTrue($stat);
         $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
@@ -260,6 +261,11 @@ class objectTest extends testcase
         $stat = $topic->purge();
         $this->assertFalse($stat);
         $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
+
+        $topic = new $classname;
+        $topic->name = __FUNCTION__ . ' 2';
+        $topic->create();
+        $this->assertEquals($id + 1, $topic->id);
     }
 
     public function test_get_parent()

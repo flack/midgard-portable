@@ -90,7 +90,7 @@ abstract class dbobject implements ObjectManagerAware
         foreach ($this->cm->reflFields as $name => $field)
         {
             if (   $entity->$name instanceof object
-                && empty($entity->$name->id) )
+                && empty($entity->$name->id))
             {
                 // This normally means that the target entity has been purged.
                 // Midgard lets you keep the (broken) association, but we have to unset it,
