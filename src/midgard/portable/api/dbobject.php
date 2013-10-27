@@ -89,6 +89,14 @@ abstract class dbobject implements ObjectManagerAware
         $this->initialize();
         foreach ($this->cm->reflFields as $name => $field)
         {
+            if (   $entity->$name instanceof object
+                && empty($entity->$name->id) )
+            {
+                // This normally means that the target entity has been purged.
+                // Midgard lets you keep the (broken) association, but we have to unset it,
+                // becaue otherwise, Doctrine will throw exceptions during flush
+                $entity->$name = null;
+            }
             $this->$name = $entity->$name;
         }
     }

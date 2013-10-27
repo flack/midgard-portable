@@ -115,7 +115,6 @@ class driver implements driver_interface
         }
         if (!array_key_exists($classname, $this->types))
         {
-            var_dump(array_keys($this->types));
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($classname);
         }
 

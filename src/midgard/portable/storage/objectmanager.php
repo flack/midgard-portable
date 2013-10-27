@@ -33,7 +33,10 @@ class objectmanager
     {
         if (!$this->em->contains($entity))
         {
-            $entity = $this->em->merge($entity);
+            $entity = $this->em->getReference(get_class($entity), $entity->id);
+        }
+        else
+        {
             $this->em->refresh($entity);
         }
         $entity->metadata_deleted = true;
@@ -46,7 +49,7 @@ class objectmanager
     {
         if (!$this->em->contains($entity))
         {
-            $entity = $this->em->merge($entity);
+            $entity = $this->em->getReference(get_class($entity), $entity->id);
         }
         $this->em->remove($entity);
         $this->em->flush($entity);

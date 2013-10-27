@@ -40,6 +40,7 @@ class personTest extends testcase
         //self::$em->clear();
 
         $member = new $member_class($member->id);
+        $person = new $person_class($person->id);
         $this->assertEquals($person->id, $member->uid);
 
         $parent = $member->get_parent();
@@ -50,6 +51,7 @@ class personTest extends testcase
 
         $this->assertTrue($person->delete());
         $this->assertTrue($person->purge());
+        $member = new $member_class($member->id);
         $this->assertTrue($member->delete());
     }
 }
