@@ -6,6 +6,7 @@
  */
 
 use midgard\portable\query;
+use midgard\portable\storage\connection;
 use Doctrine\DBAL\Types\BooleanType;
 
 class midgard_collector extends midgard_query_builder
@@ -63,7 +64,14 @@ class midgard_collector extends midgard_query_builder
         $constraint_name = $this->build_constraint_name($property);
 
         // for properties like up.name
-        if (strpos($property, ".") !== false && !(strpos($property, "metadata") === 0))
+        if (   strpos($property, ".") !== false
+            && !(strpos($property, "metadata") === 0))
+        {
+            return $constraint_name . " as " . str_replace(".", "_", $property);
+        }
+
+        $cm = connection::get_em()->getClassMetadata($this->classname);
+        if (array_key_exists($property, $cm->midgard['field_aliases']))
         {
             return $constraint_name . " as " . str_replace(".", "_", $property);
         }
@@ -107,6 +115,7 @@ class midgard_collector extends midgard_query_builder
                 }
             }
             $key = $result[$this->_key_property];
+
             unset($result[$this->_key_property]);
             $results_map[$key] = $result;
         }
@@ -173,6 +182,4 @@ class midgard_collector extends midgard_query_builder
         }
         return $keys;
     }
-
 }
-?>

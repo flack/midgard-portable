@@ -163,4 +163,20 @@ class midgard_collectorTest extends testcase
         $this->assertEquals($data, self::$_topic->name);
     }
 
+    public function test_aliased_fieldname()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $cm = self::$em->getClassMetadata($classname);
+        $cm->midgard['field_aliases'] = array('id_alias' => 'id');
+
+        $mc = new \midgard_collector($classname, 'id_alias', self::$_topic->id);
+        $mc->add_value_property("id_alias");
+        $mc->execute();
+        $keys = $mc->list_keys();
+        $key = key($keys);
+
+        $data = $mc->get_subkey($key, 'id_alias');
+        $this->assertEquals(self::$_topic->id, $data);
+    }
+
 }

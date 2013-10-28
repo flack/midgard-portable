@@ -239,6 +239,13 @@ abstract class query
                 $mrp = new \midgard_reflection_property($targetclass);
             }
         }
+
+        $cm = connection::get_em()->getClassMetadata($this->classname);
+        if (array_key_exists($column, $cm->midgard['field_aliases']))
+        {
+            $column = $cm->midgard['field_aliases'][$column];
+        }
+
         return $current_table . '.' . $column;
     }
 

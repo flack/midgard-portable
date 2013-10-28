@@ -500,4 +500,20 @@ class midgard_query_builderTest extends testcase
         $results = $qb->execute();
         $this->assertEquals($article->id, $results[0]->id);
     }
+
+    public function test_aliased_fieldname()
+    {
+        self::$em->clear();
+        $classname = self::$ns . '\\midgard_topic';
+        $this->purge_all($classname);
+        $topics = $this->_create_topics(__FUNCTION__);
+
+        $cm = self::$em->getClassMetadata($classname);
+        $cm->midgard['field_aliases'] = array('name_alias' => 'name');
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('name_alias', '=', $topics[0]->name);
+        $this->assertEquals(1, $qb->count());
+
+    }
 }
