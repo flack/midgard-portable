@@ -183,6 +183,7 @@ class objectTest extends testcase
 
         $loaded = new $classname($topic->id);
         $this->assertEquals($topic->name, $loaded->name);
+        $this->assertEquals('', $loaded->title);
     }
 
     public function test_delete()

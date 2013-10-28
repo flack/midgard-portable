@@ -29,4 +29,15 @@ class dbobjectTest extends testcase
         $topic = new $classname;
         $this->assertEquals(0, $topic->up);
     }
+
+    public function test_set()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+
+        $topic->title = null;
+        $topic->score = null;
+        $this->assertSame('', $topic->title);
+        $this->assertSame(0, $topic->score);
+    }
 }

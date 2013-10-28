@@ -54,6 +54,18 @@ abstract class dbobject implements ObjectManagerAware
             $target = connection::get_em()->find($classname, $value);
             $value = $target;
         }
+        else if ($this->cm->hasField($field))
+        {
+            $mapping = $this->cm->getFieldMapping($field);
+            if ($mapping['type'] === 'string')
+            {
+                $value = (string) $value;
+            }
+            else if ($mapping['type'] === 'integer')
+            {
+                $value = (int) $value;
+            }
+        }
 
         $this->$field = $value;
     }
