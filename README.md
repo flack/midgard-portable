@@ -66,5 +66,8 @@ Known Issues & Limitations
    A new entity was found through the relationship 'classname#link_property' that was not configured 
    to cascade persist operations for entity
    ```
+ - Doctrine does not support public properties on entity classes, so using ``get_object_vars()`` will always return 
+   an empty result. Similarly, ``ReflectionExtension('midgard2')`` will also fail, so you can't use this to get a list
+   of all registered MgdSchema classes. This will be addressed by a separate reflection helper (which is yet tbd)
 
 ...and of course, much of the API provided still only consists of stubs. It is a prototype, after all :)
