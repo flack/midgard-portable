@@ -224,6 +224,10 @@ class manager
         {
             $type->extends = 'base_person';
         }
+        if ($classname === 'midgard_repligard')
+        {
+            $type->extends = 'base_repligard';
+        }
         if (!empty($this->namespace))
         {
             $classname = $this->namespace . '\\' . $classname;

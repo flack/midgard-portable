@@ -13,6 +13,8 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 abstract class dbobject implements ObjectManagerAware
 {
+    protected $guid = '';
+
     /**
      *
      * @var Doctrine\Common\Persistence\Mapping\ClassMetadata

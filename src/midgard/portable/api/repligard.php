@@ -5,10 +5,11 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
 
-use midgard\portable\storage\subscriber;
-use midgard\portable\api\dbobject;
+namespace midgard\portable\api;
 
-class midgard_repligard extends dbobject
+use midgard\portable\storage\subscriber;
+
+class repligard extends dbobject
 {
     protected $id = 0;
 

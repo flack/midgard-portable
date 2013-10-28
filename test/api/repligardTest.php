@@ -24,6 +24,15 @@ class midgard_repligardTest extends testcase
         $tool->createSchema($classes);
     }
 
+    public function test_class()
+    {
+        $classname = self::$ns . '\\midgard_repligard';
+        $object = new $classname;
+        $this->assertInstanceOf('\\midgard\\portable\\api\\dbobject', $object);
+        $this->assertNotInstanceOf('\\midgard\\portable\\api\\object', $object);
+        $this->assertNotInstanceOf('\\midgard\\portable\\storage\\metadata\\entity', $object);
+    }
+
     public function test_create()
     {
         $classname = self::$ns . '\\midgard_topic';
