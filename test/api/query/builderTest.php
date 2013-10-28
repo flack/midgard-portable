@@ -462,6 +462,11 @@ class midgard_query_builderTest extends testcase
         $this->assertEquals(1, $qb->count());
         $results = $qb->execute();
         $this->assertEquals($topics[2]->id, $results[0]->id);
+
+        $qb = new \midgard_query_builder($classname);
+        // Array with string key is what collector normally returns
+        $qb->add_constraint('id', 'IN', array($topics[0]->guid => $topics[0]->id));
+        $this->assertEquals(1, $qb->count());
     }
 
     public function test_intree_constraint()

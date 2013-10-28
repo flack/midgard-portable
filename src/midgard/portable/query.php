@@ -85,6 +85,11 @@ abstract class query
 
             $value = $this->get_child_ids($mapping['targetEntity'], $parentfield, $value);
         }
+        else if (   $operator === 'IN'
+                 || $operator === 'NOT IN')
+        {
+            $value = array_values($value);
+        }
 
         $this->parameters++;
         $this->get_current_group()->add($this->build_where($name, $operator));
