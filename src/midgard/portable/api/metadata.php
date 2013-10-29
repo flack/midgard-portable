@@ -22,6 +22,8 @@ class metadata
 
     public function __set($property, $value)
     {
+        //TODO: filter out readonly properties (?)
+        $this->object->{'metadata_' . $property} = $value;
     }
 }
 ?>

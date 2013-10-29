@@ -42,6 +42,22 @@ class metadataTest extends testcase
         return $person;
     }
 
+    public function test_alternate_fieldname()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $topic->name = __FUNCTION__;
+        $topic->create();
+
+        $this->assertFalse($topic->metadata->navnoentry);
+
+        $topic->metadata->navnoentry = true;
+        $topic->update();
+
+        $topic = new $classname($topic->guid);
+        $this->assertTrue($topic->metadata->navnoentry);
+    }
+
     public function test_create()
     {
         $classname = self::$ns . '\\midgard_topic';

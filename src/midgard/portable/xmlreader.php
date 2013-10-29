@@ -89,6 +89,9 @@ class xmlreader
                 case 'type':
                     $property_type = $value;
                     break;
+                case 'field':
+                    $value = $prefix . $value;
+                    //fall-through
                 default:
                     $property_attributes[$name] = $value;
                     break;
