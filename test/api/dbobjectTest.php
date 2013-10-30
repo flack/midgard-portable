@@ -44,6 +44,26 @@ class dbobjectTest extends testcase
         $this->assertEquals('0001-01-01 00:00:00', $topic->metadata_published->format('Y-m-d H:i:s'));
     }
 
+    public function test_get()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $parent = new $classname;
+        $parent->name = __FUNCTION__;
+        $parent->create();
+
+        $topic = new $classname;
+        $topic->up = $parent->id;
+        $topic->create();
+        self::$em->clear();
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('id', '=', $topic->id);
+        $results = $qb->execute();
+
+        $this->assertSame($topic->score, $results[0]->score);
+        $this->assertSame($topic->up, $results[0]->up);
+    }
+
     public function test_isset()
     {
         $classname = self::$ns . '\\midgard_topic';

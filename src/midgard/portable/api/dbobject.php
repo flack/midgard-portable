@@ -93,7 +93,7 @@ abstract class dbobject implements ObjectManagerAware
         if (   $this->cm->isSingleValuedAssociation($field)
             && is_object($this->$field))
         {
-            return $this->$field->id;
+            return (int) $this->$field->id;
         }
 
         return $this->$field;
