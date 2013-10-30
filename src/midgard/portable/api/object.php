@@ -347,11 +347,15 @@ abstract class object extends dbobject
         $qb = $this->get_parameter_qb();
         $this->apply_qb_constraints($qb, $constraints);
         $params = $qb->execute();
+        $deleted_count = 0;
         foreach ($params as $param)
         {
-            $param->delete();
+            if ($param->delete())
+            {
+                $deleted_count++;
+            }
         }
-        return true;
+        return $deleted_count;
     }
 
     public function purge_parameters(array $constraints = array())
@@ -359,11 +363,15 @@ abstract class object extends dbobject
         $qb = $this->get_parameter_qb();
         $this->apply_qb_constraints($qb, $constraints);
         $params = $qb->execute();
+        $purged_count = 0;
         foreach ($params as $param)
         {
-            $param->purge();
+            if ($param->purge())
+            {
+                $purged_count++;
+            }
         }
-        return true;
+        return $purged_count;
     }
 
     public function get_parameter($domain, $name)

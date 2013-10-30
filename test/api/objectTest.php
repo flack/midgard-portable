@@ -450,10 +450,17 @@ class objectTest extends testcase
         $params = $topic->find_parameters();
         $this->assertEquals(2, count($params));
 
+        // use constraint so no params get deleted
+        $constraints = array();
+        $constraints[] = array("domain", "=", "false.domain");
+        $count = $topic->delete_parameters($constraints);
+        $this->assertEquals(0, $count);
+
         // delete only core params
         $constraints = array();
         $constraints[] = array("domain", "=", "midcom.core");
-        $topic->delete_parameters($constraints);
+        $count = $topic->delete_parameters($constraints);
+        $this->assertEquals(1, $count);
 
         // now we should only find one parameter
         $params = $topic->find_parameters();
@@ -476,10 +483,17 @@ class objectTest extends testcase
         $params = $topic->find_parameters();
         $this->assertEquals(2, count($params));
 
+        // use constraint so no params get deleted
+        $constraints = array();
+        $constraints[] = array("domain", "=", "false.domain");
+        $count = $topic->purge_parameters($constraints);
+        $this->assertEquals(0, $count);
+
         // purge only core params
         $constraints = array();
         $constraints[] = array("domain", "=", "midcom.core");
-        $topic->purge_parameters($constraints);
+        $count = $topic->purge_parameters($constraints);
+        $this->assertEquals(1, $count);
 
         // now we should only find one parameter
         $params = $topic->find_parameters();
