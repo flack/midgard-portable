@@ -15,7 +15,7 @@ use Doctrine\ORM\Query;
 
 abstract class object extends dbobject
 {
-    protected $action = ''; // <== does this need to do anything?
+    public $action = ''; // <== does this need to do anything?
 
     protected $schema_type;
 
