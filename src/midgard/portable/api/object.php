@@ -389,13 +389,21 @@ abstract class object extends dbobject
 
     public function set_parameter($domain, $name, $value)
     {
-        $parameter = new \midgard_parameter();
-        $parameter->parentguid = $this->guid;
-        $parameter->domain = $domain;
-        $parameter->name = $name;
-        $parameter->value = $value;
+        $parameter = $this->get_parameter($domain, $name);
+        if (!$parameter)
+        {
+            $parameter = $this->get_entity_instance("midgard_parameter");
+            $parameter->parentguid = $this->guid;
+            $parameter->domain = $domain;
+            $parameter->name = $name;
+            $parameter->value = $value;
+        }
 
-        return $parameter->create();
+        $em = connection::get_em();
+        $em->persist($parameter);
+        $em->flush();
+
+        return true;
     }
 
     public function parameter()

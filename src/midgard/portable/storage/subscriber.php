@@ -42,8 +42,8 @@ class subscriber implements EventSubscriber
 
         if ($entity instanceof entity)
         {
-            $entity->metadata->created->setTimestamp(time());
-            $entity->metadata->revised->setTimestamp(time());
+            $entity->metadata->created = new \midgard_datetime();
+            $entity->metadata->revised = new \midgard_datetime();
             $user = connection::get_user();
             if ($user !== null)
             {
@@ -77,7 +77,7 @@ class subscriber implements EventSubscriber
 
         if ($entity instanceof entity)
         {
-            $entity->metadata->revised->setTimestamp(time());
+            $entity->metadata->revised = new \midgard_datetime();
             $entity->metadata_revision++;
             $user = connection::get_user();
             if ($user !== null)
