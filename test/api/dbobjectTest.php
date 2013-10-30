@@ -37,8 +37,10 @@ class dbobjectTest extends testcase
 
         $topic->title = null;
         $topic->score = null;
+        $topic->metadata_published = null;
         $this->assertSame('', $topic->title);
         $this->assertSame(0, $topic->score);
+        $this->assertInstanceOf('midgard_datetime', $topic->metadata_published);
     }
 
     public function test_isset()

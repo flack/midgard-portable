@@ -10,6 +10,7 @@ use midgard\portable\storage\connection;
 use Doctrine\Common\Persistence\ObjectManagerAware;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use midgard_datetime;
 
 abstract class dbobject implements ObjectManagerAware
 {
@@ -66,6 +67,11 @@ abstract class dbobject implements ObjectManagerAware
             else if ($mapping['type'] === 'integer')
             {
                 $value = (int) $value;
+            }
+            else if (   $mapping['type'] === 'midgard_datetime'
+                     && !($value instanceof midgard_datetime))
+            {
+                $value = new midgard_datetime;
             }
         }
 
