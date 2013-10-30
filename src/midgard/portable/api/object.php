@@ -207,6 +207,15 @@ abstract class object extends dbobject
         return (!empty($this->{$this->cm->midgard['parentfield']}));
     }
 
+    private function apply_qb_constraints($qb, array $constraints)
+    {
+        foreach ($constraints as $constraint)
+        {
+            $qb->add_constraint($constraint[0], $constraint[1], $constraint[2]);
+        }
+        return $qb;
+    }
+
     public function is_in_parent_tree($root_id, $id)
     {
         return false;
@@ -306,39 +315,79 @@ abstract class object extends dbobject
         return false;
     }
 
+    private function get_parameter_qb()
+    {
+        $qb = new \midgard_query_builder('midgard:midgard_parameter');
+        $qb->add_constraint('parentguid', '=', $this->guid);
+        return $qb;
+    }
+
     public function has_parameters()
     {
-        return false;
+        $qb = $this->get_parameter_qb();
+        return ($qb->count() > 0);
     }
 
     public function list_parameters($domain)
     {
-        return false;
+        $qb = $this->get_parameter_qb();
+        $qb->add_constraint("domain", "=", $domain);
+        return $qb->execute();
     }
 
-    public function find_parameters($constraints)
+    public function find_parameters(array $constraints = array())
     {
-        return false;
+        $qb = $this->get_parameter_qb();
+        $this->apply_qb_constraints($qb, $constraints);
+        return $qb->execute();
     }
 
-    public function delete_parameters($constraints)
+    public function delete_parameters(array $constraints = array())
     {
-        return false;
+        $qb = $this->get_parameter_qb();
+        $this->apply_qb_constraints($qb, $constraints);
+        $params = $qb->execute();
+        foreach ($params as $param)
+        {
+            $param->delete();
+        }
+        return true;
     }
 
-    public function purge_parameters($constraints)
+    public function purge_parameters(array $constraints = array())
     {
-        return false;
+        $qb = $this->get_parameter_qb();
+        $this->apply_qb_constraints($qb, $constraints);
+        $params = $qb->execute();
+        foreach ($params as $param)
+        {
+            $param->purge();
+        }
+        return true;
     }
 
-    public function get_parameter($domainname)
+    public function get_parameter($domain, $name)
     {
-        return false;
+        $qb = $this->get_parameter_qb();
+        $qb->add_constraint("domain", "=", $domain);
+        $qb->add_constraint("name", "=", $name);
+        $params = $qb->execute();
+        if (count($params) == 0)
+        {
+            return false;
+        }
+        return array_pop($params);
     }
 
-    public function set_parameter($domainname, $value)
+    public function set_parameter($domain, $name, $value)
     {
-        return false;
+        $parameter = new \midgard_parameter();
+        $parameter->parentguid = $this->guid;
+        $parameter->domain = $domain;
+        $parameter->name = $name;
+        $parameter->value = $value;
+
+        return $parameter->create();
     }
 
     public function parameter()

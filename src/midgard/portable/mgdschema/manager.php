@@ -224,6 +224,10 @@ class manager
         {
             $type->extends = 'base_person';
         }
+        if ($classname === 'midgard_parameter')
+        {
+            $type->extends = 'base_parameter';
+        }
         if ($classname === 'midgard_repligard')
         {
             $type->extends = 'base_repligard';

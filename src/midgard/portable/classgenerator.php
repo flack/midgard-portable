@@ -76,6 +76,7 @@ class classgenerator
             $this->output .= 'use midgard\\portable\\api\\user as base_user; ';
             $this->output .= 'use midgard\\portable\\api\\repligard as base_repligard; ';
             $this->output .= 'use midgard\\portable\\api\\person as base_person; ';
+            $this->output .= 'use midgard\\portable\\api\\parameter as base_parameter; ';
             $this->output .= 'use midgard_datetime; { ';
         }
         else
@@ -83,6 +84,7 @@ class classgenerator
             $this->output .= 'use \midgard\portable\api\object; ';
             $this->output .= 'use midgard\\portable\\api\\user as base_user; ';
             $this->output .= 'use midgard\\portable\\api\\person as base_person; ';
+            $this->output .= 'use midgard\\portable\\api\\parameter as base_parameter; ';
             $this->output .= 'use midgard\\portable\\api\\repligard as base_repligard; ';
         }
         foreach ($types as $type)

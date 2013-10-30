@@ -12,15 +12,10 @@ class objectTest extends testcase
     public static function setupBeforeClass()
     {
         parent::setupBeforeClass();
+
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
-        $classes = array(
-            $factory->getMetadataFor('midgard:midgard_language'),
-            $factory->getMetadataFor('midgard:midgard_topic'),
-            $factory->getMetadataFor('midgard:midgard_article'),
-            $factory->getMetadataFor('midgard:midgard_snippetdir'),
-            $factory->getMetadataFor('midgard:midgard_repligard'),
-        );
+        $classes = $factory->getAllMetadata();
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
     }
@@ -341,4 +336,163 @@ class objectTest extends testcase
         $stat = $sd3->create();
         $this->assertTrue($stat);
     }
+
+    private function get_topic_with_parameter()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $topic = new $classname;
+        $topic->name = __FUNCTION__;
+        $topic->create();
+
+        $topic->set_parameter("midcom.core", "test", "some value");
+
+        return $topic;
+    }
+
+    public function test_set_parameter()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $topic = new $classname;
+        $topic->name = __FUNCTION__;
+        $topic->create();
+
+        $stat = $topic->set_parameter("midcom.core", "test", "some value");
+
+        $this->assertTrue($stat, "Failed to set parameter");
+
+        // we should find a parameter with matching parent guid now
+        $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
+        $qb->add_constraint('parentguid', '=', $topic->guid);
+        $results = $qb->execute();
+        $this->assertEquals(1, count($results), "Unable to find parameter");
+    }
+
+    public function test_get_parameter()
+    {
+        $topic = $this->get_topic_with_parameter();
+
+        // test invalid parameters
+        $param = $topic->get_parameter("midcom.core", "nonexistant");
+        $this->assertFalse($param);
+
+        // we should find a parameter with matching parent guid now
+        $param = $topic->get_parameter("midcom.core", "test");
+        $this->assertEquals("midcom.core", $param->domain);
+        $this->assertEquals($topic->guid, $param->parentguid);
+        $this->assertEquals("test", $param->name);
+        $this->assertEquals("some value", $param->value);
+    }
+
+    public function test_has_parameters()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $topic = new $classname;
+        $topic->name = __FUNCTION__;
+        $topic->create();
+
+        $this->assertFalse($topic->has_parameters());
+
+        $topic->set_parameter("midcom.core", "test", "some value");
+        $this->assertTrue($topic->has_parameters());
+    }
+
+    public function test_list_parameters()
+    {
+        $topic = $this->get_topic_with_parameter();
+
+        // add more parameters
+        $topic->set_parameter("midcom.core", "test2", "other value");
+        $topic->set_parameter("midcom.test", "test3", "another value");
+
+        $params = $topic->list_parameters("false.domain");
+        $this->assertEquals(0, count($params));
+
+        $params = $topic->list_parameters("midcom.core");
+        $this->assertEquals(2, count($params));
+
+        $params = $topic->list_parameters("midcom.test");
+        $this->assertEquals(1, count($params));
+
+        // verify that we received the correct parameter
+        $param = array_pop($params);
+        $this->assertEquals("midcom.test", $param->domain);
+        $this->assertEquals($topic->guid, $param->parentguid);
+        $this->assertEquals("test3", $param->name);
+        $this->assertEquals("another value", $param->value);
+    }
+
+    public function test_find_parameters()
+    {
+        $topic = $this->get_topic_with_parameter();
+
+        // add another parameter
+        $topic->set_parameter("midcom.test", "test3", "another value");
+
+        // find all
+        $params = $topic->find_parameters();
+        $this->assertEquals(2, count($params));
+
+        // find for midcom.core domain only
+        $constraints = array();
+        $constraints[] = array("domain", "=", "midcom.core");
+        $params = $topic->find_parameters($constraints);
+        $this->assertEquals(1, count($params));
+    }
+
+    public function test_delete_parameters()
+    {
+        $topic = $this->get_topic_with_parameter();
+        $topic->set_parameter("midcom.test", "test3", "another value");
+
+        $params = $topic->find_parameters();
+        $this->assertEquals(2, count($params));
+
+        // delete only core params
+        $constraints = array();
+        $constraints[] = array("domain", "=", "midcom.core");
+        $topic->delete_parameters($constraints);
+
+        // now we should only find one parameter
+        $params = $topic->find_parameters();
+        $this->assertEquals(1, count($params));
+
+        // we should find the deleted parameter if we include deleted
+        $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
+        $qb->add_constraint('parentguid', '=', $topic->guid);
+        $qb->add_constraint('domain', '=', "midcom.core");
+        $qb->include_deleted();
+        $results = $qb->execute();
+        $this->assertEquals(1, count($results), "Unable to find parameter");
+    }
+
+    public function test_purge_parameters()
+    {
+        $topic = $this->get_topic_with_parameter();
+        $topic->set_parameter("midcom.test", "test3", "another value");
+
+        $params = $topic->find_parameters();
+        $this->assertEquals(2, count($params));
+
+        // purge only core params
+        $constraints = array();
+        $constraints[] = array("domain", "=", "midcom.core");
+        $topic->purge_parameters($constraints);
+
+        // now we should only find one parameter
+        $params = $topic->find_parameters();
+        $this->assertEquals(1, count($params));
+
+        // we should not even find the deleted parameter if we include deleted
+        $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
+        $qb->add_constraint('parentguid', '=', $topic->guid);
+        $qb->add_constraint('domain', '=', "midcom.core");
+        $qb->include_deleted();
+        $results = $qb->execute();
+        $this->assertEquals(0, count($results), "Found a purged parameter");
+    }
+
+
 }
