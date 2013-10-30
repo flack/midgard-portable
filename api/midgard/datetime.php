@@ -7,4 +7,17 @@
 
 class midgard_datetime extends DateTime
 {
+    public function __construct($time = 'now', $timezone = null)
+    {
+        if ($timezone === null)
+        {
+            $timezone = new DateTimeZone('UTC');
+        }
+        parent::__construct($time, $timezone);
+    }
+
+    public function __toString()
+    {
+        return $this->format('c');
+    }
 }
