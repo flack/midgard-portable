@@ -40,4 +40,13 @@ class dbobjectTest extends testcase
         $this->assertSame('', $topic->title);
         $this->assertSame(0, $topic->score);
     }
+
+    public function test_isset()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+
+        $this->assertTrue(isset($topic->title));
+        $this->assertFalse(isset($topic->something));
+    }
 }

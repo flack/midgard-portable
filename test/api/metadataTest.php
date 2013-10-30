@@ -58,6 +58,15 @@ class metadataTest extends testcase
         $this->assertTrue($topic->metadata->navnoentry);
     }
 
+    public function test_isset()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+
+        $this->assertTrue(isset($topic->metadata->published));
+        $this->assertFalse(isset($topic->metadata->something));
+    }
+
     public function test_create()
     {
         $classname = self::$ns . '\\midgard_topic';

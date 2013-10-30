@@ -25,5 +25,10 @@ class metadata
         //TODO: filter out readonly properties (?)
         $this->object->{'metadata_' . $property} = $value;
     }
+
+    public function __isset($field)
+    {
+        return property_exists($this->object, 'metadata_' . $field);
+    }
 }
 ?>

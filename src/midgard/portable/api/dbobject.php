@@ -95,7 +95,7 @@ abstract class dbobject implements ObjectManagerAware
 
     public function __isset($field)
     {
-        return isset($this->$field);
+        return property_exists($this, $field);
     }
 
     protected function populate_from_entity(dbobject $entity)
