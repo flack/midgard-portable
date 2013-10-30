@@ -41,6 +41,7 @@ class dbobjectTest extends testcase
         $this->assertSame('', $topic->title);
         $this->assertSame(0, $topic->score);
         $this->assertInstanceOf('midgard_datetime', $topic->metadata_published);
+        $this->assertEquals('0001-01-01 00:00:00', $topic->metadata_published->format('Y-m-d H:i:s'));
     }
 
     public function test_isset()
