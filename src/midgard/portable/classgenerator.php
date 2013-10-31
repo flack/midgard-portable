@@ -206,6 +206,7 @@ class classgenerator
             //$objects[$name] = 'new ' . $mixin->name . '($this)';
         }
 
+        /*
         if (!empty($objects))
         {
             $this->output .= 'public function __construct($id = null) {';
@@ -214,6 +215,21 @@ class classgenerator
                 $this->output .= '$this->' . $name . ' = ' . $code . ';';
             }
             $this->output .= 'parent::__construct($id);';
+            $this->output .= '}';
+        }
+        */
+        if (!empty($objects))
+        {
+            $this->output .= 'public function __construct($id = null) {';
+            $this->output .= '$this->init();';
+            $this->output .= 'parent::__construct($id);';
+            $this->output .= '}';
+
+            $this->output .= 'public function init() {';
+            foreach ($objects as $name => $code)
+            {
+                $this->output .= '$this->' . $name . ' = ' . $code . ';';
+            }
             $this->output .= '}';
         }
     }

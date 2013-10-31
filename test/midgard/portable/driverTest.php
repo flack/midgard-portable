@@ -10,7 +10,7 @@ namespace midgard\portable\test;
 use midgard\portable\driver;
 use midgard\portable\mapping\classmetadata;
 
-class driverTest extends \PHPUnit_Framework_TestCase
+class driverTest extends testcase
 {
     public function test_getAllClassNames()
     {
@@ -37,6 +37,10 @@ class driverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertArrayHasKey('metadata_deleted', $metadata->fieldMappings);
         $this->assertArrayHasKey('score', $metadata->fieldMappings);
+
+        $mapping = $metadata->fieldMappings['metadata_approved'];
+        $this->assertEquals("midgard_datetime", $mapping["type"]);
+        $this->assertEquals("0001-01-01 00:00:00", $mapping["default"]);
     }
 
     public function test_duplicate_tablenames()

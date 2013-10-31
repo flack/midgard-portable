@@ -9,6 +9,7 @@ namespace midgard\portable\test;
 
 use midgard\portable\classgenerator;
 use midgard\portable\mgdschema\manager;
+use midgard\portable\storage\connection;
 
 class classgeneratorTest extends testcase
 {
@@ -43,6 +44,15 @@ class classgeneratorTest extends testcase
         $this->assertInstanceOf('\\midgard\\portable\\storage\\metadata\\entity', $topic);
         $this->assertEquals(0, $topic->score);
         $this->assertEquals('0001-01-01 00:00:00', $topic->metadata->created->format('Y-m-d H:i:s'));
+
+        $cm = self::$em->getClassMetadata("midgard:midgard_parameter");
+        $entity = $cm->newInstance();
+        $entity->init();
+
+        // without the default values in the mapping options, persisting the entity via em and flushing the em
+        // would cause an integrity violation for all midgard_datetime fields (that cant be NULL)
+        $this->assertInstanceOf('midgard_datetime', $entity->metadata->approved);
+        $this->assertEquals('0001-01-01 00:00:00', $entity->metadata->approved->format('Y-m-d H:i:s'));
     }
 
     public function test_duplicate_tablenames()

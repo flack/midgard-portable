@@ -16,5 +16,10 @@ class parameter extends object
     protected $name = '';
     protected $value = '';
     protected $parentguid = '';
+
+    public function get_label()
+    {
+        return $this->domain . " " . $this->name;
+    }
 }
 ?>
