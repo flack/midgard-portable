@@ -328,10 +328,13 @@ abstract class object extends dbobject
         return ($qb->count() > 0);
     }
 
-    public function list_parameters($domain)
+    public function list_parameters($domain = false)
     {
         $qb = $this->get_parameter_qb();
-        $qb->add_constraint("domain", "=", $domain);
+        if ($domain)
+        {
+            $qb->add_constraint("domain", "=", $domain);
+        }
         return $qb->execute();
     }
 
@@ -376,28 +379,57 @@ abstract class object extends dbobject
 
     public function get_parameter($domain, $name)
     {
+        if (!$this->guid)
+        {
+            return false;
+        }
         $qb = $this->get_parameter_qb();
         $qb->add_constraint("domain", "=", $domain);
         $qb->add_constraint("name", "=", $name);
         $params = $qb->execute();
         if (count($params) == 0)
         {
-            return false;
+            return null;
         }
-        return array_pop($params);
+        $param = array_shift($params);
+        return $param->value;
     }
 
     public function set_parameter($domain, $name, $value)
     {
-        $parameter = $this->get_parameter($domain, $name);
-        if (!$parameter)
+        $qb = $this->get_parameter_qb();
+        $qb->add_constraint("domain", "=", $domain);
+        $qb->add_constraint("name", "=", $name);
+        $params = $qb->execute();
+
+        // check value
+        if ($value === false || $value === null || $value === ""){
+            if (count($params) > 0)
+            {
+                foreach ($params as $param)
+                {
+                    $param->delete();
+                }
+            }
+            return true;
+        }
+
+        // create new
+        if (count($params) == 0)
         {
             $parameter = $this->get_entity_instance("midgard_parameter");
             $parameter->parentguid = $this->guid;
             $parameter->domain = $domain;
             $parameter->name = $name;
-            $parameter->value = $value;
         }
+        // use existing
+        else
+        {
+            $parameter = array_shift($params);
+        }
+
+        // update the value
+        $parameter->value = $value;
 
         $em = connection::get_em();
         $em->persist($parameter);

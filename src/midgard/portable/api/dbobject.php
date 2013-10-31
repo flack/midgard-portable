@@ -124,18 +124,9 @@ abstract class dbobject implements ObjectManagerAware
     protected function get_entity_instance($classname)
     {
         $em = connection::get_em();
-        $classname = $em->getConfiguration()->getEntityNamespace("midgard") . "\\" . $classname;
-        $entity = $em->getClassMetadata($classname)->newInstance();
+        $fqn = $em->getConfiguration()->getEntityNamespace("midgard") . "\\" . $classname;
+        $entity = new $fqn;
         $entity->guid = connection::generate_guid();
-        // set datetime defaults
-        $entity->metadata_locked = new \midgard_datetime("0001-01-01 00:00:00");
-        $entity->metadata_approved = new \midgard_datetime("0001-01-01 00:00:00");
-        $entity->metadata_schedulestart = new \midgard_datetime("0001-01-01 00:00:00");
-        $entity->metadata_scheduleend = new \midgard_datetime("0001-01-01 00:00:00");
-        $entity->metadata_published = new \midgard_datetime("0001-01-01 00:00:00");
-        $entity->metadata_imported = new \midgard_datetime("0001-01-01 00:00:00");
-        $entity->metadata_exported = new \midgard_datetime("0001-01-01 00:00:00");
-
         return $entity;
     }
 

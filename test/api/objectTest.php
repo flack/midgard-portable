@@ -371,18 +371,55 @@ class objectTest extends testcase
 
     public function test_get_parameter()
     {
-        $topic = $this->get_topic_with_parameter();
+        // try retrieving parameter from non persistant object
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $topic->name = __FUNCTION__;
+        $value = $topic->get_parameter("midcom.core", "test");
+        $this->assertFalse($value);
 
-        // test invalid parameters
-        $param = $topic->get_parameter("midcom.core", "nonexistant");
-        $this->assertFalse($param);
+        $topic->create();
 
-        // we should find a parameter with matching parent guid now
-        $param = $topic->get_parameter("midcom.core", "test");
-        $this->assertEquals("midcom.core", $param->domain);
-        $this->assertEquals($topic->guid, $param->parentguid);
-        $this->assertEquals("test", $param->name);
-        $this->assertEquals("some value", $param->value);
+        // try getting value of non existant parameter
+        $value = $topic->get_parameter("midcom.core", "nonexistant");
+        $this->assertNull($value);
+
+        // set count to 1
+        $stat = $topic->set_parameter("midcom.core", "count", "1");
+        $this->assertTrue($stat);
+
+        // try getting parameter
+        // value should be 1
+        $value = $topic->get_parameter("midcom.core", "count");
+        $this->assertEquals("1", $value);
+        // there should be just one parameter
+        $params = $topic->list_parameters();
+        $this->assertEquals(1, count($params));
+
+        // set count to 2
+        // set the same parameter again, this should overwrite the old
+        $stat = $topic->set_parameter("midcom.core", "count", "2");
+        $this->assertTrue($stat);
+
+        // try getting parameter
+        // value should be 2 this time
+        $value = $topic->get_parameter("midcom.core", "count");
+        $this->assertEquals("2", $value);
+        // there should still be just one parameter
+        $params = $topic->list_parameters();
+        $this->assertEquals(1, count($params));
+
+        // set the same parameter again
+        // this time use a false value
+        // this should delete the parameter
+        $stat = $topic->set_parameter("midcom.core", "count", false);
+        $this->assertTrue($stat);
+
+        $value = $topic->get_parameter("midcom.core", "count");
+        $this->assertNull($value);
+        // there should be no parameter left
+        $params = $topic->list_parameters();
+        $this->assertEquals(0, count($params));
     }
 
     public function test_has_parameters()
@@ -409,6 +446,10 @@ class objectTest extends testcase
 
         $params = $topic->list_parameters("false.domain");
         $this->assertEquals(0, count($params));
+
+        // dont specify domain => get all
+        $params = $topic->list_parameters();
+        $this->assertEquals(3, count($params));
 
         $params = $topic->list_parameters("midcom.core");
         $this->assertEquals(2, count($params));

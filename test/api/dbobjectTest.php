@@ -7,6 +7,8 @@
 
 namespace midgard\portable\test;
 
+use midgard\portable\storage\connection;
+
 class dbobjectTest extends testcase
 {
     public static function setupBeforeClass()
