@@ -9,7 +9,7 @@ namespace midgard\portable\api;
 
 use midgard\portable\storage\connection;
 use midgard\portable\storage\objectmanager;
-use midgard_error_exception;
+use midgard\portable\api\error\exception;
 
 class user extends dbobject
 {
@@ -58,13 +58,13 @@ class user extends dbobject
         if (   !array_key_exists('authtype', $properties)
             || !array_key_exists('login', $properties))
         {
-            throw new midgard_error_exception('Invalid property value.');
+            throw exception::invalid_property_value();
         }
         $entity = connection::get_em()->getRepository('midgard:midgard_user')->findOneBy($properties);
 
         if ($entity === null)
         {
-            throw new midgard_error_exception('Object does not exist.');
+            throw exception::not_exists();
         }
         $this->populate_from_entity($entity);
     }

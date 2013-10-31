@@ -7,9 +7,10 @@
 namespace midgard\portable\api;
 
 use midgard\portable\storage\connection;
-use \midgard\portable\storage\objectmanager;
+use midgard\portable\storage\objectmanager;
 use midgard\portable\storage\metadata\entity as metadata_interface;
 use midgard\portable\api\metadata;
+use midgard\portable\api\error\exception;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 
@@ -67,22 +68,17 @@ abstract class object extends dbobject
         $entity = connection::get_em()->find(get_class($this), $id);
         if ($entity === null)
         {
-            \midgard_connection::get_instance()->set_error(MGD_ERR_NOT_EXISTS);
-            throw new \midgard_error_exception('cannot load object ' . $id);
+            throw exception::not_exists();
         }
         if ($entity->metadata_deleted)
         {
             // This can happen when the "deleted" entity is still in EM's identity map
-            \midgard_connection::get_instance()->set_error(MGD_ERR_NOT_EXISTS);
-
-            throw new \midgard_error_exception(' object ' . $id . ' was deleted');
+            throw exception::object_deleted();
         }
         if (empty($entity->guid))
         {
             // This can happen when a reference proxy to a purged entity is still in EM's identity map
-            \midgard_connection::get_instance()->set_error(MGD_ERR_OBJECT_PURGED);
-
-            throw new \midgard_error_exception(' object ' . $id . ' was purged');
+            throw exception::object_purged();
         }
 
         $this->populate_from_entity($entity);
@@ -99,7 +95,7 @@ abstract class object extends dbobject
         $entity = connection::get_em()->getRepository(get_class($this))->findOneBy(array('guid' => $guid));
         if ($entity === null)
         {
-            throw new \midgard_error_exception('cannot load object ' . $guid);
+            throw exception::not_exists();
         }
         $this->populate_from_entity($entity);
         return $this; // <== is this right?

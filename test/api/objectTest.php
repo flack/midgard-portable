@@ -62,7 +62,7 @@ class objectTest extends testcase
         catch ( \midgard_error_exception $e){}
 
         $this->assertInstanceOf('midgard_error_exception', $e);
-        $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
+        $this->assertEquals(MGD_ERR_OBJECT_DELETED, \midgard_connection::get_instance()->get_error());
     }
 
     public function test_load_purged()

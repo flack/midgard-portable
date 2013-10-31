@@ -83,6 +83,11 @@ class midgard_connection
         return $this->error_string;
     }
 
+    public function set_error_string($string)
+    {
+        $this->error_string = $string;
+    }
+
     public function get_user()
     {
         return connection::get_user();

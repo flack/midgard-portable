@@ -118,12 +118,12 @@ abstract class query
 
     public function set_lang($language)
     {
-        throw new midgard_error_exception("Not implemented");
+        throw new \Exception("Not implemented");
     }
 
     public function toggle_read_only($toggle = false)
     {
-        throw new midgard_error_exception("Not implemented");
+        throw \Exception("Not implemented");
     }
 
     public function set_limit($limit)
