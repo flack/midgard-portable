@@ -280,9 +280,17 @@ abstract class query
             {
                 // TODO: there seems to be no way to make Doctrine accept default values for association fields,
                 // so we need a silly workaorund for existing DBs
-                $group = $this->qb->expr()->orX();
+                if ($operator === '<>')
+                {
+                    $group = $this->qb->expr()->andX();
+                    $group->add($parsed['name'] . ' IS NOT NULL');
+                }
+                else
+                {
+                    $group = $this->qb->expr()->orX();
+                    $group->add($parsed['name'] . ' IS NULL');
+                }
                 $group->add($parsed['name'] . ' ' . $expression);
-                $group->add($parsed['name'] . ' IS ' . ($operator === '<>' ? 'NOT' : '') . ' NULL');
                 return $group;
             }
         }
