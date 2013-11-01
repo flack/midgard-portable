@@ -267,7 +267,7 @@ abstract class object extends dbobject
         if (   $check_dependencies
             && $this->has_dependents())
         {
-            \midgard_connection::get_instance()->set_error(MGD_ERR_HAS_DEPENDANTS);
+            exception::has_dependants();
             return false;
         }
         if (!($this instanceof metadata_interface))
@@ -491,7 +491,7 @@ abstract class object extends dbobject
         if (empty($this->id))
         {
             // This usually means that the object has been purged already
-            \midgard_connection::get_instance()->set_error(MGD_ERR_NOT_EXISTS);
+            exception::not_exists();
             return false;
         }
         try
