@@ -76,12 +76,9 @@ class midgard_collector extends midgard_query_builder
             return $parsed['name'] . " as " . str_replace(".", "_", $property);
         }
 
-        if (   $cm->hasAssociation($property)
-            && $cm->getName() == $parsed['targetclass'])
+        if ($cm->hasAssociation($property))
         {
-            $mrp = new \midgard_reflection_property($parsed['targetclass']);
-            $join_table = $this->add_join("c", $mrp, $property);
-            return $join_table . ".id as " . $property;
+            return 'IDENTITY(' . $parsed['name'] . ") as " . $property;
         }
 
         return $parsed['name'];
