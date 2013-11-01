@@ -111,9 +111,9 @@ class exception extends base_exception
         return new self("Quota limit reached.", self::QUOTA);
     }
 
-    public static function internal()
+    public static function internal(base_exception $exception)
     {
-        return new self("Critical internal error.", self::INTERNAL);
+        return new self("Critical internal error. " . $exception->getMessage(), self::INTERNAL, $exception);
     }
 
     public static function object_name_exists()

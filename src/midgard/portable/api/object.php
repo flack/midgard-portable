@@ -108,10 +108,9 @@ abstract class object extends dbobject
             $om = new objectmanager(connection::get_em());
             $om->update($this);
         }
-        catch (Exception $e)
+        catch (\Exception $e)
         {
-            throw $e;
-            var_dump($e->getMessage());
+            exception::internal($e);
             return false;
         }
         \midgard_connection::get_instance()->set_error(MGD_ERR_OK);
@@ -133,10 +132,9 @@ abstract class object extends dbobject
             connection::get_em()->persist($this);
             connection::get_em()->flush($this);
         }
-        catch (Exception $e)
+        catch (\Exception $e)
         {
-            throw $e;
-            var_dump($e->getMessage());
+            exception::internal($e);
             return false;
         }
         \midgard_connection::get_instance()->set_error(MGD_ERR_OK);
@@ -291,10 +289,9 @@ abstract class object extends dbobject
             $om = new objectmanager(connection::get_em());
             $om->delete($this);
         }
-        catch (Exception $e)
+        catch (\Exception $e)
         {
-            throw $e;
-            var_dump($e->getMessage());
+            exception::internal($e);
             return false;
         }
 
@@ -510,10 +507,9 @@ abstract class object extends dbobject
             $om = new objectmanager(connection::get_em());
             $om->purge($this);
         }
-        catch (Exception $e)
+        catch (\Exception $e)
         {
-            throw $e;
-            var_dump($e->getMessage());
+            exception::internal($e);
             return false;
         }
         \midgard_connection::get_instance()->set_error(MGD_ERR_OK);

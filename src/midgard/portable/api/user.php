@@ -131,10 +131,9 @@ class user extends dbobject
             connection::get_em()->persist($this);
             connection::get_em()->flush($this);
         }
-        catch (Exception $e)
+        catch (\Exception $e)
         {
-            throw $e;
-            var_dump($e->getMessage());
+            exception::internal($e);
             return false;
         }
 	    return ($this->id != 0);
@@ -152,10 +151,9 @@ class user extends dbobject
             $om = new objectmanager(connection::get_em());
             $om->update($this);
         }
-        catch (Exception $e)
+        catch (\Exception $e)
         {
-            throw $e;
-            var_dump($e->getMessage());
+            exception::internal($e);
             return false;
         }
 	    return true;
@@ -173,10 +171,9 @@ class user extends dbobject
             $om = new objectmanager(connection::get_em());
             $om->purge($this);
         }
-        catch (Exception $e)
+        catch (\Exception $e)
         {
-            throw $e;
-            var_dump($e->getMessage());
+            exception::internal($e);
             return false;
         }
 	    return true;
