@@ -521,6 +521,16 @@ class midgard_query_builderTest extends testcase
         $stat = $qb->add_constraint('up', '=', 0);
         $this->assertTrue($stat);
         $this->assertEquals(1, $qb->count());
+
+        $qb = new \midgard_query_builder($classname);
+        $stat = $qb->add_constraint('up', '=', $topic->up);
+        $this->assertTrue($stat);
+        $this->assertEquals(1, $qb->count());
+
+        $qb = new \midgard_query_builder($classname);
+        $stat = $qb->add_constraint('up', '<>', 0);
+        $this->assertTrue($stat);
+        $this->assertEquals(0, $qb->count());
     }
 
     public function test_aliased_fieldname()

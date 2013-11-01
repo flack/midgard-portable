@@ -272,7 +272,8 @@ abstract class query
             $expression = $operator . '( ?' . $this->parameters . ')';
         }
 
-        if ($value === 0)
+        if (   $value === 0
+            || $value === null)
         {
             $cm = connection::get_em()->getClassMetadata($parsed['targetclass']);
             if ($cm->hasAssociation($parsed['column']))
@@ -281,7 +282,7 @@ abstract class query
                 // so we need a silly workaorund for existing DBs
                 $group = $this->qb->expr()->orX();
                 $group->add($parsed['name'] . ' ' . $expression);
-                $group->add($parsed['name'] . ' IS NULL');
+                $group->add($parsed['name'] . ' IS ' . ($operator === '<>' ? 'NOT' : '') . ' NULL');
                 return $group;
             }
         }
