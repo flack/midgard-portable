@@ -369,6 +369,35 @@ class objectTest extends testcase
         $this->assertEquals(1, count($results), "Unable to find parameter");
     }
 
+    public function test_parameter()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $topic = new $classname;
+        $topic->name = __FUNCTION__;
+        $topic->create();
+
+        $stat = $topic->parameter("midcom.core", "test", "some value");
+        $this->assertTrue($stat, "Failed to set parameter");
+
+        // we should find a parameter with matching parent guid now
+        $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
+        $qb->add_constraint('parentguid', '=', $topic->guid);
+        $results = $qb->execute();
+        $this->assertEquals(1, count($results), "Unable to find parameter");
+
+        $value = $topic->parameter("midcom.core", "test");
+        $this->assertEquals('some value', $value);
+
+        $stat = $topic->parameter("midcom.core", "test", null);
+        $this->assertTrue($stat, "Failed to delete parameter");
+
+        $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
+        $qb->add_constraint('parentguid', '=', $topic->guid);
+        $results = $qb->execute();
+        $this->assertEquals(0, count($results), "Parameter not deleted");
+    }
+
     public function test_get_parameter()
     {
         // try retrieving parameter from non persistant object

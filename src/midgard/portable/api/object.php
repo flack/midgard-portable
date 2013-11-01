@@ -399,7 +399,8 @@ abstract class object extends dbobject
         $params = $qb->execute();
 
         // check value
-        if ($value === false || $value === null || $value === ""){
+        if ($value === false || $value === null || $value === "")
+        {
             if (count($params) > 0)
             {
                 foreach ($params as $param)
@@ -434,9 +435,17 @@ abstract class object extends dbobject
         return true;
     }
 
-    public function parameter()
+    public function parameter($domain, $name)
     {
-        return false;
+        if (func_num_args() == 2)
+        {
+            return $this->get_parameter($domain, $name);
+        }
+        else
+        {
+            $value = func_get_arg(2);
+            return $this->set_parameter($domain, $name, $value);
+        }
     }
 
     public function has_attachments()
