@@ -139,6 +139,7 @@ abstract class object extends dbobject
             var_dump($e->getMessage());
             return false;
         }
+        \midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return ($this->id != 0);
     }
 
@@ -187,7 +188,12 @@ abstract class object extends dbobject
         $qb->select("count(c)");
         $count = intval($qb->getQuery()->getSingleScalarResult());
 
-        return ($count === 0);
+        if ($count !== 0)
+        {
+            exception::object_name_exists();
+            return false;
+        }
+        return true;
     }
 
     private function check_parent()
@@ -200,7 +206,12 @@ abstract class object extends dbobject
             return true;
         }
 
-        return (!empty($this->{$this->cm->midgard['parentfield']}));
+        if (empty($this->{$this->cm->midgard['parentfield']}))
+        {
+            exception::object_no_parent();
+            return false;
+        }
+        return true;
     }
 
     private function apply_qb_constraints($qb, array $constraints)

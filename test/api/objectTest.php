@@ -299,8 +299,10 @@ class objectTest extends testcase
 
         $article = new $article_class;
         $this->assertFalse($article->create());
+        $this->assertEquals(MGD_ERR_OBJECT_NO_PARENT, \midgard_connection::get_instance()->get_error());
         $article->topic = $topic->id;
         $this->assertTrue($article->create());
+        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
 
         $this->assertEquals($topic->guid, $article->get_parent()->guid);
         $this->assertFalse($topic->delete());
@@ -331,10 +333,12 @@ class objectTest extends testcase
         $sd3->name = __FUNCTION__;
         $stat = $sd3->create();
         $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_OBJECT_NAME_EXISTS, \midgard_connection::get_instance()->get_error());
 
         $sd3->up = $sd2->id;
         $stat = $sd3->create();
         $this->assertTrue($stat);
+        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
     }
 
     private function get_topic_with_parameter()
