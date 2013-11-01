@@ -506,6 +506,23 @@ class midgard_query_builderTest extends testcase
         $this->assertEquals($article->id, $results[0]->id);
     }
 
+    public function test_empty_link_constraint()
+    {
+        self::$em->clear();
+        $classname = self::$ns . '\\midgard_topic';
+        $this->purge_all($classname);
+
+        $topic = new $classname;
+        $topic->name = "A_" . __FUNCTION__ . "testOne";
+        $topic->extra = "special";
+        $topic->create();
+
+        $qb = new \midgard_query_builder($classname);
+        $stat = $qb->add_constraint('up', '=', 0);
+        $this->assertTrue($stat);
+        $this->assertEquals(1, $qb->count());
+    }
+
     public function test_aliased_fieldname()
     {
         self::$em->clear();
@@ -519,6 +536,5 @@ class midgard_query_builderTest extends testcase
         $qb = new \midgard_query_builder($classname);
         $qb->add_constraint('name_alias', '=', $topics[0]->name);
         $this->assertEquals(1, $qb->count());
-
     }
 }

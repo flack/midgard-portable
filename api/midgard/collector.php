@@ -61,19 +61,19 @@ class midgard_collector extends midgard_query_builder
 
     protected function build_property_select($property)
     {
-        $constraint_name = $this->build_constraint_name($property);
+        $parsed = $this->parse_constraint_name($property);
 
         // for properties like up.name
         if (   strpos($property, ".") !== false
             && !(strpos($property, "metadata") === 0))
         {
-            return $constraint_name . " as " . str_replace(".", "_", $property);
+            return $parsed['name'] . " as " . str_replace(".", "_", $property);
         }
 
         $cm = connection::get_em()->getClassMetadata($this->classname);
         if (array_key_exists($property, $cm->midgard['field_aliases']))
         {
-            return $constraint_name . " as " . str_replace(".", "_", $property);
+            return $parsed['name'] . " as " . str_replace(".", "_", $property);
         }
 
         // check for properties like up (link fields)
@@ -82,7 +82,7 @@ class midgard_collector extends midgard_query_builder
         // for simple fields we need no alias at all
         if (!$mrp->is_link($property))
         {
-            return $constraint_name;
+            return $parsed['name'];
         }
 
         $join_table = $this->add_join("c", $mrp, $property);

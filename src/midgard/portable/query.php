@@ -69,9 +69,9 @@ abstract class query
 
             if (strpos($name, '.') !== false)
             {
-                $a_name = $this->build_constraint_name($name);
-                list ($targetclass, $fieldname) = explode('.', $a_name);
-                $targetclass = 'midgard:' . array_search($targetclass, $this->join_tables);
+                $parsed = $this->parse_constraint_name($name);
+                $fieldname = $parsed['column'];
+                $targetclass = $parsed['targetclass'];
             }
 
             $mapping = connection::get_em()->getClassMetadata($targetclass)->getAssociationMapping($fieldname);
@@ -92,16 +92,16 @@ abstract class query
         }
 
         $this->parameters++;
-        $this->get_current_group()->add($this->build_where($name, $operator));
-
+        $this->get_current_group()->add($this->build_constraint($name, $operator, $value));
         $this->qb->setParameter($this->parameters, $value);
+
         return true;
     }
 
     public function add_order($name, $direction = 'ASC')
     {
-        $name = $this->build_constraint_name($name);
-        $this->qb->orderBy($name, $direction);
+        $parsed = $this->parse_constraint_name($name);
+        $this->qb->orderBy($parsed['name'], $direction);
         return true;
     }
 
@@ -220,29 +220,31 @@ abstract class query
         return $this->join_tables[$targetclass];
     }
 
-    protected function build_constraint_name($name)
+    protected function parse_constraint_name($name)
     {
         $current_table = 'c';
+        $targetclass = $this->classname;
 
         // metadata
         $name = str_replace('metadata.', 'metadata_', $name);
         $column = $name;
         if (strpos($name, ".") !== false)
         {
-            $mrp = new \midgard_reflection_property($this->classname);
-
             $parts = explode('.', $name);
             $column = array_pop($parts);
             foreach ($parts as $part)
             {
+                $mrp = new \midgard_reflection_property($targetclass);
+
                 if (!$mrp->is_link($part))
                 {
                     throw new \Exception($part . ' is not a link');
                 }
                 $targetclass = $mrp->get_link_name($part);
                 $current_table = $this->add_join($current_table, $mrp, $part);
-                $mrp = new \midgard_reflection_property($targetclass);
             }
+            // mrp only gives us non-namespaced classnames (TODO: verify), so we make it an alias
+            $targetclass = 'midgard:' . $targetclass;
         }
 
         $cm = connection::get_em()->getClassMetadata($this->classname);
@@ -251,12 +253,17 @@ abstract class query
             $column = $cm->midgard['field_aliases'][$column];
         }
 
-        return $current_table . '.' . $column;
+        return array
+        (
+            'name' => $current_table . '.' . $column,
+            'column' => $column,
+            'targetclass' => $targetclass
+        );
     }
 
-    protected function build_where($name, $operator)
+    protected function build_constraint($name, $operator, $value)
     {
-        $name = $this->build_constraint_name($name);
+        $parsed = $this->parse_constraint_name($name);
         $expression = $operator . ' ?' . $this->parameters;
 
         if (   $operator === 'IN'
@@ -264,9 +271,23 @@ abstract class query
         {
             $expression = $operator . '( ?' . $this->parameters . ')';
         }
-        return $name . ' ' . $expression;
-    }
 
+        if ($value === 0)
+        {
+            $cm = connection::get_em()->getClassMetadata($parsed['targetclass']);
+            if ($cm->hasAssociation($parsed['column']))
+            {
+                // TODO: there seems to be no way to make Doctrine accept default values for association fields,
+                // so we need a silly workaorund for existing DBs
+                $group = $this->qb->expr()->orX();
+                $group->add($parsed['name'] . ' ' . $expression);
+                $group->add($parsed['name'] . ' IS NULL');
+                return $group;
+            }
+        }
+
+        return $parsed['name'] . ' ' . $expression;
+    }
 
     protected function check_groups()
     {
