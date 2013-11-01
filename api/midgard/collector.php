@@ -76,17 +76,15 @@ class midgard_collector extends midgard_query_builder
             return $parsed['name'] . " as " . str_replace(".", "_", $property);
         }
 
-        // check for properties like up (link fields)
-        // up => j{num}.id as up
-        $mrp = new \midgard_reflection_property($this->classname);
-        // for simple fields we need no alias at all
-        if (!$mrp->is_link($property))
+        if (   $cm->hasAssociation($property)
+            && $cm->getName() == $parsed['targetclass'])
         {
-            return $parsed['name'];
+            $mrp = new \midgard_reflection_property($parsed['targetclass']);
+            $join_table = $this->add_join("c", $mrp, $property);
+            return $join_table . ".id as " . $property;
         }
 
-        $join_table = $this->add_join("c", $mrp, $property);
-        return $join_table . ".id as " . $property;
+        return $parsed['name'];
     }
 
     public function execute()

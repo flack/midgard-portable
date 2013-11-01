@@ -19,6 +19,8 @@ class midgard_collectorTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $classes = array(
             self::$em->getClassMetadata('midgard:midgard_topic'),
+            self::$em->getClassMetadata('midgard:midgard_user'),
+            self::$em->getClassMetadata('midgard:midgard_person'),
             self::$em->getClassMetadata('midgard:midgard_repligard'),
         );
         $tool->dropSchema($classes);
@@ -115,6 +117,27 @@ class midgard_collectorTest extends testcase
         $keys = $mc->list_keys();
         $this->assertEquals(1, count($keys));
         $this->assertEquals($topic->id, key($keys));
+    }
+
+    public function test_set_key_property_guid_link()
+    {
+        $person_class = self::$ns . '\\midgard_person';
+        $user_class = self::$ns . '\\midgard_user';
+
+        $person = new $person_class;
+        $person->create();
+
+        $user = new $user_class;
+        $user->authtype = 'Legacy';
+        $user->set_person($person);
+        $user->create();
+
+        $mc = new \midgard_collector($user_class, 'id', $user->id);
+        $mc->set_key_property('person');
+        $mc->execute();
+        $keys = $mc->list_keys();
+        $this->assertEquals(1, count($keys));
+        $this->assertEquals($person->guid, key($keys));
     }
 
     public function test_get()
