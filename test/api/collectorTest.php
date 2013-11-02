@@ -19,6 +19,7 @@ class midgard_collectorTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $classes = array(
             self::$em->getClassMetadata('midgard:midgard_topic'),
+            self::$em->getClassMetadata('midgard:midgard_article'),
             self::$em->getClassMetadata('midgard:midgard_user'),
             self::$em->getClassMetadata('midgard:midgard_person'),
             self::$em->getClassMetadata('midgard:midgard_repligard'),
@@ -33,6 +34,30 @@ class midgard_collectorTest extends testcase
         self::$_topic->title = uniqid("cT_mainTopic");
         self::$_topic->metadata_revision = 1;
         self::$_topic->create();
+    }
+
+    public function test_construct_with_association_id()
+    {
+        $topic_class = self::$ns . '\\midgard_topic';
+        $article_class = self::$ns . '\\midgard_article';
+
+        $topic = new $topic_class;
+        $topic->name = __FUNCTION__;
+        $topic->create();
+
+        $article = new $article_class;
+        $article->name = __FUNCTION__;
+        $article->topic = $topic->id;
+        $article->create();
+        self::$em->clear();
+
+        $mc = new \midgard_collector($article_class, 'topic', $topic->id);
+        $mc->add_constraint('up', '=', $article->up);
+        $mc->add_constraint('topic', '<>', 0);
+        $mc->execute();
+        $keys = $mc->list_keys();
+        $this->assertEquals(1, count($keys));
+        $this->assertEquals($article->guid, key($keys));
     }
 
     public function test_list_keys()
@@ -91,7 +116,7 @@ class midgard_collectorTest extends testcase
 
         // join field
         $this->assertTrue(array_key_exists("up", $result));
-        $this->assertEquals($result["up"], self::$_topic->id);
+        $this->assertSame($result["up"], self::$_topic->id);
 
         // properties of the linked object
         // in midgard this would have totally messed up the results

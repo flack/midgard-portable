@@ -96,17 +96,23 @@ class midgard_collector extends midgard_query_builder
         $results = $this->qb->getQuery()->getArrayResult();
         $this->post_execution();
 
+        $cm = connection::get_em()->getClassMetadata($this->classname);
         // map results by current key property
         $results_map = array();
         foreach ($results as $result)
         {
-            // for metadata fields remove the "metadata_" prefix
-            foreach ($result as $key => $value)
+            foreach ($result as $key => &$value)
             {
+                // for metadata fields remove the "metadata_" prefix
                 if (strpos($key, "metadata_") !== false)
                 {
                     $result[str_replace("metadata_", "", $key)] = $value;
                     unset($result[$key]);
+                }
+                // TODO: find out why Doctrine doesn't do this on its own
+                if ($cm->hasAssociation($key))
+                {
+                    $value = (int) $value;
                 }
             }
             $key = $result[$this->_key_property];

@@ -54,6 +54,7 @@ class objectTest extends testcase
         $topic->delete();
         $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
 
+        // try from identity map
         $e = null;
         try
         {
@@ -63,6 +64,18 @@ class objectTest extends testcase
 
         $this->assertInstanceOf('midgard_error_exception', $e);
         $this->assertEquals(MGD_ERR_OBJECT_DELETED, \midgard_connection::get_instance()->get_error());
+
+        // try from db
+        self::$em->clear();
+        $e = null;
+        try
+        {
+            $loaded = new $classname($topic->id);
+        }
+        catch ( \midgard_error_exception $e){}
+
+        $this->assertInstanceOf('midgard_error_exception', $e);
+        $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
     }
 
     public function test_load_purged()
@@ -119,6 +132,15 @@ class objectTest extends testcase
         $loaded->get_by_id($topic->id);
         $this->assertEquals($topic->id, $loaded->id);
         $this->assertEquals($topic->name, $loaded->name);
+    }
+
+    /**
+     * @expectedException midgard_error_exception
+     */
+    public function test_load_unknown_id()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname(999999999);
     }
 
     public function test_get_by_guid()
