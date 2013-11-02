@@ -66,6 +66,7 @@ abstract class object extends dbobject
     public function get_by_id($id)
     {
         $entity = connection::get_em()->find(get_class($this), $id);
+
         if ($entity === null)
         {
             throw exception::not_exists();
@@ -438,7 +439,7 @@ abstract class object extends dbobject
 
         $em = connection::get_em();
         $em->persist($parameter);
-        $em->flush();
+        $em->flush($parameter);
 
         return true;
     }
