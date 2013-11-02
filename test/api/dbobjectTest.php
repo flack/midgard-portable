@@ -36,12 +36,13 @@ class dbobjectTest extends testcase
     {
         $classname = self::$ns . '\\midgard_topic';
         $topic = new $classname;
-
         $topic->title = null;
         $topic->score = null;
         $topic->metadata_published = null;
+
         $this->assertSame('', $topic->title);
         $this->assertSame(0, $topic->score);
+        $this->assertSame(0, $topic->lang);
         $this->assertInstanceOf('midgard_datetime', $topic->metadata_published);
         $this->assertEquals('0001-01-01 00:00:00', $topic->metadata_published->format('Y-m-d H:i:s'));
     }

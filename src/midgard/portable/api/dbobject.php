@@ -88,12 +88,15 @@ abstract class dbobject implements ObjectManagerAware
             $field = $this->cm->midgard['field_aliases'][$field];
         }
 
-        // mgd api only allows returning link identifiers, doctrine has objects,
-        // so it seems we need a pretty useless conversion..
-        if (   $this->cm->isSingleValuedAssociation($field)
-            && is_object($this->$field))
+        if ($this->cm->isSingleValuedAssociation($field))
         {
-            return (int) $this->$field->id;
+            // mgd api only allows returning link identifiers, doctrine has objects,
+            // so it seems we need a pretty useless conversion..
+            if (is_object($this->$field))
+            {
+                return (int) $this->$field->id;
+            }
+            return 0;
         }
 
         return $this->$field;
