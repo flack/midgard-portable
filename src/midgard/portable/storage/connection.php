@@ -9,10 +9,12 @@ namespace midgard\portable\storage;
 
 use midgard\portable\driver;
 use midgard\portable\api\user;
+use midgard\portable\api\config;
 use midgard\portable\storage\type\datetime;
 use midgard\portable\storage\subscriber;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Types\Type;
+use midgard_connection;
 
 class connection
 {
@@ -82,5 +84,9 @@ class connection
         }
 
         self::$instance = new static($em);
+
+        $mgd_config = new config;
+        // TODO: Set config values from $config and $driver
+        midgard_connection::get_instance()->open_config($mgd_config);
     }
 }
