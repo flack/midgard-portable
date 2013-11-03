@@ -84,7 +84,7 @@ abstract class object extends dbobject
 
         $this->populate_from_entity($entity);
         \midgard_connection::get_instance()->set_error(MGD_ERR_OK);
-        return $this; // <== is this right?
+        return true;
     }
 
     public function get_by_guid($guid)
@@ -99,7 +99,7 @@ abstract class object extends dbobject
             throw exception::not_exists();
         }
         $this->populate_from_entity($entity);
-        return $this; // <== is this right?
+        return true;
     }
 
     public function update()

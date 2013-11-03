@@ -129,7 +129,8 @@ class objectTest extends testcase
         self::$em->clear();
 
         $loaded = new $classname;
-        $loaded->get_by_id($topic->id);
+        $stat = $loaded->get_by_id($topic->id);
+        $this->assertTrue($stat);
         $this->assertEquals($topic->id, $loaded->id);
         $this->assertEquals($topic->name, $loaded->name);
     }
@@ -152,7 +153,8 @@ class objectTest extends testcase
         self::$em->clear();
 
         $loaded = new $classname;
-        $loaded->get_by_guid($topic->guid);
+        $stat = $loaded->get_by_guid($topic->guid);
+        $this->assertTrue($stat);
         $this->assertEquals($topic->id, $loaded->id);
         $this->assertEquals($topic->name, $loaded->name);
     }
