@@ -376,6 +376,28 @@ class objectTest extends testcase
         $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
     }
 
+    public function test_get_by_path()
+    {
+        $classname = self::$ns . '\\midgard_snippetdir';
+        $sd = new $classname;
+        $sd->name = __FUNCTION__;
+        $sd->create();
+
+        $sd2 = new $classname;
+        $sd2->up = $sd->id;
+        $sd2->name = __FUNCTION__;
+        $sd2->create();
+
+        $x = new $classname;
+        $this->assertTrue($x->get_by_path('/' . $sd->name));
+        $this->assertEquals($sd->guid, $x->guid);
+        $this->assertTrue($x->get_by_path('/' . $sd->name . '/' . $sd2->name));
+        $this->assertEquals($sd2->guid, $x->guid);
+
+        $this->assertFalse($x->get_by_path('/' . $sd->name . '/nonexistant'));
+        $this->assertEquals('', $x->guid);
+    }
+
     private function get_topic_with_parameter()
     {
         $classname = self::$ns . '\\midgard_topic';

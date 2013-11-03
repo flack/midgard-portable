@@ -324,7 +324,81 @@ abstract class object extends dbobject
 
     public function get_by_path($path)
     {
-        return new static();
+        $parts = explode('/', trim($path, '/'));
+        if (empty($parts))
+        {
+            return false;
+        }
+        $this->initialize();
+
+        if (   count($this->cm->midgard['unique_fields']) != 1
+            || empty($this->cm->midgard['upfield']))
+        {
+            return false;
+        }
+        $field = $this->cm->midgard['unique_fields'][0];
+        $upfield = $this->cm->midgard['upfield'];
+
+        $name = array_pop($parts);
+        $up = 0;
+        foreach ($parts as $part)
+        {
+            $qb = $this->get_uniquefield_query($field, $part, $upfield, $up);
+            $qb->select("c.id");
+            $up = intval($qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR));
+            if ($up === 0)
+            {
+                exception::not_exists();
+                $this->id = 0;
+                $this->guid = '';
+                return false;
+            }
+        }
+
+        $qb = $this->get_uniquefield_query($field, $name, $upfield, $up);
+        $qb->select("c");
+        $entity = $qb->getQuery()->getOneOrNullResult();
+
+        if ($entity === null)
+        {
+            exception::not_exists();
+            $this->id = 0;
+            $this->guid = '';
+            return false;
+        }
+        $this->populate_from_entity($entity);
+
+        return true;
+    }
+
+    /**
+     * @return int
+     */
+    protected function get_uniquefield_query($field, $part, $upfield, $up)
+    {
+        $qb = connection::get_em()->createQueryBuilder();
+        $qb->from(get_class($this), 'c');
+        $conditions = $qb->expr()->andX();
+        $conditions->add($qb->expr()->eq('c.' . $field, ':' . $field));
+        $parameters = array
+        (
+            $field => $part
+        );
+
+        if (empty($up))
+        {
+            $conditions->add($qb->expr()->isNull('c.' . $upfield));
+        }
+        else
+        {
+            $conditions->add($qb->expr()->eq('c.' . $upfield, ':' . $upfield));
+            $parameters[$upfield] = $up;
+        }
+
+        $qb->where($conditions)
+            ->setParameters($parameters);
+
+        return $qb;
     }
 
     public function parent()
