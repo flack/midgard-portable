@@ -73,6 +73,16 @@ class userTest extends testcase
         $this->assertEquals($user, connection::get_user());
     }
 
+    public function test_is_admin()
+    {
+        $classname = self::$ns . '\\midgard_user';
+
+        $user = new $classname;
+        $this->assertFalse($user->is_admin());
+        $user->usertype = 2;
+        $this->assertTrue($user->is_admin());
+    }
+
     public function test_login_with_credentials()
     {
         $classname = self::$ns . '\\midgard_user';

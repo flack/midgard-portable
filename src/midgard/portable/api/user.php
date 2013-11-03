@@ -96,7 +96,7 @@ class user extends dbobject
 
     public function is_admin()
     {
-        return false;
+        return ($this->usertype == 2);
     }
 
     public function set_person(person $person)
