@@ -363,6 +363,17 @@ class objectTest extends testcase
         $stat = $sd3->create();
         $this->assertTrue($stat);
         $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
+
+        //Empty names don't trigger duplicate error for some reason
+        $sd4 = new $classname;
+        $stat = $sd4->create();
+        $this->assertTrue($stat);
+        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
+
+        $sd5 = new $classname;
+        $stat = $sd5->create();
+        $this->assertTrue($stat);
+        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
     }
 
     private function get_topic_with_parameter()

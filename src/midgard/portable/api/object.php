@@ -162,10 +162,22 @@ abstract class object extends dbobject
             );
             $conditions->add($qb->expr()->neq('c.id', ':id'));
         }
+        $found = false;
         foreach ($this->cm->midgard['unique_fields'] as $field)
         {
+            if (empty($this->$field))
+            {
+                //empty names automatically pass according to Midgard logic
+                continue;
+            }
             $conditions->add($qb->expr()->eq('c.' . $field, ':' . $field));
             $parameters[$field] = $this->$field;
+            $found = true;
+        }
+
+        if (!$found)
+        {
+            return true;
         }
 
         if (!empty($this->cm->midgard['upfield']))
