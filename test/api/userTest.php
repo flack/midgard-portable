@@ -8,6 +8,7 @@
 namespace midgard\portable\test;
 
 use midgard\portable\storage\connection;
+use midgard_connection;
 
 class userTest extends testcase
 {
@@ -38,6 +39,21 @@ class userTest extends testcase
         $stat = $user->create();
         $this->assertTrue($stat);
         $this->assertEquals($initial + 1, $this->count_results('midgard:midgard_user'));
+
+        $user2 = new $classname;
+        $user2->login = uniqid(__FUNCTION__);
+        $user2->password = 'x';
+        $user2->authtype = 'Legacy';
+        $stat = $user2->create();
+        $this->assertTrue($stat);
+
+        $user3 = new $classname;
+        $user3->login = $user2->login;
+        $user3->password = 'x';
+        $user3->authtype = 'Legacy';
+        $stat = $user3->create();
+        $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_DUPLICATE, midgard_connection::get_instance()->get_error());
     }
 
     public function test_update()

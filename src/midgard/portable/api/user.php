@@ -125,6 +125,11 @@ class user extends dbobject
         {
             return false;
         }
+        if (!$this->is_unique())
+        {
+            exception::duplicate();
+            return false;
+        }
         $this->guid = connection::generate_guid();
         try
         {
@@ -177,6 +182,40 @@ class user extends dbobject
             return false;
         }
 	    return true;
+    }
+
+    protected function is_unique()
+    {
+        if (   empty($this->login)
+            || empty($this->authtype))
+        {
+            return true;
+        }
+
+        $qb = connection::get_em()->createQueryBuilder();
+        $qb->from(get_class($this), 'c');
+        $conditions = $qb->expr()->andX();
+        $parameters = array
+        (
+            'login' => $this->login,
+            'authtype' => $this->authtype
+        );
+
+        if ($this->id)
+        {
+            $parameters['id'] = $this->id;
+            $conditions->add($qb->expr()->neq('c.id', ':id'));
+        }
+        $conditions->add($qb->expr()->eq('c.login', ':login'));
+        $conditions->add($qb->expr()->eq('c.authtype', ':authtype'));
+
+        $qb->where($conditions)
+            ->setParameters($parameters);
+
+        $qb->select("count(c)");
+        $count = intval($qb->getQuery()->getSingleScalarResult());
+
+        return ($count === 0);
     }
 }
 ?>
