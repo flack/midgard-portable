@@ -86,7 +86,11 @@ class connection
         self::$instance = new static($em);
 
         $mgd_config = new config;
-        // TODO: Set config values from $config and $driver
+        $mgd_config->vardir = $driver->get_vardir();
+        $mgd_config->cachedir = $mgd_config->vardir . '/cache';
+        $mgd_config->blobdir = $mgd_config->vardir . '/blobs';
+        $mgd_config->sharedir = $mgd_config->vardir . '/schemas';
+        // TODO: Set rest of config values from $config and $driver
         midgard_connection::get_instance()->open_config($mgd_config);
     }
 }

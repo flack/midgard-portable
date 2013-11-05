@@ -24,5 +24,9 @@ class connectionTest extends \PHPUnit_Framework_TestCase
         $config = midgard_connection::get_instance()->config;
 
         $this->assertInstanceOf('midgard_config', $config);
+        $this->assertEquals($tmpdir, $config->vardir);
+        $this->assertEquals($tmpdir . '/cache', $config->cachedir);
+        $this->assertEquals($tmpdir . '/blobs', $config->blobdir);
+        $this->assertEquals($tmpdir . '/schemas', $config->sharedir);
     }
 }

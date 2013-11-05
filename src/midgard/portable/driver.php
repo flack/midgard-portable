@@ -71,6 +71,11 @@ class driver implements driver_interface
         return $this->namespace;
     }
 
+    public function get_vardir()
+    {
+        return rtrim($this->vardir, '/');
+    }
+
     private function initialize()
     {
         $this->types = $this->manager->get_types();
