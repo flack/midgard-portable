@@ -28,6 +28,7 @@ class driver implements driver_interface
         'unsigned integer' => array('type' => dtype::INTEGER, 'default' => 0), // <== UNSIGNED in Doctrine\DBAL\Schema\Column
         'integer' => array('type' => dtype::INTEGER, 'default' => 0),
         'boolean' => array('type' => dtype::BOOLEAN, 'default' => false),
+        'bool' => array('type' => dtype::BOOLEAN, 'default' => false),
         'guid' => array('type' => dtype::STRING, 'length' => 80, 'default' => ''),
         'varchar(80)' => array('type' => dtype::STRING, 'length' => 80, 'default' => ''),
         'string' => array('type' => dtype::STRING, 'length' => 255, 'default' => ''),

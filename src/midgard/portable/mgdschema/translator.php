@@ -24,6 +24,7 @@ class translator
         'unsigned integer' => self::TYPE_UINT,
         'integer' => self::TYPE_INT,
         'boolean' => self::TYPE_BOOLEAN,
+        'bool' => self::TYPE_BOOLEAN,
         'guid' => self::TYPE_GUID,
         //'varchar(80)' => self::TYPE_GUID, // <== true for all cases?
         'string' => self::TYPE_STRING,
