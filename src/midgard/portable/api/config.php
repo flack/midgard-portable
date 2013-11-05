@@ -57,6 +57,19 @@ class config
 
     public function create_blobdir()
     {
+        $subdirs = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F');
+        foreach ($subdirs as $dir)
+        {
+            foreach ($subdirs as $subdir)
+            {
+                if (   !is_dir($this->blobdir . '/' . $dir . '/' . $subdir)
+                    && !mkdir($this->blobdir . '/' . $dir . '/' . $subdir, 0777, true))
+                {
+                    return false;
+                }
+            }
+        }
 
+        return true;
     }
 }
