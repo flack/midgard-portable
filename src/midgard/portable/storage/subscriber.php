@@ -119,7 +119,7 @@ class subscriber implements EventSubscriber
 
         $name = str_replace('.', '__', $table->getName());
         $queryFields = $platform->getColumnDeclarationListSQL($columns);
-        $queryFields = preg_replace('/^id INTEGER DEFAULT 0 NOT NULL/', 'id INTEGER PRIMARY KEY AUTOINCREMENT', $queryFields);
+        $queryFields = preg_replace('/^id INTEGER NOT NULL/', 'id INTEGER PRIMARY KEY AUTOINCREMENT', $queryFields);
 
         if (isset($options['uniqueConstraints']) && ! empty($options['uniqueConstraints']))
         {

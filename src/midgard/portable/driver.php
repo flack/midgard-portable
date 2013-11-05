@@ -202,6 +202,7 @@ class driver implements driver_interface
             if ($property->name == 'id')
             {
                 $mapping['id'] = true;
+                unset($mapping['default']);
             }
 
             $mapping['fieldName'] = $name;
