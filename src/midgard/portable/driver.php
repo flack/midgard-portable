@@ -39,7 +39,7 @@ class driver implements driver_interface
         'double' => array('type' => dtype::FLOAT, 'default' => 0.0)
     );
 
-    private $cachedir;
+    private $vardir;
 
     private $schemadirs;
 
@@ -49,10 +49,10 @@ class driver implements driver_interface
 
     private $manager;
 
-    public function __construct(array $schemadirs, $cachedir, $namespace = 'midgard\\portable\\entities')
+    public function __construct(array $schemadirs, $vardir, $namespace = 'midgard\\portable\\entities')
     {
         $this->manager = new manager($schemadirs, $namespace);
-        $this->cachedir = $cachedir . '/';
+        $this->vardir = $vardir . '/';
         $this->namespace = $namespace;
         $this->export_api();
     }
@@ -74,10 +74,10 @@ class driver implements driver_interface
     private function initialize()
     {
         $this->types = $this->manager->get_types();
-        $classgenerator = new classgenerator($this->manager, $this->cachedir . 'midgard_objects.php');
+        $classgenerator = new classgenerator($this->manager, $this->vardir . '/midgard_objects.php');
         $classgenerator->write($this->namespace);
 
-        include $this->cachedir . 'midgard_objects.php';
+        include $this->vardir . 'midgard_objects.php';
     }
 
     /**
