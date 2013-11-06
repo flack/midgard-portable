@@ -50,9 +50,11 @@ class config
         $mapping = array
         (
             'type' => 'dbtype',
+            'name' => 'database',
             'username' => 'dbuser',
             'password' => 'dbpass',
             'databasedir' => 'dbdir',
+            'logfilename' => 'logfile',
         );
 
         foreach ($config as $key => $value)
@@ -80,7 +82,60 @@ class config
 
     public function save_file($name, $user = true) // <== TODO: check
     {
+        if (!$user)
+        {
+            throw new Exception('Not implemented');
+        }
+        $prefix = getenv('HOME') . '/.midgard2/conf.d';
+        if (!file_exists($prefix))
+        {
+            mkdir($prefix, 0777, true);
+        }
+        $filename = $prefix . '/' . $name;
+        $contents = "[MidgardDir]\n\n";
+        $contents .= $this->convert_to_storage('ShareDir', $this->sharedir);
+        $contents .= $this->convert_to_storage('VarDir', $this->vardir);
+        $contents .= $this->convert_to_storage('BlobDir', $this->blobdir);
+        $contents .= $this->convert_to_storage('CacheDir', $this->cachedir);
+        $contents .= "[Midgarddatabase]\n\n";
+        $contents .= $this->convert_to_storage('Type', $this->dbtype);
+        $contents .= $this->convert_to_storage('Host', $this->host);
+        $contents .= $this->convert_to_storage('Port', $this->port);
+        $contents .= $this->convert_to_storage('Name', $this->database);
+        $contents .= $this->convert_to_storage('Username', $this->dbuser);
+        $contents .= $this->convert_to_storage('Password', $this->dbpass);
+        $contents .= $this->convert_to_storage('DatabaseDir', $this->dbdir);
+        $contents .= "DefaultLanguage = pl\n\n";
+        $contents .= $this->convert_to_storage('Logfile', $this->logfilename);
+        $contents .= $this->convert_to_storage('Loglevel', $this->loglevel);
+        $contents .= $this->convert_to_storage('TableCreate', $this->tablecreate);
+        $contents .= $this->convert_to_storage('TableUpdate', $this->tableupdate);
+        $contents .= $this->convert_to_storage('TestUnit', $this->testunit);
+        $contents .= $this->convert_to_storage('MidgardUsername', $this->midgardusername);
+        $contents .= $this->convert_to_storage('MidgardPassword', $this->midgardpassword);
+        $contents .= $this->convert_to_storage('AuthType', $this->authtype);
+        $contents .= $this->convert_to_storage('PamFile', $this->pamfile);
+        $contents .= $this->convert_to_storage('GdaThreads', $this->gdathreads);
 
+        $stat = file_put_contents($filename, $contents);
+        if ($stat === false)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private function convert_to_storage($key, $value)
+    {
+        if (is_bool($value))
+        {
+            $value = ($value) ? 'true' : 'false';
+        }
+        else if ($value === '')
+        {
+            $value = '""';
+        }
+        return $key . ' = ' . $value . "\n\n";
     }
 
     public function read_data($data)

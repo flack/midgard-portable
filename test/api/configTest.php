@@ -48,4 +48,20 @@ class configTest extends testcase
         $this->assertEquals('/tmp/dbdir', $config->dbdir);
         $this->assertTrue($config->tablecreate);
     }
+
+    public function test_save_file()
+    {
+        $config = new config;
+        $config->tablecreate = true;
+        $config->database = 'test';
+        $filename = uniqid(__FUNCTION__);
+        $path = getenv('HOME') . '/.midgard2/conf.d/' . $filename;
+        $this->assertTrue($config->save_file($filename));
+        $this->assertFileExists($path);
+
+        $this->assertTrue($config->read_file_at_path($path));
+        $this->assertTrue($config->tablecreate);
+        $this->assertEquals('test', $config->database);
+        unlink ($path);
+    }
 }
