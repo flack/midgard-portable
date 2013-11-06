@@ -19,7 +19,11 @@ class midgard_storage
         $tables = array();
         foreach ($classes as $class)
         {
-            self::create_class_storage($class->getName());
+            $stat = self::create_class_storage($class->getName());
+            if (!$stat)
+            {
+                return false;
+            }
         }
 
         $admin = $em->find('midgard:midgard_user', 1);
@@ -51,8 +55,12 @@ class midgard_storage
     {
         $em = connection::get_em();
         $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
-        $factory = $em->getMetadataFactory();
-        $cm = $factory->getMetadataFor($classname);
+
+        $cm = self::get_cm($em, $classname);
+        if ($cm === false)
+        {
+            return false;
+        }
 
         if (!$em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName())))
         {
@@ -61,8 +69,40 @@ class midgard_storage
         return true;
     }
 
+    private static function get_cm($em, $classname)
+    {
+        $factory = $em->getMetadataFactory();
+        if (!$factory->hasMetadataFor($classname))
+        {
+            $factory->getAllMetadata();
+        }
+        if (!$factory->hasMetadataFor($classname))
+        {
+            $classname = $em->getConfiguration()->getEntityNamespace("midgard") . '\\' . $classname;
+        }
+        if (!$factory->hasMetadataFor($classname))
+        {
+            return false;
+        }
+        return $factory->getMetadataFor($classname);
+    }
+
     public static function update_class_storage($classname)
     {
+        $em = connection::get_em();
+        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
+
+        $cm = self::get_cm($em, $classname);
+        if ($cm === false)
+        {
+            return false;
+        }
+
+        if ($em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName())))
+        {
+            $tool->updateSchema(array($cm));
+            return true;
+        }
         return false;
     }
 
@@ -73,6 +113,20 @@ class midgard_storage
 
     public static function class_storage_exists($classname)
     {
-        return false;
+        $em = connection::get_em();
+        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
+        $factory = $em->getMetadataFactory();
+        if (!$factory->hasMetadataFor($classname))
+        {
+            $classname = $em->getConfiguration()->getEntityNamespace("midgard") . '\\' . $classname;
+        }
+        if (!$factory->hasMetadataFor($classname))
+        {
+            return false;
+        }
+
+        $cm = $factory->getMetadataFor($classname);
+
+        return $em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName()));
     }
 }
