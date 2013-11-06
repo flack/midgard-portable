@@ -37,4 +37,15 @@ class configTest extends testcase
         $this->assertTrue($config->create_blobdir());
         $this->assertFileExists($this->directory . '/E/0');
     }
+
+    public function test_read_file_at_path()
+    {
+        $config = new config;
+        $this->assertTrue($config->read_file_at_path(TESTDIR . '__files/config/example'));
+
+        $this->assertEquals('MySQL', $config->dbtype);
+        $this->assertEquals('/tmp/blobs', $config->blobdir);
+        $this->assertEquals('/tmp/dbdir', $config->dbdir);
+        $this->assertTrue($config->tablecreate);
+    }
 }

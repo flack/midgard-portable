@@ -32,7 +32,45 @@ class config
 
     public function read_file_at_path($path)
     {
+        if (   !file_exists($path)
+            || !is_readable($path))
+        {
+            return false;
+        }
+        $parsed = parse_ini_file($path);
 
+        $this->apply_config($parsed);
+
+        return true;
+    }
+
+    // TODO: find out if this could be moved to read_data()
+    private function apply_config(array $config)
+    {
+        $mapping = array
+        (
+            'type' => 'dbtype',
+            'username' => 'dbuser',
+            'password' => 'dbpass',
+            'databasedir' => 'dbdir',
+        );
+
+        foreach ($config as $key => $value)
+        {
+            $key = strtolower($key);
+            if (array_key_exists($key, $mapping))
+            {
+                $key = $mapping[$key];
+            }
+            if (property_exists($this, $key))
+            {
+                if (is_bool($this->$key))
+                {
+                    $value = (boolean) $value;
+                }
+                $this->$key = $value;
+            }
+        }
     }
 
     public function read_file($name, $user = true) // <== TODO: check
