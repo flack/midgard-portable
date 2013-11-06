@@ -19,12 +19,7 @@ class midgard_storage
         $tables = array();
         foreach ($classes as $class)
         {
-            $tables[] = $class->getTableName();
-        }
-
-        if (!$em->getConnection()->getSchemaManager()->tablesExist($tables))
-        {
-            $tool->createSchema($classes);
+            self::create_class_storage($class->getName());
         }
 
         $admin = $em->find('midgard:midgard_user', 1);
@@ -54,7 +49,16 @@ class midgard_storage
 
     public static function create_class_storage($classname)
     {
-        return false;
+        $em = connection::get_em();
+        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
+        $factory = $em->getMetadataFactory();
+        $cm = $factory->getMetadataFor($classname);
+
+        if (!$em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName())))
+        {
+            $tool->createSchema(array($cm));
+        }
+        return true;
     }
 
     public static function update_class_storage($classname)

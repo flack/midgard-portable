@@ -30,4 +30,11 @@ class midgard_storageTest extends testcase
         $this->assertEquals(2, $admin->usertype);
         $this->assertTrue(midgard_storage::create_base_storage());
     }
+
+    public function test_create_class_storage()
+    {
+        $this->assertTrue(midgard_storage::create_base_storage('midgard_topic'));
+        $this->assertTrue(midgard_storage::create_base_storage('midgard_topic'));
+        $this->assertTrue(self::$em->getConnection()->getSchemaManager()->tablesExist(array('topic')));
+    }
 }
