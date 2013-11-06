@@ -6,6 +6,8 @@
  */
 
 use midgard\portable\storage\connection;
+use midgard\portable\api\error\exception;
+use Doctrine\ORM\Query;
 
 class midgard_object_class
 {
@@ -28,7 +30,20 @@ class midgard_object_class
             ->select('r.typename')
             ->where('r.guid = ?1')
             ->setParameter(1, $guid);
-        $type = $qb->getQuery()->getSingleScalarResult();
+
+        // workaround for http://www.doctrine-project.org/jira/browse/DDC-2655
+        try
+        {
+            $type = $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR);
+        }
+        catch (\Doctrine\ORM\NoResultException $e)
+        {
+            $type = null;
+        }
+        if ($type === null)
+        {
+            throw exception::not_exists();
+        }
         return self::factory($type, $guid);
     }
 
