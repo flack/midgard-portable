@@ -60,7 +60,7 @@ class midgard_connection
 
     public function is_connected()
     {
-        return false;
+        return is_object($this->config);
     }
 
     public function connect($signal, $callback, $userdata = '???' )
