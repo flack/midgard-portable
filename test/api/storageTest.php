@@ -28,5 +28,6 @@ class midgard_storageTest extends testcase
         );
         $admin = new $fqcn($tokens);
         $this->assertEquals(2, $admin->usertype);
+        $this->assertTrue(midgard_storage::create_base_storage());
     }
 }

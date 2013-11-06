@@ -15,7 +15,17 @@ class midgard_storage
         $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
         $factory = $em->getMetadataFactory();
         $classes = $factory->getAllMetadata();
-        $tool->createSchema($classes);
+
+        $tables = array();
+        foreach ($classes as $class)
+        {
+            $tables[] = $class->getTableName();
+        }
+
+        if (!$em->getConnection()->getSchemaManager()->tablesExist($tables))
+        {
+            $tool->createSchema($classes);
+        }
 
         $admin = $em->find('midgard:midgard_user', 1);
 
