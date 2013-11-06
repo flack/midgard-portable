@@ -77,16 +77,27 @@ class config
 
     public function read_file($name, $user = true) // <== TODO: check
     {
-
+        if (!$user)
+        {
+            $prefix = '/etc/midgard2/conf.d';
+        }
+        else
+        {
+            $prefix = getenv('HOME') . '/.midgard2/conf.d';
+        }
+        return $this->read_file_at_path($prefix . '/' . $name);
     }
 
     public function save_file($name, $user = true) // <== TODO: check
     {
         if (!$user)
         {
-            throw new Exception('Not implemented');
+            $prefix = '/etc/midgard2/conf.d';
         }
-        $prefix = getenv('HOME') . '/.midgard2/conf.d';
+        else
+        {
+            $prefix = getenv('HOME') . '/.midgard2/conf.d';
+        }
         if (!file_exists($prefix))
         {
             mkdir($prefix, 0777, true);
