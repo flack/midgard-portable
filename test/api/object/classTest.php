@@ -50,6 +50,17 @@ class classTest extends testcase
 
         $object = midgard_object_class::get_object_by_guid($topic->guid);
         $this->assertInstanceOf($classname, $object);
+
+        $e = null;
+        try
+        {
+            $object = midgard_object_class::get_object_by_guid('111111111111111111111111111111111111111111111111111');
+        }
+        catch (\midgard_error_exception $e)
+        {
+        }
+        $this->assertInstanceOf('midgard_error_exception', $e);
+        $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
     }
 
     public function test_get_property_up()
