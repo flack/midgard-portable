@@ -12,8 +12,11 @@ use midgard\portable\storage\metadata\entity;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Events as dbal_events;
 use Doctrine\DBAL\Event\SchemaCreateTableEventArgs;
+use Doctrine\DBAL\Event\SchemaColumnDefinitionEventArgs;
 use midgard_repligard;
 
 class subscriber implements EventSubscriber
@@ -103,7 +106,7 @@ class subscriber implements EventSubscriber
 
     /**
      * This is essentially a workaround for http://www.doctrine-project.org/jira/browse/DBAL-642
-     * It makes sure we get auto increment behavior similar to msyql (i.e. IDs unique during table' lifetime)
+     * It makes sure we get auto increment behavior similar to msyql (i.e. IDs unique during table's lifetime)
      */
     public function onSchemaCreateTable(SchemaCreateTableEventArgs $args)
     {
@@ -162,8 +165,33 @@ class subscriber implements EventSubscriber
         return;
     }
 
+    /**
+     * This is a workaround for ENUM fields read from existing Midgard databases,
+     * Like in the XML reader, they are converted to string for now
+     */
+    public function onSchemaColumnDefinition(SchemaColumnDefinitionEventArgs $args)
+    {
+        $column = array_change_key_case($args->getTableColumn(), CASE_LOWER);
+        $type = strtok($column['type'], '()');
+        if ($type == 'enum')
+        {
+            $args->preventDefault();
+
+            $options = array
+            (
+                'length' => 255,
+                'default' => isset($column['default']) ? $column['default'] : null,
+                'notnull' => (bool) ($column['null'] != 'YES'),
+                'comment' => $column['type']
+            );
+
+            $args->setColumn(new Column($column['field'], Type::getType(Type::STRING), $options));
+        }
+    }
+
     public function getSubscribedEvents()
     {
-        return array(Events::prePersist, Events::preUpdate, Events::preRemove, dbal_events::onSchemaCreateTable);
+        return array(Events::prePersist, Events::preUpdate, Events::preRemove,
+                     dbal_events::onSchemaCreateTable, dbal_events::onSchemaColumnDefinition);
     }
 }
