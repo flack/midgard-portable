@@ -22,9 +22,9 @@ class midgard_collector extends midgard_query_builder
      *
      * @var string
      */
-    private $_key_property = "guid";
+    private $key_property = "guid";
 
-    private $_value_properties = array("c.guid");
+    private $value_properties = array("c.guid");
 
     function __construct($class, $field, $value)
     {
@@ -39,8 +39,8 @@ class midgard_collector extends midgard_query_builder
         {
             return false;
         }
-        $this->_key_property = $property;
-        $this->add_value_property($this->_key_property);
+        $this->key_property = $property;
+
         return true;
     }
 
@@ -52,9 +52,9 @@ class midgard_collector extends midgard_query_builder
         }
 
         $property = $this->build_property_select($property);
-        if (!isset($this->_value_properties[$property]))
+        if (!isset($this->value_properties[$property]))
         {
-            $this->_value_properties[] = $property;
+            $this->value_properties[] = $property;
         }
         return true;
     }
@@ -91,7 +91,13 @@ class midgard_collector extends midgard_query_builder
             return false;
         }
         $this->check_groups();
-        $this->qb->select(implode(", ", $this->_value_properties));
+        $properties = $this->value_properties;
+        if (!isset($this->value_properties[$this->key_property]))
+        {
+            $properties[] = $this->build_property_select($this->key_property);
+        }
+
+        $this->qb->select(implode(", ", $properties));
         $this->pre_execution();
         $results = $this->qb->getQuery()->getArrayResult();
         $this->post_execution();
@@ -115,10 +121,7 @@ class midgard_collector extends midgard_query_builder
                     $value = (int) $value;
                 }
             }
-            $key = $result[$this->_key_property];
-
-            unset($result[$this->_key_property]);
-            $results_map[$key] = $result;
+            $results_map[$result[$this->key_property]] = $result;
         }
 
         $this->_results = $results_map;

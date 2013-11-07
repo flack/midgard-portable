@@ -93,6 +93,7 @@ class midgard_collectorTest extends testcase
         // without adding a value property
         $mc = new \midgard_collector($classname, 'id', $child_topic->id);
         $mc->add_value_property("name");
+        $mc->add_value_property("guid");
         $mc->add_value_property("metadata.revision");
 
         $mc->add_value_property("up");
@@ -104,27 +105,31 @@ class midgard_collectorTest extends testcase
         $result = $mc->get(key($keys));
 
         // existing property
-        $this->assertTrue(array_key_exists("name", $result));
+        $this->assertArrayHasKey("name", $result);
         $this->assertEquals($result["name"], $child_topic->name);
 
+        // guid property
+        $this->assertArrayHasKey("guid", $result);
+        $this->assertEquals($result["guid"], $child_topic->guid);
+
         // non existing property
-        $this->assertFalse(array_key_exists("extra", $result));
+        $this->assertArrayNotHasKey("extra", $result);
 
         // metadata property
-        $this->assertTrue(array_key_exists("revision", $result));
+        $this->assertArrayHasKey("revision", $result);
         $this->assertEquals($result["revision"], $child_topic->metadata_revision);
 
         // join field
-        $this->assertTrue(array_key_exists("up", $result));
+        $this->assertArrayHasKey("up", $result);
         $this->assertSame($result["up"], self::$_topic->id);
 
         // properties of the linked object
         // in midgard this would have totally messed up the results
-        $this->assertTrue(array_key_exists("up_name", $result));
+        $this->assertArrayHasKey("up_name", $result);
         $this->assertEquals($result["up_name"], self::$_topic->name);
 
         // combined with metadata property
-        $this->assertTrue(array_key_exists("up_revision", $result));
+        $this->assertArrayHasKey("up_revision", $result);
         $this->assertEquals($result["up_revision"], self::$_topic->metadata_revision);
     }
 
