@@ -639,5 +639,17 @@ class objectTest extends testcase
         $this->assertEquals(0, count($results), "Found a purged parameter");
     }
 
+    public function test_new_collector()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $mc = $classname::new_collector('id', 1);
+        $this->assertInstanceOf('midgard_collector', $mc);
+    }
 
+    public function test_new_query_builder()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $qb = $classname::new_query_builder();
+        $this->assertInstanceOf('midgard_query_builder', $qb);
+    }
 }

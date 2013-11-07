@@ -616,7 +616,7 @@ abstract class object extends dbobject
 
     public static function new_query_builder()
     {
-        return new \midgard_collector(get_called_class());
+        return new \midgard_query_builder(get_called_class());
     }
 
     public static function new_collector($field, $value)
