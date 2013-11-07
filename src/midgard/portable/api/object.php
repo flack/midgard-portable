@@ -18,8 +18,6 @@ abstract class object extends dbobject
 {
     public $action = ''; // <== does this need to do anything?
 
-    protected $schema_type;
-
     /**
      *
      * @param mixed $id ID or GUID
@@ -37,6 +35,15 @@ abstract class object extends dbobject
                 $this->get_by_guid($id);
             }
         }
+    }
+
+    public function __set($field, $value)
+    {
+        if ($field == 'guid')
+        {
+            return;
+        }
+        parent::__set($field, $value);
     }
 
     public function __get($field)
@@ -127,7 +134,7 @@ abstract class object extends dbobject
         {
             return false;
         }
-        $this->guid = connection::generate_guid();
+        $this->set_guid(connection::generate_guid());
         try
         {
             connection::get_em()->persist($this);
@@ -350,7 +357,7 @@ abstract class object extends dbobject
             {
                 exception::not_exists();
                 $this->id = 0;
-                $this->guid = '';
+                $this->set_guid('');
                 return false;
             }
         }
@@ -363,7 +370,7 @@ abstract class object extends dbobject
         {
             exception::not_exists();
             $this->id = 0;
-            $this->guid = '';
+            $this->set_guid('');
             return false;
         }
         $this->populate_from_entity($entity);
@@ -631,7 +638,7 @@ abstract class object extends dbobject
 
     public function set_guid($guid)
     {
-        return false;
+        parent::__set('guid', $guid);
     }
 
     public function emit($signal)

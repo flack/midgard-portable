@@ -129,7 +129,7 @@ abstract class dbobject implements ObjectManagerAware
         $em = connection::get_em();
         $fqn = $em->getConfiguration()->getEntityNamespace("midgard") . "\\" . $classname;
         $entity = new $fqn;
-        $entity->guid = connection::generate_guid();
+        $entity->set_guid(connection::generate_guid());
         return $entity;
     }
 

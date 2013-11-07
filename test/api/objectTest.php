@@ -652,4 +652,14 @@ class objectTest extends testcase
         $qb = $classname::new_query_builder();
         $this->assertInstanceOf('midgard_query_builder', $qb);
     }
+
+    public function test_set_guid()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $topic->guid = 'test';
+        $this->assertEquals('', $topic->guid);
+        $topic->set_guid('test');
+        $this->assertEquals('test', $topic->guid);
+    }
 }
