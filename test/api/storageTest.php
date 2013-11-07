@@ -40,13 +40,18 @@ class midgard_storageTest extends testcase
 
     public function test_update_class_storage()
     {
-        $this->assertTrue(midgard_storage::create_class_storage('midgard_topic'));
+        midgard_storage::create_base_storage();
+
         $cm = self::$em->getMetadataFactory()->getMetadataFor('midgard:midgard_topic');
         $cm->mapField(array('type' => 'string', 'fieldName' => 'testproperty'));
+
+        $this->assertTrue(midgard_storage::update_class_storage('midgard_topic'));
         $this->assertTrue(midgard_storage::update_class_storage('midgard_topic'));
 
         $table = self::$em->getConnection()->getSchemaManager()->createSchema()->getTable('topic');
         $this->assertTrue($table->hasColumn('testproperty'));
+
+        $this->assertTrue(self::$em->getConnection()->getSchemaManager()->tablesExist(array('midgard_user')));
     }
 
     public function test_class_storage_exists()

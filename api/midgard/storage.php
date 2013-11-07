@@ -100,7 +100,7 @@ class midgard_storage
 
         if ($em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName())))
         {
-            $tool->updateSchema(array($cm));
+            $tool->updateSchema(array($cm), true);
             return true;
         }
         return false;
