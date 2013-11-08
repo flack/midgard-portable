@@ -6,6 +6,7 @@
  */
 
 namespace midgard\portable\test;
+use midgard\portable\storage\connection;
 
 class objectTest extends testcase
 {
@@ -656,10 +657,13 @@ class objectTest extends testcase
     public function test_set_guid()
     {
         $classname = self::$ns . '\\midgard_topic';
+        $guid = connection::generate_guid();
         $topic = new $classname;
-        $topic->guid = 'test';
+        $topic->guid = $guid;
         $this->assertEquals('', $topic->guid);
-        $topic->set_guid('test');
-        $this->assertEquals('test', $topic->guid);
+        $topic->set_guid($guid);
+        $this->assertEquals($guid, $topic->guid);
+        $this->assertTrue($topic->create());
+        $this->assertEquals($guid, $topic->guid);
     }
 }

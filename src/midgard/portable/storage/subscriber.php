@@ -35,6 +35,10 @@ class subscriber implements EventSubscriber
         $repligard_class = $em->getClassMetadata('midgard:midgard_repligard')->getName();
         if (!($entity instanceof $repligard_class))
         {
+            if (empty($entity->guid))
+            {
+                $entity->set_guid(connection::generate_guid());
+            }
             $ref = $em->getClassMetadata(get_class($entity))->getReflectionClass();
             $repligard_entry = new $repligard_class;
             $repligard_entry->guid = $entity->guid;

@@ -134,7 +134,6 @@ abstract class object extends dbobject
         {
             return false;
         }
-        $this->set_guid(connection::generate_guid());
         try
         {
             connection::get_em()->persist($this);
