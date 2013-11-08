@@ -134,6 +134,16 @@ class objectTest extends testcase
         $this->assertTrue($stat);
         $this->assertEquals($topic->id, $loaded->id);
         $this->assertEquals($topic->name, $loaded->name);
+
+        self::$em->clear();
+        // Getting the reference now means we will get a proxy later from get_by_id
+        $ref = self::$em->getReference($classname, $topic->id);
+
+        $loaded = new $classname;
+        $stat = $loaded->get_by_id($topic->id);
+        $this->assertTrue($stat);
+        $this->assertEquals($topic->id, $loaded->id);
+        $this->assertEquals($topic->name, $loaded->name);
     }
 
     /**

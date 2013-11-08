@@ -78,6 +78,20 @@ abstract class object extends dbobject
         {
             throw exception::not_exists();
         }
+        // According to Doctrine documentation, proxies should be transparent, but in practice,
+        // there will be problems if we don't force-load
+        if (   $entity instanceof \Doctrine\ORM\Proxy\Proxy
+            && !$entity->__isInitialized())
+        {
+            try
+            {
+                $entity->__load();
+            }
+            catch (\Doctrine\ORM\EntityNotFoundException $e)
+            {
+                throw exception::object_purged();
+            }
+        }
         if ($entity->metadata_deleted)
         {
             // This can happen when the "deleted" entity is still in EM's identity map
