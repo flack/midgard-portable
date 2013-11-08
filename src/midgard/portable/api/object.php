@@ -351,19 +351,35 @@ abstract class object extends dbobject
         }
         $this->initialize();
 
-        if (   count($this->cm->midgard['unique_fields']) != 1
-            || empty($this->cm->midgard['upfield']))
+        if (count($this->cm->midgard['unique_fields']) != 1)
         {
             return false;
         }
         $field = $this->cm->midgard['unique_fields'][0];
-        $upfield = $this->cm->midgard['upfield'];
+
+        if (!empty($this->cm->midgard['parent']))
+        {
+            $parent_cm = connection::get_em()->getClassMetadata('midgard:' . $this->cm->midgard['parent']);
+            $parentclass = $this->cm->fullyQualifiedClassName($this->cm->midgard['parent']);
+            $parentfield = $parent_cm->midgard['upfield'];
+            $upfield = $this->cm->midgard['parentfield'];
+        }
+        else if (!empty($this->cm->midgard['upfield']))
+        {
+            $parentclass = get_class($this);
+            $upfield = $this->cm->midgard['upfield'];
+            $parentfield = $upfield;
+        }
+        else
+        {
+            return false;
+        }
 
         $name = array_pop($parts);
         $up = 0;
         foreach ($parts as $part)
         {
-            $qb = $this->get_uniquefield_query($field, $part, $upfield, $up);
+            $qb = $this->get_uniquefield_query($parentclass, $field, $part, $parentfield, $up);
             $qb->select("c.id");
             $up = intval($qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR));
             if ($up === 0)
@@ -375,7 +391,7 @@ abstract class object extends dbobject
             }
         }
 
-        $qb = $this->get_uniquefield_query($field, $name, $upfield, $up);
+        $qb = $this->get_uniquefield_query(get_class($this), $field, $name, $upfield, $up);
         $qb->select("c");
         $entity = $qb->getQuery()->getOneOrNullResult();
 
@@ -394,10 +410,10 @@ abstract class object extends dbobject
     /**
      * @return int
      */
-    protected function get_uniquefield_query($field, $part, $upfield, $up)
+    protected function get_uniquefield_query($classname, $field, $part, $upfield, $up)
     {
         $qb = connection::get_em()->createQueryBuilder();
-        $qb->from(get_class($this), 'c');
+        $qb->from($classname, 'c');
         $conditions = $qb->expr()->andX();
         $conditions->add($qb->expr()->eq('c.' . $field, ':' . $field));
         $parameters = array

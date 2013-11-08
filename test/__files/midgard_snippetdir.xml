@@ -13,4 +13,22 @@
         </property>
     </type>
 
+    <type name="midgard_snippet" table="snippet" parent="midgard_snippetdir">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="name" type="string" index="yes" unique="yes">
+            <description>Path name of the snippet</description>
+        </property>
+        <property name="snippetdir" type="unsigned integer" link="midgard_snippetdir:id" parentfield="snippetdir">
+            <description>Snippetdir the snippet is under</description>
+        </property>
+        <property name="code" type="text">
+            <description>Code of the snippet</description>
+        </property>
+        <property name="doc" type="text">
+            <description>Documentation of the snippet</description>
+        </property>
+    </type>
+
 </Schema>

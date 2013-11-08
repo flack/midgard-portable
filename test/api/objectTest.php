@@ -399,6 +399,12 @@ class objectTest extends testcase
         $sd2->name = __FUNCTION__;
         $sd2->create();
 
+        $s_classname = self::$ns . '\\midgard_snippet';
+        $sn = new $s_classname;
+        $sn->snippetdir = $sd->id;
+        $sn->name = __FUNCTION__ . '-snippet';
+        $sn->create();
+
         $x = new $classname;
         $this->assertTrue($x->get_by_path('/' . $sd->name));
         $this->assertEquals($sd->guid, $x->guid);
@@ -407,6 +413,10 @@ class objectTest extends testcase
 
         $this->assertFalse($x->get_by_path('/' . $sd->name . '/nonexistant'));
         $this->assertEquals('', $x->guid);
+
+        $x = new $s_classname;
+        $this->assertTrue($x->get_by_path('/' . $sd->name . '/' . $sn->name));
+        $this->assertEquals($sn->guid, $x->guid);
     }
 
     private function get_topic_with_parameter()

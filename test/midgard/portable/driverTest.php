@@ -19,7 +19,7 @@ class driverTest extends testcase
         $driver = new driver(array(TESTDIR . '__files/'), $d, $ns);
         $classnames = $driver->getAllClassNames();
         $this->assertInternalType('array', $classnames);
-        $this->assertEquals(9, count($classnames));
+        $this->assertEquals(10, count($classnames));
 
         foreach ($classnames as $classname)
         {
