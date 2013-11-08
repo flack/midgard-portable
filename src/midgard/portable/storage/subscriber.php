@@ -50,7 +50,9 @@ class subscriber implements EventSubscriber
         if ($entity instanceof entity)
         {
             $entity->metadata->created = new \midgard_datetime();
-            $entity->metadata->revised = new \midgard_datetime();
+            // we copy here instead of creating a new, because otherwise we might have
+            // a one second difference if the code runs at the right millisecond
+            $entity->metadata->revised = $entity->metadata->created;
             $user = connection::get_user();
             if ($user !== null)
             {
