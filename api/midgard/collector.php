@@ -24,7 +24,7 @@ class midgard_collector extends midgard_query_builder
      */
     private $key_property = "guid";
 
-    private $value_properties = array("c.guid");
+    private $value_properties = array();
 
     function __construct($class, $field, $value)
     {

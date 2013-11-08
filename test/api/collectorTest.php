@@ -143,7 +143,8 @@ class midgard_collectorTest extends testcase
         $this->assertTrue($mc->add_value_property("name"));
         $ref = new \ReflectionClass($mc);
         $properties = $ref->getProperty('value_properties');
-        $this->assertEquals(1, count($properties));
+        $properties->setAccessible(true);
+        $this->assertEquals(1, count($properties->getValue($mc)));
     }
 
     public function test_set_key_property()
