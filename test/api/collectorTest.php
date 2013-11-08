@@ -133,6 +133,19 @@ class midgard_collectorTest extends testcase
         $this->assertEquals($result["up_revision"], self::$_topic->metadata_revision);
     }
 
+    public function test_add_value_property_twice()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $mc = new \midgard_collector($classname, 'up', 0);
+        $this->assertTrue($mc->set_key_property("name"));
+        $this->assertTrue($mc->add_value_property("name"));
+        $this->assertTrue($mc->add_value_property("name"));
+        $ref = new \ReflectionClass($mc);
+        $properties = $ref->getProperty('value_properties');
+        $this->assertEquals(1, count($properties));
+    }
+
     public function test_set_key_property()
     {
         $classname = self::$ns . '\\midgard_topic';

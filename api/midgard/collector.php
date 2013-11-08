@@ -51,10 +51,10 @@ class midgard_collector extends midgard_query_builder
             return false;
         }
 
-        $property = $this->build_property_select($property);
+        $property_select = $this->build_property_select($property);
         if (!isset($this->value_properties[$property]))
         {
-            $this->value_properties[] = $property;
+            $this->value_properties[$property] = $property_select;
         }
         return true;
     }
