@@ -5,6 +5,7 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
 
+use Doctrine\Common\Util\ClassUtils;
 use midgard\portable\storage\connection;
 use midgard\portable\mgdschema\translator;
 
@@ -18,12 +19,14 @@ class midgard_reflection_property
 
     public function __construct($mgdschema_class)
     {
+        // we might get a proxy class, so we need to translate
+        $classname = ClassUtils::getRealClass($mgdschema_class);
         $cmf = connection::get_em()->getMetadataFactory();
-        if (!$cmf->hasMetadataFor($mgdschema_class))
+        if (!$cmf->hasMetadataFor($classname))
         {
-            $mgdschema_class = 'midgard:' . $mgdschema_class;
+            $classname = 'midgard:' . $mgdschema_class;
         }
-        $this->cm = $cmf->getMetadataFor($mgdschema_class);
+        $this->cm = $cmf->getMetadataFor($classname);
     }
 
     public function description($property)
