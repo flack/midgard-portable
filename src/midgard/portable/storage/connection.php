@@ -66,10 +66,11 @@ class connection
     public static function initialize(driver $driver, array $db_config, $dev_mode = true)
     {
         $config = \Doctrine\ORM\Tools\Setup::createConfiguration($dev_mode);
-        $config->setProxyDir($driver->get_vardir() . '/cache');
-        $config->setAutoGenerateProxyClasses(!$dev_mode);
-
-        $config = \Doctrine\ORM\Tools\Setup::createConfiguration(true);
+        if (!$dev_mode)
+        {
+            $config->setProxyDir($driver->get_vardir() . '/cache');
+            $config->setAutoGenerateProxyClasses(!$dev_mode);
+        }
         $config->addFilter('softdelete', 'midgard\\portable\\storage\\filter\\softdelete');
 
         //triggers initialize()
