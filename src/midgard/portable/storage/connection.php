@@ -63,8 +63,12 @@ class connection
         return md5(self::get_em()->getConnection()->query($sql)->fetchColumn(0));
     }
 
-    public static function initialize(driver $driver, array $db_config)
+    public static function initialize(driver $driver, array $db_config, $dev_mode = true)
     {
+        $config = \Doctrine\ORM\Tools\Setup::createConfiguration($dev_mode);
+        $config->setProxyDir($driver->get_vardir() . '/cache');
+        $config->setAutoGenerateProxyClasses(!$dev_mode);
+
         $config = \Doctrine\ORM\Tools\Setup::createConfiguration(true);
         $config->addFilter('softdelete', 'midgard\\portable\\storage\\filter\\softdelete');
 
