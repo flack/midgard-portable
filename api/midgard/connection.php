@@ -6,6 +6,7 @@
  */
 
 use midgard\portable\storage\connection;
+use midgard\portable\api\error\exception;
 
 class midgard_connection
 {
@@ -13,7 +14,7 @@ class midgard_connection
 
     private static $instance;
 
-    private $error_code;
+    private $error_code = exception::OK;
 
     private $error_string;
 
@@ -75,11 +76,16 @@ class midgard_connection
 
     public function set_error($errorcode)
     {
-        return $this->error_code = $errorcode;
+        $this->error_code = $errorcode;
+        $this->error_string = null;
     }
 
     public function get_error_string()
     {
+        if ($this->error_string === null)
+        {
+            return exception::get_error_string($this->error_code);
+        }
         return $this->error_string;
     }
 

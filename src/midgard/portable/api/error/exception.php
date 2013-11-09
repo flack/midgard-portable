@@ -181,4 +181,67 @@ class exception extends base_exception
     {
         return new self("Object is locked", self::OBJECT_IS_LOCKED);
     }
+
+    public static function get_error_string($code)
+    {
+        switch ($code)
+        {
+            case exception::OK:
+                return "MGD_ERR_OK";
+            case  exception::ACCESS_DENIED:
+                return "Access Denied.";
+            case  exception::NO_METADATA:
+                return "Metadata class not defined.";
+            case  exception::NOT_OBJECT:
+                return "Not Midgard Object.";
+            case  exception::NOT_EXISTS:
+                return "Object does not exist.";
+            case  exception::INVALID_NAME:
+                return "Invalid characters in object's name.";
+            case  exception::DUPLICATE:
+                return "Object already exist.";
+            case  exception::HAS_DEPENDANTS:
+                return "Object has dependants.";
+            case  exception::RANGE:
+                return "Date range error.";
+            case  exception::NOT_CONNECTED:
+                return "Not connected to the Midgard database.";
+            case  exception::SG_NOTFOUND:
+                return "Sitegroup not found.";
+            case  exception::INVALID_OBJECT:
+                return "Object not registered as Midgard Object.";
+            case  exception::QUOTA:
+                return "Quota limit reached.";
+            case  exception::INTERNAL:
+                return "Critical internal error. ";
+            case  exception::OBJECT_NAME_EXISTS:
+                return "Object with such name exists in tree.";
+            case  exception::OBJECT_NO_STORAGE:
+                return "Storage table not defined for object.";
+            case  exception::OBJECT_NO_PARENT:
+                return "Parent object in tree not defined.";
+            case  exception::INVALID_PROPERTY_VALUE:
+                return "Invalid property value.";
+            case  exception::INVALID_PROPERTY:
+                return "Invalid property.";
+            case  exception::USER_DATA:
+                return "";
+            case  exception::OBJECT_DELETED:
+                return "Object deleted.";
+            case  exception::OBJECT_PURGED:
+                return "Object purged.";
+            case  exception::OBJECT_EXPORTED:
+                return "Object already exported.";
+            case  exception::OBJECT_IMPORTED:
+                return "Object already imported.";
+            case  exception::MISSED_DEPENDENCE:
+                return "Missed dependence for object.";
+            case  exception::TREE_IS_CIRCULAR:
+                return "Circular reference found in object's tree.";
+            case  exception::OBJECT_IS_LOCKED:
+                return "Object is locked";
+            default:
+                return "Undefined error";
+        }
+    }
 }
