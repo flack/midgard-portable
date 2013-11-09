@@ -44,6 +44,7 @@ class exception extends base_exception
     {
         midgard_connection::get_instance()->set_error($code);
         midgard_connection::get_instance()->set_error_string($message);
+        parent::__construct($message);
     }
 
     public static function ok()
