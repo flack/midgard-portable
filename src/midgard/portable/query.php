@@ -281,11 +281,13 @@ abstract class query
         }
 
         if (   $value === 0
-            || $value === null)
+            || $value === null
+            || is_array($value))
         {
             $cm = connection::get_em()->getClassMetadata($parsed['targetclass']);
             if ($cm->hasAssociation($parsed['column']))
             {
+                $group = false;
                 // TODO: there seems to be no way to make Doctrine accept default values for association fields,
                 // so we need a silly workaorund for existing DBs
                 if ($operator === '<>')
@@ -293,13 +295,32 @@ abstract class query
                     $group = $this->qb->expr()->andX();
                     $group->add($parsed['name'] . ' IS NOT NULL');
                 }
+                else if ($operator === 'IN')
+                {
+                    if (array_search(0, $value) !== false)
+                    {
+                        $group = $this->qb->expr()->orX();
+                        $group->add($parsed['name'] . ' IS NULL');
+                    }
+                }
+                else if ($operator === 'NOT IN')
+                {
+                    if (array_search(0, $value) === false)
+                    {
+                        $group = $this->qb->expr()->orX();
+                        $group->add($parsed['name'] . ' IS NULL');
+                    }
+                }
                 else
                 {
                     $group = $this->qb->expr()->orX();
                     $group->add($parsed['name'] . ' IS NULL');
                 }
-                $group->add($parsed['name'] . ' ' . $expression);
-                return $group;
+                if ($group)
+                {
+                    $group->add($parsed['name'] . ' ' . $expression);
+                    return $group;
+                }
             }
         }
 
