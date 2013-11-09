@@ -258,6 +258,15 @@ class midgard_query_builderTest extends testcase
         $this->assertEquals($topic2->id, $results[1]->id);
     }
 
+    public function test_add_constraint_nonexistant()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $qb = new \midgard_query_builder($classname);
+        $this->assertFalse($qb->add_constraint('xxx', '=', 0));
+        $this->assertFalse($qb->add_constraint('metadata.xxx', '=', 0));
+        $this->assertFalse($qb->add_constraint('up.xxx', '=', 0));
+    }
+
     public function test_limit()
     {
         $classname = self::$ns . '\\midgard_topic';

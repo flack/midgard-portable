@@ -6,12 +6,25 @@
  */
 
 use midgard\portable\query;
+use midgard\portable\api\error\exception;
 
 class midgard_query_builder extends query
 {
 	function __construct($class)
     {
         parent::__construct($class);
+    }
+
+    public function add_constraint($name, $operator, $value)
+    {
+        try
+        {
+            return parent::add_constraint($name, $operator, $value);
+        }
+        catch (exception $e)
+        {
+            return false;
+        }
     }
 
     public function execute()

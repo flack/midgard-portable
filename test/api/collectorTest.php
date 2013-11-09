@@ -147,6 +147,21 @@ class midgard_collectorTest extends testcase
         $this->assertEquals(1, count($properties->getValue($mc)));
     }
 
+    public function test_add_value_property_nonexistant()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $mc = new \midgard_collector($classname, 'up', 0);
+        $this->assertTrue($mc->set_key_property("name"));
+        $this->assertFalse($mc->add_value_property("xxxx"));
+        $this->assertFalse($mc->add_value_property("metadata.xxxx"));
+        $this->assertFalse($mc->add_value_property("up.xxxx"));
+        $ref = new \ReflectionClass($mc);
+        $properties = $ref->getProperty('value_properties');
+        $properties->setAccessible(true);
+        $this->assertEquals(0, count($properties->getValue($mc)));
+    }
+
     public function test_set_key_property()
     {
         $classname = self::$ns . '\\midgard_topic';

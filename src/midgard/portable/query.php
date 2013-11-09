@@ -8,6 +8,7 @@
 namespace midgard\portable;
 
 use midgard\portable\storage\connection;
+use midgard\portable\api\error\exception;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\Expr;
@@ -236,9 +237,10 @@ abstract class query
             {
                 $mrp = new \midgard_reflection_property($targetclass);
 
-                if (!$mrp->is_link($part))
+                if (   !$mrp->is_link($part)
+                    && !$mrp->is_special_link($part))
                 {
-                    throw new \Exception($part . ' is not a link');
+                    throw exception::ok();
                 }
                 $targetclass = $mrp->get_link_name($part);
                 $current_table = $this->add_join($current_table, $mrp, $part);
@@ -247,10 +249,16 @@ abstract class query
             $targetclass = 'midgard:' . $targetclass;
         }
 
-        $cm = connection::get_em()->getClassMetadata($this->classname);
+        $cm = connection::get_em()->getClassMetadata($targetclass);
         if (array_key_exists($column, $cm->midgard['field_aliases']))
         {
             $column = $cm->midgard['field_aliases'][$column];
+        }
+
+        if (   !$cm->hasField($column)
+            && !$cm->hasAssociation($column))
+        {
+            throw exception::ok();
         }
 
         return array
