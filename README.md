@@ -10,6 +10,35 @@ It is in a prototype state and provides the following:
  - Metadata support, Repligard, ``midgard_blob``. ``midgard_user``
  - Partial support for database creation/update (``midgard_storage``)
 
+Usage
+--------
+
+To include ``midgard-portable``in your application, simply ``require`` it in your ``composer.json``. You can bootstrap 
+the adapter like this:
+
+```php
+<?php
+use midgard\portable\driver;
+use midgard\portable\storage\connection;
+
+$db_config = array
+(
+    'driver' => 'pdo_sqlite',
+    'memory' => true
+);
+$schema_dirs = array('/path/to/my/schemas/');
+$var_dir = '/path/to/vardir';
+$dev_mode = false;
+
+$driver = new driver($schema_dirs, $var_dir, '');
+connection::initialize($driver, $db_config, $dev_mode);
+$entityManager = connection::get_em();
+```
+
+Change the parameters as required. If you save this file under the name ```cli-config.php``, it will be used by Doctrine's 
+CLI runner. After calling ``connection::initialize()``, you can interact with the database through Midgard API as 
+outlined above.
+
 Structure
 --------
 
