@@ -69,14 +69,14 @@ class user extends dbobject
         $this->populate_from_entity($entity);
     }
 
-	public function login()
+    public function login()
     {
         if ($this->id == 0)
         {
             return false;
         }
         connection::set_user($this);
-    	return true;
+        return true;
     }
 
     public function logout()
@@ -86,7 +86,7 @@ class user extends dbobject
             return false;
         }
         connection::set_user(null);
-    	return true;
+        return true;
     }
 
     public function is_user()
@@ -112,7 +112,7 @@ class user extends dbobject
         {
             $this->person_object = connection::get_em()->getRepository('midgard:midgard_person')->findOneBy(array('guid' => $this->person));
         }
-    	return $this->person_object;
+        return $this->person_object;
     }
 
     public function create()
@@ -141,7 +141,7 @@ class user extends dbobject
             exception::internal($e);
             return false;
         }
-	    return ($this->id != 0);
+        return ($this->id != 0);
     }
 
     public function update()
@@ -161,7 +161,7 @@ class user extends dbobject
             exception::internal($e);
             return false;
         }
-	    return true;
+        return true;
     }
 
     public function delete()
@@ -181,7 +181,8 @@ class user extends dbobject
             exception::internal($e);
             return false;
         }
-	    return true;
+        $this->guid = '';
+        return true;
     }
 
     protected function is_unique()

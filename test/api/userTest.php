@@ -74,6 +74,21 @@ class userTest extends testcase
         $this->assertEquals($loaded->login, $user->login);
     }
 
+    public function test_delete()
+    {
+        $classname = self::$ns . '\\midgard_user';
+        $initial = $this->count_results('midgard:midgard_user');
+
+        $user = new $classname;
+        $user->authtype = 'Legacy';
+        $user->create();
+
+        $stat = $user->delete();
+        $this->assertTrue($stat);
+        $this->assertEquals('', $user->guid);
+        $this->assertEquals($initial, $this->count_results('midgard:midgard_user'));
+    }
+
     public function test_login()
     {
         $classname = self::$ns . '\\midgard_user';
