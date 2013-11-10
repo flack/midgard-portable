@@ -2,13 +2,13 @@ midgard-portable [![Build Status](https://travis-ci.org/flack/midgard-portable.p
 ================
 
 This library aims to provide a simulation of the Midgard API for Doctrine. 
-It is very much in a prototype state and currently provides the following:
+It is in a prototype state and provides the following:
 
- - Creating Doctrine ClassMetadata from MgdSchema XML files
- - Creating Doctrine Entity classes that provide access to some of the ``midgard_db_object`` API
- - Partial support for ``midgard_query_builder`` and ``midgard_collector``
- - Metadata + Soft Delete
- - Repligard table + midgard_datetime
+ - Creating Doctrine ClassMetadata and ``midgard_dbobject`` based Entity classes from MgdSchema XML files
+ - Support for most of the ``midgard_object`` API (CRUD, parameters, attachments, parent/up relations, softdelete, etc.)
+ - Query Support for ``midgard_query_builder``, ``midgard_collector`` and ``midgard_object_class``
+ - Metadata support, Repligard, ``midgard_blob``. ``midgard_user``
+ - Partial support for databse creation/update (``midgard_storage``)
 
 Structure
 --------
@@ -33,7 +33,7 @@ Known Issues & Limitations
 --------------------------
 
  - Entities in Doctrine can only share the same table if there is a discriminator column which tells them apart.
-   Currently, midgard-portable works around this by only registering one of the colliding classes which contains
+   Currently, midgard-portable works around this by only registering one of the colliding classes which collects
    all properties of all affected classes. The others are then converted into aliases. This means that 
    if you have e.g. ``midgard_person`` and ``org_openpsa_person`` schemas, you only get one entity class containing 
    the properties of both classes, and an a class alias for the second name. Which class becomes the actual class 
@@ -68,6 +68,8 @@ Known Issues & Limitations
    ```
  - Doctrine does not support public properties on entity classes, so using ``get_object_vars()`` will always return 
    an empty result. Similarly, ``ReflectionExtension('midgard2')`` will also fail, so you can't use this to get a list
-   of all registered MgdSchema classes. This will be addressed by a separate reflection helper (which is yet tbd)
+   of all registered MgdSchema classes. As a workaround, you can use [midgard-introspection](https://github.com/flack/midgard-introspection),
+   which abstracts these differences away.
 
-...and of course, much of the API provided still only consists of stubs. It is a prototype, after all :)
+ - Using ``midgard_storage::update_class_storage()`` can lead to data loss: If you run this command, all table columns
+   that are not listed in the MgdSchema will be dropped, so you shouldn't use this on converted Midgard1 databases e.g.
