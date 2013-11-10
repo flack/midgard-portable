@@ -232,6 +232,10 @@ class manager
         {
             $type->extends = 'base_repligard';
         }
+        if ($classname === 'midgard_attachment')
+        {
+            $type->extends = 'base_attachment';
+        }
         if (!empty($this->namespace))
         {
             $classname = $this->namespace . '\\' . $classname;
