@@ -8,7 +8,7 @@ It is in a prototype state and provides the following:
  - Support for most of the ``midgard_object`` API (CRUD, parameters, attachments, parent/up relations, softdelete, etc.)
  - Query Support for ``midgard_query_builder``, ``midgard_collector`` and ``midgard_object_class``
  - Metadata support, Repligard, ``midgard_blob``. ``midgard_user``
- - Partial support for databse creation/update (``midgard_storage``)
+ - Partial support for database creation/update (``midgard_storage``)
 
 Structure
 --------
