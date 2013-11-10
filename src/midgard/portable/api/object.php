@@ -20,7 +20,7 @@ abstract class object extends dbobject
 {
     public $action = ''; // <== does this need to do anything?
 
-    private $parameters;
+    private $collections = array();
 
     private $attachments;
 
@@ -41,8 +41,15 @@ abstract class object extends dbobject
                 $this->get_by_guid($id);
             }
         }
-        $this->parameters = new collection('midgard_parameter');
-        $this->attachments = new collection('midgard_attachment');
+    }
+
+    private function get_collection($classname)
+    {
+        if (!array_key_exists($classname, $this->collections))
+        {
+            $this->collections[$classname] = new collection($classname);
+        }
+        return $this->collections[$classname];
     }
 
     public function __set($field, $value)
@@ -443,7 +450,7 @@ abstract class object extends dbobject
 
     public function has_parameters()
     {
-        return $this->parameters->is_empty($this->guid);
+        return $this->get_collection('midgard_parameter')->is_empty($this->guid);
     }
 
     public function list_parameters($domain = false)
@@ -454,22 +461,22 @@ abstract class object extends dbobject
             $constraints[] = array("domain", "=", $domain);
         }
 
-        return $this->parameters->find($this->guid, $constraints);
+        return $this->get_collection('midgard_parameter')->find($this->guid, $constraints);
     }
 
     public function find_parameters(array $constraints = array())
     {
-        return $this->parameters->find($this->guid, $constraints);
+        return $this->get_collection('midgard_parameter')->find($this->guid, $constraints);
     }
 
     public function delete_parameters(array $constraints = array())
     {
-        return $this->parameters->delete($this->guid, $constraints);
+        return $this->get_collection('midgard_parameter')->delete($this->guid, $constraints);
     }
 
     public function purge_parameters(array $constraints = array())
     {
-        return $this->parameters->purge($this->guid, $constraints);
+        return $this->get_collection('midgard_parameter')->purge($this->guid, $constraints);
     }
 
     public function get_parameter($domain, $name)
@@ -483,7 +490,7 @@ abstract class object extends dbobject
             array ('domain', '=', $domain),
             array ('name', '=', $name),
         );
-        $params = $this->parameters->find($this->guid, $constraints);
+        $params = $this->get_collection('midgard_parameter')->find($this->guid, $constraints);
 
         if (count($params) == 0)
         {
@@ -500,7 +507,7 @@ abstract class object extends dbobject
             array ('domain', '=', $domain),
             array ('name', '=', $name),
         );
-        $params = $this->parameters->find($this->guid, $constraints);
+        $params = $this->get_collection('midgard_parameter')->find($this->guid, $constraints);
 
         // check value
         if ($value === false || $value === null || $value === "")
@@ -554,32 +561,32 @@ abstract class object extends dbobject
 
     public function has_attachments()
     {
-        return $this->attachments->is_empty($this->guid);
+        return $this->get_collection('midgard_attachment')->is_empty($this->guid);
     }
 
     public function list_attachments()
     {
-        return $this->attachments->find($this->guid, array());
+        return $this->get_collection('midgard_attachment')->find($this->guid, array());
     }
 
     public function find_attachments(array $constraints = array())
     {
-        return $this->attachments->find($this->guid, $constraints);
+        return $this->get_collection('midgard_attachment')->find($this->guid, $constraints);
     }
 
     public function delete_attachments(array $constraints = array())
     {
-        return $this->attachments->delete($this->guid, $constraints);
+        return $this->get_collection('midgard_attachment')->delete($this->guid, $constraints);
     }
 
     public function purge_attachments(array $constraints = array(), $delete_blob = '??')
     {
-        return $this->attachments->purge($this->guid, $constraints);
+        return $this->get_collection('midgard_attachment')->purge($this->guid, $constraints);
     }
 
     public function create_attachment($name, $title = '', $mimetype = '')
     {
-        $existing = $this->attachments->find($this->guid, array('name' => $name));
+        $existing = $this->get_collection('midgard_attachment')->find($this->guid, array('name' => $name));
         if (count($existing) > 0)
         {
             exception::object_name_exists();
