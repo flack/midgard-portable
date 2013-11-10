@@ -17,5 +17,14 @@ class attachment extends object
     protected $location = '';
     protected $mimetype = '';
     protected $parentguid = '';
+
+    public function create()
+    {
+        if (empty($this->parentguid))
+        {
+            return false;
+        }
+        return parent::create();
+    }
 }
 ?>

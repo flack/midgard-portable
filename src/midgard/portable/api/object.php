@@ -14,12 +14,15 @@ use midgard\portable\api\metadata;
 use midgard\portable\api\error\exception;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
+use midgard_connection;
 
 abstract class object extends dbobject
 {
     public $action = ''; // <== does this need to do anything?
 
     private $parameters;
+
+    private $attachments;
 
     /**
      *
@@ -39,6 +42,7 @@ abstract class object extends dbobject
             }
         }
         $this->parameters = new collection('midgard_parameter');
+        $this->attachments = new collection('midgard_attachment');
     }
 
     public function __set($field, $value)
@@ -108,7 +112,7 @@ abstract class object extends dbobject
         }
 
         $this->populate_from_entity($entity);
-        \midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return true;
     }
 
@@ -139,7 +143,7 @@ abstract class object extends dbobject
             exception::internal($e);
             return false;
         }
-        \midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
 
         return true;
     }
@@ -162,7 +166,7 @@ abstract class object extends dbobject
             exception::internal($e);
             return false;
         }
-        \midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return ($this->id != 0);
     }
 
@@ -323,7 +327,7 @@ abstract class object extends dbobject
             return false;
         }
 
-        \midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return true;
     }
 
@@ -550,32 +554,49 @@ abstract class object extends dbobject
 
     public function has_attachments()
     {
-        return false;
+        return $this->attachments->is_empty($this->guid);
     }
 
     public function list_attachments()
     {
-        return false;
+        return $this->attachments->find($this->guid, array());
     }
 
-    public function find_attachments($constraints)
+    public function find_attachments(array $constraints = array())
     {
-        return false;
+        return $this->attachments->find($this->guid, $constraints);
     }
 
-    public function delete_attachments($constraints)
+    public function delete_attachments(array $constraints = array())
     {
-        return false;
+        return $this->attachments->delete($this->guid, $constraints);
     }
 
-    public function purge_attachments($constraints, $delete_blob)
+    public function purge_attachments(array $constraints = array(), $delete_blob = '??')
     {
-        return false;
+        return $this->attachments->purge($this->guid, $constraints);
     }
 
-    public function create_attachment($name, $title, $mimetype)
+    public function create_attachment($name, $title = '', $mimetype = '')
     {
-        return false;
+        $existing = $this->attachments->find($this->guid, array('name' => $name));
+        if (count($existing) > 0)
+        {
+            exception::object_name_exists();
+            return null;
+        }
+        $att = $this->get_entity_instance("midgard_attachment");
+        $att->parentguid = $this->guid;
+        $att->title = $title;
+        $att->name = $name;
+        $att->mimetype = $mimetype;
+
+        $em = connection::get_em();
+        $em->persist($att);
+        $em->flush($att);
+
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+        return $att;
     }
 
     public static function serve_attachment($guid)
@@ -604,7 +625,7 @@ abstract class object extends dbobject
             exception::internal($e);
             return false;
         }
-        \midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
 
         return true;
     }
