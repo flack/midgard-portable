@@ -8,6 +8,7 @@ namespace midgard\portable\api;
 
 use midgard\portable\storage\connection;
 use midgard\portable\storage\objectmanager;
+use midgard\portable\storage\collection;
 use midgard\portable\storage\metadata\entity as metadata_interface;
 use midgard\portable\api\metadata;
 use midgard\portable\api\error\exception;
@@ -17,6 +18,8 @@ use Doctrine\ORM\Query;
 abstract class object extends dbobject
 {
     public $action = ''; // <== does this need to do anything?
+
+    private $parameters;
 
     /**
      *
@@ -35,6 +38,7 @@ abstract class object extends dbobject
                 $this->get_by_guid($id);
             }
         }
+        $this->parameters = new collection('midgard_parameter');
     }
 
     public function __set($field, $value)
@@ -245,15 +249,6 @@ abstract class object extends dbobject
         return true;
     }
 
-    private function apply_qb_constraints($qb, array $constraints)
-    {
-        foreach ($constraints as $constraint)
-        {
-            $qb->add_constraint($constraint[0], $constraint[1], $constraint[2]);
-        }
-        return $qb;
-    }
-
     public function is_in_parent_tree($root_id, $id)
     {
         return false;
@@ -442,66 +437,35 @@ abstract class object extends dbobject
         return false;
     }
 
-    private function get_parameter_qb()
-    {
-        $qb = new \midgard_query_builder('midgard:midgard_parameter');
-        $qb->add_constraint('parentguid', '=', $this->guid);
-        return $qb;
-    }
-
     public function has_parameters()
     {
-        $qb = $this->get_parameter_qb();
-        return ($qb->count() > 0);
+        return $this->parameters->is_empty($this->guid);
     }
 
     public function list_parameters($domain = false)
     {
-        $qb = $this->get_parameter_qb();
+        $constraints = array();
         if ($domain)
         {
-            $qb->add_constraint("domain", "=", $domain);
+            $constraints[] = array("domain", "=", $domain);
         }
-        return $qb->execute();
+
+        return $this->parameters->find($this->guid, $constraints);
     }
 
     public function find_parameters(array $constraints = array())
     {
-        $qb = $this->get_parameter_qb();
-        $this->apply_qb_constraints($qb, $constraints);
-        return $qb->execute();
+        return $this->parameters->find($this->guid, $constraints);
     }
 
     public function delete_parameters(array $constraints = array())
     {
-        $qb = $this->get_parameter_qb();
-        $this->apply_qb_constraints($qb, $constraints);
-        $params = $qb->execute();
-        $deleted_count = 0;
-        foreach ($params as $param)
-        {
-            if ($param->delete())
-            {
-                $deleted_count++;
-            }
-        }
-        return $deleted_count;
+        return $this->parameters->delete($this->guid, $constraints);
     }
 
     public function purge_parameters(array $constraints = array())
     {
-        $qb = $this->get_parameter_qb();
-        $this->apply_qb_constraints($qb, $constraints);
-        $params = $qb->execute();
-        $purged_count = 0;
-        foreach ($params as $param)
-        {
-            if ($param->purge())
-            {
-                $purged_count++;
-            }
-        }
-        return $purged_count;
+        return $this->parameters->purge($this->guid, $constraints);
     }
 
     public function get_parameter($domain, $name)
@@ -510,10 +474,13 @@ abstract class object extends dbobject
         {
             return false;
         }
-        $qb = $this->get_parameter_qb();
-        $qb->add_constraint("domain", "=", $domain);
-        $qb->add_constraint("name", "=", $name);
-        $params = $qb->execute();
+        $constraints = array
+        (
+            array ('domain', '=', $domain),
+            array ('name', '=', $name),
+        );
+        $params = $this->parameters->find($this->guid, $constraints);
+
         if (count($params) == 0)
         {
             return null;
@@ -524,10 +491,12 @@ abstract class object extends dbobject
 
     public function set_parameter($domain, $name, $value)
     {
-        $qb = $this->get_parameter_qb();
-        $qb->add_constraint("domain", "=", $domain);
-        $qb->add_constraint("name", "=", $name);
-        $params = $qb->execute();
+        $constraints = array
+        (
+            array ('domain', '=', $domain),
+            array ('name', '=', $name),
+        );
+        $params = $this->parameters->find($this->guid, $constraints);
 
         // check value
         if ($value === false || $value === null || $value === "")
