@@ -489,19 +489,22 @@ abstract class object extends dbobject
         {
             return false;
         }
-        $constraints = array
-        (
-            array ('domain', '=', $domain),
-            array ('name', '=', $name),
-        );
-        $params = $this->get_collection('midgard_parameter')->find($this->guid, $constraints);
+        $qb = connection::get_em()->createQueryBuilder();
+        $qb
+            ->select('c.value')
+            ->from('midgard:midgard_parameter', 'c')
+            ->where('c.domain = :domain AND c.name = :name AND c.parentguid = :parentguid')
+            ->setParameters(array('domain' => $domain, 'name' => $name, 'parentguid' => $this->guid));
 
-        if (count($params) == 0)
+        // workaround for http://www.doctrine-project.org/jira/browse/DDC-2655
+        try
+        {
+            return $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR);
+        }
+        catch (\Doctrine\ORM\NoResultException $e)
         {
             return null;
         }
-        $param = array_shift($params);
-        return $param->value;
     }
 
     public function set_parameter($domain, $name, $value)
