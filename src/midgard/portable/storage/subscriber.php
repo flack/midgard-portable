@@ -17,7 +17,6 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Events as dbal_events;
 use Doctrine\DBAL\Event\SchemaCreateTableEventArgs;
 use Doctrine\DBAL\Event\SchemaColumnDefinitionEventArgs;
-use midgard_repligard;
 
 class subscriber implements EventSubscriber
 {
