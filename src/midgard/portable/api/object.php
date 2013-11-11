@@ -361,6 +361,7 @@ abstract class object extends dbobject
         {
             return false;
         }
+
         $field = $this->cm->midgard['unique_fields'][0];
 
         if (!empty($this->cm->midgard['parent']))
@@ -399,6 +400,7 @@ abstract class object extends dbobject
 
         $qb = $this->get_uniquefield_query(get_class($this), $field, $name, $upfield, $up);
         $qb->select("c");
+
         $entity = $qb->getQuery()->getOneOrNullResult();
 
         if ($entity === null)
@@ -429,7 +431,11 @@ abstract class object extends dbobject
 
         if (empty($up))
         {
-            $conditions->add($qb->expr()->isNull('c.' . $upfield));
+            // If the database was created by Midgard, it might contain 0 instead of NULL, so...
+            $empty_conditions = $qb->expr()->orX()
+                ->add($qb->expr()->isNull('c.' . $upfield))
+                ->add($qb->expr()->eq('c.' . $upfield, '0'));
+            $conditions->add($empty_conditions);
         }
         else
         {
