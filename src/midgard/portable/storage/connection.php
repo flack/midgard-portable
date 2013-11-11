@@ -8,6 +8,7 @@
 namespace midgard\portable\storage;
 
 use midgard\portable\driver;
+use midgard\portable\classgenerator;
 use midgard\portable\api\user;
 use midgard\portable\api\config;
 use midgard\portable\storage\type\datetime;
@@ -65,16 +66,24 @@ class connection
 
     public static function initialize(driver $driver, array $db_config, $dev_mode = true)
     {
+        $vardir = $driver->get_vardir();
+
+        if (   $dev_mode
+            || !file_exists($vardir . '/midgard_objects.php'))
+        {
+            $classgenerator = new classgenerator($driver->get_manager(), $vardir . '/midgard_objects.php');
+            $classgenerator->write($driver->get_namespace());
+        }
+        include $vardir . '/midgard_objects.php';
+
         $config = \Doctrine\ORM\Tools\Setup::createConfiguration($dev_mode);
         if (!$dev_mode)
         {
-            $config->setProxyDir($driver->get_vardir() . '/cache');
+            $config->setProxyDir($vardir . '/cache');
             $config->setAutoGenerateProxyClasses(!$dev_mode);
         }
         $config->addFilter('softdelete', 'midgard\\portable\\storage\\filter\\softdelete');
 
-        //triggers initialize()
-        $driver->getAllClassNames();
         $config->setMetadataDriverImpl($driver);
         $config->addEntityNamespace('midgard', $driver->get_namespace());
         $config->setClassMetadataFactoryName('\\midgard\\portable\\mapping\\factory');
@@ -91,10 +100,10 @@ class connection
         self::$instance = new static($em);
 
         $mgd_config = new config;
-        $mgd_config->vardir = $driver->get_vardir();
-        $mgd_config->cachedir = $mgd_config->vardir . '/cache';
-        $mgd_config->blobdir = $mgd_config->vardir . '/blobs';
-        $mgd_config->sharedir = $mgd_config->vardir . '/schemas';
+        $mgd_config->vardir = $vardir;
+        $mgd_config->cachedir = $vardir . '/cache';
+        $mgd_config->blobdir = $vardir . '/blobs';
+        $mgd_config->sharedir = $vardir . '/schemas';
         // TODO: Set rest of config values from $config and $driver
         midgard_connection::get_instance()->open_config($mgd_config);
     }

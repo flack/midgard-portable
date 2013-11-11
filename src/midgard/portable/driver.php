@@ -7,7 +7,6 @@
 
 namespace midgard\portable;
 
-use midgard\portable\classgenerator;
 use midgard\portable\mgdschema\manager;
 use midgard\portable\mgdschema\translator;
 use midgard\portable\mgdschema\type;
@@ -69,6 +68,11 @@ class driver implements driver_interface
         return $this->namespace;
     }
 
+    public function get_manager()
+    {
+        return $this->manager;
+    }
+
     public function get_vardir()
     {
         return rtrim($this->vardir, '/');
@@ -77,10 +81,6 @@ class driver implements driver_interface
     private function initialize()
     {
         $this->types = $this->manager->get_types();
-        $classgenerator = new classgenerator($this->manager, $this->vardir . '/midgard_objects.php');
-        $classgenerator->write($this->namespace);
-
-        include $this->vardir . 'midgard_objects.php';
     }
 
     /**

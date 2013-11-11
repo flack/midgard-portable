@@ -8,6 +8,7 @@
 namespace midgard\portable\test;
 
 use midgard\portable\driver;
+use midgard\portable\classgenerator;
 use midgard\portable\mapping\classmetadata;
 
 class driverTest extends testcase
@@ -20,11 +21,6 @@ class driverTest extends testcase
         $classnames = $driver->getAllClassNames();
         $this->assertInternalType('array', $classnames);
         $this->assertEquals(10, count($classnames));
-
-        foreach ($classnames as $classname)
-        {
-            $this->assertTrue(class_exists($classname), $classname . ' not found');
-        }
     }
 
     public function test_loadMetadataForClass()
@@ -48,7 +44,9 @@ class driverTest extends testcase
         $ns = uniqid(__CLASS__ . '\\' . __FUNCTION__);
         $d = sys_get_temp_dir();
         $driver = new driver(array(TESTDIR . '__files/duplicate_tablenames/'), $d, $ns);
-        $driver->getAllClassNames();
+        $classgenerator = new classgenerator($driver->get_manager(), $d . '/midgard_objects.php');
+        $classgenerator->write($ns);
+        include $d . '/midgard_objects.php';
 
         $classname = $ns . '\\midgard_member';
         $classname = get_class(new $classname);
