@@ -41,17 +41,21 @@ class dbobjectTest extends testcase
         $topic->up = 0;
         $topic->styleInherit = null;
         $topic->metadata_published = null;
+        $topic->float = null;
 
         $this->assertSame('', $topic->title);
         $this->assertSame(0, $topic->score);
         $this->assertSame(0, $topic->lang);
         $this->assertSame(0, $topic->up);
+        $this->assertSame(0.0, $topic->float);
         $this->assertSame(false, $topic->styleInherit);
         $this->assertInstanceOf('midgard_datetime', $topic->metadata_published);
         $this->assertEquals('0001-01-01 00:00:00', $topic->metadata_published->format('Y-m-d H:i:s'));
 
         $topic->up = 9999999;
         $this->assertSame(9999999, $topic->up);
+        $topic->float = 2;
+        $this->assertSame(2.0, $topic->float);
     }
 
     public function test_get()

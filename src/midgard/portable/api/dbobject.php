@@ -77,6 +77,10 @@ abstract class dbobject implements ObjectManagerAware
             {
                 $value = (boolean) $value;
             }
+            else if ($mapping['type'] === 'float')
+            {
+                $value = (float) $value;
+            }
             else if (   $mapping['type'] === 'midgard_datetime'
                      && !($value instanceof midgard_datetime))
             {

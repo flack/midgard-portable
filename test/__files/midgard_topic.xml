@@ -14,7 +14,6 @@
         <property name="up"       link="midgard_topic:id" type="unsigned integer" upfield="up">
             <description>Topic the topic is under</description>
         </property>
-        <!-- MidCOM properties -->
         <property name="component"    type="string" index="yes">
             <description>MidCOM component responsible for the topic</description>
         </property>
@@ -39,9 +38,11 @@
         <property name="lang"     type="unsigned integer" link="midgard_language:id">
             <description>Language the article is in</description>
         </property>
-        <!-- Legacy -->
         <property name="score"    type="integer">
             <description>Arrangement score of the topic (legacy field)</description>
+        </property>
+        <property name="float"    type="float">
+            <description>Float field for testing conversion</description>
         </property>
     </type>
 
