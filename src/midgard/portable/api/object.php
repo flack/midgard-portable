@@ -320,6 +320,10 @@ abstract class object extends dbobject
         {
             return $this->purge();
         }
+        if ($this->metadata_deleted)
+        {
+            return true;
+        }
 
         try
         {

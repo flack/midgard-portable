@@ -232,6 +232,8 @@ class objectTest extends testcase
 
         $all = $this->count_results($classname, true);
         $this->assertEquals($initial_all + 1, $all);
+
+        $this->assertTrue($topic->delete());
     }
 
     public function test_has_dependents()
