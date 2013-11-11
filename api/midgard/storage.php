@@ -12,11 +12,9 @@ class midgard_storage
     public static function create_base_storage()
     {
         $em = connection::get_em();
-        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
         $factory = $em->getMetadataFactory();
         $classes = $factory->getAllMetadata();
 
-        $tables = array();
         foreach ($classes as $class)
         {
             $stat = self::create_class_storage($class->getName());
@@ -54,7 +52,6 @@ class midgard_storage
     public static function create_class_storage($classname)
     {
         $em = connection::get_em();
-        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
 
         $cm = self::get_cm($em, $classname);
         if ($cm === false)
@@ -64,6 +61,7 @@ class midgard_storage
 
         if (!$em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName())))
         {
+            $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
             $tool->createSchema(array($cm));
         }
         return true;
@@ -90,8 +88,6 @@ class midgard_storage
     public static function update_class_storage($classname)
     {
         $em = connection::get_em();
-        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
-
         $cm = self::get_cm($em, $classname);
         if ($cm === false)
         {
@@ -100,6 +96,7 @@ class midgard_storage
 
         if ($em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName())))
         {
+            $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
             $tool->updateSchema(array($cm), true);
             return true;
         }
@@ -114,7 +111,6 @@ class midgard_storage
     public static function class_storage_exists($classname)
     {
         $em = connection::get_em();
-        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
         $factory = $em->getMetadataFactory();
         if (!$factory->hasMetadataFor($classname))
         {

@@ -41,8 +41,6 @@ class driver implements driver_interface
 
     private $vardir;
 
-    private $schemadirs;
-
     private $types;
 
     private $namespace;

@@ -22,8 +22,6 @@ abstract class object extends dbobject
 
     private $collections = array();
 
-    private $attachments;
-
     /**
      *
      * @param mixed $id ID or GUID
