@@ -84,7 +84,8 @@ abstract class query
                 $parentfield = $cm->midgard['upfield'];
             }
 
-            $value = $this->get_child_ids($mapping['targetEntity'], $parentfield, $value);
+            $value = (array) $value;
+            $value = array_merge($value, $this->get_child_ids($mapping['targetEntity'], $parentfield, $value));
         }
         else if (   $operator === 'IN'
                  || $operator === 'NOT IN')
@@ -346,22 +347,22 @@ abstract class query
         }
     }
 
-    private function get_child_ids($targetclass, $fieldname, $parent_value)
+    private function get_child_ids($targetclass, $fieldname, array $parent_values)
     {
-        $ids = array($parent_value);
-
         $qb = connection::get_em()->createQueryBuilder();
         $qb->from($targetclass, 'c')
-            ->where('c.' . $fieldname . ' = ?0')
-            ->setParameter(0, $parent_value)
+            ->where('c.' . $fieldname . ' IN (?0)')
+            ->setParameter(0, $parent_values)
             ->select("c.id");
+
         $this->pre_execution();
         $results = $qb->getQuery()->getScalarResult();
         $this->post_execution();
 
-        foreach ($results as $row)
+        $ids = array_map('current', $results);
+        if (!empty($ids))
         {
-            $ids = array_merge($ids, $this->get_child_ids($targetclass, $fieldname, $row['id']));
+            $ids = array_merge($ids, $this->get_child_ids($targetclass, $fieldname, $ids));
         }
 
         return $ids;
