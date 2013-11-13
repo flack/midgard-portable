@@ -142,20 +142,30 @@ abstract class query
         $this->include_deleted = true;
     }
 
-    public function begin_group($operator)
+    public function begin_group($operator = 'OR')
     {
         if ($operator === 'OR')
         {
             $this->groupstack[] = $this->qb->expr()->orX();
         }
-        else
+        else if ($operator === 'AND')
         {
             $this->groupstack[] = $this->qb->expr()->andX();
         }
+        else
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public function end_group()
     {
+        if (empty($this->groupstack))
+        {
+            return false;
+        }
         $group = array_pop($this->groupstack);
         if ($group->count() > 0)
         {
@@ -168,6 +178,7 @@ abstract class query
                 $this->qb->andWhere($group);
             }
         }
+        return true;
     }
 
     /**

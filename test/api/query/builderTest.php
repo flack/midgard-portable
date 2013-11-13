@@ -454,6 +454,22 @@ class midgard_query_builderTest extends testcase
         $this->assertEquals(0, $qb->count());
     }
 
+    public function test_useless_end_group()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $qb = new \midgard_query_builder($classname);
+        $this->assertFalse($qb->end_group());
+    }
+
+    public function test_invalid_begin_group()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $qb = new \midgard_query_builder($classname);
+        $this->assertFalse($qb->begin_group('XX'));
+    }
+
     public function test_in_constraint()
     {
         self::$em->clear();
