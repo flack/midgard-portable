@@ -102,3 +102,7 @@ Known Issues & Limitations
 
  - Using ``midgard_storage::update_class_storage()`` can lead to data loss: If you run this command, all table columns
    that are not listed in the MgdSchema will be dropped, so you shouldn't use this on converted Midgard1 databases e.g.
+
+ - Midgard object API provides a function named ``list()`` that returns child objects of the same type. This is not 
+   possible to implement in plain PHP (``public function list()`` causes a PHP parse error, since ``list`` is a reserved
+   keyword). Use querybuilder instead.
