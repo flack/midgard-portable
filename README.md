@@ -8,12 +8,12 @@ It is in a prototype state and provides the following:
  - Support for most of the ``midgard_object`` API (CRUD, parameters, attachments, parent/up relations, softdelete, etc.)
  - Query Support for ``midgard_query_builder``, ``midgard_collector`` and ``midgard_object_class``
  - Metadata support, Repligard, ``midgard_blob``. ``midgard_user``
- - Partial support for database creation/update (``midgard_storage``)
+ - Partial support for database creation/update (``midgard_storage``) and reflection (``midgard_reflection_property``)
 
 Usage
 --------
 
-To include ``midgard-portable``in your application, simply ``require`` it in your ``composer.json``. You can bootstrap 
+To include ``midgard-portable`` in your application, simply ``require`` it in your ``composer.json``. You can bootstrap 
 the adapter like this:
 
 ```php
@@ -35,7 +35,7 @@ connection::initialize($driver, $db_config, $dev_mode);
 $entityManager = connection::get_em();
 ```
 
-Change the parameters as required. If you save this file under the name ```cli-config.php``, it will be used by Doctrine's 
+Change the parameters as required. If you save this file under the name ``cli-config.php``, it will be used by Doctrine's 
 CLI runner. After calling ``connection::initialize()``, you can interact with the database through Midgard API as 
 outlined above.
 
