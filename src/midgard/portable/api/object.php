@@ -345,9 +345,17 @@ abstract class object extends dbobject
         return null;
     }
 
-    public function list_children($node, $class, $name)
+    /**
+     * This should return child objects, but only if they are of a different type
+     * For all other input, an empty array is returned
+     * (not implemented yet)
+     *
+     * @param string $classname
+     * @return array
+     */
+    public function list_children($classname)
     {
-        return false;
+        return array();
     }
 
     public function get_by_path($path)
