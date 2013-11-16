@@ -204,6 +204,7 @@ class midgard_collectorTest extends testcase
         $classname = self::$ns . '\\midgard_topic';
 
         $mc = new \midgard_collector($classname, 'id', self::$_topic->id);
+        $mc->set_key_property("guid");
         $mc->add_value_property("name");
         $mc->add_value_property("id");
         $mc->execute();
@@ -219,7 +220,7 @@ class midgard_collectorTest extends testcase
         $this->assertEquals($result["id"], self::$_topic->id);
         $this->assertEquals($result["name"], self::$_topic->name);
         // was not added as value property
-        $this->assertFalse(array_key_exists("title", $result));
+        $this->assertFalse(array_key_exists("guid", $result));
     }
 
     public function test_get_subkey()
