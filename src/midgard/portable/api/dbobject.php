@@ -76,10 +76,16 @@ abstract class dbobject implements ObjectManagerAware
             {
                 $value = (float) $value;
             }
-            else if (   $mapping['type'] === 'midgard_datetime'
-                     && !($value instanceof midgard_datetime))
+            else if ($mapping['type'] === 'midgard_datetime')
             {
-                $value = new midgard_datetime('0001-01-01 00:00:00');
+                if (is_string($value))
+                {
+                    $value = new midgard_datetime($value);
+                }
+                else if (!($value instanceof midgard_datetime))
+                {
+                    $value = new midgard_datetime('0001-01-01 00:00:00');
+                }
             }
         }
 
