@@ -58,6 +58,8 @@ class dbobjectTest extends testcase
         $this->assertSame(2.0, $topic->float);
         $topic->metadata_published = '2012-10-11 01:11:22';
         $this->assertEquals('2012-10-11T01:11:22+00:00', (string) $topic->metadata_published);
+        $topic->metadata_published = '0000-00-00 00:00:00';
+        $this->assertEquals('0001-01-01T00:00:00+00:00', (string) $topic->metadata_published);
     }
 
     public function test_get()

@@ -78,7 +78,8 @@ abstract class dbobject implements ObjectManagerAware
             }
             else if ($mapping['type'] === 'midgard_datetime')
             {
-                if (is_string($value))
+                if (   is_string($value)
+                    && $value !== '0000-00-00 00:00:00')
                 {
                     $value = new midgard_datetime($value);
                 }
