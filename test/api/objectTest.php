@@ -236,12 +236,28 @@ class objectTest extends testcase
         $this->assertTrue($topic->delete());
     }
 
-    public function test_has_dependents()
+    public function test_list()
     {
         $classname = self::$ns . '\\midgard_topic';
 
-        $initial = $this->count_results($classname);
-        $initial_all = $this->count_results($classname, true);
+        $topic = new $classname;
+        $topic->name = __FUNCTION__;
+        $topic->create();
+        $topic2 = new $classname;
+        $topic2->up = $topic->id;
+        $topic2->name = __FUNCTION__;
+        $topic2->create();
+
+        $this->assertEquals(array(), $topic2->list());
+        $children = $topic->list();
+        $this->assertInternalType('array', $children);
+        $this->assertEquals(1, count($children));
+        $this->assertSame($topic2->id, $children[0]->id);
+    }
+
+    public function test_has_dependents()
+    {
+        $classname = self::$ns . '\\midgard_topic';
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;

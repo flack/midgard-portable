@@ -34,11 +34,6 @@ abstract class dbobject implements ObjectManagerAware
         $this->cm = $classmetadata;
     }
 
-    public function __call($method, $args)
-    {
-        throw new \BadMethodCallException("Unknown method " . $method . " on " . get_class($this));
-    }
-
     public function __set($field, $value)
     {
         $this->initialize();

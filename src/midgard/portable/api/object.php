@@ -71,6 +71,15 @@ abstract class object extends dbobject
         return parent::__get($field);
     }
 
+    public function __call($method, $args)
+    {
+        if ($method === 'list')
+        {
+            return $this->_list();
+        }
+        throw new \BadMethodCallException("Unknown method " . $method . " on " . get_class($this));
+    }
+
     protected function load_parent(array $candidates)
     {
         foreach ($candidates as $candidate)
@@ -343,6 +352,28 @@ abstract class object extends dbobject
     public function get_parent()
     {
         return null;
+    }
+
+    /**
+     * This function is called list() in Midgard, but that doesn't work in plain PHP
+     *
+     * @return array
+     */
+    private function _list()
+    {
+        $this->initialize();
+
+        if (!empty($this->cm->midgard['upfield']))
+        {
+            $qb = connection::get_em()->createQueryBuilder();
+            $qb->from(get_class($this), 'c')
+                ->where('c.' . $this->cm->midgard['upfield'] . ' = ?0')
+                ->setParameter(0, $this->id)
+                ->select("c");
+            return $qb->getQuery()->getResult();
+        }
+
+        return array();
     }
 
     /**
