@@ -767,7 +767,35 @@ abstract class object extends dbobject
 
     public function lock()
     {
-        return false;
+        $user = connection::get_user();
+        if ($user === null)
+        {
+            return false;
+        }
+        if ($this->metadata_islocked)
+        {
+            return false;
+        }
+
+        if ($this->id)
+        {
+            try
+            {
+                $om = new objectmanager(connection::get_em());
+                $om->lock($this);
+            }
+            catch (\Exception $e)
+            {
+                exception::internal($e);
+                return false;
+            }
+        }
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+        $this->metadata_islocked = true;
+        $this->metadata_locker = $user->person;
+        $this->metadata_locked = new midgard_datetime;
+
+        return true;
     }
 
     public function is_locked()
@@ -777,7 +805,33 @@ abstract class object extends dbobject
 
     public function unlock()
     {
-        return false;
+        $user = connection::get_user();
+        if ($user === null)
+        {
+            return false;
+        }
+        if (!$this->metadata_islocked)
+        {
+            return false;
+        }
+
+        if ($this->id)
+        {
+            try
+            {
+                $om = new objectmanager(connection::get_em());
+                $om->unlock($this);
+            }
+            catch (\Exception $e)
+            {
+                exception::internal($e);
+                return false;
+            }
+        }
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+        $this->metadata_islocked = false;
+
+        return true;
     }
 
     public function get_workspace()

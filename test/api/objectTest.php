@@ -717,4 +717,45 @@ class objectTest extends testcase
         $this->assertTrue($topic->create());
         $this->assertEquals($guid, $topic->guid);
     }
+
+    public function test_lock()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $topic->create();
+        $topic->title = 'This should not be saved';
+        connection::set_user(null);
+
+        $this->assertFalse($topic->lock());
+
+        $person = self::create_user();
+
+        $this->assertTrue($topic->lock());
+        $this->assertTrue($topic->is_locked());
+        $this->assertFalse($topic->lock());
+        $this->assertEquals($person->guid, $topic->metadata->locker);
+        //self::$em->clear();
+        $loaded = new $classname($topic->id);
+        $this->assertTrue($loaded->is_locked());
+        $this->assertEquals($person->guid, $loaded->metadata->locker);
+        $this->assertEquals('', $loaded->title);
+    }
+
+    public function test_unlock()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        connection::set_user(null);
+
+        $this->assertFalse($topic->unlock());
+
+        $person = self::create_user();
+
+        $this->assertFalse($topic->unlock());
+        $this->assertTrue($topic->lock());
+        $this->assertTrue($topic->is_locked());
+        $this->assertTrue($topic->unlock());
+        $this->assertFalse($topic->is_locked());
+        $this->assertFalse($topic->unlock());
+    }
 }

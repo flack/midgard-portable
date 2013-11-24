@@ -10,6 +10,7 @@ namespace midgard\portable\storage;
 use midgard\portable\api\dbobject;
 use midgard\portable\storage\metadata\entity;
 use Doctrine\ORM\EntityManager;
+use midgard_datetime;
 
 class objectmanager
 {
@@ -49,6 +50,34 @@ class objectmanager
         $this->em->remove($ref);
         $this->em->flush($ref);
         $this->em->detach($entity);
+    }
+
+    public function lock(dbobject $entity)
+    {
+        $user = connection::get_user();
+        $ref = $this->em->getReference(get_class($entity), $entity->id);
+        $ref->metadata_islocked = true;
+        $ref->metadata_locker = $user->person;
+        $ref->metadata_locked = new midgard_datetime;
+
+        $this->em->persist($ref);
+        $this->em->flush($ref);
+        $this->em->detach($entity);
+        $this->copy_metadata($ref, $entity);
+    }
+
+    public function unlock(dbobject $entity)
+    {
+        $user = connection::get_user();
+        $ref = $this->em->getReference(get_class($entity), $entity->id);
+        $ref->metadata_islocked = true;
+        $ref->metadata_locker = $user->person;
+        $ref->metadata_locked = new midgard_datetime;
+
+        $this->em->persist($ref);
+        $this->em->flush($ref);
+        $this->em->detach($entity);
+        $this->copy_metadata($ref, $entity);
     }
 
     private function copy_metadata($source, $target)
