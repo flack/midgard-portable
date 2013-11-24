@@ -141,6 +141,7 @@ class user extends dbobject
             exception::internal($e);
             return false;
         }
+        connection::get_em()->detach($this);
         return ($this->id != 0);
     }
 

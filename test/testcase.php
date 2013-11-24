@@ -30,6 +30,20 @@ class testcase extends \PHPUnit_Framework_TestCase
         self::$ns = $ns;
     }
 
+    protected static function create_user()
+    {
+        $person_class = self::$ns . '\\midgard_person';
+        $user_class = self::$ns . '\\midgard_user';
+        $person = new $person_class;
+        $person->create();
+        $user = new $user_class;
+        $user->authtype = 'Legacy';
+        $user->set_person($person);
+        $user->create();
+        $user->login();
+        return $person;
+    }
+
     /**
      * purge all records for the given classname
      *

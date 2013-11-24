@@ -66,7 +66,7 @@ class userTest extends testcase
         $user->login = uniqid();
         $user->password = 'x';
         $stat = $user->update();
-        $this->assertTrue($stat);
+        $this->assertTrue($stat, midgard_connection::get_instance()->get_error_string());
 
         self::$em->clear();
         $tokens = array('authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password);

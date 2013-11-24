@@ -112,6 +112,18 @@ class objectTest extends testcase
         $this->assertEquals(MGD_ERR_OBJECT_PURGED, \midgard_connection::get_instance()->get_error());
     }
 
+    public function test_load_separate_instances()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $topic->create();
+
+        $topic->name = __FUNCTION__;
+
+        $loaded = new $classname($topic->id);
+        $this->assertEquals('', $loaded->name);
+    }
+
     /**
      * @expectedException InvalidArgumentException
      */
@@ -309,7 +321,7 @@ class objectTest extends testcase
         $this->assertEquals($initial, $this->count_results($classname, true));
         $stat = $topic->purge();
         $this->assertFalse($stat);
-        $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
+        $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error(), \midgard_connection::get_instance()->get_error_string());
 
         $topic = new $classname;
         $topic->name = __FUNCTION__ . ' 2';
@@ -335,6 +347,7 @@ class objectTest extends testcase
 
         $child->up = $topic->up;
         $child->update();
+
         self::$em->clear();
 
         $child = self::$em->find('midgard:midgard_topic', $child->id);

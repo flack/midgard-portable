@@ -15,6 +15,8 @@ use midgard\portable\api\error\exception;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use midgard_connection;
+use midgard_datetime;
+use Doctrine\Common\Persistence\Proxy;
 
 abstract class object extends dbobject
 {
@@ -126,6 +128,7 @@ abstract class object extends dbobject
         }
 
         $this->populate_from_entity($entity);
+        connection::get_em()->detach($entity);
         midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return true;
     }
@@ -142,11 +145,30 @@ abstract class object extends dbobject
             throw exception::not_exists();
         }
         $this->populate_from_entity($entity);
+        connection::get_em()->detach($entity);
+
         return true;
     }
 
     public function update()
     {
+        // If association proxies are uninitialized, Doctrine ignores them during changeset calculations
+        // for some reason, so we do this manually here...
+        foreach ($this->cm->getAssociationNames() as $name)
+        {
+            if (   $this->$name instanceof Proxy
+                && !$this->$name->__isInitialized())
+            {
+                try
+                {
+                    $this->$name->__load();
+                }
+                catch (\Doctrine\ORM\EntityNotFoundException $e)
+                {
+                    $this->$name = null;
+                }
+            }
+        }
         try
         {
             $om = new objectmanager(connection::get_em());
@@ -180,6 +202,7 @@ abstract class object extends dbobject
             exception::internal($e);
             return false;
         }
+        connection::get_em()->detach($this);
         midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return ($this->id != 0);
     }
@@ -677,6 +700,11 @@ abstract class object extends dbobject
             $om = new objectmanager(connection::get_em());
             $om->purge($this);
         }
+        catch (\Doctrine\ORM\EntityNotFoundException $e)
+        {
+            exception::not_exists();
+            return false;
+        }
         catch (\Exception $e)
         {
             exception::internal($e);
@@ -744,7 +772,7 @@ abstract class object extends dbobject
 
     public function is_locked()
     {
-        return false;
+        return $this->metadata_islocked;
     }
 
     public function unlock()
