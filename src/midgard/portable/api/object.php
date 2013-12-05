@@ -145,8 +145,9 @@ abstract class object extends dbobject
             throw exception::not_exists();
         }
         $this->populate_from_entity($entity);
-        connection::get_em()->detach($entity);
-
+        // TODO this breaks userland unit tests
+        // connection::get_em()->detach($entity);
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return true;
     }
 
