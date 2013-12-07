@@ -217,14 +217,18 @@ class objectTest extends testcase
         $classname = self::$ns . '\\midgard_topic';
         $topic = new $classname;
         $topic->create();
+        $topic2 = new $classname;
+        $topic2->create();
 
         $topic->name = __FUNCTION__ . 'xxx';
+        $topic->up = $topic2->id;
         $stat = $topic->update();
         $this->assertTrue($stat);
         self::$em->clear();
 
         $loaded = new $classname($topic->id);
         $this->assertEquals($topic->name, $loaded->name);
+        $this->assertEquals($topic2->id, $loaded->up, 'Wrong up ID');
         $this->assertEquals('', $loaded->title);
     }
 
@@ -378,6 +382,44 @@ class objectTest extends testcase
         $this->assertTrue($topic->delete());
     }
 
+    /**
+     * These are more or less random operations to provoke proxy usage in Doctrine
+     */
+    public function test_associations()
+    {
+        $classname = self::$ns . '\\midgard_snippetdir';
+        $sn_class = self::$ns . '\\midgard_snippet';
+
+        $sd = new $classname;
+        $sd->name = __FUNCTION__;
+        $sd->create();
+
+        $sd2 = new $classname;
+        $sd2->name = __FUNCTION__ . '2';
+        $sd2->create();
+
+        $sn = new $sn_class;
+        $sn->name = __FUNCTION__;
+        $sn->snippetdir = $sd->id;
+        $stat = $sn->create();
+        $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());
+
+        $sn->snippetdir = $sd2->id;
+        $stat = $sn->update();
+        $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());
+        $this->assertTrue($sd2->has_dependents());
+
+        $stat = $sd2->delete();
+        $this->assertFalse($stat, \midgard_connection::get_instance()->get_error_string());
+        $stat = $sd2->purge();
+        $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());
+
+        $stat = $sn->delete();
+        $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());
+        $stat = $sn->purge();
+        $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());
+    }
+
     public function test_uniquenames()
     {
         $classname = self::$ns . '\\midgard_snippetdir';
@@ -388,12 +430,12 @@ class objectTest extends testcase
         $sd2 = new $classname;
         $sd2->name = __FUNCTION__;
         $stat = $sd2->create();
-        $this->assertFalse($stat);
+        $this->assertFalse($stat, \midgard_connection::get_instance()->get_error_string());
 
         $sd->delete();
 
         $stat = $sd2->create();
-        $this->assertTrue($stat);
+        $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());
 
         $sd3 = new $classname;
         $sd3->name = __FUNCTION__;

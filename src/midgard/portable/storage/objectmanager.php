@@ -24,21 +24,37 @@ class objectmanager
     public function update(dbobject $entity)
     {
         $merged = $this->em->merge($entity);
+        $this->copy_associations($entity, $merged);
         $this->em->persist($merged);
         $this->em->flush($merged);
         $this->em->detach($entity);
         $this->copy_metadata($merged, $entity);
     }
 
+    /**
+     * This is basically a workaround for some quirks when merging detached entities with changed associations
+     *
+     * @todo: This may or may not be a bug in Doctrine
+     */
+    private function copy_associations($source, $target)
+    {
+        foreach ($this->em->getClassMetadata(get_class($source))->getAssociationNames() as $name)
+        {
+            $target->$name = $source->$name;
+        }
+    }
+
     public function delete(dbobject $entity)
     {
-        $ref = $this->em->getReference(get_class($entity), $entity->id);
-        $ref->metadata_deleted = true;
+        $classname = get_class($entity);
+        $copy = new $classname($entity->id);
+        $copy->metadata_deleted = true;
+        $copy = $this->em->merge($copy);
 
-        $this->em->persist($ref);
-        $this->em->flush($ref);
+        $this->em->persist($copy);
+        $this->em->flush($copy);
         $this->em->detach($entity);
-        $this->copy_metadata($ref, $entity);
+        $this->copy_metadata($copy, $entity);
     }
 
     public function purge(dbobject $entity)

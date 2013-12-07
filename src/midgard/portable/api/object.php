@@ -153,23 +153,6 @@ abstract class object extends dbobject
 
     public function update()
     {
-        // If association proxies are uninitialized, Doctrine ignores them during changeset calculations
-        // for some reason, so we do this manually here...
-        foreach ($this->cm->getAssociationNames() as $name)
-        {
-            if (   $this->$name instanceof Proxy
-                && !$this->$name->__isInitialized())
-            {
-                try
-                {
-                    $this->$name->__load();
-                }
-                catch (\Doctrine\ORM\EntityNotFoundException $e)
-                {
-                    $this->$name = null;
-                }
-            }
-        }
         try
         {
             $om = new objectmanager(connection::get_em());

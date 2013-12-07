@@ -98,11 +98,13 @@ class metadataTest extends testcase
         $classname = self::$ns . '\\midgard_topic';
         $topic = new $classname;
         $topic->name = __FUNCTION__;
-        $topic->create();
-        $topic->delete();
+        $stat = $topic->create();
+        $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());
+        $stat = $topic->delete();
+        $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());
 
         $this->assertNotEquals('0000-01-01 00:00:00', $topic->metadata->revised->format('Y-m-d H:i:s'));
-        $this->assertEquals(1, $topic->metadata->revision);
+        $this->assertEquals(1, $topic->metadata->revision, 'Unexpected revision number');
         $this->assertTrue($topic->metadata->deleted);
     }
 }
