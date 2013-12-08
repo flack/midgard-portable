@@ -183,13 +183,15 @@ class objectTest extends testcase
         $this->assertTrue($stat);
         $this->assertEquals($topic->id, $loaded->id);
         $this->assertEquals($topic->name, $loaded->name);
+
         $topic2->get_by_guid($topic2->guid);
         $loaded->up = $topic2->id;
-        $stat = $loaded->update();
-        $this->assertTrue($stat);
+        $this->assert_api('update', $loaded);
+
         $topic2->delete();
         $topic2->purge();
         $loaded2 = new $classname($topic->guid);
+
         $stat = $loaded2->get_by_guid($topic->guid);
         $this->assertTrue($stat);
         $this->assertEquals($topic->id, $loaded2->id);
@@ -397,16 +399,20 @@ class objectTest extends testcase
 
         $sd = new $classname;
         $sd->name = __FUNCTION__;
-        $sd->create();
-
-        $sd2 = new $classname;
-        $sd2->name = __FUNCTION__ . '2';
-        $sd2->create();
+        $this->assert_api('create', $sd);
 
         $sn = new $sn_class;
         $sn->name = __FUNCTION__;
         $sn->snippetdir = $sd->id;
+        //This somehow causes the snippetdir reference oid to become stale
+        $sd->get_by_id($sd->id);
+        $sd->get_by_guid($sd->guid);
+
         $this->assert_api('create', $sn);
+
+        $sd2 = new $classname;
+        $sd2->name = __FUNCTION__ . '2';
+        $sd2->create();
 
         $sn->snippetdir = $sd2->id;
         $this->assert_api('update', $sn);

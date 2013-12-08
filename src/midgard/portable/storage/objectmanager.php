@@ -21,6 +21,21 @@ class objectmanager
         $this->em = $em;
     }
 
+    public function create(dbobject $entity)
+    {
+        foreach ($this->em->getClassMetadata(get_class($entity))->getAssociationNames() as $name)
+        {
+            if (!empty($entity->$name))
+            {
+                //This makes sure that we don't have stale references
+                $entity->$name = $entity->$name;
+            }
+        }
+
+        $this->em->persist($entity);
+        $this->em->flush($entity);
+    }
+
     public function update(dbobject $entity)
     {
         $merged = $this->em->merge($entity);

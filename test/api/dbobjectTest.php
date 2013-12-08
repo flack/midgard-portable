@@ -79,6 +79,8 @@ class dbobjectTest extends testcase
         $results = $qb->execute();
 
         $this->assertSame($topic->score, $results[0]->score);
+        //This confuses reference proxies. Do we need to support this case?
+        //$parent->purge();
         $this->assertSame($topic->up, $results[0]->up);
     }
 

@@ -161,8 +161,8 @@ abstract class object extends dbobject
         }
         try
         {
-            connection::get_em()->persist($this);
-            connection::get_em()->flush($this);
+            $om = new objectmanager(connection::get_em());
+            $om->create($this);
         }
         catch (\Exception $e)
         {
