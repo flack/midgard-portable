@@ -173,6 +173,9 @@ class objectTest extends testcase
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $topic->create();
+        $topic2 = new $classname;
+        $topic2->name = __FUNCTION__;
+        $topic2->create();
         self::$em->clear();
 
         $loaded = new $classname;
@@ -180,6 +183,19 @@ class objectTest extends testcase
         $this->assertTrue($stat);
         $this->assertEquals($topic->id, $loaded->id);
         $this->assertEquals($topic->name, $loaded->name);
+        $topic2->get_by_guid($topic2->guid);
+        $loaded->up = $topic2->id;
+        $stat = $loaded->update();
+        $this->assertTrue($stat);
+        $topic2->delete();
+        $topic2->purge();
+        $loaded2 = new $classname($topic->guid);
+        $stat = $loaded2->get_by_guid($topic->guid);
+        $this->assertTrue($stat);
+        $this->assertEquals($topic->id, $loaded2->id);
+        $this->assertEquals($topic2->id, $loaded2->up);
+        $this->assertTrue($loaded2->delete());
+        $this->assertTrue($loaded2->purge());
     }
 
     public function test_create()
@@ -290,9 +306,6 @@ class objectTest extends testcase
     {
         $classname = self::$ns . '\\midgard_topic';
 
-        $initial = $this->count_results($classname);
-        $initial_all = $this->count_results($classname, true);
-
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $topic->create();
@@ -301,13 +314,9 @@ class objectTest extends testcase
         $topic2->name = __FUNCTION__;
         $topic2->create();
 
-        $stat = $topic->delete();
-        $this->assertFalse($stat);
-        $this->assertEquals(MGD_ERR_HAS_DEPENDANTS, \midgard_connection::get_instance()->get_error());
-
-        $stat = $topic2->delete();
-        $this->assertTrue($stat);
-        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
+        $this->assert_api('delete', $topic, MGD_ERR_HAS_DEPENDANTS);
+        $this->assert_api('delete', $topic2);
+        $this->assert_api('delete', $topic);
     }
 
     public function test_purge()
@@ -368,18 +377,14 @@ class objectTest extends testcase
         $topic->create();
 
         $article = new $article_class;
-        $this->assertFalse($article->create());
-        $this->assertEquals(MGD_ERR_OBJECT_NO_PARENT, \midgard_connection::get_instance()->get_error());
+        $this->assert_api('create', $article, MGD_ERR_OBJECT_NO_PARENT);
         $article->topic = $topic->id;
-        $this->assertTrue($article->create());
-        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
+        $this->assert_api('create', $article);
 
         $this->assertEquals($topic->guid, $article->get_parent()->guid);
-        $this->assertFalse($topic->delete());
-        $this->assertEquals(MGD_ERR_HAS_DEPENDANTS, \midgard_connection::get_instance()->get_error());
-        $this->assertTrue($article->delete());
-        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
-        $this->assertTrue($topic->delete());
+        $this->assert_api('delete', $topic, MGD_ERR_HAS_DEPENDANTS);
+        $this->assert_api('delete', $article);
+        $this->assert_api('delete', $topic);
     }
 
     /**
@@ -401,23 +406,16 @@ class objectTest extends testcase
         $sn = new $sn_class;
         $sn->name = __FUNCTION__;
         $sn->snippetdir = $sd->id;
-        $stat = $sn->create();
-        $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());
+        $this->assert_api('create', $sn);
 
         $sn->snippetdir = $sd2->id;
-        $stat = $sn->update();
-        $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());
+        $this->assert_api('update', $sn);
         $this->assertTrue($sd2->has_dependents());
 
-        $stat = $sd2->delete();
-        $this->assertFalse($stat, \midgard_connection::get_instance()->get_error_string());
-        $stat = $sd2->purge();
-        $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());
-
-        $stat = $sn->delete();
-        $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());
-        $stat = $sn->purge();
-        $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());
+        $this->assert_api('delete', $sd2, MGD_ERR_HAS_DEPENDANTS);
+        $this->assert_api('purge', $sd2);
+        $this->assert_api('delete', $sn);
+        $this->assert_api('purge', $sn);
     }
 
     public function test_uniquenames()

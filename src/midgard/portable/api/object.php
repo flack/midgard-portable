@@ -145,26 +145,9 @@ abstract class object extends dbobject
             throw exception::not_exists();
         }
         $this->populate_from_entity($entity);
-        // TODO this breaks userland unit tests
-        // connection::get_em()->detach($entity);
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
-        return true;
-    }
 
-    public function update()
-    {
-        try
-        {
-            $om = new objectmanager(connection::get_em());
-            $om->update($this);
-        }
-        catch (\Exception $e)
-        {
-            exception::internal($e);
-            return false;
-        }
+        connection::get_em()->detach($entity);
         midgard_connection::get_instance()->set_error(MGD_ERR_OK);
-
         return true;
     }
 
@@ -189,6 +172,55 @@ abstract class object extends dbobject
         connection::get_em()->detach($this);
         midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return ($this->id != 0);
+    }
+
+    public function update()
+    {
+        try
+        {
+            $om = new objectmanager(connection::get_em());
+            $om->update($this);
+        }
+        catch (\Exception $e)
+        {
+            exception::internal($e);
+            return false;
+        }
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+
+        return true;
+    }
+
+    public function delete($check_dependencies = true)
+    {
+        if (   $check_dependencies
+            && $this->has_dependents())
+        {
+            exception::has_dependants();
+            return false;
+        }
+        if (!($this instanceof metadata_interface))
+        {
+            return $this->purge();
+        }
+        if ($this->metadata_deleted)
+        {
+            return true;
+        }
+
+        try
+        {
+            $om = new objectmanager(connection::get_em());
+            $om->delete($this);
+        }
+        catch (\Exception $e)
+        {
+            exception::internal($e);
+            return false;
+        }
+
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+        return true;
     }
 
     private function is_unique()
@@ -322,38 +354,6 @@ abstract class object extends dbobject
         }
 
         return $stat;
-    }
-
-    public function delete($check_dependencies = true)
-    {
-        if (   $check_dependencies
-            && $this->has_dependents())
-        {
-            exception::has_dependants();
-            return false;
-        }
-        if (!($this instanceof metadata_interface))
-        {
-            return $this->purge();
-        }
-        if ($this->metadata_deleted)
-        {
-            return true;
-        }
-
-        try
-        {
-            $om = new objectmanager(connection::get_em());
-            $om->delete($this);
-        }
-        catch (\Exception $e)
-        {
-            exception::internal($e);
-            return false;
-        }
-
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
-        return true;
     }
 
     public function get_parent()

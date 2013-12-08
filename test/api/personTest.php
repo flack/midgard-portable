@@ -52,6 +52,6 @@ class personTest extends testcase
         $this->assertTrue($person->delete());
         $this->assertTrue($person->purge());
         $member = new $member_class($member->id);
-        $this->assertTrue($member->delete());
+        $this->assert_api('delete', $member);
     }
 }

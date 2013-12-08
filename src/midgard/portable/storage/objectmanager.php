@@ -48,7 +48,17 @@ class objectmanager
     {
         $classname = get_class($entity);
         $copy = new $classname($entity->id);
+
         $copy->metadata_deleted = true;
+
+        foreach ($this->em->getClassMetadata($classname)->getAssociationNames() as $name)
+        {
+            if ($copy->$name === 0)
+            {
+                //This is necessary to kill potential proxy objects pointing to purged entities
+                $copy->$name = 0;
+            }
+        }
         $copy = $this->em->merge($copy);
 
         $this->em->persist($copy);
