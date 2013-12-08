@@ -128,7 +128,8 @@ abstract class object extends dbobject
         }
 
         $this->populate_from_entity($entity);
-        connection::get_em()->detach($entity);
+        //TODO: detaching somehow causes entity to become stale when it is fetched again
+        //connection::get_em()->detach($entity);
         midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return true;
     }
@@ -169,7 +170,7 @@ abstract class object extends dbobject
             exception::internal($e);
             return false;
         }
-        connection::get_em()->detach($this);
+
         midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return ($this->id != 0);
     }

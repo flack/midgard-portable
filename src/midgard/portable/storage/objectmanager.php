@@ -34,6 +34,7 @@ class objectmanager
 
         $this->em->persist($entity);
         $this->em->flush($entity);
+        $this->em->detach($entity);
     }
 
     public function update(dbobject $entity)

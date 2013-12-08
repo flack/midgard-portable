@@ -268,6 +268,16 @@ class objectTest extends testcase
         $this->assertEquals($initial_all + 1, $all);
 
         $this->assertTrue($topic->delete());
+
+        $topic = new $classname;
+        $topic->name = __FUNCTION__;
+        $topic->create();
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('guid', '=', $topic->guid);
+        unset($topic);
+
+        $result = $qb->execute();
+        $this->assert_api('delete', $result[0]);
     }
 
     public function test_list()
@@ -420,6 +430,16 @@ class objectTest extends testcase
 
         $this->assert_api('delete', $sd2, MGD_ERR_HAS_DEPENDANTS);
         $this->assert_api('purge', $sd2);
+
+        $sn->snippetdir = $sd->id;
+        $this->assert_api('update', $sn);
+        $sd->get_by_id($sd->id);
+        $sd->name  = __FUNCTION__ . '1';
+        $sd->update();
+
+        $this->assertSame($sd->id, $sn->get_parent()->id);
+        $this->assertSame(__FUNCTION__ . '1', $sn->get_parent()->name);
+
         $this->assert_api('delete', $sn);
         $this->assert_api('purge', $sn);
     }
