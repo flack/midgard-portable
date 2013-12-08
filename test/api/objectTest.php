@@ -274,9 +274,10 @@ class objectTest extends testcase
         $topic->create();
         $qb = new \midgard_query_builder($classname);
         $qb->add_constraint('guid', '=', $topic->guid);
-        unset($topic);
+        $topic = self::$em->getReference($classname, $topic->id);
 
         $result = $qb->execute();
+        $this->assertEquals(1, count($result));
         $this->assert_api('delete', $result[0]);
     }
 

@@ -10,6 +10,7 @@ namespace midgard\portable\storage;
 use midgard\portable\api\dbobject;
 use midgard\portable\storage\metadata\entity;
 use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Util\ClassUtils;
 use midgard_datetime;
 
 class objectmanager
@@ -62,7 +63,8 @@ class objectmanager
 
     public function delete(dbobject $entity)
     {
-        $classname = get_class($entity);
+        //we might deal with a proxy here, so we translate the classname
+        $classname = ClassUtils::getRealClass(get_class($entity));
         $copy = new $classname($entity->id);
 
         $copy->metadata_deleted = true;
