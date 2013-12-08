@@ -39,7 +39,13 @@ class subscriber implements EventSubscriber
                 $entity->set_guid(connection::generate_guid());
             }
             $ref = $em->getClassMetadata(get_class($entity))->getReflectionClass();
-            $repligard_entry = new $repligard_class;
+            //workaround for possible oid collisions in UnitOfWork
+            //see http://www.doctrine-project.org/jira/browse/DDC-2785
+            do
+            {
+                $repligard_entry = new $repligard_class;
+            }
+            while ($em->getUnitOfWork()->isInIdentityMap($repligard_entry));
             $repligard_entry->guid = $entity->guid;
             $repligard_entry->typename = $ref->getShortName();
             $repligard_entry->object_action = self::ACTION_CREATE;
