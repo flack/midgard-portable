@@ -88,4 +88,5 @@ class testcase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(($expected_error === MGD_ERR_OK), $object->$function(), \midgard_connection::get_instance()->get_error_string());
         $this->assertEquals($expected_error, \midgard_connection::get_instance()->get_error(), \midgard_connection::get_instance()->get_error_string());
     }
+
 }

@@ -283,6 +283,8 @@ class objectTest extends testcase
         $this->assertEquals($initial_all + 1, $all);
 
         $this->assertTrue($topic->delete());
+        // delete a topic that is already deleted
+        $this->assertTrue($topic->delete());
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;
@@ -299,7 +301,31 @@ class objectTest extends testcase
     public function test_undelete()
     {
         $classname = self::$ns . '\\midgard_topic';
+        $con = \midgard_connection::get_instance();
 
+        // test undelete on invalid guid
+        $stat = call_user_func_array($classname . "::undelete", array("hello"));
+        $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_NOT_EXISTS, $con->get_error(), $con->get_error_string());
+
+        // test undelete on not deleted topic
+        $topic = new $classname;
+        $topic->name = uniqid('t1' . time());
+        $topic->create();
+
+        $stat = call_user_func_array($classname . "::undelete", array($topic->guid));
+        $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_INTERNAL, $con->get_error(), $con->get_error_string());
+
+        // test undelete on purged topic
+        $topic->purge();
+
+        $stat = call_user_func_array($classname . "::undelete", array($topic->guid));
+        $this->assertFalse($stat);
+        // TODO expect MGD_ERR_OBJECT_PURGED here?
+        $this->assertEquals(MGD_ERR_NOT_EXISTS, $con->get_error(), $con->get_error_string());
+
+        // test undelete that should work
         $initial = $this->count_results($classname);
         $initial_all = $this->count_results($classname, true);
 

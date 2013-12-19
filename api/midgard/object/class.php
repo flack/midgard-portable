@@ -31,7 +31,8 @@ class midgard_object_class
         }
         if ($type === null)
         {
-            throw exception::not_exists();
+            exception::not_exists();
+            return null;
         }
         return $type;
     }
@@ -45,21 +46,41 @@ class midgard_object_class
 
     public static function undelete($guid)
     {
-        $em = connection::get_em();
-        $om = new objectmanager($em);
-
         $classname = self::resolve_classname($guid);
+        if (!$classname)
+        {
+            return false;
+        }
         $qb = new \midgard_query_builder($classname);
         $qb->include_deleted();
         $qb->add_constraint('guid', '=', $guid);
         $results = $qb->execute();
         if (count($results) === 0)
         {
-            throw exception::not_exists();
+            exception::not_exists();
+            return false;
         }
         $entity = array_shift($results);
 
-        $om->undelete($entity);
+        if (!$entity->metadata_deleted)
+        {
+            exception::internal(new \Exception("Object is not deleted."));
+            return false;
+        }
+
+        try
+        {
+            $om = new objectmanager(connection::get_em());
+            $om->undelete($entity);
+        }
+        catch (\Exception $e)
+        {
+            exception::internal($e);
+            return false;
+        }
+
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+        return true;
     }
 
     public static function get_object_by_guid($guid)
