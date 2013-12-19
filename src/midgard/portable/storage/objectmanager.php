@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Util\ClassUtils;
 use midgard\portable\api\error\exception;
 use midgard_datetime;
+use Doctrine\ORM\UnitOfWork;
 
 class objectmanager
 {
@@ -32,6 +33,13 @@ class objectmanager
                 //This makes sure that we don't have stale references
                 $entity->$name = $entity->$name;
             }
+        }
+
+        //workaround for possible oid collisions in UnitOfWork
+        //see http://www.doctrine-project.org/jira/browse/DDC-2785
+        if ($this->em->getUnitOfWork()->getEntityState($entity) != UnitOfWork::STATE_NEW)
+        {
+            $this->em->detach($entity);
         }
 
         $this->em->persist($entity);
