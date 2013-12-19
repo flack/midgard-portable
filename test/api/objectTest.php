@@ -322,8 +322,7 @@ class objectTest extends testcase
 
         $stat = call_user_func_array($classname . "::undelete", array($topic->guid));
         $this->assertFalse($stat);
-        // TODO expect MGD_ERR_OBJECT_PURGED here?
-        $this->assertEquals(MGD_ERR_NOT_EXISTS, $con->get_error(), $con->get_error_string());
+        $this->assertEquals(MGD_ERR_OBJECT_PURGED, $con->get_error(), $con->get_error_string());
 
         // test undelete that should work
         $initial = $this->count_results($classname);
@@ -860,7 +859,7 @@ class objectTest extends testcase
         $classname = self::$ns . '\\midgard_topic';
         $topic = new $classname;
         $topic->create();
-        $topic->title = 'This should not be saved';
+        $topic->title = 'This should not be saved'; // change AFTER create
         connection::set_user(null);
 
         $this->assertFalse($topic->lock());
@@ -871,17 +870,18 @@ class objectTest extends testcase
         $this->assertTrue($topic->is_locked());
         $this->assertFalse($topic->lock());
         $this->assertEquals($person->guid, $topic->metadata->locker);
-        //self::$em->clear();
+
         $loaded = new $classname($topic->id);
         $this->assertTrue($loaded->is_locked());
         $this->assertEquals($person->guid, $loaded->metadata->locker);
-        $this->assertEquals('', $loaded->title);
+        $this->verify_unpersisted_changes($classname, $topic->guid, "title", "");
     }
 
     public function test_unlock()
     {
         $classname = self::$ns . '\\midgard_topic';
         $topic = new $classname;
+        $topic->create();
         connection::set_user(null);
 
         $this->assertFalse($topic->unlock());
@@ -890,9 +890,65 @@ class objectTest extends testcase
 
         $this->assertFalse($topic->unlock());
         $this->assertTrue($topic->lock());
+        $locker = $topic->metadata_locker;
+        $locked = $topic->metadata_locked;
         $this->assertTrue($topic->is_locked());
         $this->assertTrue($topic->unlock());
         $this->assertFalse($topic->is_locked());
         $this->assertFalse($topic->unlock());
+
+        $loaded = new $classname($topic->id);
+        $this->assertFalse($loaded->is_locked());
+        $this->assertEquals($locker, $loaded->metadata->locker);
+        $this->assertEquals($locked, $loaded->metadata->locked);
+    }
+
+    public function test_approve()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $topic->create();
+        $topic->title = 'This should not be saved'; // change AFTER create
+        connection::set_user(null);
+
+        $this->assertFalse($topic->approve());
+
+        $person = self::create_user();
+
+        $this->assertTrue($topic->approve());
+        $this->assertTrue($topic->is_approved());
+        $this->assertFalse($topic->approve());
+        $this->assertEquals($person->guid, $topic->metadata->approver);
+
+        $loaded = new $classname($topic->id);
+        $this->assertTrue($loaded->is_approved());
+        $this->assertEquals($person->guid, $loaded->metadata->approver);
+        $this->verify_unpersisted_changes($classname, $topic->guid, "title", "");
+    }
+
+    public function test_unapprove()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $topic->create();
+        connection::set_user(null);
+
+        $this->assertFalse($topic->unapprove());
+
+        $person = self::create_user();
+
+        $this->assertFalse($topic->unapprove());
+        $this->assertTrue($topic->approve());
+        $approver = $topic->metadata_approver;
+        $approved = $topic->metadata_approved;
+        $this->assertTrue($topic->is_approved());
+        $this->assertTrue($topic->unapprove());
+        $this->assertFalse($topic->is_approved());
+        $this->assertFalse($topic->unapprove());
+
+        $loaded = new $classname($topic->id);
+        $this->assertFalse($loaded->is_approved());
+        $this->assertEquals($approver, $loaded->metadata->approver);
+        $this->assertEquals($approved, $loaded->metadata->approved);
     }
 }

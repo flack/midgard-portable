@@ -57,7 +57,9 @@ class midgard_object_class
         $results = $qb->execute();
         if (count($results) === 0)
         {
-            exception::not_exists();
+            // if the classname could be resolved by repligard and we are unable to find an object at this point
+            // it might be due to the object being purged
+            exception::object_purged();
             return false;
         }
         $entity = array_shift($results);

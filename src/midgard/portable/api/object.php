@@ -735,29 +735,42 @@ abstract class object extends dbobject
         return false;
     }
 
-    public function approve()
+    /**
+     * helper function for managing the isapproved and islocked metadata properties
+     * @param string $propertyName the property to manage (either isapproved or islocked)
+     * @param bool $newval
+     * @return boolean
+     */
+    private function manage_meta_property($propertyName, $newval)
     {
-        return false;
-    }
-
-    public function is_approved()
-    {
-        return false;
-    }
-
-    public function unapprove()
-    {
-        return false;
-    }
-
-    public function lock()
-    {
-        $user = connection::get_user();
-        if ($user === null)
+        $conf = array(
+            "isapproved" => array(
+                "func" => array("set" => "approve", "unset" => "unapprove"),
+                "fields" => array(
+                    "bool" => "metadata_isapproved", "person" => "metadata_approver", "time"=>"metadata_approved"
+                )
+             ),
+             "islocked" => array(
+                "func" => array("set" => "lock", "unset" => "unlock"),
+                "fields" => array(
+                    "bool" => "metadata_islocked", "person" => "metadata_locker", "time"=>"metadata_locked"
+                )
+            )
+        );
+        if (!isset($conf[$propertyName]))
         {
             return false;
         }
-        if ($this->metadata_islocked)
+        $conf = $conf[$propertyName];
+
+        $user = connection::get_user();
+        if ($user === null)
+        {
+            exception::access_denied();
+            return false;
+        }
+        // same val
+        if ($this->{$conf["fields"]["bool"]} === $newval)
         {
             return false;
         }
@@ -767,7 +780,8 @@ abstract class object extends dbobject
             try
             {
                 $om = new objectmanager(connection::get_em());
-                $om->lock($this);
+                $func = $newval ? $conf["func"]["set"] : $conf["func"]["unset"];
+                $om->{$func}($this);
             }
             catch (\Exception $e)
             {
@@ -776,11 +790,34 @@ abstract class object extends dbobject
             }
         }
         midgard_connection::get_instance()->set_error(MGD_ERR_OK);
-        $this->metadata_islocked = true;
-        $this->metadata_locker = $user->person;
-        $this->metadata_locked = new midgard_datetime;
 
+        $this->{$conf["fields"]["bool"]} = $newval;
+        if ($newval)
+        {
+            $this->{$conf["fields"]["person"]} = $user->person;
+            $this->{$conf["fields"]["time"]} = new midgard_datetime;
+        }
         return true;
+    }
+
+    public function approve()
+    {
+       return $this->manage_meta_property("isapproved", true);
+    }
+
+    public function is_approved()
+    {
+        return $this->metadata_isapproved;
+    }
+
+    public function unapprove()
+    {
+        return $this->manage_meta_property("isapproved", false);
+    }
+
+    public function lock()
+    {
+        return $this->manage_meta_property("islocked", true);
     }
 
     public function is_locked()
@@ -790,33 +827,7 @@ abstract class object extends dbobject
 
     public function unlock()
     {
-        $user = connection::get_user();
-        if ($user === null)
-        {
-            return false;
-        }
-        if (!$this->metadata_islocked)
-        {
-            return false;
-        }
-
-        if ($this->id)
-        {
-            try
-            {
-                $om = new objectmanager(connection::get_em());
-                $om->unlock($this);
-            }
-            catch (\Exception $e)
-            {
-                exception::internal($e);
-                return false;
-            }
-        }
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
-        $this->metadata_islocked = false;
-
-        return true;
+        return $this->manage_meta_property("islocked", false);
     }
 
     public function get_workspace()
