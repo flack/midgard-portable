@@ -7,7 +7,7 @@
 
 namespace midgard\portable\storage;
 
-use midgard\portable\storage\conection;
+use midgard\portable\storage\connection;
 use midgard\portable\storage\metadata\entity;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
@@ -112,6 +112,7 @@ class subscriber implements EventSubscriber
             $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $entity->guid));
             $repligard_entry->object_action = self::ACTION_PURGE;
             $em->persist($repligard_entry);
+            $em->flush($repligard_entry);
         }
     }
 

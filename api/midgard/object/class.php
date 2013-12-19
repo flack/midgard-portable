@@ -6,6 +6,7 @@
  */
 
 use midgard\portable\storage\connection;
+use midgard\portable\storage\subscriber;
 use midgard\portable\api\error\exception;
 use midgard\portable\storage\objectmanager;
 use Doctrine\ORM\Query;
@@ -16,50 +17,66 @@ class midgard_object_class
     {
         $qb = connection::get_em()->createQueryBuilder();
         $qb->from('midgard:midgard_repligard', 'r')
-        ->select('r.typename')
+        ->addSelect('r.typename')
+        ->addSelect('r.object_action')
         ->where('r.guid = ?1')
         ->setParameter(1, $guid);
 
-        // workaround for http://www.doctrine-project.org/jira/browse/DDC-2655
         try
         {
-            $type = $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR);
+            $result = $qb->getQuery()->getSingleResult();
         }
         catch (\Doctrine\ORM\NoResultException $e)
         {
-            $type = null;
+            $result = null;
         }
-        if ($type === null)
+        if ($result === null)
         {
-            exception::not_exists();
-            return null;
+            throw exception::not_exists();
         }
-        return $type;
+        if ($result["object_action"] == subscriber::ACTION_PURGE)
+        {
+            throw exception::object_purged();
+        }
+
+        return $result["typename"];
+    }
+
+    public static function resolve_fqn($classname)
+    {
+        $cm = connection::get_em()->getClassMetadata('midgard:' . $classname);
+        return $cm->name;
     }
 
     public static function factory($classname, $id = null)
     {
-        $cm = connection::get_em()->getClassMetadata('midgard:' . $classname);
-        $classname = $cm->name;
+        if ($classname === null)
+        {
+            return null;
+        }
+        $classname = self::resolve_fqn($classname);
         return new $classname($id);
     }
 
     public static function undelete($guid)
     {
-        $classname = self::resolve_classname($guid);
-        if (!$classname)
+        try
+        {
+            $classname = self::resolve_classname($guid);
+        }
+        catch(exception $e)
         {
             return false;
         }
+        $classname = self::resolve_fqn($classname);
+
         $qb = new \midgard_query_builder($classname);
         $qb->include_deleted();
         $qb->add_constraint('guid', '=', $guid);
         $results = $qb->execute();
         if (count($results) === 0)
         {
-            // if the classname could be resolved by repligard and we are unable to find an object at this point
-            // it might be due to the object being purged
-            exception::object_purged();
+            exception::not_exists();
             return false;
         }
         $entity = array_shift($results);
