@@ -250,6 +250,18 @@ class objectTest extends testcase
         $this->assertEquals('', $loaded->title);
     }
 
+    private function verify_unpersisted_changes($classname, $guid, $cmp_field, $cmp_value)
+    {
+        // make sure unpersisted changes has not been persisted
+        $qb = new \midgard_query_builder($classname);
+        $qb->include_deleted();
+        $qb->add_constraint('guid', '=', $guid);
+        $results = $qb->execute();
+        $this->assertEquals(1, count($results));
+        $loaded = array_shift($results);
+        $this->assertEquals($cmp_value, $loaded->{$cmp_field}, "This object change for field \"" . $cmp_field . "\" should have not been persisted!");
+    }
+
     public function test_delete()
     {
         $classname = self::$ns . '\\midgard_topic';
@@ -258,10 +270,13 @@ class objectTest extends testcase
         $initial_all = $this->count_results($classname, true);
 
         $topic = new $classname;
-        $topic->name = __FUNCTION__;
+        $name = uniqid(__FUNCTION__);
+        $topic->name = $name;
         $topic->create();
+        $topic->name = uniqid(__FUNCTION__ . time());
         $stat = $topic->delete();
         $this->assertTrue($stat);
+        $this->verify_unpersisted_changes($classname, $topic->guid, "name", $name);
         $this->assertEquals($initial, $this->count_results($classname));
 
         $all = $this->count_results($classname, true);
@@ -279,6 +294,35 @@ class objectTest extends testcase
         $result = $qb->execute();
         $this->assertEquals(1, count($result));
         $this->assert_api('delete', $result[0]);
+    }
+
+    public function test_undelete()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $initial = $this->count_results($classname);
+        $initial_all = $this->count_results($classname, true);
+
+        $topic = new $classname;
+        $name = uniqid(__FUNCTION__);
+        $topic->name = $name;
+        $topic->create();
+
+        $stat = $topic->delete();
+        $this->assertTrue($stat);
+
+        // after delete
+        $this->assertEquals($initial, $this->count_results($classname));
+        $this->assertEquals($initial_all+1, $this->count_results($classname, true));
+
+        $topic->name = uniqid(__FUNCTION__ . time());
+        $stat = call_user_func_array($classname . "::undelete", array($topic->guid));
+        $this->assertTrue($stat);
+        $this->verify_unpersisted_changes($classname, $topic->guid, "name", $name);
+
+        // after undelete
+        $this->assertEquals($initial+1, $this->count_results($classname));
+        $this->assertEquals($initial_all+1, $this->count_results($classname, true));
     }
 
     public function test_list()

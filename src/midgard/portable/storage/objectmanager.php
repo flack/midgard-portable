@@ -11,6 +11,7 @@ use midgard\portable\api\dbobject;
 use midgard\portable\storage\metadata\entity;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Util\ClassUtils;
+use midgard\portable\api\error\exception;
 use midgard_datetime;
 
 class objectmanager
@@ -61,6 +62,19 @@ class objectmanager
         }
     }
 
+    private function kill_potential_proxies($entity)
+    {
+        $classname = ClassUtils::getRealClass(get_class($entity));
+        foreach ($this->em->getClassMetadata($classname)->getAssociationNames() as $name)
+        {
+            if ($entity->$name === 0)
+            {
+                //This is necessary to kill potential proxy objects pointing to purged entities
+                $entity->$name = 0;
+            }
+        }
+    }
+
     public function delete(dbobject $entity)
     {
         //we might deal with a proxy here, so we translate the classname
@@ -68,21 +82,24 @@ class objectmanager
         $copy = new $classname($entity->id);
 
         $copy->metadata_deleted = true;
+        $this->kill_potential_proxies($copy);
 
-        foreach ($this->em->getClassMetadata($classname)->getAssociationNames() as $name)
-        {
-            if ($copy->$name === 0)
-            {
-                //This is necessary to kill potential proxy objects pointing to purged entities
-                $copy->$name = 0;
-            }
-        }
         $copy = $this->em->merge($copy);
 
         $this->em->persist($copy);
         $this->em->flush($copy);
         $this->em->detach($entity);
         $this->copy_metadata($copy, $entity);
+    }
+
+    public function undelete(dbobject $entity)
+    {
+        $entity->metadata_deleted = false;
+        $this->kill_potential_proxies($entity);
+
+        $this->em->persist($entity);
+        $this->em->flush($entity);
+        $this->em->detach($entity);
     }
 
     public function purge(dbobject $entity)

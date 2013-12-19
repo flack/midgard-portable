@@ -702,7 +702,23 @@ abstract class object extends dbobject
 
     public static function undelete($guid)
     {
-        return false;
+        try
+        {
+            \midgard_object_class::undelete($guid);
+        }
+        catch (\Doctrine\ORM\EntityNotFoundException $e)
+        {
+            exception::not_exists();
+            return false;
+        }
+        catch (\Exception $e)
+        {
+            exception::internal($e);
+            return false;
+        }
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+
+        return true;
     }
 
     public function connect($signal, $callback, $user_data)
