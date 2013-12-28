@@ -604,17 +604,16 @@ abstract class object extends dbobject
         return true;
     }
 
-    public function parameter($domain, $name)
+    /**
+     * The signature is a little different from original, because Doctrine doesn't support func_get_args() in proxies
+     */
+    public function parameter($domain, $name, $value = '__UNITIALIZED__')
     {
-        if (func_num_args() == 2)
+        if ($value === '__UNITIALIZED__')
         {
             return $this->get_parameter($domain, $name);
         }
-        else
-        {
-            $value = func_get_arg(2);
-            return $this->set_parameter($domain, $name, $value);
-        }
+        return $this->set_parameter($domain, $name, $value);
     }
 
     public function has_attachments()

@@ -38,4 +38,22 @@ class parameterTest extends testcase
         $param = array_shift($params);
         $this->assertEquals("midcom.core test", $param->get_label());
     }
+
+    public function test_parameter_proxy()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $topic = new $classname;
+        $topic->name = __FUNCTION__;
+        $topic->create();
+
+        $ref = self::$em->getReference($classname, $topic->id);
+
+        $this->assertTrue($ref->parameter("midcom.core", "test", "some value"));
+        $params = $topic->list_parameters();
+        $this->assertEquals(1, count($params));
+
+        $param = array_shift($params);
+        $this->assertEquals("midcom.core test", $param->get_label());
+    }
 }
