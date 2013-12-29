@@ -70,6 +70,22 @@ class subscriber implements EventSubscriber
     public function preUpdate(LifecycleEventArgs $args)
     {
         $entity = $args->getObject();
+
+        if ($entity instanceof entity)
+        {
+            $entity->metadata->revised = new \midgard_datetime();
+            $entity->metadata_revision++;
+            $user = connection::get_user();
+            if ($user !== null)
+            {
+                $entity->metadata_revisor = $user->person;
+            }
+        }
+    }
+
+    public function postUpdate(LifecycleEventArgs $args)
+    {
+        $entity = $args->getObject();
         $em = $args->getObjectManager();
 
         $repligard_class = $em->getClassMetadata('midgard:midgard_repligard')->getName();
@@ -87,17 +103,7 @@ class subscriber implements EventSubscriber
                 $repligard_entry->object_action = self::ACTION_UPDATE;
             }
             $em->persist($repligard_entry);
-        }
-
-        if ($entity instanceof entity)
-        {
-            $entity->metadata->revised = new \midgard_datetime();
-            $entity->metadata_revision++;
-            $user = connection::get_user();
-            if ($user !== null)
-            {
-                $entity->metadata_revisor = $user->person;
-            }
+            $em->flush($repligard_entry);
         }
     }
 
@@ -203,7 +209,7 @@ class subscriber implements EventSubscriber
 
     public function getSubscribedEvents()
     {
-        return array(Events::prePersist, Events::preUpdate, Events::preRemove,
+        return array(Events::prePersist, Events::preUpdate, Events::postUpdate, Events::preRemove,
                      dbal_events::onSchemaCreateTable, dbal_events::onSchemaColumnDefinition);
     }
 }

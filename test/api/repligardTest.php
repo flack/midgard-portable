@@ -41,6 +41,7 @@ class midgard_repligardTest extends testcase
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $topic->create();
+        self::$em->clear();
         $repligard_entry = self::$em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $topic->guid));
         $this->assertInstanceOf(self::$ns . '\\midgard_repligard', $repligard_entry);
         $this->assertFalse(property_exists($repligard_entry, 'metadata'));
@@ -57,6 +58,7 @@ class midgard_repligardTest extends testcase
         $topic->create();
         $topic->name = __FUNCTION__;
         $topic->update();
+        self::$em->clear();
         $repligard_entry = self::$em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $topic->guid));
         $this->assertInstanceOf(self::$ns . '\\midgard_repligard', $repligard_entry);
         $this->assertFalse(property_exists($repligard_entry, 'metadata'));
@@ -72,6 +74,7 @@ class midgard_repligardTest extends testcase
         $topic = new $classname;
         $topic->create();
         $topic->delete();
+        self::$em->clear();
         $repligard_entry = self::$em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $topic->guid));
         $this->assertInstanceOf(self::$ns . '\\midgard_repligard', $repligard_entry);
         $this->assertFalse(property_exists($repligard_entry, 'metadata'));
