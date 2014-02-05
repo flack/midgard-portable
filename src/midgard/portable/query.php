@@ -302,7 +302,7 @@ abstract class query
                 $group = false;
                 // TODO: there seems to be no way to make Doctrine accept default values for association fields,
                 // so we need a silly workaorund for existing DBs
-                if ($operator === '<>')
+                if ($operator === '<>' || $operator === '>')
                 {
                     $group = $this->qb->expr()->andX();
                     $group->add($parsed['name'] . ' IS NOT NULL');

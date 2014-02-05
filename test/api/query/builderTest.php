@@ -470,6 +470,26 @@ class midgard_query_builderTest extends testcase
         $this->assertFalse($qb->begin_group('XX'));
     }
 
+    public function test_null_constraints()
+    {
+        self::$em->clear();
+        $classname = self::$ns . '\\midgard_topic';
+        $this->purge_all($classname);
+        $topic = new $classname;
+        $topic->name = uniqid(__FUNCTION__);
+        $stat = $topic->create();
+        $this->assertTrue($stat);
+        self::$em->clear();
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('up', '<>', 0);
+        $this->assertEquals(0, $qb->count(), "We should not find any topics");
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('up', '>', 0);
+        $this->assertEquals(0, $qb->count(), "We should not find any topics");
+    }
+
     public function test_in_constraint()
     {
         self::$em->clear();
