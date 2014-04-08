@@ -59,7 +59,16 @@ abstract class query
     }
 
     abstract function execute();
-
+    
+    public function add_constraint_with_property($name, $operator, $property)
+    {
+        //TODO: INTREE & IN operator functionality ?
+        $parsed = $this->parse_constraint_name($name);
+        $parsed_property = $this->parse_constraint_name($property);
+        $constraint = $parsed['name'] . ' ' . $operator . ' ' . $parsed_property['name'];
+    
+        $this->get_current_group()->add($constraint);
+    }
     public function add_constraint($name, $operator, $value)
     {
         if ($operator === 'INTREE')
