@@ -939,8 +939,6 @@ class objectTest extends testcase
 
         $this->assertFalse($topic->unapprove());
         $this->assertTrue($topic->approve());
-        $approver = $topic->metadata_approver;
-        $approved = $topic->metadata_approved;
         $this->assertTrue($topic->is_approved());
         $this->assertTrue($topic->unapprove());
         $this->assertFalse($topic->is_approved());
@@ -948,7 +946,7 @@ class objectTest extends testcase
 
         $loaded = new $classname($topic->id);
         $this->assertFalse($loaded->is_approved());
-        $this->assertEquals($approver, $loaded->metadata->approver);
-        $this->assertEquals($approved, $loaded->metadata->approved);
+        $this->assertEquals($topic->metadata_approver, $loaded->metadata->approver);
+        $this->assertEquals($topic->metadata_approved, $loaded->metadata->approved);
     }
 }
