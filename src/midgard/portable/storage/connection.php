@@ -71,7 +71,7 @@ class connection
         if (   $dev_mode
             || !file_exists($vardir . '/midgard_objects.php'))
         {
-            $classgenerator = new classgenerator($driver->get_manager(), $vardir . '/midgard_objects.php');
+            $classgenerator = new classgenerator($driver->get_manager(), $vardir . '/midgard_objects.php', $dev_mode);
             $classgenerator->write($driver->get_namespace());
         }
         include $vardir . '/midgard_objects.php';
