@@ -62,6 +62,14 @@ class dbobjectTest extends testcase
         $this->assertEquals('0001-01-01T00:00:00+00:00', (string) $topic->metadata_published);
     }
 
+    public function test_set_nonexistent()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $topic->nonexistent_property = 'xxx';
+        $this->assertFalse(property_exists($topic, 'nonexistent_property'));
+    }
+
     public function test_get()
     {
         $classname = self::$ns . '\\midgard_topic';
