@@ -118,6 +118,11 @@ abstract class dbobject implements ObjectManagerAware
             }
             return 0;
         }
+        if (   $this->$field === null
+            && $this->cm->isIdentifier($field))
+        {
+            return 0;
+        }
 
         return $this->$field;
     }

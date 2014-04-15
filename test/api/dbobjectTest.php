@@ -8,6 +8,7 @@
 namespace midgard\portable\test;
 
 use midgard\portable\storage\connection;
+use Doctrine\ORM\UnitOfWork;
 
 class dbobjectTest extends testcase
 {
@@ -68,6 +69,15 @@ class dbobjectTest extends testcase
         $topic = new $classname;
         $topic->nonexistent_property = 'xxx';
         $this->assertFalse(property_exists($topic, 'nonexistent_property'));
+    }
+
+    public function test_get_id()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        //This checks the value with reflection internally and expects null
+        $this->assertSame(UnitOfWork::STATE_NEW, self::$em->getUnitOfWork()->getEntityState($topic));
+        $this->assertSame(0, $topic->id);
     }
 
     public function test_get()

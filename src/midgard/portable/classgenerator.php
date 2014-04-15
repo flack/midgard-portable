@@ -192,6 +192,11 @@ class classgenerator
                     $default = '0.0';
                     break;
                 case translator::TYPE_UINT:
+                    if ($name == $type->primaryfield)
+                    {
+                        // no default value for identifier, because otherwise, Doctrine will think it's a detached entity
+                        break;
+                    }
                 case translator::TYPE_INT:
                     $default = '0';
                     break;
@@ -224,18 +229,6 @@ class classgenerator
             //$objects[$name] = 'new ' . $mixin->name . '($this)';
         }
 
-        /*
-        if (!empty($objects))
-        {
-            $this->add_line('public function __construct($id = null) {');
-            foreach ($objects as $name => $code)
-            {
-                $this->add_line('$this->' . $name . ' = ' . $code . ';');
-            }
-            $this->add_line('parent::__construct($id);');
-            $this->add_line('}');
-        }
-        */
         if (!empty($objects))
         {
             $this->add_line('public function __construct($id = null) {');
