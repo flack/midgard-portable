@@ -250,6 +250,15 @@ class objectTest extends testcase
         $this->assertEquals('', $loaded->title);
     }
 
+    public function test_update_nonpersistent()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $stat = $topic->update();
+        $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_INTERNAL, \midgard_connection::get_instance()->get_error());
+    }
+
     private function verify_unpersisted_changes($classname, $guid, $cmp_field, $cmp_value)
     {
         // make sure unpersisted changes has not been persisted
@@ -297,6 +306,17 @@ class objectTest extends testcase
         $this->assertEquals(1, count($result));
         $this->assert_api('delete', $result[0]);
     }
+
+    public function test_delete_nonpersistent()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $stat = $topic->delete();
+        $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_INVALID_PROPERTY_VALUE, \midgard_connection::get_instance()->get_error());
+    }
+
+
 
     public function test_undelete()
     {
