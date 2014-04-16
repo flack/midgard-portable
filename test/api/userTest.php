@@ -9,6 +9,7 @@ namespace midgard\portable\test;
 
 use midgard\portable\storage\connection;
 use midgard_connection;
+use Doctrine\ORM\UnitOfWork;
 
 class userTest extends testcase
 {
@@ -87,6 +88,16 @@ class userTest extends testcase
         $this->assertTrue($stat);
         $this->assertEquals('', $user->guid);
         $this->assertEquals($initial, $this->count_results('midgard:midgard_user'));
+    }
+
+    public function test_get_id()
+    {
+        $classname = self::$ns . '\\midgard_user';
+        $user = new $classname;
+
+        //This checks the value with reflection internally and expects null
+        $this->assertSame(UnitOfWork::STATE_NEW, self::$em->getUnitOfWork()->getEntityState($user));
+        $this->assertSame(0, $user->id);
     }
 
     public function test_login()

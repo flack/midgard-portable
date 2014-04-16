@@ -25,7 +25,7 @@
     </type>
 
     <type name="midgard_user" table="midgard_user" metadata="false">
-        <property name="id" type="unsigned integer" primaryfield="guid">
+        <property name="id" type="unsigned integer" primaryfield="id">
         </property>
         <property name="login" type="string">
         </property>
