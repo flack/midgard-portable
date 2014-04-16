@@ -128,7 +128,13 @@ class driver implements driver_interface
 
         $table = array
         (
-        	'name' => $type->table
+            'name' => $type->table,
+            'options' => array
+            (
+                //Doctrine's default on MySQL is InnoDB, and the foreign keys don't play well with Midgard logic
+                //TODO: Maybe at some point we could try to figure out how to explicitly disable foreign key constraint creation instead
+                'engine' => 'MyISAM'
+            )
         );
 
         $metadata->setPrimaryTable($table);

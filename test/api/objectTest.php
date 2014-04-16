@@ -316,8 +316,6 @@ class objectTest extends testcase
         $this->assertEquals(MGD_ERR_INVALID_PROPERTY_VALUE, \midgard_connection::get_instance()->get_error());
     }
 
-
-
     public function test_undelete()
     {
         $classname = self::$ns . '\\midgard_topic';
@@ -532,6 +530,24 @@ class objectTest extends testcase
 
         $this->assert_api('delete', $sn);
         $this->assert_api('purge', $sn);
+    }
+
+    public function test_parent_purge()
+    {
+        $classname = self::$ns . '\\midgard_snippetdir';
+        $sn_class = self::$ns . '\\midgard_snippet';
+
+        $sd = new $classname;
+        $sd->name = __FUNCTION__;
+        $this->assert_api('create', $sd);
+
+        $sd2 = new $classname;
+        $sd2->name = __FUNCTION__ . '2';
+        $sd2->up = $sd->id;
+        $this->assert_api('create', $sd2);
+        $this->assert_api('delete', $sd2);
+        $this->assert_api('delete', $sd);
+        $this->assert_api('purge', $sd); //this line would fail on InnoDB because of foreign key constraint violations
     }
 
     public function test_uniquenames()
