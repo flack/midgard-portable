@@ -14,6 +14,13 @@ class midgard_storageTest extends testcase
 {
     public function test_create_base_storage()
     {
+        $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
+        $factory = self::$em->getMetadataFactory();
+        $classes = array(
+            $factory->getMetadataFor('midgard:midgard_user'),
+        );
+        $tool->dropSchema($classes);
+
         $stat = midgard_storage::create_base_storage();
         $this->assertTrue($stat);
         $cm = self::$em->getMetadataFactory()->getMetadataFor('midgard:midgard_user');
