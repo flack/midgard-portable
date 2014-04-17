@@ -22,9 +22,20 @@ class midgard_storageTest extends testcase
         self::prepare_connection(array(TESTDIR . '__files/duplicate_tablenames/'), sys_get_temp_dir(), uniqid(__CLASS__ . __FUNCTION__));
     }
 
+    private function clear_user_table()
+    {
+        $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
+        $factory = self::$em->getMetadataFactory();
+        $classes = array(
+            $factory->getMetadataFor('midgard:midgard_user'),
+        );
+        $tool->dropSchema($classes);
+    }
+
     public function test_create_base_storage()
     {
         self::prepare_base_connection();
+        $this->clear_user_table();
 
         $stat = midgard_storage::create_base_storage();
         $this->assertTrue($stat);
@@ -93,13 +104,6 @@ class midgard_storageTest extends testcase
 
         // check duplicate tablenames
         self::prepare_dtn_connection();
-
-        // check before creation
-        $this->assertUpdateClassStorageFail('midgard_group');
-        $this->assertUpdateClassStorageFail('org_openpsa_organization');
-        $this->assertUpdateClassStorageFail('org_openpsa_contacts_list');
-
-        // check after creation
         midgard_storage::create_class_storage('midgard_group');
 
         $this->assertUpdateClassStorageSuccess('midgard_group');
