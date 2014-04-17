@@ -35,10 +35,26 @@ class classgenerator
 
     private $manager;
 
-    public function __construct(manager $manager, $filename)
+    /**
+     *
+     * @var boolean
+     */
+    private $dev_mode = false;
+
+    public function __construct(manager $manager, $filename, $dev_mode = false)
     {
         $this->manager = $manager;
         $this->filename = $filename;
+        $this->dev_mode = $dev_mode;
+    }
+
+    private function add_line($line)
+    {
+        $this->output .= $line;
+        if ($this->dev_mode)
+        {
+            $this->output .= "\n";
+        }
     }
 
     public function write($namespace = '')
@@ -48,7 +64,7 @@ class classgenerator
             unlink($this->filename);
         }
         $types = $this->manager->get_types();
-        $this->output = '<?php ';
+        $this->add_line('<?php ');
 
         uasort($types, function($a, $b)
         {
@@ -70,24 +86,24 @@ class classgenerator
 
         if (!empty($namespace))
         {
-            $this->output .= 'namespace ' . $namespace . '; ';
-            $this->output .= 'use midgard\\portable\\api\\object as midgard_object; ';
-            $this->output .= 'use midgard_metadata; ';
-            $this->output .= 'use midgard\\portable\\api\\user as base_user; ';
-            $this->output .= 'use midgard\\portable\\api\\repligard as base_repligard; ';
-            $this->output .= 'use midgard\\portable\\api\\person as base_person; ';
-            $this->output .= 'use midgard\\portable\\api\\parameter as base_parameter; ';
-            $this->output .= 'use midgard\\portable\\api\\attachment as base_attachment; ';
-            $this->output .= 'use midgard_datetime; { ';
+            $this->add_line('namespace ' . $namespace . '; ');
+            $this->add_line('use midgard\\portable\\api\\object as midgard_object; ');
+            $this->add_line('use midgard_metadata; ');
+            $this->add_line('use midgard\\portable\\api\\user as base_user; ');
+            $this->add_line('use midgard\\portable\\api\\repligard as base_repligard; ');
+            $this->add_line('use midgard\\portable\\api\\person as base_person; ');
+            $this->add_line('use midgard\\portable\\api\\parameter as base_parameter; ');
+            $this->add_line('use midgard\\portable\\api\\attachment as base_attachment; ');
+            $this->add_line('use midgard_datetime; { ');
         }
         else
         {
-            $this->output .= 'use \midgard\portable\api\object; ';
-            $this->output .= 'use midgard\\portable\\api\\user as base_user; ';
-            $this->output .= 'use midgard\\portable\\api\\person as base_person; ';
-            $this->output .= 'use midgard\\portable\\api\\parameter as base_parameter; ';
-            $this->output .= 'use midgard\\portable\\api\\repligard as base_repligard; ';
-            $this->output .= 'use midgard\\portable\\api\\attachment as base_attachment; ';
+            $this->add_line('use \midgard\portable\api\object; ');
+            $this->add_line('use midgard\\portable\\api\\user as base_user; ');
+            $this->add_line('use midgard\\portable\\api\\person as base_person; ');
+            $this->add_line('use midgard\\portable\\api\\parameter as base_parameter; ');
+            $this->add_line('use midgard\\portable\\api\\repligard as base_repligard; ');
+            $this->add_line('use midgard\\portable\\api\\attachment as base_attachment; ');
         }
         foreach ($types as $type)
         {
@@ -98,7 +114,7 @@ class classgenerator
 
         if (!empty($namespace))
         {
-            $this->output .= ' }';
+            $this->add_line(' }');
         }
 
         //todo: midgard_blob special handling
@@ -115,17 +131,17 @@ class classgenerator
             if (   $prefix !== ''
                 && !class_exists($type->name))
             {
-                $this->output .= 'class_alias( "' . $prefix . $type->name . '", "' . $type->name . '"); ';
+                $this->add_line('class_alias( "' . $prefix . $type->name . '", "' . $type->name . '"); ');
             }
         }
 
         foreach ($this->manager->get_inherited_mapping() as $child => $parent)
         {
-            $this->output .= 'class_alias( "' . $prefix . $parent . '", "' . $prefix . $child . '"); ';
+            $this->add_line('class_alias( "' . $prefix . $parent . '", "' . $prefix . $child . '"); ');
             if (   $prefix !== ''
                 && !class_exists($child))
             {
-                $this->output .= 'class_alias( "' . $prefix . $parent . '", "' . $child . '"); ';
+                $this->add_line('class_alias( "' . $prefix . $parent . '", "' . $child . '"); ');
             }
         }
     }
@@ -156,7 +172,7 @@ class classgenerator
         $objects = array();
         foreach ($type->get_mixins() as $name => $mixin)
         {
-            $this->output .= ' protected $' . $name . ';';
+            $this->add_line(' protected $' . $name . ';');
         }
 
         foreach ($type->get_properties() as $name => $property)
@@ -165,7 +181,7 @@ class classgenerator
             {
                 continue;
             }
-            $this->output .= ' protected $' . $name;
+            $line = ' protected $' . $name;
             $default = null;
             switch (translator::to_constant($property->type))
             {
@@ -176,6 +192,11 @@ class classgenerator
                     $default = '0.0';
                     break;
                 case translator::TYPE_UINT:
+                    if ($name == $type->primaryfield)
+                    {
+                        // no default value for identifier, because otherwise, Doctrine will think it's a detached entity
+                        break;
+                    }
                 case translator::TYPE_INT:
                     $default = '0';
                     break;
@@ -193,9 +214,9 @@ class classgenerator
                 && (   !$property->link
                     || $this->manager->resolve_targetclass($property) === false))
             {
-                $this->output .= ' = ' . $default;
+                $line .= ' = ' . $default;
             }
-            $this->output .= ';';
+            $this->add_line($line . ';');
         }
         return $objects;
     }
@@ -208,31 +229,19 @@ class classgenerator
             //$objects[$name] = 'new ' . $mixin->name . '($this)';
         }
 
-        /*
         if (!empty($objects))
         {
-            $this->output .= 'public function __construct($id = null) {';
-            foreach ($objects as $name => $code)
-            {
-                $this->output .= '$this->' . $name . ' = ' . $code . ';';
-            }
-            $this->output .= 'parent::__construct($id);';
-            $this->output .= '}';
-        }
-        */
-        if (!empty($objects))
-        {
-            $this->output .= 'public function __construct($id = null) {';
-            $this->output .= '$this->init();';
-            $this->output .= 'parent::__construct($id);';
-            $this->output .= '}';
+            $this->add_line('public function __construct($id = null) {');
+            $this->add_line('$this->init();');
+            $this->add_line('parent::__construct($id);');
+            $this->add_line('}');
 
-            $this->output .= 'public function init() {';
+            $this->add_line('public function init() {');
             foreach ($objects as $name => $code)
             {
-                $this->output .= '$this->' . $name . ' = ' . $code . ';';
+                $this->add_line('$this->' . $name . ' = ' . $code . ';');
             }
-            $this->output .= '}';
+            $this->add_line('}');
         }
     }
 
@@ -253,14 +262,14 @@ class classgenerator
             return;
         }
 
-        $this->output .= 'public function get_parent() {';
-        $this->output .= ' return $this->load_parent(' . var_export($candidates, true) . ');';
-        $this->output .= '}';
+        $this->add_line('public function get_parent() {');
+        $this->add_line(' return $this->load_parent(' . var_export($candidates, true) . ');');
+        $this->add_line('}');
     }
 
     private function begin_class(type $type)
     {
-        $this->output .= 'class ' . $type->name . ' extends ' . $type->extends;
+        $this->add_line('class ' . $type->name . ' extends ' . $type->extends);
         $mixins = $type->get_mixins();
         $interfaces = array_filter(array_map(function($name)
         {
@@ -273,13 +282,13 @@ class classgenerator
 
         if (count($interfaces) > 0)
         {
-            $this->output .= ' implements ' . implode(', ', $interfaces);
+            $this->add_line(' implements ' . implode(', ', $interfaces));
         }
-        $this->output .= ' {';
+        $this->add_line(' {');
     }
 
     private function end_class()
     {
-        $this->output .= ' }';
+        $this->add_line(' }');
     }
 }

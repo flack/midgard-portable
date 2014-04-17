@@ -177,6 +177,11 @@ abstract class object extends dbobject
 
     public function update()
     {
+        if (empty($this->id))
+        {
+            midgard_connection::get_instance()->set_error(MGD_ERR_INTERNAL);
+            return false;
+        }
         try
         {
             $om = new objectmanager(connection::get_em());
@@ -194,6 +199,11 @@ abstract class object extends dbobject
 
     public function delete($check_dependencies = true)
     {
+        if (empty($this->id))
+        {
+            midgard_connection::get_instance()->set_error(MGD_ERR_INVALID_PROPERTY_VALUE);
+            return false;
+        }
         if (   $check_dependencies
             && $this->has_dependents())
         {

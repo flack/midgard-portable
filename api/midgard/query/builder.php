@@ -15,6 +15,18 @@ class midgard_query_builder extends query
         parent::__construct($class);
     }
 
+    public function add_constraint_with_property($name, $operator, $value)
+    {
+        try
+        {
+            return parent::add_constraint_with_property($name, $operator, $value);
+        }
+        catch (exception $e)
+        {
+            return false;
+        }
+    }
+    
     public function add_constraint($name, $operator, $value)
     {
         try

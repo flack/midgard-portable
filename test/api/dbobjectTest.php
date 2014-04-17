@@ -8,6 +8,7 @@
 namespace midgard\portable\test;
 
 use midgard\portable\storage\connection;
+use Doctrine\ORM\UnitOfWork;
 
 class dbobjectTest extends testcase
 {
@@ -41,25 +42,42 @@ class dbobjectTest extends testcase
         $topic->up = 0;
         $topic->styleInherit = null;
         $topic->metadata_published = null;
-        $topic->float = null;
+        $topic->floatField = null;
 
         $this->assertSame('', $topic->title);
         $this->assertSame(0, $topic->score);
         $this->assertSame(0, $topic->lang);
         $this->assertSame(0, $topic->up);
-        $this->assertSame(0.0, $topic->float);
+        $this->assertSame(0.0, $topic->floatField);
         $this->assertSame(false, $topic->styleInherit);
         $this->assertInstanceOf('midgard_datetime', $topic->metadata_published);
         $this->assertEquals('0001-01-01 00:00:00', $topic->metadata_published->format('Y-m-d H:i:s'));
 
         $topic->up = 9999999;
         $this->assertSame(9999999, $topic->up);
-        $topic->float = 2;
-        $this->assertSame(2.0, $topic->float);
+        $topic->floatField = 2;
+        $this->assertSame(2.0, $topic->floatField);
         $topic->metadata_published = '2012-10-11 01:11:22';
         $this->assertEquals('2012-10-11T01:11:22+00:00', (string) $topic->metadata_published);
         $topic->metadata_published = '0000-00-00 00:00:00';
         $this->assertEquals('0001-01-01T00:00:00+00:00', (string) $topic->metadata_published);
+    }
+
+    public function test_set_nonexistent()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $topic->nonexistent_property = 'xxx';
+        $this->assertFalse(property_exists($topic, 'nonexistent_property'));
+    }
+
+    public function test_get_id()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        //This checks the value with reflection internally and expects null
+        $this->assertSame(UnitOfWork::STATE_NEW, self::$em->getUnitOfWork()->getEntityState($topic));
+        $this->assertSame(0, $topic->id);
     }
 
     public function test_get()

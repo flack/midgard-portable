@@ -86,10 +86,6 @@ class midgard_storageTest extends testcase
         $this->assertTrue(midgard_storage::class_storage_exists('midgard_topic'));
         $this->assertFalse(midgard_storage::class_storage_exists('some_random_string'));
 
-        // check for duplicate tablenames
-        //$ns = uniqid(__CLASS__ . '__' . __FUNCTION__);
-        //self::prepare_connection(array(TESTDIR . '__files/duplicate_tablenames/'), sys_get_temp_dir(), $ns);
-
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
         $classes = $factory->getAllMetadata();

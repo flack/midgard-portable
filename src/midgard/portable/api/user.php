@@ -15,7 +15,7 @@ class user extends dbobject
 {
     private $person_object;
 
-    protected $id = 0;
+    protected $id;
 
     protected $properties = array();
 
@@ -71,7 +71,7 @@ class user extends dbobject
 
     public function login()
     {
-        if ($this->id == 0)
+        if (empty($this->id))
         {
             return false;
         }
@@ -81,7 +81,7 @@ class user extends dbobject
 
     public function logout()
     {
-        if ($this->id == 0)
+        if (empty($this->id))
         {
             return false;
         }
@@ -142,7 +142,7 @@ class user extends dbobject
             return false;
         }
         connection::get_em()->detach($this);
-        return ($this->id != 0);
+        return (!empty($this->id));
     }
 
     public function update()

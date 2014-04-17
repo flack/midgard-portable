@@ -59,7 +59,16 @@ abstract class query
     }
 
     abstract function execute();
-
+    
+    public function add_constraint_with_property($name, $operator, $property)
+    {
+        //TODO: INTREE & IN operator functionality ?
+        $parsed = $this->parse_constraint_name($name);
+        $parsed_property = $this->parse_constraint_name($property);
+        $constraint = $parsed['name'] . ' ' . $operator . ' ' . $parsed_property['name'];
+    
+        $this->get_current_group()->add($constraint);
+    }
     public function add_constraint($name, $operator, $value)
     {
         if ($operator === 'INTREE')
@@ -302,7 +311,7 @@ abstract class query
                 $group = false;
                 // TODO: there seems to be no way to make Doctrine accept default values for association fields,
                 // so we need a silly workaorund for existing DBs
-                if ($operator === '<>')
+                if ($operator === '<>' || $operator === '>')
                 {
                     $group = $this->qb->expr()->andX();
                     $group->add($parsed['name'] . ' IS NOT NULL');

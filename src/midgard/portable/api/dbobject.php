@@ -89,6 +89,11 @@ abstract class dbobject implements ObjectManagerAware
                 }
             }
         }
+        else
+        {
+            //If property doesn't exist, we silently ignore it
+            return;
+        }
 
         $this->$field = $value;
     }
@@ -111,6 +116,11 @@ abstract class dbobject implements ObjectManagerAware
             {
                 return (int) $this->$field->id;
             }
+            return 0;
+        }
+        if (   $this->$field === null
+            && $this->cm->isIdentifier($field))
+        {
             return 0;
         }
 

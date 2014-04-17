@@ -250,6 +250,15 @@ class objectTest extends testcase
         $this->assertEquals('', $loaded->title);
     }
 
+    public function test_update_nonpersistent()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $stat = $topic->update();
+        $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_INTERNAL, \midgard_connection::get_instance()->get_error());
+    }
+
     private function verify_unpersisted_changes($classname, $guid, $cmp_field, $cmp_value)
     {
         // make sure unpersisted changes has not been persisted
@@ -296,6 +305,15 @@ class objectTest extends testcase
         $result = $qb->execute();
         $this->assertEquals(1, count($result));
         $this->assert_api('delete', $result[0]);
+    }
+
+    public function test_delete_nonpersistent()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $stat = $topic->delete();
+        $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_INVALID_PROPERTY_VALUE, \midgard_connection::get_instance()->get_error());
     }
 
     public function test_undelete()
@@ -512,6 +530,24 @@ class objectTest extends testcase
 
         $this->assert_api('delete', $sn);
         $this->assert_api('purge', $sn);
+    }
+
+    public function test_parent_purge()
+    {
+        $classname = self::$ns . '\\midgard_snippetdir';
+        $sn_class = self::$ns . '\\midgard_snippet';
+
+        $sd = new $classname;
+        $sd->name = __FUNCTION__;
+        $this->assert_api('create', $sd);
+
+        $sd2 = new $classname;
+        $sd2->name = __FUNCTION__ . '2';
+        $sd2->up = $sd->id;
+        $this->assert_api('create', $sd2);
+        $this->assert_api('delete', $sd2);
+        $this->assert_api('delete', $sd);
+        $this->assert_api('purge', $sd); //this line would fail on InnoDB because of foreign key constraint violations
     }
 
     public function test_uniquenames()
@@ -939,8 +975,6 @@ class objectTest extends testcase
 
         $this->assertFalse($topic->unapprove());
         $this->assertTrue($topic->approve());
-        $approver = $topic->metadata_approver;
-        $approved = $topic->metadata_approved;
         $this->assertTrue($topic->is_approved());
         $this->assertTrue($topic->unapprove());
         $this->assertFalse($topic->is_approved());
@@ -948,7 +982,7 @@ class objectTest extends testcase
 
         $loaded = new $classname($topic->id);
         $this->assertFalse($loaded->is_approved());
-        $this->assertEquals($approver, $loaded->metadata->approver);
-        $this->assertEquals($approved, $loaded->metadata->approved);
+        $this->assertEquals($topic->metadata_approver, $loaded->metadata->approver);
+        $this->assertEquals($topic->metadata_approved, $loaded->metadata->approved);
     }
 }

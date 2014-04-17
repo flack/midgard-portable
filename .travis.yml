@@ -5,7 +5,12 @@ php:
   - 5.4
   - 5.5
 
+env:
+  - DB=mysql
+  - DB=sqlite
+
 before_script:
   - composer install
+  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS mp_test;'; fi"
 
-script: phpunit --debug
+script: DB=travis/$DB phpunit --debug
