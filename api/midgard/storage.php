@@ -70,19 +70,28 @@ class midgard_storage
     private static function get_cm($em, $classname)
     {
         $factory = $em->getMetadataFactory();
-        if (!$factory->hasMetadataFor($classname))
+        if ($factory->hasMetadataFor($classname))
         {
-            $factory->getAllMetadata();
+            return $factory->getMetadataFor($classname);
         }
-        if (!$factory->hasMetadataFor($classname))
+        // add namespace
+        $classname = $em->getConfiguration()->getEntityNamespace("midgard") . '\\' . $classname;
+        if ($factory->hasMetadataFor($classname))
         {
-            $classname = $em->getConfiguration()->getEntityNamespace("midgard") . '\\' . $classname;
+            return $factory->getMetadataFor($classname);
         }
-        if (!$factory->hasMetadataFor($classname))
+        // check for merged classes (duplicate tablenames)
+        // if the class doesn't exist (eg. for some_random_string), there is really nothing we could do
+        if (!class_exists($classname))
         {
             return false;
         }
-        return $factory->getMetadataFor($classname);
+        $classname = get_class(new $classname);
+        if ($factory->hasMetadataFor($classname))
+        {
+            return $factory->getMetadataFor($classname);
+        }
+        return false;
     }
 
     public static function update_class_storage($classname)
@@ -111,17 +120,12 @@ class midgard_storage
     public static function class_storage_exists($classname)
     {
         $em = connection::get_em();
-        $factory = $em->getMetadataFactory();
-        if (!$factory->hasMetadataFor($classname))
-        {
-            $classname = $em->getConfiguration()->getEntityNamespace("midgard") . '\\' . $classname;
-        }
-        if (!$factory->hasMetadataFor($classname))
+
+        $cm = self::get_cm($em, $classname);
+        if ($cm === false)
         {
             return false;
         }
-
-        $cm = $factory->getMetadataFor($classname);
 
         return $em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName()));
     }
