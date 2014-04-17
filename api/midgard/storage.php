@@ -74,6 +74,7 @@ class midgard_storage
         {
             return $factory->getMetadataFor($classname);
         }
+        $factory->getAllMetadata();
         // add namespace
         $classname = $em->getConfiguration()->getEntityNamespace("midgard") . '\\' . $classname;
         if ($factory->hasMetadataFor($classname))

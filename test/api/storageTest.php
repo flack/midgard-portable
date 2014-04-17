@@ -12,11 +12,19 @@ use midgard_query_builder;
 
 class midgard_storageTest extends testcase
 {
+    private function prepare_base_connection()
+    {
+        self::prepare_connection(array(TESTDIR . '__files/'), sys_get_temp_dir(), uniqid(__CLASS__ . __FUNCTION__));
+    }
+
+    private function prepare_dtn_connection()
+    {
+        self::prepare_connection(array(TESTDIR . '__files/duplicate_tablenames/'), sys_get_temp_dir(), uniqid(__CLASS__ . __FUNCTION__));
+    }
+
     public function test_create_base_storage()
     {
-        // check for duplicate tablenames
-        self::$ns = uniqid(__CLASS__);
-        self::prepare_connection(array(TESTDIR . '__files/duplicate_tablenames/'), sys_get_temp_dir(), self::$ns);
+        self::prepare_base_connection();
 
         $stat = midgard_storage::create_base_storage();
         $this->assertTrue($stat);
@@ -42,9 +50,14 @@ class midgard_storageTest extends testcase
 
     public function test_create_class_storage()
     {
+        self::prepare_base_connection();
+
         $this->assertTrue(midgard_storage::create_class_storage('midgard_topic'));
         $this->assertTrue(midgard_storage::create_class_storage('midgard_topic'));
         $this->assertTrue(self::$em->getConnection()->getSchemaManager()->tablesExist(array('topic')));
+
+        // check duplicate tablenames
+        self::prepare_dtn_connection();
 
         $this->assertCreateClassStorageSuccess('midgard_group');
         $this->assertCreateClassStorageSuccess('org_openpsa_organization');
@@ -56,8 +69,15 @@ class midgard_storageTest extends testcase
         $this->assertTrue(midgard_storage::update_class_storage($classname), 'Failed to update the class storage for ' . $classname);
     }
 
+    private function assertUpdateClassStorageFail($classname)
+    {
+        $this->assertFalse(midgard_storage::update_class_storage($classname), 'Without previous creation, the update of the class storage for ' . $classname . ' should fail');
+    }
+
     public function test_update_class_storage()
     {
+        self::prepare_base_connection();
+
         midgard_storage::create_base_storage();
 
         $cm = self::$em->getMetadataFactory()->getMetadataFor('midgard:midgard_topic');
@@ -71,6 +91,17 @@ class midgard_storageTest extends testcase
 
         $this->assertTrue(self::$em->getConnection()->getSchemaManager()->tablesExist(array('midgard_user')));
 
+        // check duplicate tablenames
+        self::prepare_dtn_connection();
+
+        // check before creation
+        $this->assertUpdateClassStorageFail('midgard_group');
+        $this->assertUpdateClassStorageFail('org_openpsa_organization');
+        $this->assertUpdateClassStorageFail('org_openpsa_contacts_list');
+
+        // check after creation
+        midgard_storage::create_class_storage('midgard_group');
+
         $this->assertUpdateClassStorageSuccess('midgard_group');
         $this->assertUpdateClassStorageSuccess('org_openpsa_organization');
         $this->assertUpdateClassStorageSuccess('org_openpsa_contacts_list');
@@ -83,6 +114,9 @@ class midgard_storageTest extends testcase
 
     public function test_class_storage_exists()
     {
+        self::prepare_base_connection();
+        midgard_storage::create_class_storage('midgard_topic');
+
         $this->assertTrue(midgard_storage::class_storage_exists('midgard_topic'));
         $this->assertFalse(midgard_storage::class_storage_exists('some_random_string'));
 
@@ -91,6 +125,10 @@ class midgard_storageTest extends testcase
         $classes = $factory->getAllMetadata();
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
+
+        // check duplicate tablenames
+        self::prepare_dtn_connection();
+        midgard_storage::create_class_storage('midgard_group');
 
         // we should find metadata for all classes that use "grp" table
         $this->assertClassStorageExists('midgard_group');
