@@ -20,7 +20,7 @@ class driverTest extends testcase
         $driver = new driver(array(TESTDIR . '__files/'), $d, $ns);
         $classnames = $driver->getAllClassNames();
         $this->assertInternalType('array', $classnames);
-        $this->assertEquals(10, count($classnames));
+        $this->assertEquals(11, count($classnames));
     }
 
     public function test_loadMetadataForClass()
@@ -37,6 +37,24 @@ class driverTest extends testcase
         $mapping = $metadata->fieldMappings['metadata_approved'];
         $this->assertEquals("midgard_datetime", $mapping["type"]);
         $this->assertEquals("0001-01-01 00:00:00", $mapping["default"]);
+    }
+
+    public function test_load_nonportable_dbtypes()
+    {
+        $ns = uniqid(__CLASS__ . '\\' . __FUNCTION__);
+        $d = sys_get_temp_dir();
+        $driver = new driver(array(TESTDIR . '__files/'), $d, $ns);
+        $metadata = new classmetadata($ns . '\\nonportable_dbtype');
+        $driver->loadMetadataForClass($ns . '\\nonportable_dbtype', $metadata);
+
+        $this->assertArrayHasKey('info', $metadata->fieldMappings);
+        $this->assertArrayHasKey('password', $metadata->fieldMappings);
+
+        $mapping = $metadata->fieldMappings['password'];
+        $this->assertEquals("BINARY", $mapping["comment"]);
+
+        $mapping = $metadata->fieldMappings['info'];
+        $this->assertEquals("set('auth')", $mapping["comment"]);
     }
 
     public function test_duplicate_tablenames()

@@ -252,18 +252,19 @@ class driver implements driver_interface
             if (substr($property->dbtype, -8) == ') binary')
             {
                 // see http://www.doctrine-project.org/jira/browse/DDC-1817
-                echo 'BINARY detected: set collation for column to utf8_bin. manually !!!' . "\n";
                 $mapping['length'] = (int) substr($property->dbtype, 8, -1);
+                $mapping['comment'] = 'BINARY';
                 return $mapping;
             }
         }
         else if (strpos($property->dbtype, 'set') === 0)
         {
             // see http://docs.doctrine-project.org/en/latest/cookbook/mysql-enums.html
-            echo 'SET detected: falling back to ' . $property->type . ' !!!' . "\n";
             if (!empty($this->dbtypemap[$property->type]))
             {
-                return $this->dbtypemap[$property->type];
+                $mapping = $this->dbtypemap[$property->type];
+                $mapping['comment'] = $property->dbtype;
+                return $mapping;
             }
         }
 

@@ -122,18 +122,58 @@ class subscriber implements EventSubscriber
     public function onSchemaCreateTable(SchemaCreateTableEventArgs $args)
     {
         $platform = $args->getPlatform();
-        if ($platform->getName() !== 'sqlite')
+        $columns = $args->getColumns();
+        $modified = false;
+
+        foreach ($columns as $name => &$config)
+        {
+            if ($platform->getName() === 'sqlite')
+            {
+                if (   !empty($config['primary'])
+                    && !empty($config['autoincrement']))
+                {
+                    $modified = true;
+                    $config['columnDefinition'] = 'INTEGER PRIMARY KEY AUTOINCREMENT';
+                }
+                if (   !empty($config['comment'])
+                    && $config['comment'] == 'BINARY')
+                {
+                    $modified = true;
+                    $config['columnDefinition'] = $config['type']->getSQLDeclaration($config, $platform) . ' COLLATE BINARY' . $platform->getDefaultValueDeclarationSQL($config);
+                }
+            }
+            if ($platform->getName() === 'mysql')
+            {
+                if (!empty($config['comment']))
+                {
+                    if ($config['comment'] == 'BINARY')
+                    {
+                        $modified = true;
+                        $config['columnDefinition'] = $config['type']->getSQLDeclaration($config, $platform) . ' CHARACTER SET utf8 COLLATE utf8_bin' . $platform->getDefaultValueDeclarationSQL($config);
+                    }
+                    if (substr(strtolower(trim($config['comment'])), 0, 3) == 'set')
+                    {
+                        $modified = true;
+                        $config['columnDefinition'] = $config['comment'] . $platform->getDefaultValueDeclarationSQL($config);
+                    }
+                }
+            }
+        }
+
+        if (!$modified)
         {
             return;
         }
-        $table = $args->getTable();
-        $columns = $args->getColumns();
-        $options = $args->getOptions();
+
         $args->preventDefault();
+
+        //The following is basically copied from the respective Doctrine function, since there seems to be no way
+        //to just modify columns and pass them back to the SchemaManager
+        $table = $args->getTable();
+        $options = $args->getOptions();
 
         $name = str_replace('.', '__', $table->getName());
         $queryFields = $platform->getColumnDeclarationListSQL($columns);
-        $queryFields = preg_replace('/^id INTEGER NOT NULL/', 'id INTEGER PRIMARY KEY AUTOINCREMENT', $queryFields);
 
         if (isset($options['uniqueConstraints']) && ! empty($options['uniqueConstraints']))
         {
