@@ -11,6 +11,7 @@ use midgard\portable\storage\connection;
 use midgard\portable\storage\metadata\entity;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
@@ -45,7 +46,8 @@ class subscriber implements EventSubscriber
             {
                 $repligard_entry = new $repligard_class;
             }
-            while ($em->getUnitOfWork()->isInIdentityMap($repligard_entry));
+            while ($em->getUnitOfWork()->getEntityState($repligard_entry) !== UnitOfWork::STATE_NEW);
+            // TODO: Calling $em->getUnitOfWork()->isInIdentityMap($repligard_entry) returns false in the same situation. Why?
             $repligard_entry->guid = $entity->guid;
             $repligard_entry->typename = $ref->getShortName();
             $repligard_entry->object_action = self::ACTION_CREATE;
