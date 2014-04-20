@@ -72,19 +72,12 @@ Known Issues & Limitations
    which entails a performance penalty. Also, some cases (like parent GUID links) are not supported yet
 
  - Currently, it is not possible to run midgard-portable when the original Midgard extension is loaded. This is
-   also a temporary problem that will get addressed
-
- - the MySQL ``SET`` column type used in some MgdSchemas is not yet implemented. the XML reader will fall back to
-   the ``type`` value from the property definition. Implementing ``SET``/``ENUM`` support in Doctrine is not too hard to do,
-   but it is not a priority right now
-
- - Doctrine does not support setting collation by column, so the ``BINARY`` keyword used in one or two MgdSchemas is
-   ignored and a message is printed
+   also a temporary problem that will get addressed at some point.
 
  - Doctrine does not support value objects currently, so Metadata simulation is somewhat imperfect in the sense
    that the metadata columns are accessible through the object itself (e.g. ``$topic->metadata_deleted``). The
    next planned Doctrine release (2.5) may contain support for embedded objects, so this issue can be revisited
-   once that is released
+   once that is released.
 
  - Doctrine is somewhat stricter when it comes to referential integrity. So some of the more quirky behaviors of
    Midgard (like being able to purge parents while deleted children are still in the database) are more or less
