@@ -266,7 +266,7 @@ class objectTest extends testcase
         $qb->include_deleted();
         $qb->add_constraint('guid', '=', $guid);
         $results = $qb->execute();
-        $this->assertEquals(1, count($results));
+        $this->assertCount(1, $results);
         $loaded = array_shift($results);
         $this->assertEquals($cmp_value, $loaded->{$cmp_field}, "This object change for field \"" . $cmp_field . "\" should have not been persisted!");
     }
@@ -303,7 +303,7 @@ class objectTest extends testcase
         $topic = self::$em->getReference($classname, $topic->id);
 
         $result = $qb->execute();
-        $this->assertEquals(1, count($result));
+        $this->assertCount(1, $result);
         $this->assert_api('delete', $result[0]);
     }
 
@@ -383,7 +383,7 @@ class objectTest extends testcase
         $this->assertEquals(array(), $topic2->list());
         $children = $topic->list();
         $this->assertInternalType('array', $children);
-        $this->assertEquals(1, count($children));
+        $this->assertCount(1, $children);
         $this->assertSame($topic2->id, $children[0]->id);
     }
 
@@ -651,7 +651,7 @@ class objectTest extends testcase
         $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
         $qb->add_constraint('parentguid', '=', $topic->guid);
         $results = $qb->execute();
-        $this->assertEquals(1, count($results), "Unable to find parameter");
+        $this->assertCount(1, $results, "Unable to find parameter");
     }
 
     public function test_parameter()
@@ -669,7 +669,7 @@ class objectTest extends testcase
         $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
         $qb->add_constraint('parentguid', '=', $topic->guid);
         $results = $qb->execute();
-        $this->assertEquals(1, count($results), "Unable to find parameter");
+        $this->assertCount(1, $results, "Unable to find parameter");
 
         $value = $topic->parameter("midcom.core", "test");
         $this->assertEquals('some value', $value);
@@ -680,7 +680,7 @@ class objectTest extends testcase
         $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
         $qb->add_constraint('parentguid', '=', $topic->guid);
         $results = $qb->execute();
-        $this->assertEquals(0, count($results), "Parameter not deleted");
+        $this->assertCount(0, $results, "Parameter not deleted");
     }
 
     public function test_get_parameter()
@@ -708,7 +708,7 @@ class objectTest extends testcase
         $this->assertEquals("1", $value);
         // there should be just one parameter
         $params = $topic->list_parameters();
-        $this->assertEquals(1, count($params));
+        $this->assertCount(1, $params);
 
         // set count to 2
         // set the same parameter again, this should overwrite the old
@@ -721,7 +721,7 @@ class objectTest extends testcase
         $this->assertEquals("2", $value);
         // there should still be just one parameter
         $params = $topic->list_parameters();
-        $this->assertEquals(1, count($params));
+        $this->assertCount(1, $params);
 
         // set the same parameter again
         // this time use a false value
@@ -733,7 +733,7 @@ class objectTest extends testcase
         $this->assertNull($value);
         // there should be no parameter left
         $params = $topic->list_parameters();
-        $this->assertEquals(0, count($params));
+        $this->assertCount(0, $params);
     }
 
     public function test_has_parameters()
@@ -759,17 +759,17 @@ class objectTest extends testcase
         $topic->set_parameter("midcom.test", "test3", "another value");
 
         $params = $topic->list_parameters("false.domain");
-        $this->assertEquals(0, count($params));
+        $this->assertCount(0, $params);
 
         // dont specify domain => get all
         $params = $topic->list_parameters();
-        $this->assertEquals(3, count($params));
+        $this->assertCount(3, $params);
 
         $params = $topic->list_parameters("midcom.core");
-        $this->assertEquals(2, count($params));
+        $this->assertCount(2, $params);
 
         $params = $topic->list_parameters("midcom.test");
-        $this->assertEquals(1, count($params));
+        $this->assertCount(1, $params);
 
         // verify that we received the correct parameter
         $param = array_pop($params);
@@ -788,13 +788,13 @@ class objectTest extends testcase
 
         // find all
         $params = $topic->find_parameters();
-        $this->assertEquals(2, count($params));
+        $this->assertCount(2, $params);
 
         // find for midcom.core domain only
         $constraints = array();
         $constraints[] = array("domain", "=", "midcom.core");
         $params = $topic->find_parameters($constraints);
-        $this->assertEquals(1, count($params));
+        $this->assertCount(1, $params);
     }
 
     public function test_delete_parameters()
@@ -803,7 +803,7 @@ class objectTest extends testcase
         $topic->set_parameter("midcom.test", "test3", "another value");
 
         $params = $topic->find_parameters();
-        $this->assertEquals(2, count($params));
+        $this->assertCount(2, $params);
 
         // use constraint so no params get deleted
         $constraints = array();
@@ -819,7 +819,7 @@ class objectTest extends testcase
 
         // now we should only find one parameter
         $params = $topic->find_parameters();
-        $this->assertEquals(1, count($params));
+        $this->assertCount(1, $params);
 
         // we should find the deleted parameter if we include deleted
         $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
@@ -827,7 +827,7 @@ class objectTest extends testcase
         $qb->add_constraint('domain', '=', "midcom.core");
         $qb->include_deleted();
         $results = $qb->execute();
-        $this->assertEquals(1, count($results), "Unable to find parameter");
+        $this->assertCount(1, $results, "Unable to find parameter");
     }
 
     public function test_purge_parameters()
@@ -836,7 +836,7 @@ class objectTest extends testcase
         $topic->set_parameter("midcom.test", "test3", "another value");
 
         $params = $topic->find_parameters();
-        $this->assertEquals(2, count($params));
+        $this->assertCount(2, $params);
 
         // use constraint so no params get deleted
         $constraints = array();
@@ -852,7 +852,7 @@ class objectTest extends testcase
 
         // now we should only find one parameter
         $params = $topic->find_parameters();
-        $this->assertEquals(1, count($params));
+        $this->assertCount(1, $params);
 
         // we should not even find the deleted parameter if we include deleted
         $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
@@ -860,7 +860,7 @@ class objectTest extends testcase
         $qb->add_constraint('domain', '=', "midcom.core");
         $qb->include_deleted();
         $results = $qb->execute();
-        $this->assertEquals(0, count($results), "Found a purged parameter");
+        $this->assertCount(0, $results, "Found a purged parameter");
     }
 
     public function test_new_collector()

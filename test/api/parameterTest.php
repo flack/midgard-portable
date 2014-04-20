@@ -33,7 +33,7 @@ class parameterTest extends testcase
 
         $topic->set_parameter("midcom.core", "test", "some value");
         $params = $topic->list_parameters();
-        $this->assertEquals(1, count($params));
+        $this->assertCount(1, $params);
 
         $param = array_shift($params);
         $this->assertEquals("midcom.core test", $param->get_label());
@@ -51,7 +51,7 @@ class parameterTest extends testcase
 
         $this->assertTrue($ref->parameter("midcom.core", "test", "some value"));
         $params = $topic->list_parameters();
-        $this->assertEquals(1, count($params));
+        $this->assertCount(1, $params);
 
         $param = array_shift($params);
         $this->assertEquals("midcom.core test", $param->get_label());

@@ -56,7 +56,7 @@ class midgard_collectorTest extends testcase
         $mc->add_constraint('topic', '<>', 0);
         $mc->execute();
         $keys = $mc->list_keys();
-        $this->assertEquals(1, count($keys));
+        $this->assertCount(1, $keys);
         $this->assertEquals($article->guid, key($keys));
     }
 
@@ -68,13 +68,13 @@ class midgard_collectorTest extends testcase
         $mc = new \midgard_collector($classname, 'id', self::$_topic->id);
         $keys = $mc->list_keys();
 
-        $this->assertEquals(0, count($keys));
+        $this->assertCount(0, $keys);
 
         // call execute and try again, this time we should get the keys
         $mc->execute();
         $keys = $mc->list_keys();
 
-        $this->assertEquals(1, count($keys));
+        $this->assertCount(1, $keys);
         $this->assertTrue(array_key_exists(self::$_topic->guid, $keys));
     }
 
@@ -144,7 +144,7 @@ class midgard_collectorTest extends testcase
         $ref = new \ReflectionClass($mc);
         $properties = $ref->getProperty('value_properties');
         $properties->setAccessible(true);
-        $this->assertEquals(1, count($properties->getValue($mc)));
+        $this->assertCount(1, $properties->getValue($mc));
     }
 
     public function test_add_value_property_nonexistant()
@@ -159,7 +159,7 @@ class midgard_collectorTest extends testcase
         $ref = new \ReflectionClass($mc);
         $properties = $ref->getProperty('value_properties');
         $properties->setAccessible(true);
-        $this->assertEquals(0, count($properties->getValue($mc)));
+        $this->assertCount(0, $properties->getValue($mc));
     }
 
     public function test_set_key_property()
@@ -174,7 +174,7 @@ class midgard_collectorTest extends testcase
         $mc->set_key_property('id');
         $mc->execute();
         $keys = $mc->list_keys();
-        $this->assertEquals(1, count($keys));
+        $this->assertCount(1, $keys);
         $this->assertEquals($topic->id, key($keys));
     }
 
@@ -195,7 +195,7 @@ class midgard_collectorTest extends testcase
         $mc->set_key_property('person');
         $mc->execute();
         $keys = $mc->list_keys();
-        $this->assertEquals(1, count($keys));
+        $this->assertCount(1, $keys);
         $this->assertEquals($person->guid, key($keys));
     }
 

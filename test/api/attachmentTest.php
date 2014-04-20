@@ -69,7 +69,7 @@ class attachmentTest extends testcase
         $att->create();
 
         $attachments = $topic->list_attachments();
-        $this->assertEquals(1, count($attachments));
+        $this->assertCount(1, $attachments);
         $this->assertEquals($attachments[0]->guid, $att->guid);
     }
 
@@ -89,6 +89,6 @@ class attachmentTest extends testcase
         $this->assertNull($att);
 
         $attachments = $topic->list_attachments();
-        $this->assertEquals(1, count($attachments));
+        $this->assertCount(1, $attachments);
     }
 }

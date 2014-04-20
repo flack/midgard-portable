@@ -68,7 +68,7 @@ class midgard_query_builderTest extends testcase
         $qb = new \midgard_query_builder($classname);
         $results = $qb->execute();
         $this->assertInternalType('array', $results);
-        $this->assertEquals($initial + 1, count($results));
+        $this->assertCount($initial + 1, $results);
         $this->assertInternalType('object', $results[0]);
         $this->assertEquals($classname, get_class($results[0]));
         $this->assertEquals($topic->metadata->created->format('Y-m-d H:i:s'), $results[0]->metadata->created->format('Y-m-d H:i:s'));
@@ -86,13 +86,13 @@ class midgard_query_builderTest extends testcase
         $qb = new \midgard_query_builder($classname);
         $qb->add_constraint('id', '=', $topic->id);
         $results = $qb->execute();
-        $this->assertEquals(0, count($results));
+        $this->assertCount(0, $results);
 
         $qb = new \midgard_query_builder($classname);
         $qb->include_deleted();
         $qb->add_constraint('id', '=', $topic->id);
         $results = $qb->execute();
-        $this->assertEquals(1, count($results));
+        $this->assertCount(1, $results);
     }
 
     public function test_add_order()
@@ -149,31 +149,32 @@ class midgard_query_builderTest extends testcase
         $this->assertTrue($stat);
 
         $results = $qb->execute();
-        $this->assertEquals(2, count($results));
+        $this->assertCount(2, $results);
         $first = array_shift($results);
 
         // first result should be user2 (Bob)
         $this->assertEquals($user2->id, $first->id);
     }
+
     public function test_add_constraint_with_property()
     {
         self::$em->clear();
         $classname = self::$ns . '\\midgard_topic';
         $this->purge_all($classname);
-        
+
         $topic = new $classname;
         $topic->name = "A_" . __FUNCTION__ . "testOne";
         $topic->extra = $topic->name;
         $topic->create();
-        
+
         $qb = new \midgard_query_builder($classname);
         $qb->add_constraint_with_property('name', '=', 'extra');
         $results = $qb->execute();
-        
-        $this->assertEquals(1, count($results));
+
+        $this->assertCount(1, $results);
         $this->assertEquals($topic->id, $results[0]->id);
     }
-    
+
     public function test_add_constraint()
     {
         self::$em->clear();
@@ -191,7 +192,7 @@ class midgard_query_builderTest extends testcase
         $this->assertTrue($stat);
         $results = $qb->execute();
 
-        $this->assertEquals(1, count($results));
+        $this->assertCount(1, $results);
         $this->assertEquals($topic->id, $results[0]->id);
 
         // test metadata constraint
@@ -204,7 +205,7 @@ class midgard_query_builderTest extends testcase
         $qb->add_constraint('metadata.revision', '=', 7);
         $results = $qb->execute();
 
-        $this->assertEquals(1, count($results));
+        $this->assertCount(1, $results);
         $this->assertEquals($topic2->id, $results[0]->id);
 
         // test constraint on join field
@@ -220,7 +221,7 @@ class midgard_query_builderTest extends testcase
         $qb->add_constraint('up', '=', $topic2->id);
         $results = $qb->execute();
 
-        $this->assertEquals(1, count($results));
+        $this->assertCount(1, $results);
         $this->assertEquals($topic3->id, $results[0]->id);
 
         // test multiple constraints
@@ -229,7 +230,7 @@ class midgard_query_builderTest extends testcase
         $qb->add_constraint('extra', '=', 'special');
         $results = $qb->execute();
 
-        $this->assertEquals(1, count($results));
+        $this->assertCount(1, $results);
         $this->assertEquals($topic3->id, $results[0]->id);
 
         // test join
@@ -261,7 +262,7 @@ class midgard_query_builderTest extends testcase
         $qb->add_constraint('lang.id', '=', $lang2->id);
         $results = $qb->execute();
 
-        $this->assertEquals(1, count($results));
+        $this->assertCount(1, $results);
         $this->assertEquals($topic3->id, $results[0]->id);
 
         // test with join (with metadata)
@@ -271,7 +272,7 @@ class midgard_query_builderTest extends testcase
         $qb->add_order("name");
         $results = $qb->execute();
 
-        $this->assertEquals(2, count($results));
+        $this->assertCount(2, $results);
         $this->assertEquals($topic->id, $results[0]->id);
         $this->assertEquals($topic2->id, $results[1]->id);
     }
@@ -294,7 +295,7 @@ class midgard_query_builderTest extends testcase
         $qb->set_limit(1);
 
         $results = $qb->execute();
-        $this->assertEquals(1 , count($results));
+        $this->assertCount(1, $results);
     }
 
     public function test_offset()
@@ -348,7 +349,7 @@ class midgard_query_builderTest extends testcase
         $qb->add_constraint('name', '=', $topic2->name);
 
         $results = $qb->execute();
-        $this->assertEquals(0 , count($results));
+        $this->assertCount(0, $results);
 
         //should return topic + topic2
         $qb = new \midgard_query_builder($classname);
@@ -358,7 +359,7 @@ class midgard_query_builderTest extends testcase
         $qb->end_group();
 
         $results = $qb->execute();
-        $this->assertEquals(2 , count($results));
+        $this->assertCount(2, $results);
 
         //should only return topic
         $qb = new \midgard_query_builder($classname);
@@ -371,7 +372,7 @@ class midgard_query_builderTest extends testcase
         $qb->end_group();
 
         $results = $qb->execute();
-        $this->assertEquals(1, count($results));
+        $this->assertCount(1, $results);
 
         //should only return topic2
         $qb = new \midgard_query_builder($classname);
@@ -386,7 +387,7 @@ class midgard_query_builderTest extends testcase
 
         $results = $qb->execute();
 
-        $this->assertEquals(1, count($results));
+        $this->assertCount(1, $results);
 
         //should return topic + topic2
         $qb = new \midgard_query_builder($classname);
@@ -400,7 +401,7 @@ class midgard_query_builderTest extends testcase
 
         $results = $qb->execute();
 
-        $this->assertEquals(2, count($results));
+        $this->assertCount(2, $results);
 
         //should return topic3+topic2
         $qb = new \midgard_query_builder($classname);
@@ -414,7 +415,7 @@ class midgard_query_builderTest extends testcase
 
         $results = $qb->execute();
 
-        $this->assertEquals(2, count($results));
+        $this->assertCount(2, $results);
     }
 
     public function test_count()
@@ -432,7 +433,7 @@ class midgard_query_builderTest extends testcase
 
         // the qb should not be broken now.. try receiving the results that have been counted
         $results = $qb->execute();
-        $this->assertEquals($orig_topic_count, count($results));
+        $this->assertCount($orig_topic_count, $results);
 
         // count with constraint
         $qb = new \midgard_query_builder($classname);
