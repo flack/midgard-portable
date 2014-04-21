@@ -20,11 +20,24 @@ class testcase extends \PHPUnit_Framework_TestCase
 
     public static function setupBeforeClass()
     {
-        self::prepare_connection(array(TESTDIR . '__files/'), sys_get_temp_dir(), uniqid(get_called_class()));
+        self::prepare_connection();
     }
 
-    protected static function prepare_connection(array $directories, $tmpdir, $ns)
+    protected static function prepare_connection($directory = '', $tmpdir = null, $ns = null)
     {
+        if ($tmpdir === null)
+        {
+            $tmpdir = sys_get_temp_dir();
+        }
+        if ($ns === null)
+        {
+            $ns = uniqid(get_called_class());
+        }
+        $directories = array
+        (
+            TESTDIR . '__files/' . $directory
+        );
+
         $driver = new driver($directories, $tmpdir, $ns);
         include TESTDIR . DIRECTORY_SEPARATOR . 'bootstrap.php';
         self::$em = connection::get_em();

@@ -28,7 +28,7 @@ class classgeneratorTest extends testcase
     public function test_standard()
     {
         $ns = uniqid(__CLASS__ . '__' . __FUNCTION__);
-        self::prepare_connection(array(TESTDIR . '__files/'), $this->directory, $ns);
+        self::prepare_connection('', $this->directory, $ns);
 
         $classname = $ns . '\\midgard_topic';
         $this->assertTrue(class_exists($classname));
@@ -58,7 +58,7 @@ class classgeneratorTest extends testcase
     public function test_duplicate_tablenames()
     {
         $ns = uniqid(__CLASS__ . '__' . __FUNCTION__);
-        self::prepare_connection(array(TESTDIR . '__files/duplicate_tablenames/'), $this->directory, $ns);
+        self::prepare_connection('duplicate_tablenames/', $this->directory, $ns);
 
         $classname = $ns . '\\midgard_group';
         $this->assertTrue(class_exists($classname));

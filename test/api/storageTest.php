@@ -12,14 +12,9 @@ use midgard_query_builder;
 
 class midgard_storageTest extends testcase
 {
-    private function prepare_base_connection()
-    {
-        self::prepare_connection(array(TESTDIR . '__files/'), sys_get_temp_dir(), uniqid(__CLASS__ . __FUNCTION__));
-    }
-
     private function prepare_dtn_connection()
     {
-        self::prepare_connection(array(TESTDIR . '__files/duplicate_tablenames/'), sys_get_temp_dir(), uniqid(__CLASS__ . __FUNCTION__));
+        self::prepare_connection('duplicate_tablenames/', sys_get_temp_dir(), uniqid(__CLASS__ . __FUNCTION__));
     }
 
     private function clear_user_table()
@@ -34,7 +29,7 @@ class midgard_storageTest extends testcase
 
     public function test_create_base_storage()
     {
-        self::prepare_base_connection();
+        self::prepare_connection();
         $this->clear_user_table();
 
         $stat = midgard_storage::create_base_storage();
@@ -61,7 +56,7 @@ class midgard_storageTest extends testcase
 
     public function test_create_class_storage()
     {
-        self::prepare_base_connection();
+        self::prepare_connection();
 
         $this->assertTrue(midgard_storage::create_class_storage('midgard_topic'));
         $this->assertTrue(midgard_storage::create_class_storage('midgard_topic'));
@@ -87,7 +82,7 @@ class midgard_storageTest extends testcase
 
     public function test_update_class_storage()
     {
-        self::prepare_base_connection();
+        self::prepare_connection();
 
         midgard_storage::create_base_storage();
 
@@ -118,7 +113,7 @@ class midgard_storageTest extends testcase
 
     public function test_class_storage_exists()
     {
-        self::prepare_base_connection();
+        self::prepare_connection();
         midgard_storage::create_class_storage('midgard_topic');
 
         $this->assertTrue(midgard_storage::class_storage_exists('midgard_topic'));

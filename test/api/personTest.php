@@ -11,8 +11,7 @@ class personTest extends testcase
 {
     public static function setupBeforeClass()
     {
-        $ns = uniqid(__CLASS__);
-        self::prepare_connection(array(TESTDIR . '__files/membership/'), sys_get_temp_dir(), $ns);
+        self::prepare_connection('membership/');
 
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
