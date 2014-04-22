@@ -28,5 +28,6 @@ class connectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($tmpdir . '/cache', $config->cachedir);
         $this->assertEquals($tmpdir . '/blobs', $config->blobdir);
         $this->assertEquals($tmpdir . '/schemas', $config->sharedir);
+        $this->assertEquals($tmpdir . '/log/midgard-portable.log', $config->logfilename);
     }
 }

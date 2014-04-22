@@ -104,6 +104,7 @@ class connection
         $mgd_config->cachedir = $vardir . '/cache';
         $mgd_config->blobdir = $vardir . '/blobs';
         $mgd_config->sharedir = $vardir . '/schemas';
+        $mgd_config->logfilename = $vardir . '/log/midgard-portable.log';
         // TODO: Set rest of config values from $config and $driver
         midgard_connection::get_instance()->open_config($mgd_config);
     }
