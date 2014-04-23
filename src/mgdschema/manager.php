@@ -84,7 +84,7 @@ class manager
             return;
         }
         $reader = new xmlreader;
-        $types = $reader->parse(dirname(dirname(dirname(dirname(__DIR__)))) . '/xml/core.xml');
+        $types = $reader->parse(dirname(dirname(__DIR__)) . '/xml/core.xml');
 
         foreach ($this->schemadirs as $schemadir)
         {

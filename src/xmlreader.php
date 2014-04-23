@@ -109,7 +109,7 @@ class xmlreader
     {
         if (empty($this->mixins[$name]))
         {
-            $schema = simplexml_load_file(dirname(dirname(dirname(__DIR__))) . '/xml/' . $name . '.xml');
+            $schema = simplexml_load_file(dirname(__DIR__) . '/xml/' . $name . '.xml');
             $schema->registerXPathNamespace('r', 'http://www.midgard-project.org/repligard/1.4');
             $nodes = $schema->xpath('/r:Schema/r:mixin');
             $this->mixins[$name] = new mixin($nodes[0]->attributes());
