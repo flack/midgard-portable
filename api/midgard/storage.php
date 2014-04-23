@@ -82,16 +82,15 @@ class midgard_storage
             return $factory->getMetadataFor($classname);
         }
         // check for merged classes (duplicate tablenames)
+        if (class_exists($classname))
+        {
+            $classname = get_class(new $classname);
+            if ($factory->hasMetadataFor($classname))
+            {
+                return $factory->getMetadataFor($classname);
+            }
+        }
         // if the class doesn't exist (eg. for some_random_string), there is really nothing we could do
-        if (!class_exists($classname))
-        {
-            return false;
-        }
-        $classname = get_class(new $classname);
-        if ($factory->hasMetadataFor($classname))
-        {
-            return $factory->getMetadataFor($classname);
-        }
         return false;
     }
 
