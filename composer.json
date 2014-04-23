@@ -17,6 +17,7 @@
     "bin": ["bin/midgard-portable"],
     "autoload": {
     	"classmap": ["api/"],
-        "psr-0": { "midgard\\portable": "src/" }
+        "psr-0": { "midgard\\portable": "src/" },
+        "files": ["api/bootstrap.php"]
     }
 }

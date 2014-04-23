@@ -51,16 +51,6 @@ class driver implements driver_interface
         $this->manager = new manager($schemadirs, $namespace);
         $this->vardir = $vardir . '/';
         $this->namespace = $namespace;
-        $this->export_api();
-    }
-
-    private function export_api()
-    {
-        if (   !extension_loaded('midgard')
-            && !extension_loaded('midgard2'))
-        {
-            require_once dirname(dirname(dirname(__DIR__))) . '/api/bootstrap.php';
-        }
     }
 
     public function get_namespace()
