@@ -35,11 +35,17 @@ class userTest extends testcase
         $user = new $classname;
         $stat = $user->create();
         $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_INVALID_PROPERTY_VALUE, midgard_connection::get_instance()->get_error());
 
         $user->authtype = 'Legacy';
         $stat = $user->create();
         $this->assertTrue($stat);
+        $this->assertEquals(MGD_ERR_OK, midgard_connection::get_instance()->get_error());
         $this->assertEquals($initial + 1, $this->count_results('midgard:midgard_user'));
+
+        $stat = $user->create();
+        $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_INVALID_PROPERTY_VALUE, midgard_connection::get_instance()->get_error());
 
         $user2 = new $classname;
         $user2->login = uniqid(__FUNCTION__);

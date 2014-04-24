@@ -10,6 +10,7 @@ namespace midgard\portable\api;
 use midgard\portable\storage\connection;
 use midgard\portable\storage\objectmanager;
 use midgard\portable\api\error\exception;
+use midgard_connection;
 
 class user extends dbobject
 {
@@ -117,12 +118,10 @@ class user extends dbobject
 
     public function create()
     {
-        if (empty($this->authtype))
+        if (   empty($this->authtype)
+            || !empty($this->id))
         {
-            return false;
-        }
-        if (!empty($this->id))
-        {
+            exception::invalid_property_value();
             return false;
         }
         if (!$this->is_unique())
@@ -142,6 +141,7 @@ class user extends dbobject
             return false;
         }
         connection::get_em()->detach($this);
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return (!empty($this->id));
     }
 
