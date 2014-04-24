@@ -46,11 +46,42 @@ class driver implements driver_interface
 
     private $manager;
 
+    /**
+     * keep track of the namespaces already in use and
+     * remember the used manager instance for resolving types
+     *
+     * @var array
+     */
+    private static $processed_namespaces = array();
+
+    /**
+     * indicates whether the current namespace has been used before
+     *
+     * @var boolean
+     */
+    private $is_fresh_namespace;
+
     public function __construct(array $schemadirs, $vardir, $namespace = 'midgard\\portable\\entities')
     {
-        $this->manager = new manager($schemadirs, $namespace);
         $this->vardir = $vardir . '/';
         $this->namespace = $namespace;
+
+        $this->is_fresh_namespace = !array_key_exists($this->namespace, self::$processed_namespaces);
+        if ($this->is_fresh_namespace)
+        {
+            $this->manager = new manager($schemadirs, $this->namespace);
+            self::$processed_namespaces[$this->namespace] = array("manager" => $this->manager);
+        }
+        else
+        {
+            // reuse manager instance
+            $this->manager = self::$processed_namespaces[$this->namespace]["manager"];
+        }
+    }
+
+    public function is_fresh_namespace()
+    {
+        return $this->is_fresh_namespace;
     }
 
     public function get_namespace()

@@ -68,13 +68,18 @@ class connection
     {
         $vardir = $driver->get_vardir();
 
-        if (   $dev_mode
-            || !file_exists($vardir . '/midgard_objects.php'))
+        // generate and include midgard_objects.php if its a fresh namespace
+        // otherwhise it should be included already
+        if ($driver->is_fresh_namespace())
         {
-            $classgenerator = new classgenerator($driver->get_manager(), $vardir . '/midgard_objects.php', $dev_mode);
-            $classgenerator->write($driver->get_namespace());
+            if (   $dev_mode
+                || !file_exists($vardir . '/midgard_objects.php'))
+            {
+                $classgenerator = new classgenerator($driver->get_manager(), $vardir . '/midgard_objects.php', $dev_mode);
+                $classgenerator->write($driver->get_namespace());
+            }
+            include $vardir . '/midgard_objects.php';
         }
-        include $vardir . '/midgard_objects.php';
 
         $config = \Doctrine\ORM\Tools\Setup::createConfiguration($dev_mode);
         if (!$dev_mode)
