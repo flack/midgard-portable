@@ -617,9 +617,9 @@ abstract class object extends dbobject
     /**
      * The signature is a little different from original, because Doctrine doesn't support func_get_args() in proxies
      */
-    public function parameter($domain, $name, $value = '__UNITIALIZED__')
+    public function parameter($domain, $name, $value = '__UNINITIALIZED__')
     {
-        if ($value === '__UNITIALIZED__')
+        if ($value === '__UNINITIALIZED__')
         {
             return $this->get_parameter($domain, $name);
         }
