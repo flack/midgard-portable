@@ -66,7 +66,14 @@ Known Issues & Limitations
    all properties of all affected classes. The others are then converted into aliases. This means that
    if you have e.g. ``midgard_person`` and ``org_openpsa_person`` schemas, you only get one entity class containing
    the properties of both classes, and an a class alias for the second name. Which class becomes the actual class
-   depends on the order the files are read, so for all practical purposes, it's random right now
+   depends on the order the files are read, so for all practical purposes, it's random right now.
+
+   For the collected properties, some limitations apply. For example, if two MgdSchema classes using the same DB table
+   both define a property with the PHP name ``myfield``, but they both point to a different ``dbfield``, one of them
+   will become unreachable. Also, if two MgdSchema classes define different field types for the same field (e.g. 
+   ``string`` vs. ``text`` on a field named ``extra``), only one of these definitions will be used. The latter case 
+   may be implementable in the adapter, but it really is not a solid configuration to begin with (as it could 
+   theoretically lead to data loss), so this is not in the cards for now
 
  - Links to non-PK fields are not supported in Doctrine. So GUID-based link functionality is implemented in the adapter,
    which entails a performance penalty. Also, some cases (like parent GUID links) are not supported yet
@@ -76,7 +83,7 @@ Known Issues & Limitations
 
  - Doctrine does not support value objects currently, so Metadata simulation is somewhat imperfect in the sense
    that the metadata columns are accessible through the object itself (e.g. ``$topic->metadata_deleted``). The
-   next planned Doctrine release (2.5) may contain support for embedded objects, so this issue can be revisited
+   next planned Doctrine ORM release (2.5) will support for embedded objects (``Embeddable``), so this issue can be revisited
    once that is released.
 
  - Doctrine is somewhat stricter when it comes to referential integrity. So some of the more quirky behaviors of
@@ -89,7 +96,7 @@ Known Issues & Limitations
    to cascade persist operations for entity
    ```
  - Doctrine does not support public properties on entity classes, so using ``get_object_vars()`` will always return
-   an empty result. Similarly, ``ReflectionExtension('midgard2')`` will also fail, so you can't use this to get a list
+   an empty result. Obviously, ``ReflectionExtension('midgard2')`` will also fail, so you can't use this to get a list
    of all registered MgdSchema classes. As a workaround, you can use [midgard-introspection](https://github.com/flack/midgard-introspection),
    which abstracts these differences away.
 
