@@ -20,6 +20,8 @@ class midgard_connection
 
     private $loglevel;
 
+    private $available_loglevels = array('error', 'warn', 'warning', 'info', 'message', 'debug');
+
     function __construct()
     {
         //??
@@ -57,6 +59,7 @@ class midgard_connection
     public function open_config(midgard_config $config)
     {
         $this->config = $config;
+        $this->set_loglevel($config->loglevel);
     }
 
     public function is_connected()
@@ -101,7 +104,12 @@ class midgard_connection
 
     public function set_loglevel($level, $callback = '???' )
     {
+        if (!in_array($level, $this->available_loglevels))
+        {
+            return false;
+        }
         $this->loglevel = $level;
+        return true;
     }
 
     public function get_loglevel()
