@@ -186,6 +186,7 @@ class objectTest extends testcase
 
         $topic2->get_by_guid($topic2->guid);
         $loaded->up = $topic2->id;
+
         $this->assert_api('update', $loaded);
 
         $topic2->delete();
@@ -510,7 +511,7 @@ class objectTest extends testcase
 
         $sd2 = new $classname;
         $sd2->name = __FUNCTION__ . '2';
-        $sd2->create();
+        $this->assert_api('create', $sd2);
 
         $sn->snippetdir = $sd2->id;
         $this->assert_api('update', $sn);
@@ -523,7 +524,7 @@ class objectTest extends testcase
         $this->assert_api('update', $sn);
         $sd->get_by_id($sd->id);
         $sd->name  = __FUNCTION__ . '1';
-        $sd->update();
+        $this->assert_api('update', $sd);
 
         $this->assertSame($sd->id, $sn->get_parent()->id);
         $this->assertSame(__FUNCTION__ . '1', $sn->get_parent()->name);
