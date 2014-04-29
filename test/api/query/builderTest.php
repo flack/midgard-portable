@@ -168,7 +168,7 @@ class midgard_query_builderTest extends testcase
         $topic->create();
 
         $qb = new \midgard_query_builder($classname);
-        $qb->add_constraint_with_property('name', '=', 'extra');
+        $this->assertTrue($qb->add_constraint_with_property('name', '=', 'extra'));
         $results = $qb->execute();
 
         $this->assertCount(1, $results);
