@@ -420,6 +420,23 @@ class objectTest extends testcase
         $this->assert_api('delete', $topic);
     }
 
+    public function test_purge_with_dependents()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $topic = new $classname;
+        $topic->name = __FUNCTION__;
+        $topic->create();
+        $topic2 = new $classname;
+        $topic2->up = $topic->id;
+        $topic2->name = __FUNCTION__;
+        $topic2->create();
+
+        $this->assert_api('purge', $topic, MGD_ERR_HAS_DEPENDANTS);
+        $this->assert_api('delete', $topic2);
+        $this->assert_api('purge', $topic);
+    }
+
     public function test_purge()
     {
         $classname = self::$ns . '\\midgard_topic';
@@ -518,7 +535,7 @@ class objectTest extends testcase
         $this->assertTrue($sd2->has_dependents());
 
         $this->assert_api('delete', $sd2, MGD_ERR_HAS_DEPENDANTS);
-        $this->assert_api('purge', $sd2);
+        $sd2->purge(false);
 
         $sn->snippetdir = $sd->id;
         $this->assert_api('update', $sn);

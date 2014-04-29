@@ -197,6 +197,10 @@ abstract class object extends dbobject
         return true;
     }
 
+    /**
+     * @todo: Tests indicate that $check_dependencies is ignored in the mgd2 extension,
+     * so we might consider ignoring it, too
+     */
     public function delete($check_dependencies = true)
     {
         if (empty($this->id))
@@ -212,7 +216,7 @@ abstract class object extends dbobject
         }
         if (!($this instanceof metadata_interface))
         {
-            return $this->purge();
+            return $this->purge($check_dependencies);
         }
         if ($this->metadata_deleted)
         {
@@ -679,9 +683,10 @@ abstract class object extends dbobject
     }
 
     /**
-     * @todo: What is the default for check_dependencies and what does it do?
+     * @todo: Tests indicate that $check_dependencies is ignored in the mgd2 extension,
+     * so we might consider ignoring it, too
      */
-    public function purge($check_dependencies = false)
+    public function purge($check_dependencies = true)
     {
         if (empty($this->id))
         {
@@ -689,6 +694,13 @@ abstract class object extends dbobject
             exception::not_exists();
             return false;
         }
+        if (   $check_dependencies
+            && $this->has_dependents())
+        {
+            exception::has_dependants();
+            return false;
+        }
+
         try
         {
             $om = new objectmanager(connection::get_em());
