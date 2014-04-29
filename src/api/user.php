@@ -54,6 +54,15 @@ class user extends dbobject
         }
     }
 
+    public function __set($field, $value)
+    {
+        if ($field == 'guid')
+        {
+            return;
+        }
+        parent::__set($field, $value);
+    }
+
     private function load_by_properties(array $properties)
     {
         if (   !array_key_exists('authtype', $properties)

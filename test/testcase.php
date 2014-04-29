@@ -8,7 +8,7 @@
 namespace midgard\portable\test;
 
 use midgard\portable\driver;
-use midgard\portable\api\object;
+use midgard\portable\api\dbobject;
 use midgard\portable\storage\connection;
 use midgard_dbobject;
 
@@ -96,7 +96,7 @@ class testcase extends \PHPUnit_Framework_TestCase
         return (int) $count;
     }
 
-    protected function assert_api($function, object $object, $expected_error = MGD_ERR_OK)
+    protected function assert_api($function, dbobject $object, $expected_error = MGD_ERR_OK)
     {
         $this->assertEquals(($expected_error === MGD_ERR_OK), $object->$function(), \midgard_connection::get_instance()->get_error_string());
         $this->assertEquals($expected_error, \midgard_connection::get_instance()->get_error(), \midgard_connection::get_instance()->get_error_string());

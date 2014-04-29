@@ -42,6 +42,7 @@ class userTest extends testcase
         $this->assertTrue($stat);
         $this->assertEquals(MGD_ERR_OK, midgard_connection::get_instance()->get_error());
         $this->assertEquals($initial + 1, $this->count_results('midgard:midgard_user'));
+        $this->assertTrue(mgd_is_guid($user->guid));
 
         $stat = $user->create();
         $this->assertFalse($stat);
@@ -79,22 +80,26 @@ class userTest extends testcase
         $tokens = array('authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password);
         $loaded = new $classname($tokens);
         $this->assertEquals($loaded->login, $user->login);
-        
+
         $user2 = new $classname;
         $user2->login = uniqid(__FUNCTION__);
         $user2->password = 'x';
         $user2->authtype = 'Legacy';
         $stat = $user2->create();
         $this->assertTrue($stat);
-        
+
         //set same login - should not work
         $user2->login = $user->login;
         $stat = $user2->update();
         $this->assertFalse($stat);
         $this->assertEquals(MGD_ERR_DUPLICATE, midgard_connection::get_instance()->get_error());
-        
+
         //incorrect guid - should not work
-        $user->guid = 0;
+        $ref = new \ReflectionClass($user);
+        $guid = $ref->getProperty('guid');
+        $guid->setAccessible(true);
+        $guid->setValue($user, 'x');
+
         $stat = $user->update();
         $this->assertFalse($stat);
         $this->assertEquals(MGD_ERR_INVALID_PROPERTY_VALUE, midgard_connection::get_instance()->get_error());
@@ -123,6 +128,20 @@ class userTest extends testcase
         //This checks the value with reflection internally and expects null
         $this->assertSame(UnitOfWork::STATE_NEW, self::$em->getUnitOfWork()->getEntityState($user));
         $this->assertSame(0, $user->id);
+    }
+
+    public function test_set_guid()
+    {
+        $classname = self::$ns . '\\midgard_user';
+        $user = new $classname;
+        $user->authtype = 'Legacy';
+        $user->login = uniqid();
+        $user->password = 'x';
+        $this->assert_api('create', $user);
+
+        $guid = $user->guid;
+        $user->guid = 'x';
+        $this->assertSame($guid, $user->guid);
     }
 
     public function test_login()
