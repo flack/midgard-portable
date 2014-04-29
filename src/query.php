@@ -68,6 +68,8 @@ abstract class query
         $constraint = $parsed['name'] . ' ' . $operator . ' ' . $parsed_property['name'];
     
         $this->get_current_group()->add($constraint);
+        
+        return true;
     }
     public function add_constraint($name, $operator, $value)
     {

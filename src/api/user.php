@@ -147,11 +147,16 @@ class user extends dbobject
 
     public function update()
     {
-        if (empty($this->id))
+        if (empty($this->id) || !mgd_is_guid($this->guid))
         {
+            exception::invalid_property_value();
             return false;
         }
-
+        if (!$this->is_unique())
+        {
+            exception::duplicate();
+            return false;
+        }
         try
         {
             $om = new objectmanager(connection::get_em());

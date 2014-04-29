@@ -79,6 +79,25 @@ class userTest extends testcase
         $tokens = array('authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password);
         $loaded = new $classname($tokens);
         $this->assertEquals($loaded->login, $user->login);
+        
+        $user2 = new $classname;
+        $user2->login = uniqid(__FUNCTION__);
+        $user2->password = 'x';
+        $user2->authtype = 'Legacy';
+        $stat = $user2->create();
+        $this->assertTrue($stat);
+        
+        //set same login - should not work
+        $user2->login = $user->login;
+        $stat = $user2->update();
+        $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_DUPLICATE, midgard_connection::get_instance()->get_error());
+        
+        //incorrect guid - should not work
+        $user->guid = 0;
+        $stat = $user->update();
+        $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_INVALID_PROPERTY_VALUE, midgard_connection::get_instance()->get_error());
     }
 
     public function test_delete()
