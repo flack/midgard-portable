@@ -176,13 +176,15 @@ class user extends dbobject
             exception::internal($e);
             return false;
         }
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return true;
     }
 
     public function delete()
     {
-        if (empty($this->id))
+        if (!mgd_is_guid($this->guid))
         {
+            exception::invalid_property_value();
             return false;
         }
 
@@ -197,6 +199,7 @@ class user extends dbobject
             return false;
         }
         $this->guid = '';
+        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return true;
     }
 

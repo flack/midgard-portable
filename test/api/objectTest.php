@@ -87,8 +87,7 @@ class objectTest extends testcase
         $topic->create();
         $id = $topic->id;
         $topic->delete();
-        $topic->purge();
-        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
+        $this->assert_api('purge', $topic);
 
         $e = null;
         try

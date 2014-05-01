@@ -85,14 +85,11 @@ class userTest extends testcase
         $user2->login = uniqid(__FUNCTION__);
         $user2->password = 'x';
         $user2->authtype = 'Legacy';
-        $stat = $user2->create();
-        $this->assertTrue($stat);
+        $this->assert_api('create', $user2);
 
         //set same login - should not work
         $user2->login = $user->login;
-        $stat = $user2->update();
-        $this->assertFalse($stat);
-        $this->assertEquals(MGD_ERR_DUPLICATE, midgard_connection::get_instance()->get_error());
+        $this->assert_api('update', $user2, MGD_ERR_DUPLICATE);
 
         //incorrect guid - should not work
         $ref = new \ReflectionClass($user);
@@ -100,9 +97,9 @@ class userTest extends testcase
         $guid->setAccessible(true);
         $guid->setValue($user, 'x');
 
-        $stat = $user->update();
-        $this->assertFalse($stat);
-        $this->assertEquals(MGD_ERR_INVALID_PROPERTY_VALUE, midgard_connection::get_instance()->get_error());
+        $this->assert_api('update', $user, MGD_ERR_INVALID_PROPERTY_VALUE);
+        $user2->login = uniqid('xx');
+        $this->assert_api('update', $user2);
     }
 
     public function test_delete()
@@ -112,10 +109,16 @@ class userTest extends testcase
 
         $user = new $classname;
         $user->authtype = 'Legacy';
-        $user->create();
+        $user2 = new $classname;
+        $user2->authtype = 'Legacy';
+        $this->assert_api('create', $user2);
 
-        $stat = $user->delete();
-        $this->assertTrue($stat);
+        $this->assert_api('delete', $user, MGD_ERR_INVALID_PROPERTY_VALUE);
+        $this->assert_api('create', $user);
+
+        $this->assert_api('delete', $user);
+        $this->assert_api('delete', $user, MGD_ERR_INVALID_PROPERTY_VALUE);
+        $this->assert_api('delete', $user2);
         $this->assertEquals('', $user->guid);
         $this->assertEquals($initial, $this->count_results('midgard:midgard_user'));
     }
