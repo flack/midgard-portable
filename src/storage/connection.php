@@ -11,14 +11,40 @@ use midgard\portable\driver;
 use midgard\portable\classgenerator;
 use midgard\portable\api\user;
 use midgard\portable\api\config;
+use midgard\portable\api\error\exception;
 use midgard\portable\storage\type\datetime;
 use midgard\portable\storage\subscriber;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Types\Type;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 use midgard_connection;
 
 class connection
 {
+    /**
+     * @var Monolog\Logger
+     */
+    private static $logger;
+
+    /**
+     * Loglevel translation table.
+     *
+     * The semantics of info and notice/message are unfortunately reversed between Monolog
+     * and Midgard, so it looks a bit confusing..
+     *
+     * @var array
+     */
+    private static $loglevels = array
+    (
+        'error' => Logger::ERROR,
+        'warn' => Logger::WARNING,
+        'warning' => Logger::WARNING,
+        'info' => Logger::NOTICE,
+        'message' => Logger::INFO,
+        'debug' => Logger::DEBUG
+    );
+
     private $user;
 
     /**
@@ -112,5 +138,34 @@ class connection
         $mgd_config->logfilename = $vardir . '/log/midgard-portable.log';
         // TODO: Set rest of config values from $config and $driver
         midgard_connection::get_instance()->open_config($mgd_config);
+    }
+
+    /**
+     * Get Logger instance
+     *
+     * @return Monolog\Logger
+     */
+    public static function log()
+    {
+        if (self::$logger === null)
+        {
+            $midgard = midgard_connection::get_instance();
+            if ($midgard->config->logfilename)
+            {
+                $logdir = dirname($midgard->config->logfilename);
+                if (   !is_dir($logdir)
+                    && !mkdir($logdir, 0777, true))
+                {
+                    throw exception::user_data('Log directory could not be created');
+                }
+                self::$logger = new Logger('midgard-portable');
+                self::$logger->pushHandler(new StreamHandler($midgard->config->logfilename, self::$loglevels[$midgard->get_loglevel()]));
+            }
+            else
+            {
+                throw exception::user_data('log filename not set in config');
+            }
+        }
+        return self::$logger;
     }
 }

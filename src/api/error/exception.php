@@ -6,6 +6,7 @@
  */
 namespace midgard\portable\api\error;
 
+use midgard\portable\storage\connection;
 use midgard_connection;
 use Exception as base_exception;
 
@@ -114,6 +115,7 @@ class exception extends base_exception
 
     public static function internal(base_exception $exception)
     {
+        connection::log()->critical("Internal error", array('exception' => $exception));
         return new self("Critical internal error. " . $exception->getMessage(), self::INTERNAL, $exception);
     }
 
@@ -142,9 +144,9 @@ class exception extends base_exception
         return new self("Invalid property.", self::INVALID_PROPERTY);
     }
 
-    public static function user_data()
+    public static function user_data($message = 'Unknown error')
     {
-        return new self("", self::USER_DATA);
+        return new self($message, self::USER_DATA);
     }
 
     public static function object_deleted()
