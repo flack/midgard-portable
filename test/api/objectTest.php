@@ -181,8 +181,8 @@ class objectTest extends testcase
         $loaded = new $classname;
         $stat = $loaded->get_by_guid($topic->guid);
         $this->assertTrue($stat);
-        $this->assertEquals($topic->id, $loaded->id);
-        $this->assertEquals($topic->name, $loaded->name);
+        $this->assertSame($topic->id, $loaded->id);
+        $this->assertSame($topic->name, $loaded->name);
 
         $topic2->get_by_guid($topic2->guid);
         $loaded->up = $topic2->id;
@@ -547,6 +547,25 @@ class objectTest extends testcase
         $this->assertSame(__FUNCTION__ . '1', $sn->get_parent()->name);
 
         $this->assert_api('delete', $sn);
+        $this->assert_api('purge', $sn);
+    }
+
+    public function test_association_purge()
+    {
+        $classname = self::$ns . '\\midgard_snippetdir';
+        $sn_class = self::$ns . '\\midgard_snippet';
+
+        $sd = new $classname;
+        $sd->name = __FUNCTION__;
+        $this->assert_api('create', $sd);
+
+        $sn = new $sn_class;
+        $sn->name = __FUNCTION__;
+        $sn->snippetdir = $sd->id;
+        $this->assert_api('create', $sn);
+        $this->assert_api('delete', $sn);
+        $sd->get_by_guid($sd->guid);
+        $sn->snippetdir = $sd->id;
         $this->assert_api('purge', $sn);
     }
 

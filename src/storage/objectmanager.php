@@ -112,12 +112,15 @@ class objectmanager
 
     public function purge(dbobject $entity)
     {
+        $entity = $this->em->merge($entity);
+        // If we don't refresh here, Doctrine might try to update before deleting and
+        // throw exceptions about new entities being found (most likely stale association proxies)
+        // @todo: In Doctrine 2.5, this behavior should be removed, so we may be able to remove this workaround
         $this->em->getFilters()->disable('softdelete');
-        $ref = $this->em->getReference(get_class($entity), $entity->id);
+        $this->em->refresh($entity);
         $this->em->getFilters()->enable('softdelete');
-
-        $this->em->remove($ref);
-        $this->em->flush($ref);
+        $this->em->remove($entity);
+        $this->em->flush($entity);
         $this->em->detach($entity);
     }
 
