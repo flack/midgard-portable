@@ -938,9 +938,9 @@ class objectTest extends testcase
 
         $person = self::create_user();
 
-        $this->assertTrue($topic->lock());
+        $this->assert_api('lock', $topic);
         $this->assertTrue($topic->is_locked());
-        $this->assertFalse($topic->lock());
+        $this->assert_api('lock', $topic, MGD_ERR_OBJECT_IS_LOCKED);
         $this->assertEquals($person->guid, $topic->metadata->locker);
 
         $loaded = new $classname($topic->id);

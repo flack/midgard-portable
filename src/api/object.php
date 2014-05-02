@@ -838,6 +838,11 @@ abstract class object extends dbobject
 
     public function lock()
     {
+        if ($this->is_locked())
+        {
+            exception::object_is_locked();
+            return false;
+        }
         return $this->manage_meta_property("islocked", true);
     }
 
