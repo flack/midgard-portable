@@ -23,6 +23,15 @@ abstract class dbobject implements ObjectManagerAware
     protected $cm;
 
     /**
+     * Simple map of association fields changed during the object's lifetime
+     *
+     * We need this for some workarounds for proxy-related problems during changeset calculation
+     *
+     * @var array
+     */
+    protected $changed_associations = array();
+
+    /**
      * {@inheritDoc}
      */
     public function injectObjectManager(ObjectManager $objectmanager, ClassMetadata $classmetadata)
@@ -32,6 +41,14 @@ abstract class dbobject implements ObjectManagerAware
         }
 
         $this->cm = $classmetadata;
+    }
+
+    /**
+     * @return array
+     */
+    public function __get_changed_associations()
+    {
+        return $this->changed_associations;
     }
 
     public function __set($field, $value)
@@ -53,6 +70,11 @@ abstract class dbobject implements ObjectManagerAware
             }
             else
             {
+                if (   !is_object($this->$field)
+                    || $this->$field->id != $value)
+                {
+                    $this->changed_associations[$field] = true;
+                }
                 $classname = $this->cm->getAssociationTargetClass($field);
                 $value = connection::get_em()->getReference($classname, $value);
             }

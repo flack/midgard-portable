@@ -10,10 +10,11 @@ namespace midgard\portable\storage;
 use midgard\portable\api\dbobject;
 use midgard\portable\storage\metadata\entity;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\Common\Util\ClassUtils;
 use midgard\portable\api\error\exception;
 use midgard_datetime;
-use Doctrine\ORM\UnitOfWork;
 
 class objectmanager
 {
@@ -73,12 +74,25 @@ class objectmanager
     private function kill_potential_proxies($entity)
     {
         $classname = ClassUtils::getRealClass(get_class($entity));
-        foreach ($this->em->getClassMetadata($classname)->getAssociationNames() as $name)
+        $cm = $this->em->getClassMetadata($classname);
+        $changed_associations = $entity->__get_changed_associations();
+
+        foreach ($cm->getAssociationNames() as $name)
         {
             if ($entity->$name === 0)
             {
                 //This is necessary to kill potential proxy objects pointing to purged entities
                 $entity->$name = 0;
+            }
+            else if (!array_key_exists($name, $changed_associations))
+            {
+                $value = $cm->getReflectionProperty($name)->getValue($entity);
+                if ($value instanceof Proxy)
+                {
+                    //This makes sure that the associated entity doesn't end up in the changeset calculation
+                    $value->__isInitialized__ = false;
+                    continue;
+                }
             }
         }
     }
@@ -90,9 +104,9 @@ class objectmanager
         $copy = new $classname($entity->id);
 
         $copy->metadata_deleted = true;
-        $this->kill_potential_proxies($copy);
 
         $copy = $this->em->merge($copy);
+        $this->kill_potential_proxies($copy);
 
         $this->em->persist($copy);
         $this->em->flush($copy);
