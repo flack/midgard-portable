@@ -124,7 +124,7 @@
 
         <!-- /Common OpenPSA properties -->
     </type>
-    
+
     <type name="org_openpsa_member" table="member">
         <property name="id" type="unsigned integer" primaryfield="id">
             <description>Local non-replication-safe database identifier</description>

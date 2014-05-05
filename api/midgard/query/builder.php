@@ -26,7 +26,7 @@ class midgard_query_builder extends query
             return false;
         }
     }
-    
+
     public function add_constraint($name, $operator, $value)
     {
         try
