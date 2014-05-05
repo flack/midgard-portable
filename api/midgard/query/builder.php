@@ -10,7 +10,7 @@ use midgard\portable\api\error\exception;
 
 class midgard_query_builder extends query
 {
-	function __construct($class)
+    function __construct($class)
     {
         parent::__construct($class);
     }

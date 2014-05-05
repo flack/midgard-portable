@@ -11,10 +11,10 @@ use midgard\portable\api\config;
 
 class configTest extends testcase
 {
-	private $directory;
+    private $directory;
 
-	public function setUp()
-	{
+    public function setUp()
+    {
         $this->directory = TESTDIR . '__output';
         if (is_dir($this->directory))
         {

@@ -10,29 +10,29 @@ namespace midgard\portable\mgdschema;
 
 class property implements node
 {
-	public $link;
+    public $link;
 
-	public $noidlink;
+    public $noidlink;
 
-	/**
-	 * DB column name (defaults to $this->name)
-	 *
-	 * @var string
-	 */
-	public $field;
+    /**
+     * DB column name (defaults to $this->name)
+     *
+     * @var string
+     */
+    public $field;
 
-	/**
-	 * Does this field point to a parent
-	 *
-	 * @var string
-	 */
-	public $parentfield;
+    /**
+     * Does this field point to a parent
+     *
+     * @var string
+     */
+    public $parentfield;
 
-	/**
-	 * Field name for MdgSchema object
-	 *
-	 * @var string
-	 */
+    /**
+     * Field name for MdgSchema object
+     *
+     * @var string
+     */
     public $name;
 
     /**
@@ -95,10 +95,10 @@ class property implements node
     {
         switch ($name)
         {
-        	case 'unique':
-        	case 'index':
-        	    $value = ($value === 'yes');
-        	    break;
+            case 'unique':
+            case 'index':
+                $value = ($value === 'yes');
+                break;
             case 'link':
                 $tmp = explode(':', $value);
                 $value = array();
