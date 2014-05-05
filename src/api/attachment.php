@@ -27,4 +27,3 @@ class attachment extends object
         return parent::create();
     }
 }
-?>

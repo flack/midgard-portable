@@ -31,4 +31,3 @@ class metadata
         return property_exists($this->object, 'metadata_' . $field);
     }
 }
-?>

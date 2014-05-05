@@ -859,4 +859,3 @@ abstract class object extends dbobject
         return false;
     }
 }
-?>

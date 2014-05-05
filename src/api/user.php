@@ -237,4 +237,3 @@ class user extends dbobject
         return ($count === 0);
     }
 }
-?>

@@ -50,4 +50,3 @@ class midgard_query_builder extends query
         return $result;
     }
 }
-?>

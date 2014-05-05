@@ -17,4 +17,3 @@ class person extends object
 
     protected $lastname = '';
 }
-?>

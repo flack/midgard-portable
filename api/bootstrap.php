@@ -69,4 +69,3 @@ class_alias('midgard\\portable\\api\\metadata', 'midgard_metadata');
 class_alias('midgard\\portable\\api\\blob', 'midgard_blob');
 
 require 'functions.php';
-?>

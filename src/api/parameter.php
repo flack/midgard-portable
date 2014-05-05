@@ -22,4 +22,3 @@ class parameter extends object
         return $this->domain . " " . $this->name;
     }
 }
-?>

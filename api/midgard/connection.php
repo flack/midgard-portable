@@ -177,4 +177,3 @@ class midgard_connection
 
     }
 }
-?>
