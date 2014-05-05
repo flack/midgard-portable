@@ -59,7 +59,7 @@ abstract class query
     }
 
     abstract function execute();
-    
+
     public function add_constraint_with_property($name, $operator, $property)
     {
         //TODO: INTREE & IN operator functionality ?
@@ -68,7 +68,7 @@ abstract class query
         $constraint = $parsed['name'] . ' ' . $operator . ' ' . $parsed_property['name'];
     
         $this->get_current_group()->add($constraint);
-        
+
         return true;
     }
     public function add_constraint($name, $operator, $value)
@@ -136,7 +136,7 @@ abstract class query
 
     public function toggle_read_only($toggle = false)
     {
-        throw \Exception("Not implemented");
+        throw new \Exception("Not implemented");
     }
 
     public function set_limit($limit)
