@@ -9,7 +9,6 @@ use midgard\portable\storage\connection;
 use midgard\portable\storage\subscriber;
 use midgard\portable\api\error\exception;
 use midgard\portable\storage\objectmanager;
-use Doctrine\ORM\Query;
 
 class midgard_object_class
 {

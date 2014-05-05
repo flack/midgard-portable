@@ -7,8 +7,6 @@
 
 namespace midgard\portable\mgdschema;
 
-use SimpleXMLElement;
-use Doctrine\DBAL\Types\BooleanType;
 
 class property implements node
 {

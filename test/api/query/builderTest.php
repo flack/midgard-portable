@@ -7,7 +7,6 @@
 
 namespace midgard\portable\test;
 
-use midgard_dbobject;
 
 class midgard_query_builderTest extends testcase
 {

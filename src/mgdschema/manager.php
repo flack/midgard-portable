@@ -8,8 +8,6 @@
 namespace midgard\portable\mgdschema;
 
 use midgard\portable\xmlreader;
-use midgard\portable\mgdschema\type;
-use midgard\portable\mgdschema\property;
 
 class manager
 {

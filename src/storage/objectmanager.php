@@ -13,7 +13,6 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Common\Util\ClassUtils;
-use midgard\portable\api\error\exception;
 use midgard_datetime;
 
 class objectmanager

@@ -5,10 +5,8 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
 
-use midgard\portable\query;
 use midgard\portable\api\error\exception;
 use midgard\portable\storage\connection;
-use Doctrine\DBAL\Types\BooleanType;
 
 class midgard_collector extends midgard_query_builder
 {

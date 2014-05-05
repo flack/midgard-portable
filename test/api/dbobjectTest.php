@@ -7,7 +7,6 @@
 
 namespace midgard\portable\test;
 
-use midgard\portable\storage\connection;
 use Doctrine\ORM\UnitOfWork;
 
 class dbobjectTest extends testcase

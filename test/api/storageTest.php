@@ -8,7 +8,6 @@
 namespace midgard\portable\test;
 
 use midgard_storage;
-use midgard_query_builder;
 
 class midgard_storageTest extends testcase
 {

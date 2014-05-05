@@ -7,7 +7,6 @@
 
 namespace midgard\portable\storage;
 
-use midgard\portable\storage\connection;
 use midgard\portable\storage\metadata\entity;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;

@@ -7,9 +7,6 @@
 
 namespace midgard\portable\test;
 
-use midgard\portable\classgenerator;
-use midgard\portable\mgdschema\manager;
-use midgard\portable\storage\connection;
 
 class classgeneratorTest extends testcase
 {

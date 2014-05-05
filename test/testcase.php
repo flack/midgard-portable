@@ -10,7 +10,6 @@ namespace midgard\portable\test;
 use midgard\portable\driver;
 use midgard\portable\api\dbobject;
 use midgard\portable\storage\connection;
-use midgard_dbobject;
 
 class testcase extends \PHPUnit_Framework_TestCase
 {

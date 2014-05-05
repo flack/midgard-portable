@@ -1,7 +1,6 @@
 <?php
 use midgard\portable\driver;
 use midgard\portable\storage\connection;
-use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 
 require_once "vendor/autoload.php";

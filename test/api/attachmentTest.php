@@ -7,7 +7,6 @@
 
 namespace midgard\portable\test;
 
-use midgard\portable\api\blob;
 use midgard_connection;
 
 class attachmentTest extends testcase

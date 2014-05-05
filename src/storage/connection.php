@@ -13,7 +13,6 @@ use midgard\portable\api\user;
 use midgard\portable\api\config;
 use midgard\portable\api\error\exception;
 use midgard\portable\storage\type\datetime;
-use midgard\portable\storage\subscriber;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Types\Type;
 use Monolog\Logger;
