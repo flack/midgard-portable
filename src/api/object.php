@@ -152,8 +152,12 @@ abstract class object extends dbobject
 
     public function create()
     {
-        if (   !empty($this->id)
-            || !$this->is_unique()
+        if (!empty($this->id))
+        {
+            exception::duplicate();
+            return false;
+        }
+        if (   !$this->is_unique()
             || !$this->check_parent())
         {
             return false;
@@ -170,6 +174,7 @@ abstract class object extends dbobject
         }
 
         midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+
         return ($this->id != 0);
     }
 

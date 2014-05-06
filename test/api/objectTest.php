@@ -33,7 +33,7 @@ class objectTest extends testcase
         $topic = new $classname;
         $topic->name = __FUNCTION__;
 
-        $topic->create();
+        $this->assert_api('create', $topic);
         self::$em->clear();
 
         $loaded = new $classname($topic->id);
@@ -218,8 +218,7 @@ class objectTest extends testcase
         $topic2->name = __FUNCTION__ . '-2';
         $stat = $topic2->create();
         $this->assertTrue($stat);
-        $stat = $topic2->create();
-        $this->assertFalse($stat);
+        $this->assert_api('create', $topic2, MGD_ERR_DUPLICATE);
         $this->assertEquals($initial + 2, $this->count_results($classname));
         $this->assertEquals($topic->id + 1, $topic2->id);
 
