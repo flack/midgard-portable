@@ -141,15 +141,15 @@ class user extends dbobject
         $this->guid = connection::generate_guid();
         try
         {
-            connection::get_em()->persist($this);
-            connection::get_em()->flush($this);
+            $om = new objectmanager(connection::get_em());
+            $om->create($this);
         }
         catch (\Exception $e)
         {
             exception::internal($e);
             return false;
         }
-        connection::get_em()->detach($this);
+
         midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return (!empty($this->id));
     }
