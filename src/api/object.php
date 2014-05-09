@@ -591,10 +591,15 @@ abstract class object extends dbobject
             {
                 foreach ($params as $param)
                 {
-                    $param->delete();
+                    $stat = $param->delete();
                 }
+                return $stat;
             }
-            return true;
+            else
+            {
+                exception::not_exists();
+                return false;
+            }
         }
 
         // create new

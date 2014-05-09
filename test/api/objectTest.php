@@ -7,6 +7,7 @@
 
 namespace midgard\portable\test;
 use midgard\portable\storage\connection;
+use midgard_connection;
 
 class objectTest extends testcase
 {
@@ -52,8 +53,7 @@ class objectTest extends testcase
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $topic->create();
-        $topic->delete();
-        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
+        $this->assert_api('delete', $topic);
 
         // try from identity map
         $e = null;
@@ -64,7 +64,7 @@ class objectTest extends testcase
         catch ( \midgard_error_exception $e){}
 
         $this->assertInstanceOf('midgard_error_exception', $e);
-        $this->assertEquals(MGD_ERR_OBJECT_DELETED, \midgard_connection::get_instance()->get_error());
+        $this->assertEquals(MGD_ERR_OBJECT_DELETED, midgard_connection::get_instance()->get_error());
 
         // try from db
         self::$em->clear();
@@ -76,7 +76,7 @@ class objectTest extends testcase
         catch ( \midgard_error_exception $e){}
 
         $this->assertInstanceOf('midgard_error_exception', $e);
-        $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
+        $this->assertEquals(MGD_ERR_NOT_EXISTS, midgard_connection::get_instance()->get_error());
     }
 
     public function test_load_purged()
@@ -97,7 +97,7 @@ class objectTest extends testcase
         catch ( \midgard_error_exception $e){}
 
         $this->assertInstanceOf('midgard_error_exception', $e);
-        $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
+        $this->assertEquals(MGD_ERR_NOT_EXISTS, midgard_connection::get_instance()->get_error());
 
         $e = null;
         try
@@ -108,7 +108,7 @@ class objectTest extends testcase
         catch ( \midgard_error_exception $e){}
 
         $this->assertInstanceOf('midgard_error_exception', $e);
-        $this->assertEquals(MGD_ERR_OBJECT_PURGED, \midgard_connection::get_instance()->get_error());
+        $this->assertEquals(MGD_ERR_OBJECT_PURGED, midgard_connection::get_instance()->get_error());
     }
 
     public function test_load_separate_instances()
@@ -253,9 +253,7 @@ class objectTest extends testcase
     {
         $classname = self::$ns . '\\midgard_topic';
         $topic = new $classname;
-        $stat = $topic->update();
-        $this->assertFalse($stat);
-        $this->assertEquals(MGD_ERR_INTERNAL, \midgard_connection::get_instance()->get_error());
+        $this->assert_api('update', $topic, MGD_ERR_INTERNAL);
     }
 
     private function verify_unpersisted_changes($classname, $guid, $cmp_field, $cmp_value)
@@ -310,15 +308,13 @@ class objectTest extends testcase
     {
         $classname = self::$ns . '\\midgard_topic';
         $topic = new $classname;
-        $stat = $topic->delete();
-        $this->assertFalse($stat);
-        $this->assertEquals(MGD_ERR_INVALID_PROPERTY_VALUE, \midgard_connection::get_instance()->get_error());
+        $this->assert_api('delete', $topic, MGD_ERR_INVALID_PROPERTY_VALUE);
     }
 
     public function test_undelete()
     {
         $classname = self::$ns . '\\midgard_topic';
-        $con = \midgard_connection::get_instance();
+        $con = midgard_connection::get_instance();
 
         // test undelete on invalid guid
         $stat = call_user_func_array($classname . "::undelete", array("hello"));
@@ -444,13 +440,9 @@ class objectTest extends testcase
         $topic->name = __FUNCTION__;
         $topic->create();
         $id = $topic->id;
-        $stat = $topic->purge();
-        $this->assertTrue($stat);
-        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
+        $this->assert_api('purge', $topic);
         $this->assertEquals($initial, $this->count_results($classname, true));
-        $stat = $topic->purge();
-        $this->assertFalse($stat);
-        $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error(), \midgard_connection::get_instance()->get_error_string());
+        $this->assert_api('purge', $topic, MGD_ERR_NOT_EXISTS);
 
         $topic = new $classname;
         $topic->name = __FUNCTION__ . ' 2';
@@ -595,34 +587,25 @@ class objectTest extends testcase
         $sd2 = new $classname;
         $sd2->name = __FUNCTION__;
         $stat = $sd2->create();
-        $this->assertFalse($stat, \midgard_connection::get_instance()->get_error_string());
+        $this->assertFalse($stat, midgard_connection::get_instance()->get_error_string());
 
         $sd->delete();
 
-        $stat = $sd2->create();
-        $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());
+        $this->assert_api('create', $sd2);
 
         $sd3 = new $classname;
         $sd3->name = __FUNCTION__;
-        $stat = $sd3->create();
-        $this->assertFalse($stat);
-        $this->assertEquals(MGD_ERR_OBJECT_NAME_EXISTS, \midgard_connection::get_instance()->get_error());
+        $this->assert_api('create', $sd3, MGD_ERR_OBJECT_NAME_EXISTS);
 
         $sd3->up = $sd2->id;
-        $stat = $sd3->create();
-        $this->assertTrue($stat);
-        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
+        $this->assert_api('create', $sd3);
 
         //Empty names don't trigger duplicate error for some reason
         $sd4 = new $classname;
-        $stat = $sd4->create();
-        $this->assertTrue($stat);
-        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
+        $this->assert_api('create', $sd4);
 
         $sd5 = new $classname;
-        $stat = $sd5->create();
-        $this->assertTrue($stat);
-        $this->assertEquals(MGD_ERR_OK, \midgard_connection::get_instance()->get_error());
+        $this->assert_api('create', $sd5);
     }
 
     public function test_get_by_path()
@@ -769,6 +752,11 @@ class objectTest extends testcase
         // there should be no parameter left
         $params = $topic->list_parameters();
         $this->assertCount(0, $params);
+
+        // delete attempt on nonexistant parameter should return false
+        $stat = $topic->set_parameter("midcom.core", "count", false);
+        $this->assertFalse($stat, 'Delete nonexistant parameter should return false');
+        $this->assertEquals(MGD_ERR_NOT_EXISTS, midgard_connection::get_instance()->get_error(), 'Unexpected status: ' . midgard_connection::get_instance()->get_error_string());
     }
 
     public function test_has_parameters()
