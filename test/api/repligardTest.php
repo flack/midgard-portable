@@ -36,7 +36,6 @@ class midgard_repligardTest extends testcase
     public function test_create()
     {
         $classname = self::$ns . '\\midgard_topic';
-        $initial = $this->count_results($classname);
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;
@@ -52,13 +51,15 @@ class midgard_repligardTest extends testcase
     public function test_update()
     {
         $classname = self::$ns . '\\midgard_topic';
-        $initial = $this->count_results($classname);
 
         $topic = new $classname;
         $topic->create();
+        self::$em->clear();
+
         $topic->name = __FUNCTION__;
         $topic->update();
         self::$em->clear();
+
         $repligard_entry = self::$em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $topic->guid));
         $this->assertInstanceOf(self::$ns . '\\midgard_repligard', $repligard_entry);
         $this->assertFalse(property_exists($repligard_entry, 'metadata'));
@@ -69,12 +70,14 @@ class midgard_repligardTest extends testcase
     public function test_delete()
     {
         $classname = self::$ns . '\\midgard_topic';
-        $initial = $this->count_results($classname);
 
         $topic = new $classname;
         $topic->create();
+        self::$em->clear();
+
         $topic->delete();
         self::$em->clear();
+
         $repligard_entry = self::$em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $topic->guid));
         $this->assertInstanceOf(self::$ns . '\\midgard_repligard', $repligard_entry);
         $this->assertFalse(property_exists($repligard_entry, 'metadata'));
@@ -85,11 +88,14 @@ class midgard_repligardTest extends testcase
     public function test_purge()
     {
         $classname = self::$ns . '\\midgard_topic';
-        $initial = $this->count_results($classname);
 
         $topic = new $classname;
         $topic->create();
+        self::$em->clear();
+
         $topic->purge();
+        self::$em->clear();
+
         $repligard_entry = self::$em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $topic->guid));
         $this->assertInstanceOf(self::$ns . '\\midgard_repligard', $repligard_entry);
         $this->assertFalse(property_exists($repligard_entry, 'metadata'));

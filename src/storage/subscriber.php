@@ -8,10 +8,12 @@
 namespace midgard\portable\storage;
 
 use midgard\portable\storage\metadata\entity;
+use midgard\portable\api\dbobject;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Events as dbal_events;
@@ -26,19 +28,38 @@ class subscriber implements EventSubscriber
     const ACTION_CREATE = 3;
     const ACTION_UPDATE = 4;
 
-    public function prePersist(LifecycleEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args)
     {
-        $entity = $args->getObject();
-        $em = $args->getObjectManager();
+        $em = $args->getEntityManager();
+        $uow = $em->getUnitOfWork();
 
-        $repligard_class = $em->getClassMetadata('midgard:midgard_repligard')->getName();
+        foreach ($uow->getScheduledEntityInsertions() as $entity)
+        {
+            $this->on_create($entity, $em);
+        }
+
+        foreach ($uow->getScheduledEntityUpdates() as $entity)
+        {
+            $this->on_update($entity, $em);
+        }
+
+        foreach ($uow->getScheduledEntityDeletions() as $entity)
+        {
+            $this->on_remove($entity, $em);
+        }
+    }
+
+    private function on_create(dbobject $entity, EntityManagerInterface $em)
+    {
+        $cm = $em->getClassMetadata(get_class($entity));
+        $repligard_cm = $em->getClassMetadata('midgard:midgard_repligard');
+        $repligard_class = $repligard_cm->getName();
         if (!($entity instanceof $repligard_class))
         {
             if (empty($entity->guid))
             {
                 $entity->set_guid(connection::generate_guid());
             }
-            $ref = $em->getClassMetadata(get_class($entity))->getReflectionClass();
             //workaround for possible oid collisions in UnitOfWork
             //see http://www.doctrine-project.org/jira/browse/DDC-2785
             do
@@ -47,10 +68,11 @@ class subscriber implements EventSubscriber
             }
             while ($em->getUnitOfWork()->getEntityState($repligard_entry) !== UnitOfWork::STATE_NEW);
             // TODO: Calling $em->getUnitOfWork()->isInIdentityMap($repligard_entry) returns false in the same situation. Why?
+            $repligard_entry->typename = $cm->getReflectionClass()->getShortName();
             $repligard_entry->guid = $entity->guid;
-            $repligard_entry->typename = $ref->getShortName();
             $repligard_entry->object_action = self::ACTION_CREATE;
             $em->persist($repligard_entry);
+            $em->getUnitOfWork()->computeChangeSet($repligard_cm, $repligard_entry);
         }
 
         if ($entity instanceof entity)
@@ -65,16 +87,15 @@ class subscriber implements EventSubscriber
                 $entity->metadata_creator = $user->person;
                 $entity->metadata_revisor = $user->person;
             }
+            $em->getUnitOfWork()->recomputeSingleEntityChangeSet($cm, $entity);
         }
     }
 
-    public function preUpdate(LifecycleEventArgs $args)
+    private function on_update(dbobject $entity, EntityManagerInterface $em)
     {
-        $entity = $args->getObject();
-        $em = $args->getObjectManager();
-
         if ($entity instanceof entity)
         {
+            $cm = $em->getClassMetadata(get_class($entity));
             $entity->metadata->revised = new \midgard_datetime();
             $entity->metadata_revision++;
             $user = connection::get_user();
@@ -82,6 +103,7 @@ class subscriber implements EventSubscriber
             {
                 $entity->metadata_revisor = $user->person;
             }
+            $em->getUnitOfWork()->recomputeSingleEntityChangeSet($cm, $entity);
         }
 
         $repligard_class = $em->getClassMetadata('midgard:midgard_repligard')->getName();
@@ -98,21 +120,21 @@ class subscriber implements EventSubscriber
             {
                 $repligard_entry->object_action = self::ACTION_UPDATE;
             }
+            $em->persist($repligard_entry);
             $em->getUnitOfWork()->computeChangeSet($em->getClassMetadata('midgard:midgard_repligard'), $repligard_entry);
         }
     }
 
-    public function preRemove(LifecycleEventArgs $args)
+    private function on_remove(dbobject $entity, EntityManagerInterface $em)
     {
-        $entity = $args->getObject();
-        $em = $args->getObjectManager();
-
-        $repligard_class = $em->getClassMetadata('midgard:midgard_repligard')->getName();
+        $repligard_cm = $em->getClassMetadata('midgard:midgard_repligard');
+        $repligard_class = $repligard_cm->getName();
         if (!($entity instanceof $repligard_class))
         {
             $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $entity->guid));
             $repligard_entry->object_action = self::ACTION_PURGE;
-            $em->getUnitOfWork()->computeChangeSet($em->getClassMetadata('midgard:midgard_repligard'), $repligard_entry);
+            $em->persist($repligard_entry);
+            $em->getUnitOfWork()->computeChangeSet($repligard_cm, $repligard_entry);
         }
     }
 
@@ -243,7 +265,6 @@ class subscriber implements EventSubscriber
 
     public function getSubscribedEvents()
     {
-        return array(Events::prePersist, Events::preUpdate, Events::preRemove,
-                     dbal_events::onSchemaCreateTable, dbal_events::onSchemaColumnDefinition);
+        return array(Events::onFlush, dbal_events::onSchemaCreateTable, dbal_events::onSchemaColumnDefinition);
     }
 }
