@@ -136,7 +136,17 @@ class connection
         $mgd_config->sharedir = $vardir . '/schemas';
         $mgd_config->logfilename = $vardir . '/log/midgard-portable.log';
         // TODO: Set rest of config values from $config and $driver
-        midgard_connection::get_instance()->open_config($mgd_config);
+
+        $midgard = midgard_connection::get_instance();
+        $midgard->open_config($mgd_config);
+        $level = self::$loglevels[$midgard->get_loglevel()];
+        if ($level === Logger::DEBUG)
+        {
+            $logger = new Logger('doctrine');
+            $logger->pushHandler(new StreamHandler($midgard->config->logfilename, $level));
+
+            self::get_em()->getConnection()->getConfiguration()->setSQLLogger(new sqllogger($logger));
+        }
     }
 
     /**
