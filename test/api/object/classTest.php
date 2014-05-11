@@ -19,6 +19,7 @@ class classTest extends testcase
         $classes = array(
             $factory->getMetadataFor('midgard:midgard_language'),
             $factory->getMetadataFor('midgard:midgard_topic'),
+            $factory->getMetadataFor('midgard:midgard_article'),
             $factory->getMetadataFor('midgard:midgard_repligard'),
         );
         $tool->dropSchema($classes);
@@ -55,6 +56,39 @@ class classTest extends testcase
         try
         {
             $object = midgard_object_class::get_object_by_guid('111111111111111111111111111111111111111111111111111');
+        }
+        catch (\midgard_error_exception $e)
+        {
+        }
+        $this->assertInstanceOf('midgard_error_exception', $e);
+        $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
+    }
+
+    public function test_get_object_by_guid_deleted()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $this->assert_api('create', $topic);
+        $this->assert_api('delete', $topic);
+
+        $e = null;
+        try
+        {
+            $object = midgard_object_class::get_object_by_guid($topic->guid);
+        }
+        catch (\midgard_error_exception $e)
+        {
+        }
+        $this->assertInstanceOf('midgard_error_exception', $e);
+        $this->assertEquals(MGD_ERR_OBJECT_DELETED, \midgard_connection::get_instance()->get_error());
+    }
+
+    public function test_get_object_by_guid_invalid()
+    {
+        $e = null;
+        try
+        {
+            $object = midgard_object_class::get_object_by_guid('XXX');
         }
         catch (\midgard_error_exception $e)
         {

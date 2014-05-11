@@ -12,14 +12,14 @@ use midgard\portable\storage\objectmanager;
 
 class midgard_object_class
 {
-    public static function resolve_classname($guid)
+    private static function resolve_classname($guid, $include_deleted = false)
     {
         $qb = connection::get_em()->createQueryBuilder();
         $qb->from('midgard:midgard_repligard', 'r')
-        ->addSelect('r.typename')
-        ->addSelect('r.object_action')
-        ->where('r.guid = ?1')
-        ->setParameter(1, $guid);
+            ->addSelect('r.typename')
+            ->addSelect('r.object_action')
+            ->where('r.guid = ?1')
+            ->setParameter(1, $guid);
 
         try
         {
@@ -36,6 +36,11 @@ class midgard_object_class
         if ($result["object_action"] == subscriber::ACTION_PURGE)
         {
             throw exception::object_purged();
+        }
+        if (    !$include_deleted
+             && $result["object_action"] == subscriber::ACTION_DELETE)
+        {
+            throw exception::object_deleted();
         }
 
         return $result["typename"];
@@ -61,9 +66,9 @@ class midgard_object_class
     {
         try
         {
-            $classname = self::resolve_classname($guid);
+            $classname = self::resolve_classname($guid, true);
         }
-        catch(exception $e)
+        catch (exception $e)
         {
             return false;
         }
