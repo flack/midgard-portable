@@ -17,12 +17,6 @@ class classgenerator
 {
     /**
      *
-     * @var array
-     */
-    private $added_classes = array();
-
-    /**
-     *
      * @var string
      */
     private $output;
@@ -107,7 +101,7 @@ class classgenerator
         }
         foreach ($types as $type)
         {
-            $this->convert_type($type, $namespace);
+            $this->convert_type($type);
         }
 
         $this->register_aliases($namespace);
@@ -126,7 +120,7 @@ class classgenerator
     {
         $prefix = $this->get_class_prefix($namespace);
 
-        foreach ($this->manager->get_types() as $name => $type)
+        foreach ($this->manager->get_types() as $type)
         {
             if (   $prefix !== ''
                 && !class_exists($type->name))
@@ -155,7 +149,7 @@ class classgenerator
         return str_replace('\\', '\\\\', $namespace) . '\\\\';
     }
 
-    private function convert_type(type $type, $namespace)
+    private function convert_type(type $type)
     {
         $this->begin_class($type);
         $objects = $this->write_properties($type);
