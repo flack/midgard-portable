@@ -9,6 +9,7 @@ namespace midgard\portable\storage;
 
 use midgard\portable\storage\metadata\entity;
 use midgard\portable\api\dbobject;
+use midgard\portable\api\error\exception;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\UnitOfWork;
@@ -62,9 +63,14 @@ class subscriber implements EventSubscriber
             }
             //workaround for possible oid collisions in UnitOfWork
             //see http://www.doctrine-project.org/jira/browse/DDC-2785
+            $counter = 0;
             do
             {
                 $repligard_entry = new $repligard_class;
+                if ($counter++ > 100)
+                {
+                    throw new exception('Failed to create fresh repligard object (all tried oids are already known to UoW)');
+                }
             }
             while ($em->getUnitOfWork()->getEntityState($repligard_entry) !== UnitOfWork::STATE_NEW);
             // TODO: Calling $em->getUnitOfWork()->isInIdentityMap($repligard_entry) returns false in the same situation. Why?
