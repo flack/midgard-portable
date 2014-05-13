@@ -39,6 +39,7 @@ class objectmanager
         //see http://www.doctrine-project.org/jira/browse/DDC-2785
         if ($this->em->getUnitOfWork()->getEntityState($entity) != UnitOfWork::STATE_NEW)
         {
+            connection::log()->warning('oid collision during create detected, detaching ' . spl_object_hash($entity));
             $this->em->detach($entity);
         }
 
@@ -101,6 +102,14 @@ class objectmanager
         //we might deal with a proxy here, so we translate the classname
         $classname = ClassUtils::getRealClass(get_class($entity));
         $copy = new $classname($entity->id);
+
+        //workaround for possible oid collisions in UnitOfWork
+        //see http://www.doctrine-project.org/jira/browse/DDC-2785
+        if ($this->em->getUnitOfWork()->getEntityState($copy) != UnitOfWork::STATE_DETACHED)
+        {
+            connection::log()->warning('oid collision during delete detected, detaching ' . spl_object_hash($copy));
+            $this->em->detach($copy);
+        }
 
         $copy->metadata_deleted = true;
 

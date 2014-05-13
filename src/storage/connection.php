@@ -152,7 +152,7 @@ class connection
     /**
      * Get Logger instance
      *
-     * @return Monolog\Logger
+     * @return Logger
      */
     public static function log()
     {
