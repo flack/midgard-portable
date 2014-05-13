@@ -110,7 +110,7 @@ class objectmanager
         $this->em->persist($copy);
         $this->em->flush($copy);
         $this->em->detach($entity);
-        $this->copy_metadata($copy, $entity);
+        $this->copy_metadata($copy, $entity, 'delete');
     }
 
     public function undelete(dbobject $entity)
@@ -148,7 +148,7 @@ class objectmanager
         $this->em->persist($ref);
         $this->em->flush($ref);
         $this->em->detach($entity);
-        $this->copy_metadata($ref, $entity);
+        $this->copy_metadata($ref, $entity, 'approve');
     }
 
     public function unapprove(dbobject $entity)
@@ -156,11 +156,13 @@ class objectmanager
         $user = connection::get_user();
         $ref = $this->em->getReference(get_class($entity), $entity->id);
         $ref->metadata_isapproved = false;
+        $ref->metadata_approver = $user->person;
+        $ref->metadata_approved = new midgard_datetime;
 
         $this->em->persist($ref);
         $this->em->flush($ref);
         $this->em->detach($entity);
-        $this->copy_metadata($ref, $entity);
+        $this->copy_metadata($ref, $entity, 'approve');
     }
 
     public function lock(dbobject $entity)
@@ -174,7 +176,7 @@ class objectmanager
         $this->em->persist($ref);
         $this->em->flush($ref);
         $this->em->detach($entity);
-        $this->copy_metadata($ref, $entity);
+        $this->copy_metadata($ref, $entity, 'lock');
     }
 
     public function unlock(dbobject $entity)
@@ -186,18 +188,35 @@ class objectmanager
         $this->em->persist($ref);
         $this->em->flush($ref);
         $this->em->detach($entity);
-        $this->copy_metadata($ref, $entity);
+        $this->copy_metadata($ref, $entity, 'lock');
     }
 
-    private function copy_metadata($source, $target)
+    private function copy_metadata($source, $target, $action = 'update')
     {
         if (!$source instanceof entity)
         {
             return;
         }
-        $target->metadata_deleted = $source->metadata_deleted;
+
         $target->metadata_revised = $source->metadata_revised;
         $target->metadata_revisor = $source->metadata_revisor;
         $target->metadata_revision = $source->metadata_revision;
+
+        if ($action == 'lock')
+        {
+            $target->metadata_islocked = $source->metadata_islocked;
+            $target->metadata_locker = $source->metadata_locker;
+            $target->metadata_locked = $source->metadata_locked;
+        }
+        else if ($action == 'approve')
+        {
+            $target->metadata_isapproved = $source->metadata_isapproved;
+            $target->metadata_approver = $source->metadata_approver;
+            $target->metadata_approved = $source->metadata_approved;
+        }
+        else if ($action == 'delete')
+        {
+            $target->metadata_deleted = $source->metadata_deleted;
+        }
     }
 }

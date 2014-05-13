@@ -921,7 +921,7 @@ class objectTest extends testcase
         $topic->title = 'This should not be saved'; // change AFTER create
         connection::set_user(null);
 
-        $this->assertFalse($topic->lock());
+        $this->assert_api('lock', $topic, MGD_ERR_ACCESS_DENIED);
 
         $person = self::create_user();
 

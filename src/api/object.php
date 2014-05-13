@@ -770,38 +770,34 @@ abstract class object extends dbobject
      * @param bool $newval
      * @return boolean
      */
-    private function manage_meta_property($propertyName, $newval)
+    private function manage_meta_property($action, $value)
     {
-        $conf = array(
-            "isapproved" => array(
-                "func" => array("set" => "approve", "unset" => "unapprove"),
-                "fields" => array(
-                    "bool" => "metadata_isapproved", "person" => "metadata_approver", "time"=>"metadata_approved"
-                )
-             ),
-             "islocked" => array(
-                "func" => array("set" => "lock", "unset" => "unlock"),
-                "fields" => array(
-                    "bool" => "metadata_islocked", "person" => "metadata_locker", "time"=>"metadata_locked"
-                )
-            )
-        );
-        if (!isset($conf[$propertyName]))
-        {
-            return false;
-        }
-        $conf = $conf[$propertyName];
-
         $user = connection::get_user();
         if ($user === null)
         {
             exception::access_denied();
             return false;
         }
+        if ($action == 'lock')
+        {
+            $flag = 'islocked';
+        }
+        else if ($action == 'approve')
+        {
+            $flag = 'isapproved';
+        }
+        else
+        {
+            throw new exception('Unsupported action ' . $action);
+        }
         // same val
-        if ($this->{$conf["fields"]["bool"]} === $newval)
+        if ($this->metadata->$flag === $value)
         {
             return false;
+        }
+        if ($value === false)
+        {
+            $action = 'un' . $action;
         }
 
         if ($this->id)
@@ -809,8 +805,7 @@ abstract class object extends dbobject
             try
             {
                 $om = new objectmanager(connection::get_em());
-                $func = $newval ? $conf["func"]["set"] : $conf["func"]["unset"];
-                $om->{$func}($this);
+                $om->{$action}($this);
             }
             catch (\Exception $e)
             {
@@ -820,18 +815,12 @@ abstract class object extends dbobject
         }
         midgard_connection::get_instance()->set_error(MGD_ERR_OK);
 
-        $this->{$conf["fields"]["bool"]} = $newval;
-        if ($newval)
-        {
-            $this->{$conf["fields"]["person"]} = $user->person;
-            $this->{$conf["fields"]["time"]} = new midgard_datetime;
-        }
         return true;
     }
 
     public function approve()
     {
-       return $this->manage_meta_property("isapproved", true);
+       return $this->manage_meta_property("approve", true);
     }
 
     public function is_approved()
@@ -841,7 +830,7 @@ abstract class object extends dbobject
 
     public function unapprove()
     {
-        return $this->manage_meta_property("isapproved", false);
+        return $this->manage_meta_property("approve", false);
     }
 
     public function lock()
@@ -851,7 +840,7 @@ abstract class object extends dbobject
             exception::object_is_locked();
             return false;
         }
-        return $this->manage_meta_property("islocked", true);
+        return $this->manage_meta_property("lock", true);
     }
 
     public function is_locked()
@@ -861,7 +850,7 @@ abstract class object extends dbobject
 
     public function unlock()
     {
-        return $this->manage_meta_property("islocked", false);
+        return $this->manage_meta_property("lock", false);
     }
 
     public function get_workspace()
