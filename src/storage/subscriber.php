@@ -11,6 +11,7 @@ use midgard\portable\storage\metadata\entity;
 use midgard\portable\api\dbobject;
 use midgard\portable\api\error\exception;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\EntityManagerInterface;
@@ -87,12 +88,12 @@ class subscriber implements EventSubscriber
             // we copy here instead of creating a new, because otherwise we might have
             // a one second difference if the code runs at the right millisecond
             $entity->metadata->revised = $entity->metadata->created;
-            $user = connection::get_user();
-            if ($user !== null)
+            if ($user = connection::get_user())
             {
                 $entity->metadata_creator = $user->person;
                 $entity->metadata_revisor = $user->person;
             }
+            $entity->metadata->size = $this->calculate_size($cm, $entity);
             $em->getUnitOfWork()->recomputeSingleEntityChangeSet($cm, $entity);
         }
     }
@@ -104,11 +105,11 @@ class subscriber implements EventSubscriber
             $cm = $em->getClassMetadata(get_class($entity));
             $entity->metadata->revised = new \midgard_datetime();
             $entity->metadata_revision++;
-            $user = connection::get_user();
-            if ($user !== null)
+            if ($user = connection::get_user())
             {
                 $entity->metadata_revisor = $user->person;
             }
+            $entity->metadata->size = $this->calculate_size($cm, $entity);
             $em->getUnitOfWork()->recomputeSingleEntityChangeSet($cm, $entity);
         }
 
@@ -142,6 +143,20 @@ class subscriber implements EventSubscriber
             $em->persist($repligard_entry);
             $em->getUnitOfWork()->computeChangeSet($repligard_cm, $repligard_entry);
         }
+    }
+
+    private function calculate_size(ClassMetadata $cm, entity $entity)
+    {
+        $size = 0;
+        foreach ($cm->getAssociationNames() as $name)
+        {
+            $size += strlen($entity->$name);
+        }
+        foreach ($cm->getFieldNames() as $name)
+        {
+            $size += strlen($entity->$name);
+        }
+        return $size;
     }
 
     /**

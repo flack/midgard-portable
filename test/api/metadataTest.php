@@ -91,6 +91,7 @@ class metadataTest extends testcase
         $loaded = new $classname($topic->id);
         $this->assertEquals($topic->metadata->revision, $loaded->metadata->revision);
         $this->assertEquals($person->guid, $loaded->metadata->revisor);
+        $this->assertEquals(344, $topic->metadata->size);
     }
 
     public function test_delete()
@@ -106,5 +107,6 @@ class metadataTest extends testcase
         $this->assertNotEquals('0000-01-01 00:00:00', $topic->metadata->revised->format('Y-m-d H:i:s'));
         $this->assertEquals(1, $topic->metadata->revision, 'Unexpected revision number');
         $this->assertTrue($topic->metadata->deleted);
+        $this->assertEquals(341, $topic->metadata->size);
     }
 }
