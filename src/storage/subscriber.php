@@ -62,19 +62,8 @@ class subscriber implements EventSubscriber
             {
                 $entity->set_guid(connection::generate_guid());
             }
-            //workaround for possible oid collisions in UnitOfWork
-            //see http://www.doctrine-project.org/jira/browse/DDC-2785
-            $counter = 0;
-            do
-            {
-                $repligard_entry = new $repligard_class;
-                if ($counter++ > 100)
-                {
-                    throw new exception('Failed to create fresh repligard object (all tried oids are already known to UoW)');
-                }
-            }
-            while ($em->getUnitOfWork()->getEntityState($repligard_entry) !== UnitOfWork::STATE_NEW);
-            // TODO: Calling $em->getUnitOfWork()->isInIdentityMap($repligard_entry) returns false in the same situation. Why?
+            $om = new objectmanager($em);
+            $repligard_entry = $om->new_instance($repligard_class);
             $repligard_entry->typename = $cm->getReflectionClass()->getShortName();
             $repligard_entry->guid = $entity->guid;
             $repligard_entry->object_action = self::ACTION_CREATE;

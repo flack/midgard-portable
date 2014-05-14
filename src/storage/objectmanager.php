@@ -200,6 +200,28 @@ class objectmanager
         $this->copy_metadata($ref, $entity, 'lock');
     }
 
+    /**
+     * @param string $classname
+     * @return dbobject
+     */
+    public function new_instance($classname)
+    {
+        //workaround for possible oid collisions in UnitOfWork
+        //see http://www.doctrine-project.org/jira/browse/DDC-2785
+        $counter = 0;
+        do
+        {
+            $entity = new $classname;
+            if ($counter++ > 100)
+            {
+                throw new exception('Failed to create fresh ' . $classname . ' instance (all tried oids are already known to UoW)');
+            }
+        }
+        while ($this->em->getUnitOfWork()->getEntityState($entity) !== UnitOfWork::STATE_NEW);
+        // TODO: Calling $em->getUnitOfWork()->isInIdentityMap($entity) returns false in the same situation. Why?
+        return $entity;
+    }
+
     private function copy_metadata($source, $target, $action = 'update')
     {
         if (!$source instanceof entity)

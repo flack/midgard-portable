@@ -602,28 +602,34 @@ abstract class object extends dbobject
             }
         }
 
-        // create new
-        if (count($params) == 0)
+        $om = new objectmanager(connection::get_em());
+        try
         {
-            $parameter = $this->get_entity_instance("midgard_parameter");
-            $parameter->parentguid = $this->guid;
-            $parameter->domain = $domain;
-            $parameter->name = $name;
+            // create new
+            if (count($params) == 0)
+            {
+                $parameter = $om->new_instance(connection::get_em()->getClassMetadata('midgard:midgard_parameter')->getName());
+                $parameter->parentguid = $this->guid;
+                $parameter->domain = $domain;
+                $parameter->name = $name;
+                $parameter->value = $value;
+                $om->create($parameter);
+            }
+            // use existing
+            else
+            {
+                $parameter = array_shift($params);
+                $parameter->value = $value;
+                $om->update($parameter);
+            }
+            midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+            return true;
         }
-        // use existing
-        else
+        catch (\Exception $e)
         {
-            $parameter = array_shift($params);
+            exception::internal($e);
+            return false;
         }
-
-        // update the value
-        $parameter->value = $value;
-
-        $em = connection::get_em();
-        $em->persist($parameter);
-        $em->flush($parameter);
-
-        return true;
     }
 
     /**
@@ -671,18 +677,24 @@ abstract class object extends dbobject
             exception::object_name_exists();
             return null;
         }
-        $att = $this->get_entity_instance("midgard_attachment");
+        $om = new objectmanager(connection::get_em());
+        $att = $om->new_instance(connection::get_em()->getClassMetadata('midgard:midgard_attachment')->getName());
+
         $att->parentguid = $this->guid;
         $att->title = $title;
         $att->name = $name;
         $att->mimetype = $mimetype;
-
-        $em = connection::get_em();
-        $em->persist($att);
-        $em->flush($att);
-
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
-        return $att;
+        try
+        {
+            $om->create($att);
+            midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+            return $att;
+        }
+        catch (\Exception $e)
+        {
+            exception::internal($e);
+            return null;
+        }
     }
 
     public static function serve_attachment($guid)
