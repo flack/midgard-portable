@@ -8,6 +8,7 @@
 namespace midgard\portable\storage;
 
 use midgard\portable\api\dbobject;
+use midgard\portable\api\error\exception;
 use midgard\portable\storage\metadata\entity;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Proxy\Proxy;
