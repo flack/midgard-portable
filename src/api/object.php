@@ -86,6 +86,20 @@ abstract class object extends dbobject
         {
             if ($this->$candidate !== null)
             {
+                //Proxies become stale if the object itself is detached, so we have to re-fetch
+                if (   $this->$candidate instanceof \Doctrine\ORM\Proxy\Proxy
+                    && $this->$candidate->__isInitialized())
+                {
+                    try
+                    {
+                        $this->$candidate->get_by_id($this->$candidate->id);
+                    }
+                    catch (exception $e)
+                    {
+                        connection::log()->error('Failed to refresh parent from proxy: ' . $e->getMessage());
+                        return null;
+                    }
+                }
                 return $this->$candidate;
             }
         }
@@ -126,8 +140,8 @@ abstract class object extends dbobject
         }
 
         $this->populate_from_entity($entity);
-        //TODO: detaching somehow causes entity to become stale when it is fetched again
-        //connection::get_em()->detach($entity);
+
+        connection::get_em()->detach($entity);
         midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return true;
     }
