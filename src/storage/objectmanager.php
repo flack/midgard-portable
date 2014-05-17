@@ -210,6 +210,7 @@ class objectmanager
         //workaround for possible oid collisions in UnitOfWork
         //see http://www.doctrine-project.org/jira/browse/DDC-2785
         $counter = 0;
+        $candidates = array();
         do
         {
             $entity = new $classname;
@@ -217,6 +218,8 @@ class objectmanager
             {
                 throw new exception('Failed to create fresh ' . $classname . ' instance (all tried oids are already known to UoW)');
             }
+            //we keep the entity in memory to make sure we get a different oid during the next iteration
+            $candidates[] = $entity;
         }
         while ($this->em->getUnitOfWork()->getEntityState($entity) !== UnitOfWork::STATE_NEW);
         // TODO: Calling $em->getUnitOfWork()->isInIdentityMap($entity) returns false in the same situation. Why?
