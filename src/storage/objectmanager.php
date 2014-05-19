@@ -119,6 +119,7 @@ class objectmanager
 
         $this->em->persist($copy);
         $this->em->flush($copy);
+        $this->em->detach($copy);
         $this->em->detach($entity);
         $this->copy_metadata($copy, $entity, 'delete');
     }
@@ -135,12 +136,20 @@ class objectmanager
 
     public function purge(dbobject $entity)
     {
-        $entity = $this->em->merge($entity);
-        // If we don't refresh here, Doctrine might try to update before deleting and
-        // throw exceptions about new entities being found (most likely stale association proxies)
-        // @todo: In Doctrine 2.5, this behavior should be removed, so we may be able to remove this workaround
         $this->em->getFilters()->disable('softdelete');
-        $this->em->refresh($entity);
+        try
+        {
+            $entity = $this->em->merge($entity);
+            // If we don't refresh here, Doctrine might try to update before deleting and
+            // throw exceptions about new entities being found (most likely stale association proxies)
+            // @todo: In Doctrine 2.5, this behavior should be removed, so we may be able to remove this workaround
+            $this->em->refresh($entity);
+        }
+        catch (\Exception $e)
+        {
+            $this->em->getFilters()->enable('softdelete');
+            throw $e;
+        }
         $this->em->getFilters()->enable('softdelete');
         $this->em->remove($entity);
         $this->em->flush($entity);

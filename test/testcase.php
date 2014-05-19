@@ -9,7 +9,9 @@ namespace midgard\portable\test;
 
 use midgard\portable\driver;
 use midgard\portable\api\dbobject;
+use midgard\portable\api\error\exception;
 use midgard\portable\storage\connection;
+use midgard_connection;
 
 class testcase extends \PHPUnit_Framework_TestCase
 {
@@ -97,8 +99,13 @@ class testcase extends \PHPUnit_Framework_TestCase
 
     protected function assert_api($function, dbobject $object, $expected_error = MGD_ERR_OK)
     {
-        $this->assertEquals(($expected_error === MGD_ERR_OK), $object->$function(), \midgard_connection::get_instance()->get_error_string());
-        $this->assertEquals($expected_error, \midgard_connection::get_instance()->get_error(), \midgard_connection::get_instance()->get_error_string());
+        $this->assertEquals(($expected_error === MGD_ERR_OK), $object->$function(), $function . '() returned ' . midgard_connection::get_instance()->get_error_string());
+        $this->assert_error($expected_error);
+    }
+
+    protected function assert_error($error_code)
+    {
+        $this->assertEquals(exception::get_error_string($error_code), exception::get_error_string(midgard_connection::get_instance()->get_error()), 'Unexpected error code');
     }
 
 }

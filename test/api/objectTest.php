@@ -55,18 +55,6 @@ class objectTest extends testcase
         $topic->create();
         $this->assert_api('delete', $topic);
 
-        // try from identity map
-        $e = null;
-        try
-        {
-            $loaded = new $classname($topic->id);
-        }
-        catch ( \midgard_error_exception $e){}
-
-        $this->assertInstanceOf('midgard_error_exception', $e);
-        $this->assertEquals(MGD_ERR_OBJECT_DELETED, midgard_connection::get_instance()->get_error());
-
-        // try from db
         self::$em->clear();
         $e = null;
         try
@@ -76,7 +64,7 @@ class objectTest extends testcase
         catch ( \midgard_error_exception $e){}
 
         $this->assertInstanceOf('midgard_error_exception', $e);
-        $this->assertEquals(MGD_ERR_NOT_EXISTS, midgard_connection::get_instance()->get_error());
+        $this->assert_error(MGD_ERR_NOT_EXISTS);
     }
 
     public function test_load_purged()
@@ -84,9 +72,9 @@ class objectTest extends testcase
         $classname = self::$ns . '\\midgard_topic';
         $topic = new $classname;
         $topic->name = __FUNCTION__;
-        $topic->create();
+        $this->assert_api('create', $topic);
         $id = $topic->id;
-        $topic->delete();
+        $this->assert_api('delete', $topic);
         $this->assert_api('purge', $topic);
 
         $e = null;
