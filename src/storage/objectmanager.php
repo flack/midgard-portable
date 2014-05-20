@@ -56,6 +56,7 @@ class objectmanager
         $this->em->persist($merged);
         $this->em->flush($merged);
         $this->em->detach($entity);
+        $this->em->detach($merged);
         $this->copy_metadata($merged, $entity);
     }
 
