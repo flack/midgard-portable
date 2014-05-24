@@ -124,6 +124,10 @@ class midgard_query_builderTest extends testcase
         $first = array_shift($results);
         $this->assertEquals($topics[2]->name, $first->name);
 
+        // test invalid orders
+        $this->assertFalse($qb->add_order('name', 'xxx'));
+        $this->assertFalse($qb->add_order('xxx', 'ASC'));
+
         // test order with guid link field
         self::$em->clear();
 
