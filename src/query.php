@@ -114,7 +114,7 @@ abstract class query
     public function add_order($name, $direction = 'ASC')
     {
         $parsed = $this->parse_constraint_name($name);
-        $this->qb->orderBy($parsed['name'], $direction);
+        $this->qb->addOrderBy($parsed['name'], $direction);
         return true;
     }
 
