@@ -51,11 +51,15 @@ class objectmanager
 
     public function update(dbobject $entity)
     {
+        // if entities are loaded by querybuilder, they are managed at this point already,
+        // which can in very rare (and very unreproducable) circumstances lead to the update
+        // getting lost silently (because originalEntityData somehow is empty), so we detach
+        // before doing anything else
+        $this->em->detach($entity);
         $merged = $this->em->merge($entity);
         $this->copy_associations($entity, $merged);
         $this->em->persist($merged);
         $this->em->flush($merged);
-        $this->em->detach($entity);
         $this->em->detach($merged);
         $this->copy_metadata($merged, $entity);
     }
