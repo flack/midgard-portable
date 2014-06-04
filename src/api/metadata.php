@@ -6,6 +6,8 @@
  */
 namespace midgard\portable\api;
 
+use midgard_datetime;
+
 class metadata
 {
     private $object;
@@ -17,7 +19,15 @@ class metadata
 
     public function __get($property)
     {
-        return $this->object->{'metadata_' . $property};
+        $value = $this->object->{'metadata_' . $property};
+        if (   $value instanceof midgard_datetime
+            && $value->format('U') == -62169984000)
+        {
+            //This is mainly needed for working with converted Legacy databases. Midgard2 somehow handles this internally
+            //@todo Find a nicer solution and research how QB handles this
+            $value->setDate(1, 1, 1);
+        }
+        return $value;
     }
 
     public function __set($property, $value)

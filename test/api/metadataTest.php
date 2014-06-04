@@ -38,7 +38,7 @@ class metadataTest extends testcase
         $this->assertFalse($topic->metadata->navnoentry);
 
         $topic->metadata->navnoentry = true;
-        $topic->update();
+        $this->assert_api('update', $topic);
 
         $topic = new $classname($topic->guid);
         $this->assertTrue($topic->metadata->navnoentry);
@@ -108,5 +108,19 @@ class metadataTest extends testcase
         $this->assertEquals(1, $topic->metadata->revision, 'Unexpected revision number');
         $this->assertTrue($topic->metadata->deleted);
         $this->assertEquals(341, $topic->metadata->size);
+    }
+
+    public function test_metadata_default_date()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+
+        // This simulates data loaded from old Midgard 1 databases
+        $ref = new \ReflectionClass($topic);
+        $published = $ref->getProperty('metadata_published');
+        $published->setAccessible(true);
+        $published->setValue($topic, new \midgard_datetime('0000-00-00 00:00:00'));
+
+        $this->assertSame('0001-01-01 00:00:00', $topic->metadata->published->format('Y-m-d H:i:s'));
     }
 }
