@@ -118,6 +118,11 @@ class connection
         $config->addEntityNamespace('midgard', $driver->get_namespace());
         $config->setClassMetadataFactoryName('\\midgard\\portable\\mapping\\factory');
 
+        if (!array_key_exists('charset', $db_config))
+        {
+            $db_config['charset'] = 'utf8';
+        }
+
         $em = \Doctrine\ORM\EntityManager::create($db_config, $config);
         $em->getFilters()->enable('softdelete');
         $em->getEventManager()->addEventSubscriber(new subscriber);
