@@ -62,6 +62,8 @@ Midgard's PHP classes, which provide the actual API emulation.
 Known Issues & Limitations
 --------------------------
 
+### MgdSchema Definitions
+
  - Entities in Doctrine can only share the same table if there is a discriminator column which tells them apart.
    Currently, midgard-portable works around this by only registering one of the colliding classes which collects
    all properties of all affected classes. The others are then converted into aliases. This means that
@@ -79,14 +81,16 @@ Known Issues & Limitations
  - Links to non-PK fields are not supported in Doctrine. So GUID-based link functionality is implemented in the adapter,
    which entails a performance penalty. Also, some cases (like parent GUID links) are not supported yet
 
- - It is not possible to run midgard-portable when the original Midgard (or Midgard2) extension is loaded. This is
-   problem could get addressed at some point, but it mostl likely wouldn't do any good, since the extension registers
-   all its classes on PHP startup, so that the adapter's classes would never get loaded. 
-
  - Doctrine does not support value objects currently, so Metadata simulation is somewhat imperfect in the sense
    that the metadata columns are accessible through the object itself (e.g. `$topic->metadata_deleted`). The
    next planned Doctrine ORM release (2.5) will support for embedded objects (`Embeddable`), so this issue can be revisited
    once that is released.
+
+### Runtime
+
+ - It is not possible to run midgard-portable when the original Midgard (or Midgard2) extension is loaded. This is
+   problem could get addressed at some point, but it mostl likely wouldn't do any good, since the extension registers
+   all its classes on PHP startup, so that the adapter's classes would never get loaded. 
 
  - Doctrine is somewhat stricter when it comes to referential integrity. So some of the more quirky behaviors of
    Midgard (like being able to purge parents while deleted children are still in the database) are more or less
@@ -97,7 +101,9 @@ Known Issues & Limitations
    A new entity was found through the relationship 'classname#link_property' that was not configured
    to cascade persist operations for entity
    ```
-   
+
+### Reflection
+
  - Doctrine does not support public properties on entity classes, so using `get_object_vars()` will always return
    an empty result. Obviously, `ReflectionExtension('midgard2')` will also fail, so you can't use this to get a list
    of all registered MgdSchema classes. As a workaround, you can use [midgard-introspection](https://github.com/flack/midgard-introspection),
@@ -107,5 +113,12 @@ Known Issues & Limitations
    and is not specific to midgard-portable, but it is worth remembering if you try to run code originally written for
    the Midgard extension. midgard-introspection contains a `print_r()` method you can use instead.
 
+### Running Legacy Databases
+
  - Using `midgard_storage::update_class_storage()` can lead to data loss: If you run this command, all table columns
-   that are not listed in the MgdSchema will be dropped, so you shouldn't use this on converted Midgard1 databases e.g.
+   that are not listed in the MgdSchema will be dropped, so you shouldn't use this on converted Midgard1 databases e.g. 
+   without making sure that there will be no collateral damage
+
+ - Association fields (i.e. fields with `link` in the MgdSchema definition) must be marked as nullable in the database. 
+   It is impossible to get Doctrine to accept `0` as a value. So existing database tables must be updated. You can do so 
+   by running `midgard_storage::update_class_storage()` (after carefully reading the note above)
