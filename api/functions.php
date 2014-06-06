@@ -7,7 +7,7 @@
 
 function mgd_version()
 {
-    return 'midgard-portable DEV';
+    return '0.4.0-portable+git';
 }
 
 function mgd_is_guid($input)
