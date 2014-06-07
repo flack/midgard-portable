@@ -19,15 +19,7 @@ class metadata
 
     public function __get($property)
     {
-        $value = $this->object->{'metadata_' . $property};
-        if (   $value instanceof midgard_datetime
-            && $value->format('U') == -62169984000)
-        {
-            //This is mainly needed for working with converted Legacy databases. Midgard2 somehow handles this internally
-            //@todo Find a nicer solution and research how QB handles this
-            $value->setDate(1, 1, 1);
-        }
-        return $value;
+        return $this->object->{'metadata_' . $property};
     }
 
     public function __set($property, $value)

@@ -14,8 +14,8 @@
         <property name="up"       link="midgard_topic:id" type="unsigned integer" upfield="up">
             <description>Topic the topic is under</description>
         </property>
-        <property name="component"    type="string" index="yes">
-            <description>MidCOM component responsible for the topic</description>
+        <property name="birthdate" type="datetime" >
+            <description>Datetime field for testing default value</description>
         </property>
         <property name="style"    type="string" index="yes">
             <description>MidCOM style path for the topic</description>

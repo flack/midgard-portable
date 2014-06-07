@@ -145,6 +145,13 @@ abstract class dbobject implements ObjectManagerAware
         {
             return 0;
         }
+        if (   $this->$field instanceof midgard_datetime
+            && $this->$field->format('U') == -62169984000)
+        {
+            //This is mainly needed for working with converted Legacy databases. Midgard2 somehow handles this internally
+            //@todo Find a nicer solution and research how QB handles this
+            $this->$field->setDate(1, 1, 1);
+        }
 
         return $this->$field;
     }

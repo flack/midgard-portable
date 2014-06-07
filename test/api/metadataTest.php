@@ -91,7 +91,7 @@ class metadataTest extends testcase
         $loaded = new $classname($topic->id);
         $this->assertEquals($topic->metadata->revision, $loaded->metadata->revision);
         $this->assertEquals($person->guid, $loaded->metadata->revisor);
-        $this->assertEquals(344, $topic->metadata->size);
+        $this->assertEquals(369, $topic->metadata->size);
     }
 
     public function test_delete()
@@ -107,20 +107,6 @@ class metadataTest extends testcase
         $this->assertNotEquals('0000-01-01 00:00:00', $topic->metadata->revised->format('Y-m-d H:i:s'));
         $this->assertEquals(1, $topic->metadata->revision, 'Unexpected revision number');
         $this->assertTrue($topic->metadata->deleted);
-        $this->assertEquals(341, $topic->metadata->size);
-    }
-
-    public function test_metadata_default_date()
-    {
-        $classname = self::$ns . '\\midgard_topic';
-        $topic = new $classname;
-
-        // This simulates data loaded from old Midgard 1 databases
-        $ref = new \ReflectionClass($topic);
-        $published = $ref->getProperty('metadata_published');
-        $published->setAccessible(true);
-        $published->setValue($topic, new \midgard_datetime('0000-00-00 00:00:00'));
-
-        $this->assertSame('0001-01-01 00:00:00', $topic->metadata->published->format('Y-m-d H:i:s'));
+        $this->assertEquals(366, $topic->metadata->size);
     }
 }
