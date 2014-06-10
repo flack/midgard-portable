@@ -99,6 +99,10 @@ class midgard_connection
 
     public function get_user()
     {
+        if (!$this->is_connected())
+        {
+            return null;
+        }
         return connection::get_user();
     }
 

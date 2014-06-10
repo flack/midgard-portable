@@ -39,4 +39,10 @@ class connectionTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('message', $connection->get_loglevel());
     }
+
+    public function test_get_user()
+    {
+        $connection = new midgard_connection;
+        $this->assertNull($connection->get_user());
+    }
 }
