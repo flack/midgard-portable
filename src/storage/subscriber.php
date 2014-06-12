@@ -42,7 +42,11 @@ class subscriber implements EventSubscriber
 
         foreach ($uow->getScheduledEntityUpdates() as $entity)
         {
-            $this->on_update($entity, $em);
+            //Workaround for http://www.doctrine-project.org/jira/browse/DDC-3160
+            if ($entity->id !== 0)
+            {
+                $this->on_update($entity, $em);
+            }
         }
 
         foreach ($uow->getScheduledEntityDeletions() as $entity)
