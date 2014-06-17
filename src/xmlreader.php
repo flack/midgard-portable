@@ -81,7 +81,7 @@ class xmlreader
             {
                 case 'primaryfield':
                 case 'upfield':
-                    $type->$name = (string) $value;
+                    $type->$name = $value;
                     break;
                 case 'name':
                     $property_name = $prefix . $value;
