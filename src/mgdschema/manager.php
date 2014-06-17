@@ -11,14 +11,34 @@ use midgard\portable\xmlreader;
 
 class manager
 {
+    /**
+     *
+     * @var array
+     */
     private $types;
 
+    /**
+     *
+     * @var array
+     */
     private $schemadirs;
 
+    /**
+     *
+     * @var string
+     */
     private $namespace;
 
+    /**
+     *
+     * @var array
+     */
     private $merged_types = array();
 
+    /**
+     *
+     * @var array
+     */
     private $child_classes = array();
 
     public function __construct(array $schemadirs, $namespace)
