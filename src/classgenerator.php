@@ -27,6 +27,10 @@ class classgenerator
      */
     private $filename;
 
+    /**
+     *
+     * @var manager
+     */
     private $manager;
 
     /**
@@ -49,6 +53,10 @@ class classgenerator
         {
             $this->output .= "\n";
         }
+        else
+        {
+            $this->output .= ' ';
+        }
     }
 
     public function write($namespace = '')
@@ -58,7 +66,7 @@ class classgenerator
             unlink($this->filename);
         }
         $types = $this->manager->get_types();
-        $this->add_line('<?php ');
+        $this->add_line('<?php');
 
         uasort($types, function($a, $b)
         {
@@ -80,36 +88,23 @@ class classgenerator
 
         if (!empty($namespace))
         {
-            $this->add_line('namespace ' . $namespace . '; ');
-            $this->add_line('use midgard\\portable\\api\\object as midgard_object; ');
-            $this->add_line('use midgard_metadata; ');
-            $this->add_line('use midgard\\portable\\api\\user as base_user; ');
-            $this->add_line('use midgard\\portable\\api\\repligard as base_repligard; ');
-            $this->add_line('use midgard\\portable\\api\\person as base_person; ');
-            $this->add_line('use midgard\\portable\\api\\parameter as base_parameter; ');
-            $this->add_line('use midgard\\portable\\api\\attachment as base_attachment; ');
-            $this->add_line('use midgard_datetime; { ');
+            $this->add_line('namespace ' . $namespace . ';');
+            $this->add_line('use midgard\\portable\\api\\object as midgard_object;');
+            $this->add_line('use midgard_metadata;');
+            $this->add_line('use midgard_datetime;');
         }
-        else
-        {
-            $this->add_line('use \midgard\portable\api\object; ');
-            $this->add_line('use midgard\\portable\\api\\user as base_user; ');
-            $this->add_line('use midgard\\portable\\api\\person as base_person; ');
-            $this->add_line('use midgard\\portable\\api\\parameter as base_parameter; ');
-            $this->add_line('use midgard\\portable\\api\\repligard as base_repligard; ');
-            $this->add_line('use midgard\\portable\\api\\attachment as base_attachment; ');
-        }
+        $this->add_line('use midgard\\portable\\api\\user as base_user;');
+        $this->add_line('use midgard\\portable\\api\\person as base_person;');
+        $this->add_line('use midgard\\portable\\api\\parameter as base_parameter;');
+        $this->add_line('use midgard\\portable\\api\\repligard as base_repligard;');
+        $this->add_line('use midgard\\portable\\api\\attachment as base_attachment; ');
+
         foreach ($types as $type)
         {
             $this->convert_type($type);
         }
 
         $this->register_aliases($namespace);
-
-        if (!empty($namespace))
-        {
-            $this->add_line(' }');
-        }
 
         //todo: midgard_blob special handling
 
@@ -125,17 +120,17 @@ class classgenerator
             if (   $prefix !== ''
                 && !class_exists($type->name))
             {
-                $this->add_line('class_alias( "' . $prefix . $type->name . '", "' . $type->name . '"); ');
+                $this->add_line('class_alias( "' . $prefix . $type->name . '", "' . $type->name . '");');
             }
         }
 
         foreach ($this->manager->get_inherited_mapping() as $child => $parent)
         {
-            $this->add_line('class_alias( "' . $prefix . $parent . '", "' . $prefix . $child . '"); ');
+            $this->add_line('class_alias( "' . $prefix . $parent . '", "' . $prefix . $child . '");');
             if (   $prefix !== ''
                 && !class_exists($child))
             {
-                $this->add_line('class_alias( "' . $prefix . $parent . '", "' . $child . '"); ');
+                $this->add_line('class_alias( "' . $prefix . $parent . '", "' . $child . '");');
             }
         }
     }
@@ -278,11 +273,11 @@ class classgenerator
         {
             $this->add_line(' implements ' . implode(', ', $interfaces));
         }
-        $this->add_line(' {');
+        $this->add_line('{');
     }
 
     private function end_class()
     {
-        $this->add_line(' }');
+        $this->add_line('}');
     }
 }
