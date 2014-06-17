@@ -9,6 +9,7 @@ namespace midgard\portable\storage;
 
 use midgard\portable\storage\metadata\entity;
 use midgard\portable\api\dbobject;
+use midgard\portable\api\repligard;
 use midgard\portable\api\error\exception;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
@@ -58,16 +59,15 @@ class subscriber implements EventSubscriber
     private function on_create(dbobject $entity, EntityManagerInterface $em)
     {
         $cm = $em->getClassMetadata(get_class($entity));
-        $repligard_cm = $em->getClassMetadata('midgard:midgard_repligard');
-        $repligard_class = $repligard_cm->getName();
-        if (!($entity instanceof $repligard_class))
+        if (!($entity instanceof repligard))
         {
             if (empty($entity->guid))
             {
                 $entity->set_guid(connection::generate_guid());
             }
             $om = new objectmanager($em);
-            $repligard_entry = $om->new_instance($repligard_class);
+            $repligard_cm = $em->getClassMetadata('midgard:midgard_repligard');
+            $repligard_entry = $om->new_instance($repligard_cm->getName());
             $repligard_entry->typename = $cm->getReflectionClass()->getShortName();
             $repligard_entry->guid = $entity->guid;
             $repligard_entry->object_action = self::ACTION_CREATE;
@@ -106,8 +106,7 @@ class subscriber implements EventSubscriber
             $em->getUnitOfWork()->recomputeSingleEntityChangeSet($cm, $entity);
         }
 
-        $repligard_class = $em->getClassMetadata('midgard:midgard_repligard')->getName();
-        if (!($entity instanceof $repligard_class))
+        if (!($entity instanceof repligard))
         {
             $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $entity->guid));
 
@@ -127,14 +126,12 @@ class subscriber implements EventSubscriber
 
     private function on_remove(dbobject $entity, EntityManagerInterface $em)
     {
-        $repligard_cm = $em->getClassMetadata('midgard:midgard_repligard');
-        $repligard_class = $repligard_cm->getName();
-        if (!($entity instanceof $repligard_class))
+        if (!($entity instanceof repligard))
         {
             $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $entity->guid));
             $repligard_entry->object_action = self::ACTION_PURGE;
             $em->persist($repligard_entry);
-            $em->getUnitOfWork()->computeChangeSet($repligard_cm, $repligard_entry);
+            $em->getUnitOfWork()->computeChangeSet($em->getClassMetadata('midgard:midgard_repligard'), $repligard_entry);
         }
     }
 
