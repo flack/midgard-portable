@@ -111,11 +111,8 @@ class connection
         }
 
         $config = \Doctrine\ORM\Tools\Setup::createConfiguration($dev_mode);
-        if (!$dev_mode)
-        {
-            $config->setProxyDir($vardir . '/cache');
-            $config->setAutoGenerateProxyClasses(!$dev_mode);
-        }
+        $config->setProxyDir($vardir . '/cache');
+        $config->setAutoGenerateProxyClasses($dev_mode);
         $config->addFilter('softdelete', 'midgard\\portable\\storage\\filter\\softdelete');
 
         $config->setMetadataDriverImpl($driver);
