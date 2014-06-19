@@ -67,7 +67,8 @@ class dbobjectTest extends testcase
         $classname = self::$ns . '\\midgard_topic';
         $topic = new $classname;
         $topic->nonexistent_property = 'xxx';
-        $this->assertFalse(property_exists($topic, 'nonexistent_property'));
+        $this->assertTrue(property_exists($topic, 'nonexistent_property'));
+        $this->assertSame('xxx', $topic->nonexistent_property);
     }
 
     public function test_get_id()
