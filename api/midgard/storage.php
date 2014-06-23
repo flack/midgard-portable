@@ -5,6 +5,8 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
 
+use Doctrine\DBAL\Schema\Comparator;
+use Doctrine\ORM\Tools\SchemaTool;
 use midgard\portable\storage\connection;
 
 class midgard_storage
@@ -61,7 +63,7 @@ class midgard_storage
 
         if (!$em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName())))
         {
-            $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
+            $tool = new SchemaTool($em);
             $tool->createSchema(array($cm));
         }
         return true;
@@ -90,10 +92,18 @@ class midgard_storage
                 return $factory->getMetadataFor($classname);
             }
         }
-        // if the class doesn't exist (eg. for some_random_string), there is really nothing we could do
+        // if the class doesn't exist (e.g. for some_random_string), there is really nothing we could do
         return false;
     }
 
+    /**
+     * Update DB table according to MgdSchema information.
+     *
+     * this does not use SchemaTool's updateSchema, since this would delete columns that are no longer
+     * in the MgdSchema definition
+     *
+     * @param string $classname The MgdSchema class to work on
+     */
     public static function update_class_storage($classname)
     {
         $em = connection::get_em();
@@ -102,11 +112,28 @@ class midgard_storage
         {
             return false;
         }
-
-        if ($em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName())))
+        $sm = $em->getConnection()->getSchemaManager();
+        if ($sm->tablesExist(array($cm->getTableName())))
         {
-            $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
-            $tool->updateSchema(array($cm), true);
+            $tool = new SchemaTool($em);
+            $conn = $em->getConnection();
+            $from = $sm->createSchema();
+            $to = $tool->getSchemaFromMetadata(array($cm));
+
+            $comparator = new Comparator;
+            $diff = $comparator->compare($from, $to);
+            if (!empty($diff->changedTables[$cm->getTableName()]->removedColumns))
+            {
+                $diff->changedTables[$cm->getTableName()]->removedColumns = array();
+            }
+            $sql = $diff->toSaveSql($conn->getDatabasePlatform());
+
+
+            foreach ($sql as $sql_line)
+            {
+                $conn->executeQuery($sql_line);
+            }
+
             return true;
         }
         return false;

@@ -43,7 +43,7 @@ outlined above.
 Goals
 -----
 
-For the moment, the goal is to implement enough of the Midgard API to run [openpsa](https://github.com/flack/openpsa) 
+For the moment, the goal is to implement enough of the Midgard API to run [openpsa](https://github.com/flack/openpsa)
 on. This means that both older features (like MultiLang or Sitegroups) and newer features (like Workspaces) are out of
 scope. But Pull Requests are of course welcome, so if anyone feels motivated to work on those areas, go right ahead!
 
@@ -73,9 +73,9 @@ Known Issues & Limitations
 
    For the collected properties, some limitations apply: For example, if two MgdSchema classes using the same DB table
    both define a property with the PHP name `myfield`, but they both point to a different `dbfield`, one of them
-   will become unreachable. Also, if two MgdSchema classes define different field types for the same field (e.g. 
-   `string` vs. `text` on a field named `extra`), only one of these definitions will be used. The latter case 
-   may be implementable in the adapter, but it really is not a solid configuration to begin with (as it could 
+   will become unreachable. Also, if two MgdSchema classes define different field types for the same field (e.g.
+   `string` vs. `text` on a field named `extra`), only one of these definitions will be used. The latter case
+   may be implementable in the adapter, but it really is not a solid configuration to begin with (as it could
    theoretically lead to data loss), so this is not in the cards for now
 
  - Links to non-PK fields are not supported in Doctrine. So GUID-based link functionality is implemented in the adapter,
@@ -90,7 +90,7 @@ Known Issues & Limitations
 
  - It is not possible to run midgard-portable when the original Midgard (or Midgard2) extension is loaded. This is
    problem could get addressed at some point, but it mostl likely wouldn't do any good, since the extension registers
-   all its classes on PHP startup, so that the adapter's classes would never get loaded. 
+   all its classes on PHP startup, so that the adapter's classes would never get loaded.
 
  - Doctrine is somewhat stricter when it comes to referential integrity. So some of the more quirky behaviors of
    Midgard (like being able to purge parents while deleted children are still in the database) are more or less
@@ -115,10 +115,6 @@ Known Issues & Limitations
 
 ### Running Legacy Databases
 
- - Using `midgard_storage::update_class_storage()` can lead to data loss: If you run this command, all table columns
-   that are not listed in the MgdSchema will be dropped, so you shouldn't use this on converted Midgard1 databases e.g. 
-   without making sure that there will be no collateral damage
-
- - Association fields (i.e. fields with `link` in the MgdSchema definition) must be marked as nullable in the database. 
-   It is impossible to get Doctrine to accept `0` as a value. So existing database tables must be updated. You can do so 
-   by running `midgard_storage::update_class_storage()` (after carefully reading the note above)
+ - Association fields (i.e. fields with `link` in the MgdSchema definition) must be marked as nullable in the database.
+   It is impossible to get Doctrine to accept `0` as a value. So existing database tables must be updated. You can do so
+   by running `midgard_storage::update_class_storage()`
