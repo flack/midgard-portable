@@ -247,7 +247,6 @@ class subscriber implements EventSubscriber
                 $args->addSql($platform->getCreateIndexSQL($indexDef, $name));
             }
         }
-        return;
     }
 
     /**
