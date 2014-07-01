@@ -209,7 +209,7 @@ class subscriber implements EventSubscriber
         $name = str_replace('.', '__', $table->getName());
         $queryFields = $platform->getColumnDeclarationListSQL($columns);
 
-        if (isset($options['uniqueConstraints']) && ! empty($options['uniqueConstraints']))
+        if (!empty($options['uniqueConstraints']))
         {
             foreach ($options['uniqueConstraints'] as $name => $definition)
             {
@@ -217,7 +217,7 @@ class subscriber implements EventSubscriber
             }
         }
 
-        if (isset($options['foreignKeys']))
+        if (!empty($options['foreignKeys']))
         {
             foreach ($options['foreignKeys'] as $foreignKey)
             {
@@ -232,7 +232,7 @@ class subscriber implements EventSubscriber
             return;
         }
 
-        if (isset($options['indexes']) && ! empty($options['indexes']))
+        if (!empty($options['indexes']))
         {
             foreach ($options['indexes'] as $indexDef)
             {
@@ -240,7 +240,7 @@ class subscriber implements EventSubscriber
             }
         }
 
-        if (isset($options['unique']) && ! empty($options['unique']))
+        if (!empty($options['unique']))
         {
             foreach ($options['unique'] as $indexDef)
             {
