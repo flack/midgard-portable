@@ -89,5 +89,6 @@ class attachmentTest extends testcase
 
         $attachments = $topic->list_attachments();
         $this->assertCount(1, $attachments);
+        $this->assertSame('', $attachments[0]->location);
     }
 }

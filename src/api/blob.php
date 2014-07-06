@@ -48,14 +48,15 @@ class blob
 
     public function get_path()
     {
-        if (empty($this->attachment->guid))
+        if (empty($this->attachment->location))
         {
-            $this->attachment->set_guid(connection::generate_guid());
+            $location = connection::generate_guid();
+            $subdir1 = strtoupper(substr($location, 0, 1));
+            $subdir2 = strtoupper(substr($location, 1, 1));
+            $this->attachment->location = $subdir1 . DIRECTORY_SEPARATOR . $subdir2 . DIRECTORY_SEPARATOR . $location;
         }
         $blobdir = midgard_connection::get_instance()->config->blobdir;
-        $subdir1 = substr($this->attachment->guid, 0, 1);
-        $subdir2 = substr($this->attachment->guid, 1, 1);
-        return $blobdir . '/' . strtoupper($subdir1) . '/' . strtoupper($subdir2) . '/' . $this->attachment->guid;
+        return $blobdir . DIRECTORY_SEPARATOR . $this->attachment->location;
     }
 
     public function exists()
