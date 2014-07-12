@@ -60,6 +60,7 @@ class midgard_storageTest extends testcase
         $this->assertTrue(midgard_storage::create_class_storage('midgard_topic'));
         $this->assertTrue(midgard_storage::create_class_storage('midgard_topic'));
         $this->assertTrue(self::$em->getConnection()->getSchemaManager()->tablesExist(array('topic')));
+        $this->assertFalse(midgard_storage::create_class_storage('nonexistent'));
 
         // check duplicate tablenames
         self::prepare_dtn_connection();

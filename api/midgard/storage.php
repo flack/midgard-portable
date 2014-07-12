@@ -7,6 +7,7 @@
 
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\ORM\Mapping\MappingException;
 use midgard\portable\storage\connection;
 
 class midgard_storage
@@ -71,29 +72,32 @@ class midgard_storage
 
     private static function get_cm($em, $classname)
     {
+        if (!class_exists($classname))
+        {
+            // if the class doesn't exist (e.g. for some_random_string), there is really nothing we could do
+            return false;
+        }
+
         $factory = $em->getMetadataFactory();
-        if ($factory->hasMetadataFor($classname))
+        try
         {
             return $factory->getMetadataFor($classname);
         }
-        $factory->getAllMetadata();
-        // add namespace
-        $classname = $em->getConfiguration()->getEntityNamespace("midgard") . '\\' . $classname;
-        if ($factory->hasMetadataFor($classname))
+        catch (MappingException $e)
         {
-            return $factory->getMetadataFor($classname);
-        }
-        // check for merged classes (duplicate tablenames)
-        if (class_exists($classname))
-        {
-            $classname = get_class(new $classname);
-            if ($factory->hasMetadataFor($classname))
+            // add namespace
+            $classname = $em->getConfiguration()->getEntityNamespace("midgard") . '\\' . $classname;
+            try
             {
                 return $factory->getMetadataFor($classname);
             }
+            catch (MappingException $e)
+            {
+                // check for merged classes (duplicate tablenames)
+                $classname = get_class(new $classname);
+                return $factory->getMetadataFor($classname);
+            }
         }
-        // if the class doesn't exist (e.g. for some_random_string), there is really nothing we could do
-        return false;
     }
 
     /**
