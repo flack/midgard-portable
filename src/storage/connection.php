@@ -97,17 +97,30 @@ class connection
     {
         $vardir = $driver->get_vardir();
 
+        $mgd_config = new config;
+        $mgd_config->vardir = $vardir;
+        $mgd_config->cachedir = $vardir . '/cache';
+        $mgd_config->blobdir = $vardir . '/blobs';
+        $mgd_config->sharedir = $vardir . '/schemas';
+        $mgd_config->logfilename = $vardir . '/log/midgard-portable.log';
+        // TODO: Set rest of config values from $config and $driver
+
+        $midgard = midgard_connection::get_instance();
+        // we open the config here to have logfile available during class generation
+        $midgard->open_config($mgd_config);
+
         // generate and include midgard_objects.php if its a fresh namespace
         // otherwhise it should be included already
         if ($driver->is_fresh_namespace())
         {
+            $entityfile = $vardir . '/midgard_objects.php';
             if (   $dev_mode
-                || !file_exists($vardir . '/midgard_objects.php'))
+                || !file_exists($entityfile))
             {
-                $classgenerator = new classgenerator($driver->get_manager(), $vardir . '/midgard_objects.php', $dev_mode);
+                $classgenerator = new classgenerator($driver->get_manager(), $entityfile, $dev_mode);
                 $classgenerator->write($driver->get_namespace());
             }
-            include $vardir . '/midgard_objects.php';
+            include $entityfile;
         }
 
         $config = \Doctrine\ORM\Tools\Setup::createConfiguration($dev_mode);
@@ -134,17 +147,6 @@ class connection
         }
 
         self::$instance = new static($em);
-
-        $mgd_config = new config;
-        $mgd_config->vardir = $vardir;
-        $mgd_config->cachedir = $vardir . '/cache';
-        $mgd_config->blobdir = $vardir . '/blobs';
-        $mgd_config->sharedir = $vardir . '/schemas';
-        $mgd_config->logfilename = $vardir . '/log/midgard-portable.log';
-        // TODO: Set rest of config values from $config and $driver
-
-        $midgard = midgard_connection::get_instance();
-        $midgard->open_config($mgd_config);
         $level = self::$loglevels[$midgard->get_loglevel()];
         if ($level === Logger::DEBUG)
         {

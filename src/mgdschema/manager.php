@@ -8,6 +8,7 @@
 namespace midgard\portable\mgdschema;
 
 use midgard\portable\xmlreader;
+use midgard\portable\storage\connection;
 
 class manager
 {
@@ -108,6 +109,11 @@ class manager
         {
             foreach (glob($schemadir . '*.xml', GLOB_NOSORT) as $filename)
             {
+                if (!file_exists($filename))
+                {
+                    connection::log()->warning('File exists check for ' . $filename . ' returned false, skipping');
+                    continue;
+                }
                 $types = array_merge($types, $reader->parse($filename));
             }
         }
