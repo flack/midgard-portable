@@ -123,9 +123,7 @@ class connection
             include $entityfile;
         }
 
-        $config = \Doctrine\ORM\Tools\Setup::createConfiguration($dev_mode);
-        $config->setProxyDir($vardir . '/cache');
-        $config->setAutoGenerateProxyClasses($dev_mode);
+        $config = \Doctrine\ORM\Tools\Setup::createConfiguration($dev_mode, $vardir . '/cache');
         $config->addFilter('softdelete', 'midgard\\portable\\storage\\filter\\softdelete');
 
         $config->setMetadataDriverImpl($driver);
