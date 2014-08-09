@@ -15,4 +15,4 @@ else
         'driver' => 'pdo_sqlite'
     );
 }
-connection::initialize($driver, $db_config);
+connection::initialize($driver, $db_config, true);

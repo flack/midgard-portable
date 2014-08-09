@@ -93,7 +93,7 @@ class connection
         return md5(self::get_em()->getConnection()->query($sql)->fetchColumn(0));
     }
 
-    public static function initialize(driver $driver, array $db_config, $dev_mode = true)
+    public static function initialize(driver $driver, array $db_config, $dev_mode = false)
     {
         $vardir = $driver->get_vardir();
 
