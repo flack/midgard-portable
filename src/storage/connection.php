@@ -125,7 +125,11 @@ class connection
 
         $config = \Doctrine\ORM\Tools\Setup::createConfiguration($dev_mode, $vardir . '/cache');
         $config->addFilter('softdelete', 'midgard\\portable\\storage\\filter\\softdelete');
-
+        if (!$dev_mode)
+        {
+            //TODO: Performance-wise it would be better to generate the proxies beforehand, but we need a cli script for that
+            $config->setAutoGenerateProxyClasses(\Doctrine\Common\Proxy\AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
+        }
         $config->setMetadataDriverImpl($driver);
         $config->addEntityNamespace('midgard', $driver->get_namespace());
         $config->setClassMetadataFactoryName('\\midgard\\portable\\mapping\\factory');

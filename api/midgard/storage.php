@@ -5,6 +5,8 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
 
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Mapping\MappingException;
@@ -67,7 +69,23 @@ class midgard_storage
             $tool = new SchemaTool($em);
             $tool->createSchema(array($cm));
         }
+
+        self::generate_proxyfile($cm);
+
         return true;
+    }
+
+    private static function generate_proxyfile(ClassMetadata $cm)
+    {
+        $em = connection::get_em();
+        $generator = new ProxyGenerator($em->getConfiguration()->getProxyDir(), $em->getConfiguration()->getProxyNamespace());
+        $generator->setPlaceholder('baseProxyInterface', 'Doctrine\ORM\Proxy\Proxy');
+        $filename = $generator->getProxyFileName($cm->getName());
+        if (file_exists($filename))
+        {
+            unlink($filename);
+        }
+        $generator->generateProxyClass($cm, $filename);
     }
 
     private static function get_cm($em, $classname)
@@ -137,6 +155,8 @@ class midgard_storage
             {
                 $conn->executeQuery($sql_line);
             }
+
+            self::generate_proxyfile($cm);
 
             return true;
         }
