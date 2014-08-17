@@ -48,7 +48,7 @@ class midgard_connection
 
     public function copy()
     {
-
+        return clone self::$instance;
     }
 
     public function open($name)
