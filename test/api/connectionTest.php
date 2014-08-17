@@ -30,6 +30,18 @@ class connectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('error', $connection->get_loglevel());
     }
 
+    public function test_open()
+    {
+        $connection = new midgard_connection;
+
+        $connection = new midgard_connection;
+        $this->assertFalse($connection->open('test'));
+        $connection->open_config(new midgard_config);
+
+        $this->assertFalse($connection->open('test'));
+        $this->assertEquals(MGD_ERR_INTERNAL, $connection->get_error());
+    }
+
     public function test_open_config()
     {
         $config = new midgard_config;

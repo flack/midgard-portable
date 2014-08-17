@@ -7,9 +7,14 @@
 
 use midgard\portable\storage\connection;
 use midgard\portable\api\error\exception;
+use midgard\portable\api\config;
 
 class midgard_connection
 {
+    /**
+     *
+     * @var config
+     */
     public $config;
 
     private static $instance;
@@ -48,7 +53,19 @@ class midgard_connection
 
     public function open($name)
     {
-
+        if ($this->config !== null)
+        {
+            $this->error_code = exception::INTERNAL;
+            $this->error_string = 'MidgardConfig already associated with MidgardConnection';
+            return false;
+        }
+        $config = new config;
+        if (!$config->read_file($name, false))
+        {
+            return false;
+        }
+        $this->config = $config;
+        return true;
     }
 
     public function reopen()
