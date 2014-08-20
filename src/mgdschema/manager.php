@@ -186,10 +186,20 @@ class manager
         {
             foreach ($type->get_properties() as $property)
             {
-                if (!$root_type->has_property($property->name))
+                if ($root_type->has_property($property->name))
                 {
-                    $root_type->add_property($property);
+                    $root_property = $root_type->get_property($property->name);
+                    if ($root_property->field !== $property->field)
+                    {
+                        connection::log()->error('Naming collision in ' . $root_type->name . ': Field ' . $type->name . '.' . $property->name . ' cannot use column ' . $property->field);
+                    }
+                    if ($root_property->type !== $property->type)
+                    {
+                        connection::log()->warn('Naming collision in ' . $root_type->name . ': Field ' . $type->name . '.' . $property->name . ' cannot use type ' . $property->type);
+                    }
+                    continue;
                 }
+                $root_type->add_property($property);
             }
 
             if (array_key_exists($type->name, $this->child_classes))
