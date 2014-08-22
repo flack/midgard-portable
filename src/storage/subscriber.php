@@ -202,14 +202,13 @@ class subscriber implements EventSubscriber
         $table = $args->getTable();
         $options = $args->getOptions();
 
-        $name = str_replace('.', '__', $table->getName());
         $queryFields = $platform->getColumnDeclarationListSQL($columns);
 
         if (!empty($options['uniqueConstraints']))
         {
             foreach ($options['uniqueConstraints'] as $name => $definition)
             {
-                $queryFields .= ', ' . $this->getUniqueConstraintDeclarationSQL($name, $definition);
+                $queryFields .= ', ' . $platform->getUniqueConstraintDeclarationSQL($name, $definition);
             }
         }
 
@@ -221,6 +220,7 @@ class subscriber implements EventSubscriber
             }
         }
 
+        $name = str_replace('.', '__', $table->getName());
         $args->addSql('CREATE TABLE ' . $name . ' (' . $queryFields . ')');
 
         if (isset($options['alter']) && true === $options['alter'])
