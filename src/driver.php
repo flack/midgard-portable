@@ -226,19 +226,21 @@ class driver implements driver_interface
                 $mapping['noidlink'] = $property->noidlink;
             }
 
-            // @todo: use primaryfield?
-            if ($property->name == 'id')
+            if ($property->name == $type->primaryfield)
             {
                 $mapping['id'] = true;
                 unset($mapping['default']);
+                if ($mapping['type'] == dtype::INTEGER)
+                {
+                    $metadata->setIdGeneratorType(CM::GENERATOR_TYPE_AUTO);
+                }
+                else
+                {
+                    $metadata->setIdGeneratorType(CM::GENERATOR_TYPE_NONE);
+                }
             }
 
             $mapping['fieldName'] = $name;
-
-            if (!empty($mapping['id']))
-            {
-                $metadata->setIdGeneratorType(CM::GENERATOR_TYPE_AUTO);
-            }
 
             $metadata->mapField($mapping);
 
