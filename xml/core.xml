@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Schema xmlns="http://www.midgard-project.org/repligard/1.4">
 
-    <type name="midgard_repligard" table="repligard" metadata="false">
-        <property name="id" type="unsigned integer" primaryfield="id">
-        </property>
-        <property name="guid" type="guid" unique="yes">
+    <type name="midgard_repligard" table="repligard" metadata="false">‚
+        <property name="guid" type="guid" primaryfield="guid">
         </property>
         <property name="typename" type="string">
         </property>
