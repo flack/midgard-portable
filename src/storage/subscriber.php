@@ -11,6 +11,7 @@ use midgard\portable\storage\metadata\entity;
 use midgard\portable\api\dbobject;
 use midgard\portable\api\repligard;
 use midgard\portable\api\error\exception;
+use midgard\portable\storage\type\datetime;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
@@ -246,13 +247,16 @@ class subscriber implements EventSubscriber
     }
 
     /**
-     * This is a workaround for ENUM fields read from existing Midgard databases,
-     * Like in the XML reader, they are converted to string for now
+     * This function contains workarounds for reading existing Midgard databases
+     *
+     * ENUM fields are converted to string for now (Like in the XML reader)
+     * DATETIME files use our custom datetime type
      */
     public function onSchemaColumnDefinition(SchemaColumnDefinitionEventArgs $args)
     {
         $column = array_change_key_case($args->getTableColumn(), CASE_LOWER);
         $type = strtok($column['type'], '()');
+
         if ($type == 'enum')
         {
             $args->preventDefault();
@@ -266,6 +270,17 @@ class subscriber implements EventSubscriber
             );
 
             $args->setColumn(new Column($column['field'], Type::getType(Type::STRING), $options));
+        }
+        else if ($type == 'datetime')
+        {
+            $args->preventDefault();
+            $options = array
+            (
+                'default' => isset($column['default']) ? $column['default'] : null,
+                'notnull' => (bool) ($column['null'] != 'YES'),
+            );
+
+            $args->setColumn(new Column($column['field'], Type::getType(datetime::TYPE), $options));
         }
     }
 
