@@ -30,8 +30,8 @@ class driver implements driver_interface
         'varchar(80)' => array('type' => dtype::STRING, 'length' => 80, 'default' => ''),
         'string' => array('type' => dtype::STRING, 'length' => 255, 'default' => ''),
         'datetime' => array('type' => datetime::TYPE, 'default' => '0001-01-01 00:00:00'),
-        'text' => array('type' => dtype::TEXT, 'default' => ''),
-        'longtext' => array('type' => dtype::TEXT, 'default' => ''),
+        'text' => array('type' => dtype::TEXT),
+        'longtext' => array('type' => dtype::TEXT),
         'float' => array('type' => dtype::FLOAT, 'default' => 0.0),
         'double' => array('type' => dtype::FLOAT, 'default' => 0.0)
     );
