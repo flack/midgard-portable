@@ -159,26 +159,20 @@ class connection
         $dev_mode = self::$parameters['dev_mode'];
         $vardir = $driver->get_vardir();
         // generate and include midgard_objects.php if its a fresh namespace
-        // otherwhise it should be included already
+        // otherwise it should be included already
         if ($driver->is_fresh_namespace())
         {
             $entityfile = $vardir . '/midgard_objects.php';
-            if (   $dev_mode
-                || !file_exists($entityfile))
+            if ($dev_mode)
             {
                 $classgenerator = new classgenerator($driver->get_manager(), $entityfile, $dev_mode);
                 $classgenerator->write($driver->get_namespace());
             }
-            include $entityfile;
+            require $entityfile;
         }
 
         $config = \Doctrine\ORM\Tools\Setup::createConfiguration($dev_mode, $vardir . '/cache');
         $config->addFilter('softdelete', 'midgard\\portable\\storage\\filter\\softdelete');
-        if (!$dev_mode)
-        {
-            //TODO: Performance-wise it would be better to generate the proxies beforehand, but we need a cli script for that
-            $config->setAutoGenerateProxyClasses(\Doctrine\Common\Proxy\AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
-        }
         $config->setMetadataDriverImpl($driver);
         $config->addEntityNamespace('midgard', $driver->get_namespace());
         $config->setClassMetadataFactoryName('\\midgard\\portable\\mapping\\factory');
