@@ -2,7 +2,7 @@ midgard-portable [![Build Status](https://travis-ci.org/flack/midgard-portable.p
 ================
 
 This library aims to provide a simulation of the Midgard API for Doctrine.
-It is in a prototype state and provides the following:
+It is in a developmental state and provides the roughly following:
 
  - Creating Doctrine ClassMetadata and `midgard_dbobject` based Entity classes from MgdSchema XML files
  - Support for most of the `midgard_object` API (CRUD, parameters, attachments, parent/up relations, softdelete, etc.)
@@ -128,4 +128,6 @@ Known Issues & Limitations
 
  - Association fields (i.e. fields with `link` in the MgdSchema definition) must be marked as nullable in the database.
    It is impossible to get Doctrine to accept `0` as a value. So existing database tables must be updated. You can do so
-   by running `midgard_storage::update_class_storage()`
+   by running the `midgard-portable schema` command
+
+ - When converting a Midgard1 database directly to midgard-portable (with `openpsa/installer`), the primary kay of the repligard table will change. In some situations, Doctrine may not be able to do this automatically, if you get an exception during the conversion, you can work around it by removing the primary key directly from the database
