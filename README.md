@@ -36,9 +36,20 @@ connection::initialize($driver, $db_config, $dev_mode);
 $entityManager = connection::get_em();
 ```
 
-Change the parameters as required. If you save this file under the name `cli-config.php`, it will be used by Doctrine's
+Change the parameters as required. If you save this file under the name `cli-config.php`, it will can used by Doctrine's
 CLI runner. After calling `connection::initialize()`, you can interact with the database through Midgard API as
 outlined above.
+
+### CLI tools
+
+`midgard-portable` needs to generate entity classes as well as `ClassMetadata` and `Proxy` classes for Doctrine. In development setups, this is done automatically on each request. For production installations, you can run the following CLI command:
+
+```
+./bin/vendor/midgard-portable schema
+```
+
+It works very much like the `midgard-schema` tool of old, i.e. it will generate `midgard_object` classes based on MgdSchema XML files, and the accompanying mapping data and proxy classes. You will need to run this once during inital installation, and then again each time the MgdSchemas change.
+
 
 Goals
 -----
