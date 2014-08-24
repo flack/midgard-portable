@@ -44,6 +44,20 @@ class connection
         'debug' => Logger::DEBUG
     );
 
+    /**
+     * Flag for automatically starting up during initialize
+     *
+     * @var boolean
+     */
+    private static $autostart = true;
+
+    /**
+     * Initialization parameters
+     *
+     * @param array
+     */
+    private static $parameters = array();
+
     private $user;
 
     /**
@@ -87,12 +101,28 @@ class connection
         self::$instance->user = $user;
     }
 
+    /**
+     * Generate a new GUID
+     *
+     * @return string The generated GUID
+     */
     public static function generate_guid()
     {
         $sql = 'SELECT ' . self::get_em()->getConnection()->getDatabasePlatform()->getGuidExpression();
         return md5(self::get_em()->getConnection()->query($sql)->fetchColumn(0));
     }
 
+    /**
+     * Toggle autostart
+     */
+    public static function set_autostart($autostart)
+    {
+        self::$autostart = $autostart;
+    }
+
+    /**
+     * Initialize Midgard connection
+     */
     public static function initialize(driver $driver, array $db_config, $dev_mode = false)
     {
         $vardir = $driver->get_vardir();
@@ -105,10 +135,29 @@ class connection
         $mgd_config->logfilename = $vardir . '/log/midgard-portable.log';
         // TODO: Set rest of config values from $config and $driver
 
-        $midgard = midgard_connection::get_instance();
-        // we open the config here to have logfile available during class generation
-        $midgard->open_config($mgd_config);
+        // we open the config before startup to have logfile available
+        midgard_connection::get_instance()->open_config($mgd_config);
 
+        self::$parameters = array('driver' => $driver, 'db_config' => $db_config, 'dev_mode' => $dev_mode);
+        if (self::$autostart)
+        {
+            static::startup();
+        }
+    }
+
+    /**
+     * Start the API emulation layer
+     */
+    public static function startup()
+    {
+        if (empty(self::$parameters))
+        {
+            throw new \RuntimeError('Not initialized');
+        }
+        $driver = self::$parameters['driver'];
+        $db_config = self::$parameters['db_config'];
+        $dev_mode = self::$parameters['dev_mode'];
+        $vardir = $driver->get_vardir();
         // generate and include midgard_objects.php if its a fresh namespace
         // otherwhise it should be included already
         if ($driver->is_fresh_namespace())
@@ -148,15 +197,17 @@ class connection
             Type::addType(datetime::TYPE, 'midgard\portable\storage\type\datetime');
         }
 
-        self::$instance = new static($em);
+        $midgard = midgard_connection::get_instance();
         $level = self::$loglevels[$midgard->get_loglevel()];
         if ($level === Logger::DEBUG)
         {
             $logger = new Logger('doctrine');
             $logger->pushHandler(new StreamHandler($midgard->config->logfilename, $level));
 
-            self::get_em()->getConnection()->getConfiguration()->setSQLLogger(new sqllogger($logger));
+            $em->getConnection()->getConfiguration()->setSQLLogger(new sqllogger($logger));
         }
+
+        self::$instance = new static($em);
     }
 
     /**
