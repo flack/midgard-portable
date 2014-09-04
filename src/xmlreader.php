@@ -48,6 +48,11 @@ class xmlreader
     private function parse_type(SimpleXMLElement $node)
     {
         $type = new type($node->attributes());
+        if (empty($type->table))
+        {
+            throw new \LogicException('"table" attribute is missing in ' . $type->name);
+        }
+
         $node->registerXPathNamespace('r', "http://www.midgard-project.org/repligard/1.4");
         $properties = $node->xpath('r:property');
         foreach ($properties as $property)
