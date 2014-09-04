@@ -145,6 +145,15 @@ class connection
         }
     }
 
+    public static function get_parameter($name)
+    {
+        if (!array_key_exists($name, self::$parameters))
+        {
+            throw new \RuntimeException('Parameter "' . $name . '" is not available');
+        }
+        return self::$parameters[$name];
+    }
+
     /**
      * Start the API emulation layer
      */

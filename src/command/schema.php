@@ -8,6 +8,7 @@
 namespace midgard\portable\command;
 
 use midgard\portable\storage\connection;
+use midgard\portable\classgenerator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -56,7 +57,12 @@ class schema extends Command
         {
             throw new \RuntimeException('Could not unlink ' . $mgdobjects_file);
         }
-
+        if (connection::get_parameter('dev_mode') !== true)
+        {
+            $driver = connection::get_parameter('driver');
+            $classgenerator = new classgenerator($driver->get_manager(), $mgdobjects_file);
+            $classgenerator->write($driver->get_namespace());
+        }
         connection::startup();
         $em = connection::get_em();
         // no idea why this has to be listed explicitly...
