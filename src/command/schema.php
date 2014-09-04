@@ -51,7 +51,8 @@ class schema extends Command
         connection::set_autostart(false);
         require $path;
 
-        $mgdobjects_file = midgard_connection::get_instance()->config->vardir . '/midgard_objects.php';
+        $mgd_config = midgard_connection::get_instance()->config;
+        $mgdobjects_file = $mgd_config->vardir . '/midgard_objects.php';
         if (   file_exists($mgdobjects_file)
             && !unlink($mgdobjects_file))
         {
@@ -62,6 +63,10 @@ class schema extends Command
             $driver = connection::get_parameter('driver');
             $classgenerator = new classgenerator($driver->get_manager(), $mgdobjects_file);
             $classgenerator->write($driver->get_namespace());
+        }
+        if (!file_exists($mgd_config->blobdir . '/0/0'))
+        {
+            $mgd_config->create_blobdir();
         }
         connection::startup();
         $em = connection::get_em();
@@ -95,8 +100,10 @@ class schema extends Command
             {
                 midgard_storage::create_class_storage($type);
             }
-            // for some reason, create misses some fields under midgard2, so we call update unconditionally
-            midgard_storage::update_class_storage($type);
+            else
+            {
+                midgard_storage::update_class_storage($type);
+            }
             $progress->advance();
         }
         $progress->finish();
