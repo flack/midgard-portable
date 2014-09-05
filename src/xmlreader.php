@@ -16,30 +16,23 @@ class xmlreader
 {
     /**
      *
-     * @var SimpleXMLElement
-     */
-    private $parser;
-
-    /**
-     *
      * @var array
      */
     private $mixins = array();
 
     public function parse($filename)
     {
-        $this->parser = simplexml_load_file($filename);
-        $this->parser->registerXPathNamespace('r', "http://www.midgard-project.org/repligard/1.4");
-        return $this->parse_file();
-    }
-
-    private function parse_file()
-    {
         $types = array();
-        $nodes = $this->parser->xpath('/r:Schema/r:type');
+        $parser = simplexml_load_file($filename);
+        $parser->registerXPathNamespace('r', "http://www.midgard-project.org/repligard/1.4");
+        $nodes = $parser->xpath('/r:Schema/r:type');
         foreach ($nodes as $node)
         {
             $type = $this->parse_type($node);
+            if (empty($type->table))
+            {
+                throw new \LogicException('"table" attribute is missing in ' . $type->name . ' (' . $filename . ')');
+            }
             $types[$type->name] = $type;
         }
         return $types;
@@ -48,11 +41,6 @@ class xmlreader
     private function parse_type(SimpleXMLElement $node)
     {
         $type = new type($node->attributes());
-        if (empty($type->table))
-        {
-            throw new \LogicException('"table" attribute is missing in ' . $type->name);
-        }
-
         $node->registerXPathNamespace('r', "http://www.midgard-project.org/repligard/1.4");
         $properties = $node->xpath('r:property');
         foreach ($properties as $property)
