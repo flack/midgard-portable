@@ -10,11 +10,6 @@ use midgard\portable\api\error\exception;
 
 class midgard_query_builder extends query
 {
-    function __construct($class)
-    {
-        parent::__construct($class);
-    }
-
     public function add_constraint_with_property($name, $operator, $value)
     {
         try

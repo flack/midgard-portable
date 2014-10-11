@@ -41,6 +41,11 @@ abstract class object extends dbobject
         }
     }
 
+    /**
+     *
+     * @param string $classname
+     * @return collection
+     */
     private function get_collection($classname)
     {
         if (!array_key_exists($classname, $this->collections))

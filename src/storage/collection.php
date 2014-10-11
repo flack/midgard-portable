@@ -63,6 +63,11 @@ class collection
         return $purged_count;
     }
 
+    /**
+     *
+     * @param string $guid
+     * @return \midgard_query_builder
+     */
     private function get_qb($guid)
     {
         $qb = new \midgard_query_builder('midgard:' . $this->classname);
