@@ -31,7 +31,12 @@ class midgard_reflection_property
 
     public function description($property)
     {
-        throw new \exception('not implemented yet');
+        if (!$this->cm->hasField($property))
+        {
+            return null;
+        }
+        $mapping = $this->cm->getFieldMapping($property);
+        return $mapping['midgard:description'];
     }
 
     public function get_mapping($property)

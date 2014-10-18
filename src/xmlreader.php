@@ -90,9 +90,14 @@ class xmlreader
                     break;
             }
         }
+        $node->registerXPathNamespace('r', "http://www.midgard-project.org/repligard/1.4");
+        $description = $node->xpath('r:description');
+        if ($description)
+        {
+            $property_attributes['description'] = (string) $description[0];
+        }
 
         $property = new property($type, $property_name, $property_type);
-
         $property->set_multiple($property_attributes);
 
         $type->add_property($property);

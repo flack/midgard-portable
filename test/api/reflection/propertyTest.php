@@ -42,4 +42,11 @@ class propertyTest extends testcase
         $this->assertEquals('id', $ref->get_link_target('up'));
         $this->assertEquals(null, $ref->get_link_target('xxx'));
     }
+
+    public function test_description()
+    {
+        $ref = new midgard_reflection_property('midgard_topic');
+        $this->assertEquals('Arrangement score of the topic (legacy field)', $ref->description('score'));
+        $this->assertEquals(null, $ref->description('xxx'));
+    }
 }

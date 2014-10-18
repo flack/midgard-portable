@@ -219,6 +219,7 @@ class driver implements driver_interface
 
             $mapping['columnName'] = $property->field;
             $mapping['midgard:midgard_type'] = translator::to_constant($property->type);
+            $mapping['midgard:description'] = $property->description;
 
             // its some other link (like guid link)
             if ($property->noidlink)
