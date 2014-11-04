@@ -13,8 +13,7 @@ It is in a developmental state and provides the roughly following:
 Usage
 --------
 
-To include `midgard-portable` in your application, simply `require` it in your `composer.json`. You can bootstrap
-the adapter like this:
+To include `midgard-portable` in your application, simply `require` it in your `composer.json`. You can bootstrap the adapter like this:
 
 ```php
 <?php
@@ -33,12 +32,9 @@ $dev_mode = false;
 
 $driver = new driver($schema_dirs, $var_dir, $entity_namespace);
 connection::initialize($driver, $db_config, $dev_mode);
-$entityManager = connection::get_em();
 ```
 
-Change the parameters as required. If you save this file under the name `cli-config.php`, it will can used by Doctrine's
-CLI runner. After calling `connection::initialize()`, you can interact with the database through Midgard API as
-outlined above.
+Change the parameters as required. After calling `connection::initialize()`, you can interact with the database through Midgard API as outlined above.
 
 ### CLI tools
 
@@ -50,6 +46,13 @@ outlined above.
 
 It works very much like the `midgard-schema` tool of old, i.e. it will generate `midgard_object` classes based on MgdSchema XML files, and the accompanying mapping data and proxy classes. You will need to run this once during inital installation, and then again each time the MgdSchemas change.
 
+You can also use Doctrine's CLI runner and all the functionality it provides if you create a file under the name `cli-config.php`, with this content:
+
+```php
+<?php
+require 'my_settings_file.php'; //This needs to contain the code shown above
+$entityManager = connection::get_em();
+```
 
 Goals
 -----
