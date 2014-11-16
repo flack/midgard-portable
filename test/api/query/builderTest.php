@@ -16,6 +16,7 @@ class midgard_query_builderTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $classes = array(
             self::$em->getClassMetadata('midgard:midgard_topic'),
+            self::$em->getClassMetadata('midgard:midgard_parameter'),
             self::$em->getClassMetadata('midgard:midgard_article'),
             self::$em->getClassMetadata('midgard:midgard_language'),
             self::$em->getClassMetadata('midgard:midgard_repligard'),
@@ -295,6 +296,21 @@ class midgard_query_builderTest extends testcase
         $this->assertFalse($qb->add_constraint('xxx', '=', 0));
         $this->assertFalse($qb->add_constraint('metadata.xxx', '=', 0));
         $this->assertFalse($qb->add_constraint('up.xxx', '=', 0));
+    }
+
+    public function test_add_constraint_parameter()
+    {
+        $classname_t = self::$ns . '\\midgard_topic';
+        $topics = $this->_create_topics(__FUNCTION__);
+        $topics[0]->set_parameter('test_domain', 'test', 'test_value');
+
+        $qb = new \midgard_query_builder($classname_t);
+        $this->assertTrue($qb->add_constraint('parameter.domain', '=', 'test_domain'));
+        $this->assertTrue($qb->add_constraint('parameter.name', '=', 'test'));
+        $this->assertTrue($qb->add_constraint('parameter.value', '=', 'test_value'));
+
+        $results = $qb->execute();
+        $this->assertCount(1, $results);
     }
 
     public function test_limit()

@@ -236,6 +236,17 @@ abstract class query
         }
     }
 
+    protected function add_collection_join($current_table, $targetclass)
+    {
+        if (!array_key_exists($targetclass, $this->join_tables))
+        {
+            $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
+            $c = $this->join_tables[$targetclass] . ".parentguid = " . $current_table . ".guid";
+            $this->qb->innerJoin("midgard:" . $targetclass, $this->join_tables[$targetclass], Join::WITH, $c);
+        }
+        return $this->join_tables[$targetclass];
+    }
+
     protected function add_join($current_table, $mrp, $property)
     {
         $targetclass = $mrp->get_link_name($property);
@@ -271,17 +282,26 @@ abstract class query
             $column = array_pop($parts);
             foreach ($parts as $part)
             {
-                $mrp = new \midgard_reflection_property($targetclass);
-
-                if (   !$mrp->is_link($part)
-                    && !$mrp->is_special_link($part))
+                if (   $part === 'parameter'
+                    || $part === 'attachment')
                 {
-                    throw exception::ok();
+                    $targetclass = 'midgard_' . $part;
+                    $current_table = $this->add_collection_join($current_table, $targetclass);
                 }
-                $targetclass = $mrp->get_link_name($part);
-                $current_table = $this->add_join($current_table, $mrp, $part);
+                else
+                {
+                    $mrp = new \midgard_reflection_property($targetclass);
+
+                    if (   !$mrp->is_link($part)
+                        && !$mrp->is_special_link($part))
+                    {
+                        throw exception::ok();
+                    }
+                    $targetclass = $mrp->get_link_name($part);
+                    $current_table = $this->add_join($current_table, $mrp, $part);
+                }
             }
-            // mrp only gives us non-namespaced classnames (TODO: verify), so we make it an alias
+            // mrp only gives us non-namespaced classnames, so we make it an alias
             $targetclass = 'midgard:' . $targetclass;
         }
 
