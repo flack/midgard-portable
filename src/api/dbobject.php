@@ -82,7 +82,9 @@ abstract class dbobject implements ObjectManagerAware
         else if ($this->cm->hasField($field))
         {
             $mapping = $this->cm->getFieldMapping($field);
-            if ($mapping['type'] === 'string')
+
+            if (   $mapping['type'] === 'string'
+                || $mapping['type'] == 'text')
             {
                 $value = (string) $value;
             }

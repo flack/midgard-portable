@@ -37,6 +37,7 @@ class dbobjectTest extends testcase
         $classname = self::$ns . '\\midgard_topic';
         $topic = new $classname;
         $topic->title = null;
+        $topic->code = null;
         $topic->score = null;
         $topic->up = 0;
         $topic->styleInherit = null;
@@ -44,6 +45,7 @@ class dbobjectTest extends testcase
         $topic->floatField = null;
 
         $this->assertSame('', $topic->title);
+        $this->assertSame('', $topic->code);
         $this->assertSame(0, $topic->score);
         $this->assertSame(0, $topic->lang);
         $this->assertSame(0, $topic->up);
