@@ -108,6 +108,11 @@ class midgard_object_class
 
     public static function get_object_by_guid($guid)
     {
+        if (!mgd_is_guid($guid))
+        {
+            throw exception::not_exists();
+        }
+
         $type = self::resolve_classname($guid);
         return self::factory($type, $guid);
     }
