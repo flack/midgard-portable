@@ -245,7 +245,8 @@ class driver implements driver_interface
 
             $metadata->mapField($mapping);
 
-            if ($property->index)
+            if (   $property->index
+                || ($property->type == 'guid' && empty($mapping['unique'])))
             {
                 if (empty($metadata->table['indexes']))
                 {
