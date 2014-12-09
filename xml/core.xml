@@ -25,17 +25,17 @@
     <type name="midgard_user" table="midgard_user" metadata="false">
         <property name="id" type="unsigned integer" primaryfield="id">
         </property>
-        <property name="login" type="string">
+        <property name="login" type="string" index="true">
         </property>
         <property name="password" type="string">
         </property>
         <property name="active" type="boolean">
         </property>
-        <property name="authtype" field="auth_type" type="string">
+        <property name="authtype" field="auth_type" type="string" index="true">
         </property>
-        <property name="authtypeid" field="auth_type_id" type="integer">
+        <property name="authtypeid" field="auth_type_id" type="integer" index="true">
         </property>
-        <property name="usertype" field="user_type" type="integer">
+        <property name="usertype" field="user_type" type="integer" index="true">
         </property>
         <property name="person" field="person_guid" type="guid" link="midgard_person:guid">
         </property>
