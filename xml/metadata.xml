@@ -5,23 +5,23 @@
         </property>
         <property name="created" type="datetime">
         </property>
-        <property name="revisor" type="guid">
+        <property name="revisor" type="guid" index="false">
         </property>
         <property name="revised" type="datetime">
         </property>
         <property name="revision" type="integer">
         </property>
-        <property name="locker" type="guid">
+        <property name="locker" type="guid" index="false">
         </property>
         <property name="locked" type="datetime">
         </property>
-        <property name="approver" type="guid">
+        <property name="approver" type="guid" index="false">
         </property>
         <property name="approved" type="datetime">
         </property>
         <property name="authors" type="text">
         </property>
-        <property name="owner" type="guid">
+        <property name="owner" type="guid" index="false">
         </property>
         <property name="schedulestart" field="schedule_start" type="datetime">
         </property>
