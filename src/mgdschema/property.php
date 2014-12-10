@@ -84,6 +84,8 @@ class property implements node
         $this->field = $name;
         $this->type = $type;
         $this->dbtype = $type;
+        // type guid always gets an index (but the guid field itself already has unique)
+        $this->index = ($type == 'guid' && $name != 'guid');
     }
 
     public function get_parent()
@@ -108,6 +110,8 @@ class property implements node
                 {
                     $this->noidlink = $value;
                     $value = null;
+                    // Doctrine can't figure this out automatically, so we do it here
+                    $this->index = true;
                 }
                 break;
         }
