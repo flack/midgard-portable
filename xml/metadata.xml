@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Schema xmlns="http://www.midgard-project.org/repligard/1.4">
     <mixin name="midgard_metadata">
-        <property name="creator" type="guid">
+        <property name="creator" type="guid" index="false">
         </property>
         <property name="created" type="datetime">
         </property>
