@@ -18,28 +18,35 @@ class midgard_storage
     {
         $em = connection::get_em();
         $factory = $em->getMetadataFactory();
-        $classes = $factory->getAllMetadata();
+        $ns = $em->getConfiguration()->getEntityNamespace("midgard");
 
-        foreach ($classes as $class)
+        $cm_repligard = $em->getClassMetadata($ns . '\\midgard_repligard');
+        if (!self::create_class_storage($cm_repligard->getName()))
         {
-            $stat = self::create_class_storage($class->getName());
-            if (!$stat)
-            {
-                return false;
-            }
+            return false;
+        }
+        $cm_person = $em->getClassMetadata($ns . '\\midgard_person');
+        if (!self::create_class_storage($cm_person->getName()))
+        {
+            return false;
+        }
+        $cm_user = $em->getClassMetadata($ns . '\\midgard_user');
+        if (!self::create_class_storage($cm_user->getName()))
+        {
+            return false;
         }
 
         $admin = $em->find('midgard:midgard_user', 1);
 
         if ($admin === null)
         {
-            $fqcn = $em->getConfiguration()->getEntityNamespace("midgard") . "\\midgard_person";
+            $fqcn = $cm_person->getName();
             $person = new $fqcn;
             $person->firstname = 'Midgard';
             $person->lastname = 'Administrator';
             $person->create();
 
-            $fqcn = $em->getConfiguration()->getEntityNamespace("midgard") . "\\midgard_user";
+            $fqcn = $cm_user->getName();
             $admin = new $fqcn;
             $admin->authtype = 'Plaintext';
             $admin->authtypeid = 2;

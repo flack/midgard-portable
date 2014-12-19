@@ -85,6 +85,7 @@ class midgard_storageTest extends testcase
         self::prepare_connection();
 
         midgard_storage::create_base_storage();
+        $this->assertTrue(midgard_storage::create_class_storage('midgard_topic'));
 
         $cm = self::$em->getMetadataFactory()->getMetadataFor('midgard:midgard_topic');
         $cm->mapField(array('type' => 'string', 'fieldName' => 'testproperty'));
