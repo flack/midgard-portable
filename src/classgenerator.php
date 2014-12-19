@@ -65,9 +65,8 @@ class classgenerator
         {
             unlink($this->filename);
         }
-        $types = $this->manager->get_types();
-        $this->add_line('<?php');
 
+        $types = $this->manager->get_types();
         uasort($types, function($a, $b)
         {
             if (   !empty($a->extends)
@@ -85,6 +84,8 @@ class classgenerator
             }
             return 0;
         });
+
+        $this->add_line('<?php');
 
         if (!empty($namespace))
         {
