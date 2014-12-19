@@ -15,6 +15,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use midgard_storage;
 use midgard_connection;
+use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\DBAL\Schema\Comparator;
 
 /**
  * (Re)generate mapping information from MgdSchema XMLs
@@ -70,19 +72,7 @@ class schema extends Command
         }
         connection::startup();
         $em = connection::get_em();
-        // no idea why this has to be listed explicitly...
-        $types = array('midgard_repligard');
         $cms = $em->getMetadataFactory()->getAllMetadata();
-        foreach ($cms as $cm)
-        {
-            if ($cm->reflClass->isSubclassOf('\midgard_object'))
-            {
-                $types[] = $cm->name;
-            }
-        }
-
-        $progress = $this->getHelperset()->get('progress');
-        $progress->start($output, count($types) + 1);
 
         // create storage
         if (!midgard_storage::create_base_storage())
@@ -92,22 +82,67 @@ class schema extends Command
                 throw new \Exception("Failed to create base database structures" . $midgard->get_error_string());
             }
         }
-        $progress->advance();
 
-        foreach ($types as $type)
+        $to_update = array();
+        $to_create = array();
+
+        foreach ($cms as $cm)
         {
-            if (!midgard_storage::class_storage_exists($type))
+            if (!$em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName())))
             {
-                midgard_storage::create_class_storage($type);
+                $to_create[] = $cm;
             }
             else
             {
-                midgard_storage::update_class_storage($type);
+                $to_update[] = $cm;
             }
+        }
+
+        if (!empty($to_create))
+        {
+            $output->writeln('Creating <info>' . count($to_create) . '</info> new tables');
+            $tool = new SchemaTool($em);
+            $tool->createSchema($to_create);
+        }
+        if (!empty($to_update))
+        {
+            $this->process_updates($to_update, $output);
+        }
+        $output->writeln('Done');
+    }
+
+    private function process_updates(array $to_update, OutputInterface $output)
+    {
+        $em = connection::get_em();
+        $conn = $em->getConnection();
+        $tool = new SchemaTool($em);
+        $from = $conn->getSchemaManager()->createSchema();
+        $to = $tool->getSchemaFromMetadata($to_update);
+
+        $comparator = new Comparator;
+        $diff = $comparator->compare($from, $to);
+        foreach ($diff->changedTables as $changed_table)
+        {
+            if (!empty($changed_table->removedColumns))
+            {
+                $changed_table->removedColumns = array();
+            }
+        }
+        $sql = $diff->toSaveSql($conn->getDatabasePlatform());
+
+        $output->writeln('Executing <info>' . count($sql) . '</info> updates');
+        $progress = $this->getHelperset()->get('progress');
+        $progress->start($output, count($sql));
+
+        foreach ($sql as $sql_line)
+        {
+            if ($output->getVerbosity() == OutputInterface::VERBOSITY_VERBOSE)
+            {
+                $output->writeln('Executing <info>' . $sql_line . '</info>');
+            }
+            $conn->executeQuery($sql_line);
             $progress->advance();
         }
         $progress->finish();
-
-        $output->writeln('Storage created');
     }
 }
