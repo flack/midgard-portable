@@ -18,6 +18,7 @@ use midgard_connection;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\DBAL\Schema\Comparator;
 use Symfony\Component\Console\Input\InputOption;
+use Doctrine\Common\Proxy\ProxyGenerator;
 
 /**
  * (Re)generate mapping information from MgdSchema XMLs
@@ -124,7 +125,27 @@ class schema extends Command
         {
             $this->process_updates($to_update, $output, $force);
         }
+        $output->writeln('Generating proxies');
+        $this->generate_proxyfiles($cms);
+
         $output->writeln('Done');
+    }
+
+    private function generate_proxyfiles(array $cms)
+    {
+        $em = connection::get_em();
+        $generator = new ProxyGenerator($em->getConfiguration()->getProxyDir(), $em->getConfiguration()->getProxyNamespace());
+        $generator->setPlaceholder('baseProxyInterface', 'Doctrine\ORM\Proxy\Proxy');
+
+        foreach ($cms as $cm)
+        {
+            $filename = $generator->getProxyFileName($cm->getName());
+            if (file_exists($filename))
+            {
+                unlink($filename);
+            }
+            $generator->generateProxyClass($cm, $filename);
+        }
     }
 
     private function process_updates(array $to_update, OutputInterface $output, $force)
