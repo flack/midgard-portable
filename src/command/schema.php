@@ -17,6 +17,7 @@ use midgard_storage;
 use midgard_connection;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\DBAL\Schema\Comparator;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * (Re)generate mapping information from MgdSchema XMLs
@@ -27,7 +28,8 @@ class schema extends Command
     {
         $this->setName('schema')
             ->setDescription('(Re)generate mapping information from MgdSchema XMLs')
-            ->addArgument('config', InputArgument::OPTIONAL, 'Full path to midgard-portable config file');
+            ->addArgument('config', InputArgument::OPTIONAL, 'Full path to midgard-portable config file')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Ignore errors from DB');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -82,7 +84,7 @@ class schema extends Command
                 throw new \Exception("Failed to create base database structures" . $midgard->get_error_string());
             }
         }
-
+        $force = $input->getOption('force');
         $to_update = array();
         $to_create = array();
 
@@ -102,16 +104,30 @@ class schema extends Command
         {
             $output->writeln('Creating <info>' . count($to_create) . '</info> new tables');
             $tool = new SchemaTool($em);
-            $tool->createSchema($to_create);
+            try
+            {
+                $tool->createSchema($to_create);
+            }
+            catch (\Exception $e)
+            {
+                if (!$force)
+                {
+                    throw $e;
+                }
+                else
+                {
+                    $output->writeln('<error>' . $e->getMessage() . '</error>');
+                }
+            }
         }
         if (!empty($to_update))
         {
-            $this->process_updates($to_update, $output);
+            $this->process_updates($to_update, $output, $force);
         }
         $output->writeln('Done');
     }
 
-    private function process_updates(array $to_update, OutputInterface $output)
+    private function process_updates(array $to_update, OutputInterface $output, $force)
     {
         $em = connection::get_em();
         $conn = $em->getConnection();
@@ -140,7 +156,22 @@ class schema extends Command
             {
                 $output->writeln('Executing <info>' . $sql_line . '</info>');
             }
-            $conn->executeQuery($sql_line);
+            try
+            {
+                $conn->executeQuery($sql_line);
+            }
+            catch (\Exception $e)
+            {
+                if (!$force)
+                {
+                    throw $e;
+                }
+                else
+                {
+                    $output->writeln('<error>' . $e->getMessage() . '</error>');
+                }
+            }
+
             $progress->advance();
         }
         $progress->finish();
