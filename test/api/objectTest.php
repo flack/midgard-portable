@@ -145,6 +145,32 @@ class objectTest extends testcase
         $this->assertEquals($topic->name, $loaded->name);
     }
 
+    public function test_get_by_id_with_updates()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $topic->name = __FUNCTION__;
+        $topic->create();
+        $loaded = new $classname;
+        $stat = $loaded->get_by_id($topic->id);
+        $this->assertTrue($stat);
+        $this->assertEquals($topic->name, $loaded->name);
+
+        // This causes the entity to become registered in IdentityMap
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('id', '=', $topic->id);
+        $result = $qb->execute();
+
+        $topic->name = __FUNCTION__ . '2';
+        $topic->update();
+        $name = $topic->name;
+
+        //If we load from IdentityMap and not from DB, we will get the pre-update value
+        $stat = $loaded->get_by_id($topic->id);
+        $this->assertTrue($stat);
+        $this->assertEquals($topic->name, $loaded->name);
+    }
+
     /**
      * @expectedException midgard_error_exception
      */
@@ -195,8 +221,8 @@ class objectTest extends testcase
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;
-        $stat = $topic->create();
-        $this->assertTrue($stat);
+
+        $this->assert_api('create', $topic);
         $this->assertFalse(empty($topic->guid), 'GUID empty');
         $this->assertEquals($initial + 1, $this->count_results($classname));
         $this->assertGreaterThan($initial, $topic->id);
@@ -455,7 +481,7 @@ class objectTest extends testcase
         $this->assertEquals($topic->guid, $parent->guid);
 
         $child->up = $topic->up;
-        $child->update();
+        $this->assert_api('update', $child);
 
         self::$em->clear();
 
