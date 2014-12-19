@@ -146,10 +146,6 @@ class subscriber implements EventSubscriber
         return $size;
     }
 
-    /**
-     * This is essentially a workaround for http://www.doctrine-project.org/jira/browse/DBAL-642
-     * It makes sure we get auto increment behavior similar to msyql (i.e. IDs unique during table's lifetime)
-     */
     public function onSchemaCreateTable(SchemaCreateTableEventArgs $args)
     {
         $platform = $args->getPlatform();
@@ -163,6 +159,10 @@ class subscriber implements EventSubscriber
                 if (   !empty($config['primary'])
                     && !empty($config['autoincrement']))
                 {
+                    /*
+                     * This is essentially a workaround for http://www.doctrine-project.org/jira/browse/DBAL-642
+                     * It makes sure we get auto increment behavior similar to msyql (i.e. IDs unique during table's lifetime)
+                     */
                     $modified = true;
                     $config['columnDefinition'] = 'INTEGER PRIMARY KEY AUTOINCREMENT';
                 }

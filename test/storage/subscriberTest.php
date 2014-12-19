@@ -54,7 +54,7 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
                     'id' => array
                     (
                         'name' => "id",
-                        'type' =>Type::getType(Type::INTEGER),
+                        'type' => Type::getType(Type::INTEGER),
                         'default' => null,
                         'notnull' => true,
                         'length' => null,
@@ -81,7 +81,7 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
                     'password' => array
                     (
                         'name' => "password",
-                        'type' =>Type::getType(Type::STRING),
+                        'type' => Type::getType(Type::STRING),
                         'default' => null,
                         'notnull' => false,
                         'length' => 13,
@@ -108,7 +108,7 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
                     'settest' => array
                     (
                         'name' => "settest",
-                        'type' =>Type::getType(Type::STRING),
+                        'type' => Type::getType(Type::STRING),
                         'default' => null,
                         'notnull' => false,
                         'length' => 13,
@@ -124,7 +124,7 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
                 ),
                 array
                 (
-                    'mysql' => array("CREATE TABLE dummy (settest set('auth') DEFAULT NULL COMMENT 'set('auth')')"),
+                    'mysql' => array("CREATE TABLE dummy (settest set('auth') DEFAULT NULL COMMENT 'set(''auth'')')"),
                 )
             )
         );
