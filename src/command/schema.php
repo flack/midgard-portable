@@ -167,6 +167,11 @@ class schema extends Command
         }
         $sql = $diff->toSaveSql($conn->getDatabasePlatform());
 
+        if (count($sql) == 0)
+        {
+            return;
+        }
+
         $output->writeln('Executing <info>' . count($sql) . '</info> updates');
         $progress = $this->getHelperset()->get('progress');
         $progress->start($output, count($sql));
