@@ -23,6 +23,8 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Events as dbal_events;
 use Doctrine\DBAL\Event\SchemaCreateTableEventArgs;
 use Doctrine\DBAL\Event\SchemaColumnDefinitionEventArgs;
+use Doctrine\ORM\Tools\ToolEvents;
+use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 
 class subscriber implements EventSubscriber
 {
@@ -284,8 +286,34 @@ class subscriber implements EventSubscriber
         }
     }
 
+    /**
+     * This is mostly a workaround for the fact that SchemaTool wants to create FKs on
+     * each run since it doesn't detect that MyISAM tables don't support them
+     *
+     * @see http://www.doctrine-project.org/jira/browse/DDC-3460
+     * @param GenerateSchemaTableEventArgs $args
+     */
+    public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $args)
+    {
+        $table = $args->getClassTable();
+        if (   !$table->hasOption('engine')
+            || $table->getOption('engine') !== 'MyISAM')
+        {
+            return;
+        }
+        foreach ($table->getForeignKeys() as $key)
+        {
+            $table->removeForeignKey($key->getName());
+        }
+    }
+
     public function getSubscribedEvents()
     {
-        return array(Events::onFlush, dbal_events::onSchemaCreateTable, dbal_events::onSchemaColumnDefinition);
+        return array
+        (
+            Events::onFlush,
+            dbal_events::onSchemaCreateTable, dbal_events::onSchemaColumnDefinition,
+            ToolEvents::postGenerateSchemaTable
+        );
     }
 }
