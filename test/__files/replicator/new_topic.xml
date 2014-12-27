@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<midgard_object xmlns="http://www.midgard-project.org/midgard_object/1.8">
+  <midgard_topic purge="no" guid="">
+    <metadata>
+      <creator></creator>
+      <created>0001-01-01 00:00:00+0000</created>
+      <revisor></revisor>
+      <revised>0001-01-01 00:00:00+0000</revised>
+      <revision>0</revision>
+      <locker></locker>
+      <locked>0001-01-01 00:00:00+0000</locked>
+      <approver></approver>
+      <approved>0001-01-01 00:00:00+0000</approved>
+      <authors></authors>
+      <owner></owner>
+      <schedulestart>0001-01-01 00:00:00+0000</schedulestart>
+      <scheduleend>0001-01-01 00:00:00+0000</scheduleend>
+      <hidden>0</hidden>
+      <navnoentry>0</navnoentry>
+      <size>0</size>
+      <published>0001-01-01 00:00:00+0000</published>
+      <score>0</score>
+      <imported>0001-01-01 00:00:00+0000</imported>
+      <exported>0001-01-01 00:00:00+0000</exported>
+      <deleted>0</deleted>
+      <isapproved>0</isapproved>
+      <islocked>0</islocked>
+    </metadata>
+    <action></action>
+    <id>0</id>
+    <name></name>
+    <code></code>
+    <up>0</up>
+    <component></component>
+    <style></style>
+    <styleInherit>0</styleInherit>
+    <symlink>0</symlink>
+    <title></title>
+    <extra></extra>
+    <description></description>
+    <lang>0</lang>
+    <score>0</score>
+  </midgard_topic>
+</midgard_object>
