@@ -7,6 +7,11 @@
 
 use midgard\portable\api\dbobject;
 use midgard\portable\api\attachment;
+use midgard\portable\storage\connection;
+use \midgard_datetime;
+use \SimpleXMLElement;
+use midgard\portable\storage\subscriber;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 class midgard_replicator
 {
@@ -49,7 +54,101 @@ class midgard_replicator
      */
     public static function serialize(dbobject $object)
     {
-        throw new Exception('not implemented');
+        $xml = new SimpleXMLElement('<midgard_object xmlns="http://www.midgard-project.org/midgard_object/1.8"/>');
+
+        $cm = connection::get_em()->getClassMetadata(get_class($object));
+        $node = $xml->addChild($cm->getReflectionClass()->getShortName());
+        $node->addAttribute('guid', $object->guid);
+        $node->addAttribute('purge', 'no');
+
+        if (mgd_is_guid($object->guid))
+        {
+            $node->addAttribute('action', self::get_object_action($object->guid));
+        }
+
+        $metadata = array();
+
+        foreach ($cm->getAssociationNames() as $name)
+        {
+            $node->addChild($name, self::resolve_link_id($cm, $object, $name));
+        }
+        foreach ($cm->getFieldNames() as $name)
+        {
+            if ($name == 'guid')
+            {
+                continue;
+            }
+            if (strpos($name, 'metadata_') === 0)
+            {
+                $metadata[substr($name, 9)] = $object->$name;
+            }
+            else
+            {
+                $node->addChild($name, self::convert_value($object->$name));
+            }
+        }
+
+        if (!empty($metadata))
+        {
+            $mnode = $node->addChild('metadata');
+            foreach ($metadata as $name => $value)
+            {
+                $mnode->addChild($name, self::convert_value($value));
+            }
+        }
+
+        return $xml->asXML();
+    }
+
+    private static function resolve_link_id(ClassMetadata $cm, dbobject $object, $name)
+    {
+        if ($object->$name == 0)
+        {
+            return '0';
+        }
+        $target_class = $cm->getAssociationTargetClass($name);
+        return connection::get_em()
+            ->createQueryBuilder()
+            ->from($target_class, 'c')
+            ->select('c.guid')
+            ->where('c.id = ?0')
+            ->setParameter(0, $object->$name)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    private static function get_object_action($guid)
+    {
+        $action = connection::get_em()
+            ->createQueryBuilder()
+            ->from('midgard:midgard_repligard', 'c')
+            ->select('c.object_action')
+            ->where('c.guid = ?0')
+            ->setParameter(0, $guid)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        switch ((int) $action)
+        {
+            case subscriber::ACTION_CREATE:
+                return 'created';
+            case subscriber::ACTION_UPDATE:
+                return 'updated';
+            case subscriber::ACTION_DELETE:
+                return 'deleted';
+            case subscriber::ACTION_PURGE:
+                return 'purged';
+            default:
+                return 'none';
+        }
+    }
+
+    private static function convert_value($value)
+    {
+        if ($value instanceof midgard_datetime)
+        {
+            return $value->format('Y-m-d H:i:sO');
+        }
     }
 
     /**
