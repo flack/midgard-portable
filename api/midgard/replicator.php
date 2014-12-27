@@ -149,6 +149,7 @@ class midgard_replicator
         {
             return $value->format('Y-m-d H:i:sO');
         }
+        return $value;
     }
 
     /**
@@ -164,7 +165,59 @@ class midgard_replicator
      */
     public static function unserialize($xml, $force = false)
     {
-        throw new Exception('not implemented');
+        $ret = array();
+
+        $xml = new SimpleXMLElement($xml);
+        foreach ($xml as $node)
+        {
+            $ret[] = self::object_from_xml($node);
+        }
+
+        return $ret;
+    }
+
+    /**
+     *
+     * @param SimpleXMLElement $node
+     * @return dbobject
+     */
+    private static function object_from_xml(SimpleXMLElement $node)
+    {
+        $cm = connection::get_em()->getClassMetadata('midgard:' . $node->getName());
+        $classname = $cm->getName();
+        $object = new $classname;
+        $object->set_guid($node['guid']);
+        $object->action = $node['action'];
+        foreach ($node as $child)
+        {
+            $field = $child->getName();
+            if ($field == 'metadata')
+            {
+                foreach ($child as $mchild)
+                {
+                    $field = 'metadata_' . $mchild->getName();
+                    $object->$field = (string) $mchild;
+                }
+                continue;
+            }
+            $value = (string) $child;
+            if (   $cm->isSingleValuedAssociation($field)
+                && mgd_is_guid($value))
+            {
+                $target_class = $cm->getAssociationTargetClass($field);
+                $value = connection::get_em()
+                    ->createQueryBuilder()
+                    ->from($target_class, 'c')
+                    ->select('c.id')
+                    ->where('c.guid = ?0')
+                    ->setParameter(0, $value)
+                    ->getQuery()
+                    ->getSingleScalarResult();
+            }
+
+            $object->$field = $value;
+        }
+        return $object;
     }
 
     /**

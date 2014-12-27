@@ -25,7 +25,7 @@ class midgard_replicatorTest extends testcase
         $tool->createSchema($classes);
     }
 
-    public function test_serialize_nonpersistent_topic()
+    public function test_serialize_nonpersistent()
     {
         $classname = self::$ns . '\\midgard_topic';
         $object = new $classname;
@@ -40,7 +40,7 @@ class midgard_replicatorTest extends testcase
         $this->assertEquals($expected->midgard_topic->metadata->created, $actual->midgard_topic->metadata->created);
     }
 
-    public function test_serialize_created_topic()
+    public function test_serialize()
     {
         $classname = self::$ns . '\\midgard_topic';
         $object = new $classname;
@@ -48,43 +48,25 @@ class midgard_replicatorTest extends testcase
         $ret = midgard_replicator::serialize($object);
         $actual = new SimpleXMLElement($ret);
         $this->assertEquals('created', (string) $actual->midgard_topic['action']);
-    }
+        $this->assertEquals($object->id, (string) $actual->midgard_topic->id);
 
-    public function test_serialize_updated_topic()
-    {
-        $classname = self::$ns . '\\midgard_topic';
-        $object = new $classname;
-        $this->assert_api('create', $object);
         $this->assert_api('update', $object);
         $ret = midgard_replicator::serialize($object);
         $actual = new SimpleXMLElement($ret);
         $this->assertEquals('updated', (string) $actual->midgard_topic['action']);
-    }
 
-    public function test_serialize_deleted_topic()
-    {
-        $classname = self::$ns . '\\midgard_topic';
-        $object = new $classname;
-        $this->assert_api('create', $object);
         $this->assert_api('delete', $object);
         $ret = midgard_replicator::serialize($object);
         $actual = new SimpleXMLElement($ret);
         $this->assertEquals('deleted', (string) $actual->midgard_topic['action']);
-    }
 
-    public function test_serialize_purged_topic()
-    {
-        $classname = self::$ns . '\\midgard_topic';
-        $object = new $classname;
-        $this->assert_api('create', $object);
-        $this->assert_api('delete', $object);
         $this->assert_api('purge', $object);
         $ret = midgard_replicator::serialize($object);
         $actual = new SimpleXMLElement($ret);
         $this->assertEquals('purged', (string) $actual->midgard_topic['action']);
     }
 
-    public function test_serialize_child_topic()
+    public function test_serialize_child()
     {
         $classname = self::$ns . '\\midgard_topic';
         $parent = new $classname;
@@ -96,5 +78,61 @@ class midgard_replicatorTest extends testcase
         $ret = midgard_replicator::serialize($object);
         $actual = new SimpleXMLElement($ret);
         $this->assertEquals($parent->guid, (string) $actual->midgard_topic->up);
+    }
+
+    public function test_unserialize_nonpersistent()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $expected = new $classname;
+        $ret = midgard_replicator::unserialize(file_get_contents(dirname(__DIR__) . '/__files/replicator/new_topic.xml'));
+
+        $this->assertCount(1, $ret);
+        $actual = $ret[0];
+        $this->assertEquals(get_class($expected), get_class($actual));
+    }
+
+    public function test_unserialize()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $object = new $classname;
+        $this->assert_api('create', $object);
+        $ret = midgard_replicator::unserialize(midgard_replicator::serialize($object));
+        $this->assertEquals($object->guid, $ret[0]->guid);
+        $this->assertEquals($object->id, $ret[0]->id);
+        $this->assertEquals($object->metadata->created, $ret[0]->metadata->created);
+        $this->assertEquals('created', $ret[0]->action);
+
+        $this->assert_api('update', $object);
+        $ret = midgard_replicator::unserialize(midgard_replicator::serialize($object));
+        $this->assertEquals($object->guid, $ret[0]->guid);
+        $this->assertEquals($object->id, $ret[0]->id);
+        $this->assertEquals($object->metadata->revised, $ret[0]->metadata->revised);
+        $this->assertEquals('updated', $ret[0]->action);
+
+        $this->assert_api('delete', $object);
+        $ret = midgard_replicator::unserialize(midgard_replicator::serialize($object));
+        $this->assertEquals($object->guid, $ret[0]->guid);
+        $this->assertEquals($object->id, $ret[0]->id);
+        $this->assertEquals($object->metadata->deleted, $ret[0]->metadata->deleted);
+        $this->assertEquals('deleted', $ret[0]->action);
+
+        $this->assert_api('purge', $object);
+        $ret = midgard_replicator::unserialize(midgard_replicator::serialize($object));
+        $this->assertEquals($object->guid, $ret[0]->guid);
+        $this->assertEquals($object->id, $ret[0]->id);
+        $this->assertEquals('purged', $ret[0]->action);
+    }
+
+    public function test_unserialize_child()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $parent = new $classname;
+        $this->assert_api('create', $parent);
+
+        $object = new $classname;
+        $object->up = $parent->id;
+        $this->assert_api('create', $object);
+        $ret = midgard_replicator::unserialize(midgard_replicator::serialize($object));
+        $this->assertEquals($parent->id, $ret[0]->up);
     }
 }
