@@ -156,8 +156,8 @@ class midgard_replicatorTest extends testcase
     public function test_export_by_guid()
     {
         $classname = self::$ns . '\\midgard_topic';
-
         $object = new $classname;
+
         $this->assertFalse(midgard_replicator::export_by_guid($object->guid));
         $this->assert_error(MGD_ERR_INVALID_PROPERTY_VALUE);
 
@@ -174,8 +174,8 @@ class midgard_replicatorTest extends testcase
     public function test_import_object()
     {
         $classname = self::$ns . '\\midgard_topic';
-
         $object = new $classname;
+
         $this->assertFalse(midgard_replicator::import_object($object));
         $this->assert_error(MGD_ERR_INVALID_PROPERTY_VALUE);
 
@@ -216,5 +216,15 @@ class midgard_replicatorTest extends testcase
         $results = $qb->execute();
         $this->assertCount(1, $results);
         $this->assertTrue($results[0]->metadata->deleted);
+    }
+
+    public function test_import_from_xml()
+    {
+        $prefix = dirname(__DIR__) . '/__files/replicator/';
+        $classname = self::$ns . '\\midgard_topic';
+
+        midgard_replicator::import_from_xml(file_get_contents($prefix . 'import_created_topic.xml'));
+        $object = new $classname('c1f17ea68e9911e4a07b8f9cdafb00b500b5');
+        $this->assertSame('test', $object->extra);
     }
 }

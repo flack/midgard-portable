@@ -174,8 +174,23 @@ class midgard_replicator
         $classname = $cm->getName();
 
         connection::get_em()->getFilters()->disable('softdelete');
-        $dbobject = new $classname($object->guid);
-        connection::get_em()->getFilters()->enable('softdelete');
+        try
+        {
+            $dbobject = new $classname($object->guid);
+            connection::get_em()->getFilters()->enable('softdelete');
+        }
+        catch (exception $e)
+        {
+            connection::get_em()->getFilters()->enable('softdelete');
+            if (   $e->getCode() === exception::NOT_EXISTS
+                || $e->getCode() === exception::OK)
+            {
+                $object->metadata->imported = new \midgard_datetime();
+                $object->id = 0;
+                return $object->create();
+            }
+            return false;
+        }
 
         if ($dbobject->metadata->revised >= $object->metadata->revised)
         {
@@ -222,7 +237,11 @@ class midgard_replicator
      */
     public static function import_from_xml($xml, $force = false)
     {
-        throw new Exception('not implemented');
+        $objects = self::unserialize($xml, $force);
+        foreach ($objects as $object)
+        {
+            self::import_object($object, $force);
+        }
     }
 
 
