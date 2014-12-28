@@ -100,7 +100,6 @@ class classTest extends testcase
     public function test_get_property_up()
     {
         $classname = self::$ns . '\\midgard_topic';
-
         $topic = new $classname;
 
         $up = midgard_object_class::get_property_up($topic);
@@ -110,10 +109,21 @@ class classTest extends testcase
     public function test_get_property_parent()
     {
         $classname = self::$ns . '\\midgard_article';
-
         $article = new $classname;
 
         $parentfield = midgard_object_class::get_property_parent($article);
         $this->assertEquals('topic', $parentfield);
+    }
+
+    public function test_undelete()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $this->assert_api('create', $topic);
+        $this->assert_api('delete', $topic);
+
+        $this->assertTrue(midgard_object_class::undelete($topic->guid));
+        $refreshed = new $classname($topic->id);
+        $this->assertFalse($refreshed->metadata->deleted);
     }
 }
