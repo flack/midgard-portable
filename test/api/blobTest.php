@@ -97,4 +97,15 @@ class blobTest extends testcase
         $handle = $blob->get_handler();
         $this->assertSame('', $blob->read_content());
     }
+
+    public function test_write_content()
+    {
+        $classname = self::$ns . '\\midgard_attachment';
+        $att = new $classname;
+
+        $blob = new blob($att);
+        $this->assertNull($blob->read_content());
+        $this->assertTrue($blob->write_content('X'));
+        $this->assertSame('X', $blob->read_content());
+    }
 }

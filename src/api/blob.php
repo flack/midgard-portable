@@ -33,7 +33,7 @@ class blob
 
     public function write_content($content)
     {
-
+        return file_put_contents($this->get_path(), $content) !== false;
     }
 
     public function remove_file()
