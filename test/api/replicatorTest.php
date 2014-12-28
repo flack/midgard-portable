@@ -170,4 +170,51 @@ class midgard_replicatorTest extends testcase
         $this->assertFalse(midgard_replicator::export_by_guid($object->guid));
         $this->assert_error(MGD_ERR_OBJECT_PURGED);
     }
+
+    public function test_import_object()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $object = new $classname;
+        $this->assertFalse(midgard_replicator::import_object($object));
+        $this->assert_error(MGD_ERR_INVALID_PROPERTY_VALUE);
+
+        $this->assert_api('create', $object);
+        $object->title = 'test';
+        $this->assertFalse(midgard_replicator::import_object($object));
+        $this->assert_error(MGD_ERR_OBJECT_IMPORTED);
+
+        $older = new \midgard_datetime('now - 1 day');
+        $object->metadata->revised = $older;
+        $this->assertFalse(midgard_replicator::import_object($object));
+        $this->assert_error(MGD_ERR_OBJECT_IMPORTED);
+
+        $newer = new \midgard_datetime('now + 1 day');
+        $object->metadata->revised = $newer;
+        $this->assertTrue(midgard_replicator::import_object($object));
+
+        $refreshed = new $classname($object->id);
+        $this->assertSame('test', $refreshed->title);
+        $this->assertNotEquals((string) $refreshed->metadata->imported, (string) $object->metadata->imported);
+
+        $this->assert_api('delete', $object);
+        $object->metadata->deleted = false;
+        $object->metadata->revised = $newer;
+        $this->assertTrue(midgard_replicator::import_object($object), \midgard_connection::get_instance()->get_error_string());
+
+        $refreshed = new $classname($object->id);
+        $this->assertSame('test', $refreshed->title);
+        $this->assertFalse($refreshed->metadata->deleted);
+
+        $object->metadata->deleted = true;
+        $object->metadata->revised = $newer;
+        $this->assertTrue(midgard_replicator::import_object($object), \midgard_connection::get_instance()->get_error_string());
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->include_deleted();
+        $qb->add_constraint('guid', '=', $object->guid);
+        $results = $qb->execute();
+        $this->assertCount(1, $results);
+        $this->assertTrue($results[0]->metadata->deleted);
+    }
 }

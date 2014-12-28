@@ -15,6 +15,7 @@ use midgard\portable\storage\subscriber;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use midgard\portable\api\error\exception;
 use midgard\portable\api\blob;
+use midgard\portable\storage\objectmanager;
 
 class midgard_replicator
 {
@@ -66,6 +67,7 @@ class midgard_replicator
             ->getQuery()
             ->execute();
 
+        midgard_connection::get_instance()->set_error(exception::OK);
         return ($result > 0);
     }
 
@@ -128,6 +130,102 @@ class midgard_replicator
         return $xml->asXML();
     }
 
+    /**
+     * @return string XML representation of the blob (content is base64 encoded)
+     */
+    public static function serialize_blob(attachment $object)
+    {
+        $blob = new blob($object);
+        $xml = new SimpleXMLElement('<midgard_object xmlns="http://www.midgard-project.org/midgard_object/1.8"/>');
+        $node = $xml->addChild('midgard_blob', base64_encode($blob->read_content()));
+        $node->addAttribute('guid', $object->guid);
+
+        return $xml->asXML();
+    }
+
+    /**
+     * @return dbobject[] Array of objects read from input XML
+     */
+    public static function unserialize($xml, $force = false)
+    {
+        $ret = array();
+
+        $xml = new SimpleXMLElement($xml);
+        foreach ($xml as $node)
+        {
+            $ret[] = self::object_from_xml($node);
+        }
+
+        return $ret;
+    }
+
+    /**
+     * @return boolean Indicating success
+     */
+    public static function import_object($object, $force = false)
+    {
+        if (!mgd_is_guid($object->guid))
+        {
+            midgard_connection::get_instance()->set_error(exception::INVALID_PROPERTY_VALUE);
+            return false;
+        }
+
+        $cm = connection::get_em()->getClassMetadata(get_class($object));
+        $classname = $cm->getName();
+
+        connection::get_em()->getFilters()->disable('softdelete');
+        $dbobject = new $classname($object->guid);
+        connection::get_em()->getFilters()->enable('softdelete');
+
+        if ($dbobject->metadata->revised >= $object->metadata->revised)
+        {
+            midgard_connection::get_instance()->set_error(exception::OBJECT_IMPORTED);
+            return false;
+        }
+
+        if (   $dbobject->metadata->deleted
+            && !$object->metadata->deleted)
+        {
+            if (!midgard_object_class::undelete($dbobject->guid))
+            {
+                return false;
+            }
+            $dbobject->metadata_deleted = false;
+        }
+        else if (   !$dbobject->metadata->deleted
+                 && $object->metadata->deleted)
+        {
+            return $dbobject->delete();
+        }
+
+        foreach ($cm->getAssociationNames() as $name)
+        {
+            $dbobject->$name = self::resolve_link_guid($cm, $name, $object->$name);
+        }
+        foreach ($cm->getFieldNames() as $name)
+        {
+            if ($name == 'id')
+            {
+                continue;
+            }
+            if (strpos($name, 'metadata_') === false)
+            {
+                $dbobject->$name = $object->$name;
+            }
+        }
+        $dbobject->metadata->imported = new \midgard_datetime();
+        return $dbobject->update();
+    }
+
+    /**
+     * @return boolean Indicating success
+     */
+    public static function import_from_xml($xml, $force = false)
+    {
+        throw new Exception('not implemented');
+    }
+
+
     private static function resolve_link_id(ClassMetadata $cm, dbobject $object, $name)
     {
         if ($object->$name == 0)
@@ -144,6 +242,60 @@ class midgard_replicator
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    private static function resolve_link_guid(ClassMetadata $cm, $name, $value)
+    {
+        if (!mgd_is_guid($value))
+        {
+            return 0;
+        }
+        $target_class = $cm->getAssociationTargetClass($name);
+        return connection::get_em()
+            ->createQueryBuilder()
+            ->from($target_class, 'c')
+            ->select('c.id')
+            ->where('c.guid = ?0')
+            ->setParameter(0, $value)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     *
+     * @param SimpleXMLElement $node
+     * @return dbobject
+     */
+    private static function object_from_xml(SimpleXMLElement $node)
+    {
+        $cm = connection::get_em()->getClassMetadata('midgard:' . $node->getName());
+        $classname = $cm->getName();
+        $object = new $classname;
+        $object->set_guid($node['guid']);
+        $object->action = $node['action'];
+        foreach ($node as $child)
+        {
+            $field = $child->getName();
+            if ($field == 'metadata')
+            {
+                foreach ($child as $mchild)
+                {
+                    $field = 'metadata_' . $mchild->getName();
+                    $object->$field = (string) $mchild;
+                }
+                continue;
+            }
+            $value = (string) $child;
+            if ($cm->isSingleValuedAssociation($field))
+            {
+                $value = self::resolve_link_guid($cm, $field, $value);
+            }
+
+            $object->$field = $value;
+        }
+        return $object;
+    }
+
+
 
     private static function get_object_action($guid)
     {
@@ -178,99 +330,5 @@ class midgard_replicator
             return $value->format('Y-m-d H:i:sO');
         }
         return $value;
-    }
-
-    /**
-     * @return string XML representation of the blob (content is base64 encoded)
-     */
-    public static function serialize_blob(attachment $object)
-    {
-        $blob = new blob($object);
-        $xml = new SimpleXMLElement('<midgard_object xmlns="http://www.midgard-project.org/midgard_object/1.8"/>');
-        $node = $xml->addChild('midgard_blob', base64_encode($blob->read_content()));
-        $node->addAttribute('guid', $object->guid);
-
-        return $xml->asXML();
-    }
-
-    /**
-     * @return dbobject[] Array of objects read from input XML
-     */
-    public static function unserialize($xml, $force = false)
-    {
-        $ret = array();
-
-        $xml = new SimpleXMLElement($xml);
-        foreach ($xml as $node)
-        {
-            $ret[] = self::object_from_xml($node);
-        }
-
-        return $ret;
-    }
-
-    /**
-     *
-     * @param SimpleXMLElement $node
-     * @return dbobject
-     */
-    private static function object_from_xml(SimpleXMLElement $node)
-    {
-        $cm = connection::get_em()->getClassMetadata('midgard:' . $node->getName());
-        $classname = $cm->getName();
-        $object = new $classname;
-        $object->set_guid($node['guid']);
-        $object->action = $node['action'];
-        foreach ($node as $child)
-        {
-            $field = $child->getName();
-            if ($field == 'metadata')
-            {
-                foreach ($child as $mchild)
-                {
-                    $field = 'metadata_' . $mchild->getName();
-                    $object->$field = (string) $mchild;
-                }
-                continue;
-            }
-            $value = (string) $child;
-            if (   $cm->isSingleValuedAssociation($field)
-                && mgd_is_guid($value))
-            {
-                $target_class = $cm->getAssociationTargetClass($field);
-                $value = connection::get_em()
-                    ->createQueryBuilder()
-                    ->from($target_class, 'c')
-                    ->select('c.id')
-                    ->where('c.guid = ?0')
-                    ->setParameter(0, $value)
-                    ->getQuery()
-                    ->getSingleScalarResult();
-            }
-
-            $object->$field = $value;
-        }
-        return $object;
-    }
-
-    /**
-     * @return boolean Indicating success
-     */
-    public static function import_object($object, $force = false)
-    {
-        if (!mgd_is_guid($object->guid))
-        {
-            return false;
-        }
-
-        throw new Exception('not implemented');
-    }
-
-    /**
-     * @return boolean Indicating success
-     */
-    public static function import_from_xml($xml, $force = false)
-    {
-        throw new Exception('not implemented');
     }
 }
