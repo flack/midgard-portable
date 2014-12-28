@@ -135,4 +135,22 @@ class midgard_replicatorTest extends testcase
         $ret = midgard_replicator::unserialize(midgard_replicator::serialize($object));
         $this->assertEquals($parent->id, $ret[0]->up);
     }
+
+    public function test_export_by_guid()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $object = new $classname;
+        $this->assertFalse(midgard_replicator::export_by_guid($object->guid));
+        $this->assert_error(MGD_ERR_INVALID_PROPERTY_VALUE);
+
+        $this->assert_api('create', $object);
+        $this->assertTrue(midgard_replicator::export_by_guid($object->guid));
+        $refreshed = new $classname($object->id);
+        $this->assertNotEquals((string) $refreshed->metadata->exported, (string) $object->metadata->exported);
+
+        $this->assert_api('purge', $object);
+        $this->assertFalse(midgard_replicator::export_by_guid($object->guid));
+        $this->assert_error(MGD_ERR_OBJECT_PURGED);
+    }
 }

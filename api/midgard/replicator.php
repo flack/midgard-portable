@@ -9,9 +9,11 @@ use midgard\portable\api\dbobject;
 use midgard\portable\api\attachment;
 use midgard\portable\storage\connection;
 use \midgard_datetime;
+use \midgard_connection;
 use \SimpleXMLElement;
 use midgard\portable\storage\subscriber;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use midgard\portable\api\error\exception;
 
 class midgard_replicator
 {
@@ -35,10 +37,35 @@ class midgard_replicator
     {
         if (!mgd_is_guid($guid))
         {
+            midgard_connection::get_instance()->set_error(exception::INVALID_PROPERTY_VALUE);
             return false;
         }
-        throw new Exception('not implemented');
-        return true;
+        $result = connection::get_em()
+            ->createQueryBuilder()
+            ->from('midgard:midgard_repligard', 'c')
+            ->select('c.typename', 'c.object_action')
+            ->where('c.guid = ?0')
+            ->setParameter(0, $guid)
+            ->getQuery()
+            ->getSingleResult();
+
+        if ($result['object_action'] === subscriber::ACTION_PURGE)
+        {
+            midgard_connection::get_instance()->set_error(exception::OBJECT_PURGED);
+            return false;
+        }
+
+        $result = connection::get_em()
+            ->createQueryBuilder()
+            ->update('midgard:' . $result['typename'], 'c')
+            ->set('c.metadata_exported', '?0')
+            ->setParameter(0, new midgard_datetime)
+            ->where('c.guid = ?1')
+            ->setParameter(1, $guid)
+            ->getQuery()
+            ->execute();
+
+        return ($result > 0);
     }
 
     /**
