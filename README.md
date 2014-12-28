@@ -2,12 +2,12 @@ midgard-portable [![Build Status](https://travis-ci.org/flack/midgard-portable.p
 ================
 
 This library aims to provide a simulation of the Midgard API for Doctrine.
-It is in a developmental state and provides the roughly following:
+It is in a developmental state and provides the following:
 
  - Creating Doctrine ClassMetadata and `midgard_dbobject` based Entity classes from MgdSchema XML files
  - Support for most of the `midgard_object` API (CRUD, parameters, attachments, parent/up relations, softdelete, etc.)
  - Query Support for `midgard_query_builder`, `midgard_collector` and `midgard_object_class`
- - Metadata support, Repligard, `midgard_blob`. `midgard_user`
+ - Metadata support, Repligard, `midgard_blob`, `midgard_user`
  - Partial support for database creation/update (`midgard_storage`) and reflection (`midgard_reflection_property`)
 
 Usage
@@ -103,7 +103,7 @@ Known Issues & Limitations
 ### Runtime
 
  - It is not possible to run midgard-portable when the original Midgard (or Midgard2) extension is loaded. This is
-   problem could get addressed at some point, but it mostl likely wouldn't do any good, since the extension registers
+   problem could get addressed at some point, but it most likely wouldn't do any good, since the extension registers
    all its classes on PHP startup, so that the adapter's classes would never get loaded.
 
  - Doctrine is somewhat stricter when it comes to referential integrity. So some of the more quirky behaviors of
@@ -133,4 +133,4 @@ Known Issues & Limitations
    It is impossible to get Doctrine to accept `0` as a value. So existing database tables must be updated. You can do so
    by running the `midgard-portable schema` command
 
- - When converting a Midgard1 database directly to midgard-portable (with `openpsa/installer`), the primary kay of the repligard table will change. In some situations, Doctrine may not be able to do this automatically, if you get an exception during the conversion, you can work around it by removing the primary key directly from the database
+ - When converting a Midgard1 database directly to midgard-portable (with `openpsa/installer`), the primary key of the repligard table will change. In some situations, Doctrine may not be able to do this automatically, if you get an exception during the conversion, you can work around it by removing the primary key directly from the database
