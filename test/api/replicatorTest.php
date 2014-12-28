@@ -9,6 +9,7 @@ namespace midgard\portable\test;
 
 use \SimpleXMLElement;
 use midgard_replicator;
+use midgard\portable\api\blob;
 
 class midgard_replicatorTest extends testcase
 {
@@ -19,7 +20,8 @@ class midgard_replicatorTest extends testcase
         $classes = array(
             self::$em->getClassMetadata(self::$ns . '\\midgard_topic'),
             self::$em->getClassMetadata('midgard:midgard_repligard'),
-            self::$em->getClassMetadata('midgard:midgard_article')
+            self::$em->getClassMetadata('midgard:midgard_article'),
+            self::$em->getClassMetadata('midgard:midgard_attachment')
         );
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
@@ -78,6 +80,21 @@ class midgard_replicatorTest extends testcase
         $ret = midgard_replicator::serialize($object);
         $actual = new SimpleXMLElement($ret);
         $this->assertEquals($parent->guid, (string) $actual->midgard_topic->up);
+    }
+
+    public function test_serialize_blob()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $object = new $classname;
+        $this->assert_api('create', $object);
+        $att = $object->create_attachment('test', 'test');
+        $blob = new blob($att);
+        $blob->write_content('X');
+
+        $ret = midgard_replicator::serialize_blob($att);
+        $actual = new SimpleXMLElement($ret);
+        $this->assertEquals($att->guid, (string) $actual->midgard_blob['guid']);
+        $this->assertEquals('WA==', (string) $actual->midgard_blob);
     }
 
     public function test_unserialize_nonpersistent()

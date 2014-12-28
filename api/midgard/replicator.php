@@ -14,6 +14,7 @@ use \SimpleXMLElement;
 use midgard\portable\storage\subscriber;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use midgard\portable\api\error\exception;
+use midgard\portable\api\blob;
 
 class midgard_replicator
 {
@@ -184,7 +185,12 @@ class midgard_replicator
      */
     public static function serialize_blob(attachment $object)
     {
-        throw new Exception('not implemented');
+        $blob = new blob($object);
+        $xml = new SimpleXMLElement('<midgard_object xmlns="http://www.midgard-project.org/midgard_object/1.8"/>');
+        $node = $xml->addChild('midgard_blob', base64_encode($blob->read_content()));
+        $node->addAttribute('guid', $object->guid);
+
+        return $xml->asXML();
     }
 
     /**
