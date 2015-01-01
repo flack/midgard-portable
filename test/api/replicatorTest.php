@@ -238,4 +238,29 @@ class midgard_replicatorTest extends testcase
         $object = new $classname('c1f17ea68e9911e4a07b8f9cdafb00b500b5');
         $this->assertSame('test', $object->extra);
     }
+
+    public function test_import_from_xml_invalid_link()
+    {
+        $prefix = dirname(__DIR__) . '/__files/replicator/';
+        $classname = self::$ns . '\\midgard_topic';
+
+        midgard_replicator::import_from_xml(file_get_contents($prefix . 'import_invalid_link.xml'));
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->include_deleted();
+        $qb->add_constraint('guid', '=', 'c1f17ea68e9911e4a07b8f9cdafb00b500b4');
+        $results = $qb->execute();
+        $this->assertCount(0, $results);
+
+        midgard_replicator::import_from_xml(file_get_contents($prefix . 'import_invalid_link.xml'), true);
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->include_deleted();
+        $qb->add_constraint('guid', '=', 'c1f17ea68e9911e4a07b8f9cdafb00b500b4');
+        $results = $qb->execute();
+        $this->assertCount(1, $results);
+
+        $object = new $classname('c1f17ea68e9911e4a07b8f9cdafb00b500b4');
+        $this->assertSame(0, $object->up);
+    }
 }

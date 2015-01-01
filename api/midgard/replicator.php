@@ -16,6 +16,7 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use midgard\portable\api\error\exception;
 use midgard\portable\api\blob;
 use midgard\portable\storage\objectmanager;
+use Doctrine\ORM\NoResultException;
 
 class midgard_replicator
 {
@@ -153,7 +154,14 @@ class midgard_replicator
         $xml = new SimpleXMLElement($xml);
         foreach ($xml as $node)
         {
-            $ret[] = self::object_from_xml($node);
+            try
+            {
+                $ret[] = self::object_from_xml($node, $force);
+            }
+            catch (NoResultException $e)
+            {
+                connection::log()->warning($e->getMessage());
+            }
         }
 
         return $ret;
@@ -270,7 +278,6 @@ class midgard_replicator
         }
     }
 
-
     private static function resolve_link_id(ClassMetadata $cm, dbobject $object, $name)
     {
         if ($object->$name == 0)
@@ -308,9 +315,10 @@ class midgard_replicator
     /**
      *
      * @param SimpleXMLElement $node
+     * @param boolean $force
      * @return dbobject
      */
-    private static function object_from_xml(SimpleXMLElement $node)
+    private static function object_from_xml(SimpleXMLElement $node, $force)
     {
         $cm = connection::get_em()->getClassMetadata('midgard:' . $node->getName());
         $classname = $cm->getName();
@@ -332,7 +340,18 @@ class midgard_replicator
             $value = (string) $child;
             if ($cm->isSingleValuedAssociation($field))
             {
-                $value = self::resolve_link_guid($cm, $field, $value);
+                try
+                {
+                    $value = self::resolve_link_guid($cm, $field, $value);
+                }
+                catch (NoResultException $e)
+                {
+                    if (!$force)
+                    {
+                        throw $e;
+                    }
+                    $value = 0;
+                }
             }
 
             $object->$field = $value;
