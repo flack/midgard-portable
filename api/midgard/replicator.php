@@ -162,7 +162,7 @@ class midgard_replicator
     /**
      * @return boolean Indicating success
      */
-    public static function import_object($object, $force = false)
+    public static function import_object(dbobject $object, $force = false)
     {
         if (!mgd_is_guid($object->guid))
         {
@@ -170,29 +170,48 @@ class midgard_replicator
             return false;
         }
 
-        $cm = connection::get_em()->getClassMetadata(get_class($object));
-        $classname = $cm->getName();
+        $classname = get_class($object);
 
-        connection::get_em()->getFilters()->disable('softdelete');
-        try
+        switch (self::get_object_action($object->guid))
         {
-            $dbobject = new $classname($object->guid);
-            connection::get_em()->getFilters()->enable('softdelete');
-        }
-        catch (exception $e)
-        {
-            connection::get_em()->getFilters()->enable('softdelete');
-            if (   $e->getCode() === exception::NOT_EXISTS
-                || $e->getCode() === exception::OK)
-            {
-                $object->metadata->imported = new \midgard_datetime();
-                $object->id = 0;
-                return $object->create();
-            }
-            return false;
+            case 'created':
+            case 'updated':
+                $dbobject = new $classname($object->guid);
+                break;
+
+            case 'deleted':
+                connection::get_em()->getFilters()->disable('softdelete');
+                $dbobject = new $classname($object->guid);
+                connection::get_em()->getFilters()->enable('softdelete');
+                break;
+
+            case 'purged':
+                if (!$force)
+                {
+                    return false;
+                }
+                $result = connection::get_em()
+                    ->createQueryBuilder()
+                    ->delete('midgard:midgard_repligard', 'c')
+                    ->where('c.guid = ?0')
+                    ->setParameter(0, $object->guid)
+                    ->getQuery()
+                    ->execute();
+
+                if ($result == 0)
+                {
+                    return false;
+                }
+                //fall-through
+
+            default:
+                $dbobject = new $classname;
+                $dbobject->set_guid($object->guid);
+                break;
         }
 
-        if ($dbobject->metadata->revised >= $object->metadata->revised)
+        if (   $dbobject->id > 0
+            && $dbobject->metadata->revised >= $object->metadata->revised)
         {
             midgard_connection::get_instance()->set_error(exception::OBJECT_IMPORTED);
             return false;
@@ -213,6 +232,8 @@ class midgard_replicator
             return $dbobject->delete();
         }
 
+        $cm = connection::get_em()->getClassMetadata(get_class($object));
+
         foreach ($cm->getAssociationNames() as $name)
         {
             $dbobject->$name = self::resolve_link_guid($cm, $name, $object->$name);
@@ -229,7 +250,12 @@ class midgard_replicator
             }
         }
         $dbobject->metadata->imported = new \midgard_datetime();
-        return $dbobject->update();
+        if ($dbobject->id > 0)
+        {
+            return $dbobject->update();
+        }
+
+        return $dbobject->create();
     }
 
     /**
@@ -314,20 +340,19 @@ class midgard_replicator
         return $object;
     }
 
-
-
     private static function get_object_action($guid)
     {
-        $action = connection::get_em()
+        $result = connection::get_em()
             ->createQueryBuilder()
             ->from('midgard:midgard_repligard', 'c')
             ->select('c.object_action')
             ->where('c.guid = ?0')
             ->setParameter(0, $guid)
             ->getQuery()
-            ->getSingleScalarResult();
+            ->getScalarResult();
+        $action = (empty($result)) ? 0 : (int) $result[0]['object_action'];
 
-        switch ((int) $action)
+        switch ($action)
         {
             case subscriber::ACTION_CREATE:
                 return 'created';

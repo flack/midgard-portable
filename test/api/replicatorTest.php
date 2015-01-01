@@ -184,13 +184,11 @@ class midgard_replicatorTest extends testcase
         $this->assertFalse(midgard_replicator::import_object($object));
         $this->assert_error(MGD_ERR_OBJECT_IMPORTED);
 
-        $older = new \midgard_datetime('now - 1 day');
-        $object->metadata->revised = $older;
+        $object->metadata->revised = new \midgard_datetime('now - 1 day');
         $this->assertFalse(midgard_replicator::import_object($object));
         $this->assert_error(MGD_ERR_OBJECT_IMPORTED);
 
-        $newer = new \midgard_datetime('now + 1 day');
-        $object->metadata->revised = $newer;
+        $object->metadata->revised = new \midgard_datetime('now + 1 day');
         $this->assertTrue(midgard_replicator::import_object($object));
 
         $refreshed = new $classname($object->id);
@@ -199,7 +197,7 @@ class midgard_replicatorTest extends testcase
 
         $this->assert_api('delete', $object);
         $object->metadata->deleted = false;
-        $object->metadata->revised = $newer;
+        $object->metadata->revised = new \midgard_datetime('now + 2 days');
         $this->assertTrue(midgard_replicator::import_object($object), \midgard_connection::get_instance()->get_error_string());
 
         $refreshed = new $classname($object->id);
@@ -207,7 +205,7 @@ class midgard_replicatorTest extends testcase
         $this->assertFalse($refreshed->metadata->deleted);
 
         $object->metadata->deleted = true;
-        $object->metadata->revised = $newer;
+        $object->metadata->revised = new \midgard_datetime('now + 3 days');
         $this->assertTrue(midgard_replicator::import_object($object), \midgard_connection::get_instance()->get_error_string());
 
         $qb = new \midgard_query_builder($classname);
@@ -216,6 +214,19 @@ class midgard_replicatorTest extends testcase
         $results = $qb->execute();
         $this->assertCount(1, $results);
         $this->assertTrue($results[0]->metadata->deleted);
+
+    }
+
+    public function test_import_object_purged()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $object = new $classname;
+        $this->assert_api('create', $object);
+        $this->assert_api('purge', $object);
+        $this->assertFalse(midgard_replicator::import_object($object), \midgard_connection::get_instance()->get_error_string());
+        $this->assertTrue(midgard_replicator::import_object($object, true), \midgard_connection::get_instance()->get_error_string());
+        $refreshed = new $classname($object->guid);
+        $this->assertNotEquals($object->id, $refreshed->id);
     }
 
     public function test_import_from_xml()
