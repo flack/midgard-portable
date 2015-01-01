@@ -83,6 +83,25 @@ class classTest extends testcase
         $this->assertEquals(MGD_ERR_OBJECT_DELETED, \midgard_connection::get_instance()->get_error());
     }
 
+    public function test_get_object_by_guid_purged()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $this->assert_api('create', $topic);
+        $this->assert_api('purge', $topic);
+
+        $e = null;
+        try
+        {
+            $object = midgard_object_class::get_object_by_guid($topic->guid);
+        }
+        catch (\midgard_error_exception $e)
+        {
+        }
+        $this->assertInstanceOf('midgard_error_exception', $e);
+        $this->assertEquals(MGD_ERR_OBJECT_PURGED, \midgard_connection::get_instance()->get_error());
+    }
+
     public function test_get_object_by_guid_invalid()
     {
         $e = null;
