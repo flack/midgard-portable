@@ -683,7 +683,14 @@ abstract class object extends dbobject
         return $this->get_collection('midgard_attachment')->delete($this->guid, $constraints);
     }
 
-    public function purge_attachments(array $constraints = array(), $delete_blob = '??')
+    /**
+     *
+     * @param array $constraints
+     * @param boolean $delete_blob
+     * @return boolean False if one or more attachments couldn't be deleted
+     * @todo Implement delete_blob & return value
+     */
+    public function purge_attachments(array $constraints = array(), $delete_blob = true)
     {
         return $this->get_collection('midgard_attachment')->purge($this->guid, $constraints);
     }
