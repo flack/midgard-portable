@@ -153,6 +153,21 @@ class midgard_replicatorTest extends testcase
         $this->assertEquals($parent->id, $ret[0]->up);
     }
 
+    public function test_unserialize_blob()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $object = new $classname;
+        $this->assert_api('create', $object);
+        $att = $object->create_attachment('test', 'test');
+        $blob = new blob($att);
+        $blob->write_content('X');
+
+        $ret = midgard_replicator::unserialize(midgard_replicator::serialize_blob($att));
+        $this->assertCount(1, $ret);
+        $this->assertInstanceOf('midgard\\portable\\api\\blob', $ret[0]);
+        $this->assertSame('X', $ret[0]->content);
+    }
+
     public function test_export_by_guid()
     {
         $classname = self::$ns . '\\midgard_topic';
@@ -262,5 +277,33 @@ class midgard_replicatorTest extends testcase
 
         $object = new $classname('c1f17ea68e9911e4a07b8f9cdafb00b500b4');
         $this->assertSame(0, $object->up);
+    }
+
+    public function test_import_from_xml_blob()
+    {
+        $prefix = dirname(__DIR__) . '/__files/replicator/';
+        $classname = self::$ns . '\\midgard_attachment';
+
+        midgard_replicator::import_from_xml(file_get_contents($prefix . 'import_blob.xml'));
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->include_deleted();
+        $qb->add_constraint('guid', '=', '8708d5a091f011e49de5c7e771ceea9dea9d');
+        $results = $qb->execute();
+        $this->assertCount(0, $results);
+
+        midgard_replicator::import_from_xml(file_get_contents($prefix . 'import_attachment_topic.xml'));
+        midgard_replicator::import_from_xml(file_get_contents($prefix . 'import_attachment.xml'));
+        midgard_replicator::import_from_xml(file_get_contents($prefix . 'import_blob.xml'));
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->include_deleted();
+        $qb->add_constraint('guid', '=', '8708d5a091f011e49de5c7e771ceea9dea9d');
+        $results = $qb->execute();
+        $this->assertCount(1, $results);
+
+        $att = new $classname('8708d5a091f011e49de5c7e771ceea9dea9d');
+        $blob = new blob($att);
+        $this->assertSame('test', $blob->read_content());
     }
 }

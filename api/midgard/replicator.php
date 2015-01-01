@@ -156,9 +156,16 @@ class midgard_replicator
         {
             try
             {
-                $ret[] = self::object_from_xml($node, $force);
+                if ($node->getName() == 'midgard_blob')
+                {
+                    $ret[] = self::blob_from_xml($node, $force);
+                }
+                else
+                {
+                    $ret[] = self::object_from_xml($node, $force);
+                }
             }
-            catch (NoResultException $e)
+            catch (\Exception $e)
             {
                 connection::log()->warning($e->getMessage());
             }
@@ -274,8 +281,25 @@ class midgard_replicator
         $objects = self::unserialize($xml, $force);
         foreach ($objects as $object)
         {
-            self::import_object($object, $force);
+            if ($object instanceof blob)
+            {
+                self::import_blob($object, $force);
+            }
+            else
+            {
+                self::import_object($object, $force);
+            }
         }
+    }
+
+    /**
+     *
+     * @param blob $blob
+     * @param boolean $force
+     */
+    private static function import_blob(blob $blob, $force)
+    {
+        $blob->write_content($blob->content);
     }
 
     private static function resolve_link_id(ClassMetadata $cm, dbobject $object, $name)
@@ -357,6 +381,21 @@ class midgard_replicator
             $object->$field = $value;
         }
         return $object;
+    }
+
+    /**
+     *
+     * @param SimpleXMLElement $node
+     * @param boolean $force
+     * @return dbobject
+     */
+    private static function blob_from_xml(SimpleXMLElement $node, $force)
+    {
+        $attachment = midgard_object_class::get_object_by_guid((string) $node['guid']);
+
+        $blob = new blob($attachment);
+        $blob->content = base64_decode($node);
+        return $blob;
     }
 
     private static function get_object_action($guid)
