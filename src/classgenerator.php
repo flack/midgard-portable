@@ -213,24 +213,14 @@ class classgenerator
 
     private function write_constructor(type $type, array $objects)
     {
-        foreach ($type->get_mixins() as $name => $mixin)
-        {
-            //TODO: A magic getter should be configured with this somehow
-            //$objects[$name] = 'new ' . $mixin->name . '($this)';
-        }
-
         if (!empty($objects))
         {
             $this->add_line('public function __construct($id = null) {');
-            $this->add_line('$this->init();');
-            $this->add_line('parent::__construct($id);');
-            $this->add_line('}');
-
-            $this->add_line('public function init() {');
             foreach ($objects as $name => $code)
             {
                 $this->add_line('$this->' . $name . ' = ' . $code . ';');
             }
+            $this->add_line('parent::__construct($id);');
             $this->add_line('}');
         }
     }

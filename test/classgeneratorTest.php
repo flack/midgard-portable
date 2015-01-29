@@ -42,9 +42,8 @@ class classgeneratorTest extends testcase
         $this->assertEquals(0, $topic->score);
         $this->assertEquals('0001-01-01 00:00:00', $topic->metadata->created->format('Y-m-d H:i:s'));
 
-        $cm = self::$em->getClassMetadata("midgard:midgard_parameter");
-        $entity = $cm->newInstance();
-        $entity->init();
+        $classname = $ns . '\\midgard_parameter';
+        $entity = new $classname;
 
         // without the default values in the mapping options, persisting the entity via em and flushing the em
         // would cause an integrity violation for all midgard_datetime fields (that cant be NULL)
