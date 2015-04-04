@@ -117,10 +117,9 @@ class objectmanager
             $this->em->detach($copy);
         }
 
-        $copy->metadata_deleted = true;
-
         $copy = $this->em->merge($copy);
         $this->kill_potential_proxies($copy);
+        $copy->metadata_deleted = true;
 
         $this->em->persist($copy);
         $this->em->flush($copy);

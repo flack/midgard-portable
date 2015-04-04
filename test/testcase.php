@@ -99,7 +99,7 @@ class testcase extends \PHPUnit_Framework_TestCase
 
     protected function assert_api($function, dbobject $object, $expected_error = MGD_ERR_OK)
     {
-        $this->assertEquals(($expected_error === MGD_ERR_OK), $object->$function(), $function . '() returned ' . midgard_connection::get_instance()->get_error_string());
+        $this->assertEquals(($expected_error === MGD_ERR_OK), $object->$function(), $function . '() returned: ' . midgard_connection::get_instance()->get_error_string());
         $this->assert_error($expected_error);
     }
 

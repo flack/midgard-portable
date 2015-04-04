@@ -302,7 +302,6 @@ class objectTest extends testcase
         $all = $this->count_results($classname, true);
         $this->assertEquals($initial_all + 1, $all);
 
-        $this->assertTrue($topic->delete());
         // delete a topic that is already deleted
         $this->assertTrue($topic->delete());
 
@@ -409,6 +408,8 @@ class objectTest extends testcase
         $topic2->create();
 
         $this->assertTrue($topic->has_dependents());
+        $this->assert_api('delete', $topic2);
+        $this->assertFalse($topic->has_dependents());
     }
 
     public function test_delete_with_dependents()
