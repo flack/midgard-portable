@@ -989,6 +989,7 @@ class objectTest extends testcase
 
         $person = self::create_user();
 
+        $topic = new $classname($topic->id);
         $this->assertTrue($topic->approve());
         $this->assertTrue($topic->is_approved());
         $this->assertFalse($topic->approve());

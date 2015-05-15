@@ -829,7 +829,7 @@ abstract class object extends dbobject
             throw new exception('Unsupported action ' . $action);
         }
         // same val
-        if ($this->metadata->$flag === $value)
+        if ($this->__get('metadata')->$flag === $value)
         {
             return false;
         }
