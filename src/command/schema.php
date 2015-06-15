@@ -175,7 +175,7 @@ class schema extends Command
 
         $output->writeln('Executing <info>' . count($sql) . '</info> updates');
         $progress = new ProgressBar($output);
-        $progress->start($output, count($sql));
+        $progress->start(count($sql));
 
         foreach ($sql as $sql_line)
         {
