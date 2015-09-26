@@ -8,9 +8,9 @@
 use midgard\portable\api\dbobject;
 use midgard\portable\api\attachment;
 use midgard\portable\storage\connection;
-use \midgard_datetime;
-use \midgard_connection;
-use \SimpleXMLElement;
+use \midgard_datetime as midgard_datetime;
+use \midgard_connection as midgard_conection;
+use \SimpleXMLElement as SimpleXMLElement;
 use midgard\portable\storage\subscriber;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use midgard\portable\api\error\exception;
