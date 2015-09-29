@@ -95,10 +95,9 @@ Known Issues & Limitations
  - Links to non-PK fields are not supported in Doctrine. So GUID-based link functionality is implemented in the adapter,
    which entails a performance penalty. Also, some cases (like parent GUID links) are not supported yet
 
- - Doctrine does not support value objects currently, so Metadata simulation is somewhat imperfect in the sense
-   that the metadata columns are accessible through the object itself (e.g. `$topic->metadata_deleted`). The
-   next planned Doctrine ORM release (2.5) will support for embedded objects (`Embeddable`), so this issue can be revisited
-   once that is released.
+ - Metadata simulation is somewhat imperfect in the sense that the metadata columns are accessible through the
+   object itself (e.g. `$topic->metadata_deleted`). This will be changed once we drop PHP 5.3 support
+   by utilizing embedded objects (`Embeddable`) from Doctrine ORM 2.5.
 
 ### Runtime
 
