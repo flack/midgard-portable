@@ -31,7 +31,7 @@ class xmlreaderTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('id', $properties);
         $this->assertEquals('guid', $properties['guid']->type);
         $this->assertEquals('guid', $properties['guid']->dbtype);
-        $this->assertEquals(38, sizeof($properties));
+        $this->assertEquals(39, sizeof($properties));
 
         $mixins = $type->get_mixins();
         $this->assertArrayHasKey('metadata', $mixins);

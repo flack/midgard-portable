@@ -243,6 +243,17 @@ class objectTest extends testcase
         $this->assertTrue($stat);
     }
 
+    public function test_create_invalid_guid_field()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $topic = new $classname;
+        $topic->name = __FUNCTION__;
+        $topic->guidField = 'xx';
+
+        $this->assert_api('create', $topic, MGD_ERR_INVALID_PROPERTY_VALUE);
+    }
+
     public function test_update()
     {
         $classname = self::$ns . '\\midgard_topic';
@@ -262,6 +273,18 @@ class objectTest extends testcase
         $this->assertEquals($topic2->id, $loaded->up, 'Wrong up ID');
         $this->assertEquals('', $loaded->title);
     }
+
+    public function test_update_invalid_guid_field()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $topic = new $classname;
+        $this->assert_api('create', $topic);
+        $topic->guidField = 'xx';
+
+        $this->assert_api('update', $topic, MGD_ERR_INVALID_PROPERTY_VALUE);
+    }
+
 
     public function test_update_nonpersistent()
     {

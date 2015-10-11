@@ -10,10 +10,10 @@ use midgard\portable\storage\connection;
 use midgard\portable\storage\objectmanager;
 use midgard\portable\storage\collection;
 use midgard\portable\storage\metadata\entity as metadata_interface;
+use midgard\portable\mgdschema\translator;
 use midgard\portable\api\error\exception;
 use Doctrine\ORM\Query;
 use midgard_connection;
-use midgard_datetime;
 use Doctrine\Common\Persistence\Proxy;
 
 abstract class object extends dbobject
@@ -181,6 +181,10 @@ abstract class object extends dbobject
         {
             return false;
         }
+        if (!$this->check_fields())
+        {
+            return false;
+        }
         try
         {
             $om = new objectmanager(connection::get_em());
@@ -202,6 +206,10 @@ abstract class object extends dbobject
         if (empty($this->id))
         {
             midgard_connection::get_instance()->set_error(MGD_ERR_INTERNAL);
+            return false;
+        }
+        if (!$this->check_fields())
+        {
             return false;
         }
         try
@@ -339,6 +347,23 @@ abstract class object extends dbobject
         {
             exception::object_no_parent();
             return false;
+        }
+        return true;
+    }
+
+    private function check_fields()
+    {
+        $this->initialize();
+
+        foreach ($this->cm->fieldMappings as $name => $field)
+        {
+            if (   $field['midgard:midgard_type'] == translator::TYPE_GUID
+                && !empty($this->__get($name))
+                && !mgd_is_guid($this->__get($name)))
+            {
+                exception::invalid_property_value("'" . $name . "' property's value is not a guid.");
+                return false;
+            }
         }
         return true;
     }

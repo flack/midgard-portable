@@ -44,6 +44,9 @@
         <property name="floatField"    type="float">
             <description>Float field for testing conversion</description>
         </property>
+        <property name="guidField"    type="guid">
+            <description>GUID field for testing conversion</description>
+        </property>
     </type>
 
 </Schema>

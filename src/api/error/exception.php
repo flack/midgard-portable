@@ -134,9 +134,13 @@ class exception extends base_exception
         return new self("Parent object in tree not defined.", self::OBJECT_NO_PARENT);
     }
 
-    public static function invalid_property_value()
+    public static function invalid_property_value($message = null)
     {
-        return new self("Invalid property value.", self::INVALID_PROPERTY_VALUE);
+        if ($message == null)
+        {
+            $message = "Invalid property value.";
+        }
+        return new self($message, self::INVALID_PROPERTY_VALUE);
     }
 
     public static function invalid_property()
