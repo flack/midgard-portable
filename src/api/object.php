@@ -358,8 +358,8 @@ abstract class object extends dbobject
         foreach ($this->cm->fieldMappings as $name => $field)
         {
             if (   $field['midgard:midgard_type'] == translator::TYPE_GUID
-                && !empty($this->__get($name))
-                && !mgd_is_guid($this->__get($name)))
+                && !empty($this->$name)
+                && !mgd_is_guid($this->$name))
             {
                 exception::invalid_property_value("'" . $name . "' property's value is not a guid.");
                 return false;
