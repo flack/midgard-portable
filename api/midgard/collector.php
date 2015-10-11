@@ -100,7 +100,14 @@ class midgard_collector extends midgard_query_builder
         $properties = $this->value_properties;
         if (!isset($this->value_properties[$this->key_property]))
         {
-            $properties[] = $this->build_property_select($this->key_property);
+            try
+            {
+                $properties[] = $this->build_property_select($this->key_property);
+            }
+            catch (exception $e)
+            {
+                throw new exception('Property "' . $this->key_property . '" not found in "' . $this->classname . '"', exception::INVALID_PROPERTY);
+            }
         }
 
         $this->qb->select(implode(", ", $properties));
