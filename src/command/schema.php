@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Question\Question;
 use midgard_storage;
 use midgard_connection;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -45,8 +46,8 @@ class schema extends Command
             }
             else
             {
-                $dialog = $this->getHelperset()->get('dialog');
-                $path = $dialog->ask($output, '<question>Enter path to config file</question>');
+                $dialog = $this->getHelper('question');
+                $path = $dialog->ask($input, $output, new Question('<question>Enter path to config file</question>'));
             }
         }
         if (!file_exists($path))
