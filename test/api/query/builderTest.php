@@ -298,6 +298,15 @@ class midgard_query_builderTest extends testcase
         $this->assertFalse($qb->add_constraint('up.xxx', '=', 0));
     }
 
+    public function test_add_constraint_invalid_operator()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $qb = new \midgard_query_builder($classname);
+        $this->assertFalse($qb->add_constraint('id', '', 0));
+        $this->assertFalse($qb->add_constraint('id', '!=', 0));
+        $this->assertFalse($qb->add_constraint('id', 'xxx', 0));
+    }
+
     public function test_add_constraint_parameter()
     {
         $classname_t = self::$ns . '\\midgard_topic';

@@ -104,7 +104,10 @@ abstract class query
         {
             $value = array_values($value);
         }
-
+        else if (!in_array($operator, array('=', '>', '<', '<>', '<=', '>=', 'LIKE', 'NOT LIKE')))
+        {
+            return false;
+        }
         $this->parameters++;
         $this->get_current_group()->add($this->build_constraint($name, $operator, $value));
         $this->qb->setParameter($this->parameters, $value);
