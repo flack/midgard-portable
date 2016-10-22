@@ -132,6 +132,12 @@ class classTest extends testcase
 
         $parentfield = midgard_object_class::get_property_parent($article);
         $this->assertEquals('topic', $parentfield);
+
+        $classname = self::$ns . '\\midgard_person';
+        $person = new $classname;
+
+        $parentfield = midgard_object_class::get_property_parent($person);
+        $this->assertNull($parentfield);
     }
 
     public function test_undelete()
