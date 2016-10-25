@@ -20,5 +20,10 @@
     	"classmap": ["api/"],
         "psr-4": { "midgard\\portable\\": "src/" },
         "files": ["api/bootstrap.php"]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.9-dev"
+        }
     }
 }
