@@ -6,8 +6,6 @@
  */
 namespace midgard\portable\api;
 
-use midgard_datetime;
-
 class metadata
 {
     private $object;
