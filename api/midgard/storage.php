@@ -17,7 +17,6 @@ class midgard_storage
     public static function create_base_storage()
     {
         $em = connection::get_em();
-        $factory = $em->getMetadataFactory();
         $ns = $em->getConfiguration()->getEntityNamespace("midgard");
 
         $cm_repligard = $em->getClassMetadata($ns . '\\midgard_repligard');

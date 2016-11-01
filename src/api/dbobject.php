@@ -18,7 +18,7 @@ abstract class dbobject implements ObjectManagerAware
 
     /**
      *
-     * @var Doctrine\Common\Persistence\Mapping\ClassMetadata
+     * @var ClassMetadata
      */
     protected $cm;
 

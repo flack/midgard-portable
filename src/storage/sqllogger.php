@@ -13,7 +13,7 @@ use Doctrine\DBAL\Logging\SQLLogger as base_logger;
 class sqllogger implements base_logger
 {
     /**
-     * @var Monolog\Logger
+     * @var Logger
      */
     private $logger;
 

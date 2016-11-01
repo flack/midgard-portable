@@ -41,7 +41,7 @@ class exception extends base_exception
     const TREE_IS_CIRCULAR = -26;
     const OBJECT_IS_LOCKED = -27;
 
-    public function __construct ($message = "Undefined error", $code = self::ERROR , base_exception $previous = null)
+    public function __construct($message = "Undefined error", $code = self::ERROR, base_exception $previous = null)
     {
         midgard_connection::get_instance()->set_error($code);
         midgard_connection::get_instance()->set_error_string($message);
@@ -194,57 +194,57 @@ class exception extends base_exception
         {
             case exception::OK:
                 return "MGD_ERR_OK";
-            case  exception::ACCESS_DENIED:
+            case exception::ACCESS_DENIED:
                 return "Access Denied.";
-            case  exception::NO_METADATA:
+            case exception::NO_METADATA:
                 return "Metadata class not defined.";
-            case  exception::NOT_OBJECT:
+            case exception::NOT_OBJECT:
                 return "Not Midgard Object.";
-            case  exception::NOT_EXISTS:
+            case exception::NOT_EXISTS:
                 return "Object does not exist.";
-            case  exception::INVALID_NAME:
+            case exception::INVALID_NAME:
                 return "Invalid characters in object's name.";
-            case  exception::DUPLICATE:
+            case exception::DUPLICATE:
                 return "Object already exist.";
-            case  exception::HAS_DEPENDANTS:
+            case exception::HAS_DEPENDANTS:
                 return "Object has dependants.";
-            case  exception::RANGE:
+            case exception::RANGE:
                 return "Date range error.";
-            case  exception::NOT_CONNECTED:
+            case exception::NOT_CONNECTED:
                 return "Not connected to the Midgard database.";
-            case  exception::SG_NOTFOUND:
+            case exception::SG_NOTFOUND:
                 return "Sitegroup not found.";
-            case  exception::INVALID_OBJECT:
+            case exception::INVALID_OBJECT:
                 return "Object not registered as Midgard Object.";
-            case  exception::QUOTA:
+            case exception::QUOTA:
                 return "Quota limit reached.";
-            case  exception::INTERNAL:
+            case exception::INTERNAL:
                 return "Critical internal error. ";
-            case  exception::OBJECT_NAME_EXISTS:
+            case exception::OBJECT_NAME_EXISTS:
                 return "Object with such name exists in tree.";
-            case  exception::OBJECT_NO_STORAGE:
+            case exception::OBJECT_NO_STORAGE:
                 return "Storage table not defined for object.";
-            case  exception::OBJECT_NO_PARENT:
+            case exception::OBJECT_NO_PARENT:
                 return "Parent object in tree not defined.";
-            case  exception::INVALID_PROPERTY_VALUE:
+            case exception::INVALID_PROPERTY_VALUE:
                 return "Invalid property value.";
-            case  exception::INVALID_PROPERTY:
+            case exception::INVALID_PROPERTY:
                 return "Invalid property.";
-            case  exception::USER_DATA:
+            case exception::USER_DATA:
                 return "";
-            case  exception::OBJECT_DELETED:
+            case exception::OBJECT_DELETED:
                 return "Object deleted.";
-            case  exception::OBJECT_PURGED:
+            case exception::OBJECT_PURGED:
                 return "Object purged.";
-            case  exception::OBJECT_EXPORTED:
+            case exception::OBJECT_EXPORTED:
                 return "Object already exported.";
-            case  exception::OBJECT_IMPORTED:
+            case exception::OBJECT_IMPORTED:
                 return "Object already imported.";
-            case  exception::MISSED_DEPENDENCE:
+            case exception::MISSED_DEPENDENCE:
                 return "Missed dependence for object.";
-            case  exception::TREE_IS_CIRCULAR:
+            case exception::TREE_IS_CIRCULAR:
                 return "Circular reference found in object's tree.";
-            case  exception::OBJECT_IS_LOCKED:
+            case exception::OBJECT_IS_LOCKED:
                 return "Object is locked";
             default:
                 return "Undefined error";

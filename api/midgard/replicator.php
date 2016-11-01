@@ -9,13 +9,12 @@ use midgard\portable\api\dbobject;
 use midgard\portable\api\attachment;
 use midgard\portable\storage\connection;
 use \midgard_datetime as midgard_datetime;
-use \midgard_connection as midgard_conection;
+use \midgard_connection as midgard_connection;
 use \SimpleXMLElement as SimpleXMLElement;
 use midgard\portable\storage\subscriber;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use midgard\portable\api\error\exception;
 use midgard\portable\api\blob;
-use midgard\portable\storage\objectmanager;
 use Doctrine\ORM\NoResultException;
 
 class midgard_replicator

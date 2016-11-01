@@ -204,7 +204,6 @@ class objectmanager
 
     public function unlock(dbobject $entity)
     {
-        $user = connection::get_user();
         $ref = $this->em->getReference(get_class($entity), $entity->id);
         $ref->metadata_islocked = false;
 

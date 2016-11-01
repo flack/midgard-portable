@@ -828,9 +828,10 @@ abstract class object extends dbobject
     }
 
     /**
-     * helper function for managing the isapproved and islocked metadata properties
-     * @param string $propertyName the property to manage (either isapproved or islocked)
-     * @param bool $newval
+     * Helper for managing the isapproved and islocked metadata properties
+     *
+     * @param string $action the property to manage (either approve or lock)
+     * @param bool $value
      * @return boolean
      */
     private function manage_meta_property($action, $value)

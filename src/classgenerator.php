@@ -150,7 +150,7 @@ class classgenerator
         $this->begin_class($type);
         $objects = $this->write_properties($type);
 
-        $this->write_constructor($type, $objects);
+        $this->write_constructor($objects);
 
         $this->write_parent_getter($type);
 
@@ -211,7 +211,7 @@ class classgenerator
         return $objects;
     }
 
-    private function write_constructor(type $type, array $objects)
+    private function write_constructor(array $objects)
     {
         if (!empty($objects))
         {

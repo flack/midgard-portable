@@ -22,7 +22,7 @@ use midgard_connection;
 class connection
 {
     /**
-     * @var Monolog\Logger
+     * @var Logger
      */
     private static $logger;
 
