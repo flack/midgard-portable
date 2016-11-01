@@ -81,9 +81,14 @@ class metadataTest extends testcase
         $person = self::create_user();
 
         $topic->name = __FUNCTION__ . '2'; // <== TODO: Without changing anything, doctrine won't update. Problem?
+        $created = (int) $topic->metadata->created->format('U');
+        while ($created == time())
+        {
+            usleep(100);
+        }
         $topic->update();
 
-        $this->assertNotEquals('0000-01-01 00:00:00', $topic->metadata->revised->format('Y-m-d H:i:s'));
+        $this->assertGreaterThan($created, (int) $topic->metadata->revised->format('U'));
         $this->assertEquals(1, $topic->metadata->revision);
 
         self::$em->clear();

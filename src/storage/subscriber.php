@@ -95,7 +95,7 @@ class subscriber implements EventSubscriber
         if ($entity instanceof entity)
         {
             $cm = $em->getClassMetadata(get_class($entity));
-            $entity->metadata->revised = new \midgard_datetime();
+            $entity->metadata_revised = new \midgard_datetime();
             $entity->metadata_revision++;
             if ($user = connection::get_user())
             {
