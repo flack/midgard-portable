@@ -27,17 +27,7 @@ class midgard_connection
 
     private $available_loglevels = array('error', 'warn', 'warning', 'info', 'message', 'debug');
 
-    private $replication_enabled = false;
-
-    function __construct()
-    {
-        //??
-    }
-
-    function __destruct()
-    {
-        //??
-    }
+    private $replication_enabled = true;
 
     public static function get_instance()
     {
