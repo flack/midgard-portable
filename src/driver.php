@@ -105,7 +105,7 @@ class driver implements driver_interface
     /**
      * {@inheritDoc}
      */
-    function getAllClassNames()
+    public function getAllClassNames()
     {
         if ($this->types === null)
         {
@@ -118,7 +118,7 @@ class driver implements driver_interface
     /**
      * {@inheritDoc}
      */
-    function isTransient($classname)
+    public function isTransient($classname)
     {
         if ($this->types === null)
         {

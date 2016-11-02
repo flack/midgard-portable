@@ -25,7 +25,7 @@ class midgard_collector extends midgard_query_builder
 
     private $value_properties = array();
 
-    function __construct($class, $field, $value)
+    public function __construct($class, $field, $value)
     {
         parent::__construct($class);
         $this->add_constraint($field, '=', $value);

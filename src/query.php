@@ -58,7 +58,7 @@ abstract class query
         $this->qb->from($class, 'c');
     }
 
-    abstract function execute();
+    abstract public function execute();
 
     public function add_constraint_with_property($name, $operator, $property)
     {
@@ -160,7 +160,7 @@ abstract class query
         $this->qb->setMaxResults($limit);
     }
 
-    function set_offset($offset)
+    public function set_offset($offset)
     {
         $this->qb->setFirstResult($offset);
     }
