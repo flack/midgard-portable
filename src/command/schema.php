@@ -80,12 +80,10 @@ class schema extends Command
         $cms = $em->getMetadataFactory()->getAllMetadata();
 
         // create storage
-        if (!midgard_storage::create_base_storage())
+        if (    !midgard_storage::create_base_storage()
+             && midgard_connection::get_instance()->get_error_string() != 'MGD_ERR_OK')
         {
-            if ($midgard->get_error_string() != 'MGD_ERR_OK')
-            {
-                throw new \Exception("Failed to create base database structures" . $midgard->get_error_string());
-            }
+            throw new \Exception("Failed to create base database structures" . midgard_connection::get_instance()->get_error_string());
         }
         $force = $input->getOption('force');
         $to_update = array();
