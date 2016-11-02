@@ -631,19 +631,16 @@ abstract class object extends dbobject
         // check value
         if ($value === false || $value === null || $value === "")
         {
-            if (count($params) > 0)
-            {
-                foreach ($params as $param)
-                {
-                    $stat = $param->delete();
-                }
-                return $stat;
-            }
-            else
+            if (count($params) == 0)
             {
                 exception::not_exists();
                 return false;
             }
+            foreach ($params as $param)
+            {
+                $stat = $param->delete();
+            }
+            return $stat;
         }
 
         $om = new objectmanager(connection::get_em());
