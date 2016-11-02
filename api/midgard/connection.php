@@ -27,6 +27,8 @@ class midgard_connection
 
     private $available_loglevels = array('error', 'warn', 'warning', 'info', 'message', 'debug');
 
+    private $replication_enabled = false;
+
     function __construct()
     {
         //??
@@ -155,12 +157,12 @@ class midgard_connection
 
     public function enable_replication($toggle)
     {
-
+        $this->replication_enabled = (bool) $toggle;
     }
 
     public function is_enabled_replication()
     {
-        return true;
+        return $this->replication_enabled;
     }
 
     public function enable_dbus($toggle)
