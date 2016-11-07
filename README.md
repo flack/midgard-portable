@@ -1,4 +1,4 @@
-midgard-portable [![Build Status](https://travis-ci.org/flack/midgard-portable.png?branch=master)](https://travis-ci.org/flack/midgard-portable)
+midgard-portable [![Build Status](https://travis-ci.org/flack/midgard-portable.png?branch=master)](https://travis-ci.org/flack/midgard-portable) [![Code Coverage](https://scrutinizer-ci.com/g/flack/midgard-portable/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/flack/midgard-portable/?branch=master)
 ================
 
 This library aims to provide a simulation of the Midgard API for Doctrine.
