@@ -51,6 +51,31 @@ abstract class dbobject implements ObjectManagerAware
         return $this->changed_associations;
     }
 
+    /**
+     * Filter out internal stuff for var_dump
+     *
+     * This is not 100% accurate right now (e.g. metadata is not handled totally correctly), but at least it
+     * prevents killing the server by dumping recursively linked EntityManagers and the like
+     *
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        $this->initialize();
+        $properties = array_merge($this->cm->getFieldNames(), $this->cm->getAssociationNames(), array_keys($this->cm->midgard['field_aliases']));
+        $properties = array_filter($properties, function($input)
+        {
+            return (strpos($input, 'metadata_') === false);
+        });
+        $ret = array();
+        foreach ($properties as $property)
+        {
+            $ret[$property] = $this->__get($property);
+        }
+
+        return $ret;
+    }
+
     public function __set($field, $value)
     {
         $this->initialize();

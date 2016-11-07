@@ -55,6 +55,26 @@ abstract class object extends dbobject
         return $this->collections[$classname];
     }
 
+    public function __debugInfo()
+    {
+        $ret = parent::__debugInfo();
+        if (property_exists($this, 'metadata'))
+        {
+            $metadata = new \stdClass;
+            foreach ($this->cm->getFieldNames() as $name)
+            {
+                if (strpos($name, 'metadata_') !== false)
+                {
+                    $fieldname = str_replace('metadata_', '', $name);
+                    $metadata->$fieldname = $this->__get($name);
+                }
+            }
+            $ret['metadata'] = $metadata;
+        }
+
+        return $ret;
+    }
+
     public function __set($field, $value)
     {
         if ($field == 'guid')
