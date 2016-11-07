@@ -1,8 +1,8 @@
 midgard-portable [![Build Status](https://travis-ci.org/flack/midgard-portable.png?branch=master)](https://travis-ci.org/flack/midgard-portable) [![Code Coverage](https://scrutinizer-ci.com/g/flack/midgard-portable/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/flack/midgard-portable/?branch=master)
 ================
 
-This library aims to provide a simulation of the Midgard API for Doctrine.
-It is in a developmental state and provides the following:
+This library provides as emulation of the Midgard API for Doctrine.
+It currently contains the following functionality:
 
  - Creating Doctrine ClassMetadata and `midgard_dbobject` based Entity classes from MgdSchema XML files
  - Support for most of the `midgard_object` API (CRUD, parameters, attachments, parent/up relations, softdelete, etc.)
