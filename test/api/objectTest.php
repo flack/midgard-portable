@@ -1047,4 +1047,58 @@ class objectTest extends testcase
         $this->assertEquals($topic->metadata_approver, $loaded->metadata->approver);
         $this->assertEquals($topic->metadata_approved, $loaded->metadata->approved);
     }
+
+    public function test__debugInfo()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+
+        $metadata = new \stdClass;
+        $metadata->creator = $topic->metadata->creator;
+        $metadata->created = $topic->metadata->created;
+        $metadata->revisor = $topic->metadata->revisor;
+        $metadata->revised = $topic->metadata->revised;
+        $metadata->revision = $topic->metadata->revision;
+        $metadata->locker = $topic->metadata->locker;
+        $metadata->locked = $topic->metadata->locked;
+        $metadata->approver = $topic->metadata->approver;
+        $metadata->approved = $topic->metadata->approved;
+        $metadata->owner = $topic->metadata->owner;
+        $metadata->schedulestart = $topic->metadata->schedulestart;
+        $metadata->scheduleend = $topic->metadata->scheduleend;
+        $metadata->hidden = $topic->metadata->hidden;
+        $metadata->navnoentry = $topic->metadata->navnoentry;
+        $metadata->size = $topic->metadata->size;
+        $metadata->score = $topic->metadata->score;
+        $metadata->published= $topic->metadata->published;
+        $metadata->imported = $topic->metadata->imported;
+        $metadata->exported = $topic->metadata->exported;
+        $metadata->deleted = $topic->metadata->deleted;
+        $metadata->islocked = $topic->metadata->islocked;
+        $metadata->isapproved = $topic->metadata->isapproved;
+        $metadata->authors = $topic->metadata->authors;
+
+        $expected = array
+        (
+            'id' => $topic->id,
+            'guid' => $topic->guid,
+            'name' => $topic->name,
+            'code' => $topic->code,
+            'style' => $topic->style,
+            'styleInherit' => $topic->styleInherit,
+            'title' => $topic->title,
+            'extra' => $topic->extra,
+            'description' => $topic->description,
+            'score' => $topic->score,
+            'floatField' => $topic->floatField,
+            'guidField' => $topic->guidField,
+            'up' => $topic->up,
+            'symlink' => $topic->symlink,
+            'lang' => $topic->lang,
+            'birthdate' => $topic->birthdate,
+            'metadata' => $metadata
+
+        );
+        $this->assertEquals($expected, $topic->__debugInfo());
+    }
 }
