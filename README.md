@@ -122,7 +122,7 @@ Known Issues & Limitations
    of all registered MgdSchema classes. As a workaround, you can use [midgard-introspection](https://github.com/flack/midgard-introspection),
    which abstracts these differences away.
 
- - Do not try to call `print_r()`, `var_dump()` or similar functions on entities. This applies to all Doctrine entities
+ - Do not try to call `print_r()`, `var_dump()` or similar functions on entities when using PHP 5.5 or earlier. This applies to all Doctrine entities
    and is not specific to midgard-portable, but it is worth remembering if you try to run code originally written for
    the Midgard extension. midgard-introspection contains a `print_r()` method you can use instead.
 
