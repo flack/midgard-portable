@@ -20,8 +20,7 @@ class attachment extends object
 
     public function create()
     {
-        if (empty($this->parentguid))
-        {
+        if (empty($this->parentguid)) {
             return false;
         }
         return parent::create();

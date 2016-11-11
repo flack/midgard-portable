@@ -37,22 +37,17 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
         $subscriber->onSchemaCreateTable($args);
 
         $pf_name = strtolower($platform->getName());
-        if (array_key_exists($pf_name, $expected))
-        {
+        if (array_key_exists($pf_name, $expected)) {
             $this->assertEquals($expected[$pf_name], $args->getSql());
         }
     }
 
     public function provider_onSchemaCreateTable()
     {
-        return array
-        (
-            array
-            (
-                array
-                (
-                    'id' => array
-                    (
+        return array(
+            array(
+                array(
+                    'id' => array(
                         'name' => "id",
                         'type' => Type::getType(Type::INTEGER),
                         'default' => null,
@@ -69,17 +64,13 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
                         'primary' => true
                     )
                 ),
-                array
-                (
+                array(
                     'sqlite' => array('CREATE TABLE dummy (id INTEGER PRIMARY KEY AUTOINCREMENT)'),
                 )
             ),
-            array
-            (
-                array
-                (
-                    'password' => array
-                    (
+            array(
+                array(
+                    'password' => array(
                         'name' => "password",
                         'type' => Type::getType(Type::STRING),
                         'default' => null,
@@ -95,18 +86,14 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
                         'version' => false,
                     )
                 ),
-                array
-                (
+                array(
                     'sqlite' => array("CREATE TABLE dummy (password VARCHAR(13) COLLATE BINARY DEFAULT NULL)"),
                     'mysql' => array("CREATE TABLE dummy (password VARCHAR(13) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT 'BINARY')"),
                 )
             ),
-            array
-            (
-                array
-                (
-                    'settest' => array
-                    (
+            array(
+                array(
+                    'settest' => array(
                         'name' => "settest",
                         'type' => Type::getType(Type::STRING),
                         'default' => null,
@@ -122,8 +109,7 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
                         'version' => false,
                     )
                 ),
-                array
-                (
+                array(
                     'mysql' => array("CREATE TABLE dummy (settest set('auth') DEFAULT NULL COMMENT 'set(''auth'')')"),
                 )
             )

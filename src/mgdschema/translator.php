@@ -19,8 +19,7 @@ class translator
     const TYPE_TIMESTAMP = 139645924049440;
     const TYPE_GUID = 139645923896704;
 
-    private static $typemap = array
-    (
+    private static $typemap = array(
         'unsigned integer' => self::TYPE_UINT,
         'integer' => self::TYPE_INT,
         'boolean' => self::TYPE_BOOLEAN,
@@ -36,8 +35,7 @@ class translator
 
     public static function to_constant($typeattribute)
     {
-        if (!array_key_exists($typeattribute, self::$typemap))
-        {
+        if (!array_key_exists($typeattribute, self::$typemap)) {
             throw new \Exception('unknown type ' . $typeattribute);
         }
         return self::$typemap[$typeattribute];

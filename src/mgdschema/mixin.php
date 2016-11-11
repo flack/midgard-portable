@@ -9,5 +9,4 @@ namespace midgard\portable\mgdschema;
 
 class mixin extends type implements node
 {
-
 }

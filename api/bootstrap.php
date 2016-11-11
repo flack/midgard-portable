@@ -10,8 +10,7 @@ use midgard\portable\mgdschema\translator;
 use midgard\portable\api\error\exception;
 
 if (   extension_loaded('midgard')
-    || extension_loaded('midgard2'))
-{
+    || extension_loaded('midgard2')) {
     //TODO: Print some error?
     return;
 }

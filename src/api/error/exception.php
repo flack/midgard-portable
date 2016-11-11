@@ -41,8 +41,7 @@ class exception extends base_exception
     const TREE_IS_CIRCULAR = -26;
     const OBJECT_IS_LOCKED = -27;
 
-    private static $messages = array
-    (
+    private static $messages = array(
         self::OK => "MGD_ERR_OK",
         self::ACCESS_DENIED => "Access Denied.",
         self::NO_METADATA => "Metadata class not defined.",
@@ -168,8 +167,7 @@ class exception extends base_exception
 
     public static function invalid_property_value($message = null)
     {
-        if ($message == null)
-        {
+        if ($message == null) {
             $message = self::$messages[self::INVALID_PROPERTY_VALUE];
         }
         return new self($message, self::INVALID_PROPERTY_VALUE);
@@ -222,8 +220,7 @@ class exception extends base_exception
 
     public static function get_error_string($code)
     {
-        if (!array_key_exists($code, self::$messages))
-        {
+        if (!array_key_exists($code, self::$messages)) {
             return "Undefined error";
         }
         return self::$messages[$code];

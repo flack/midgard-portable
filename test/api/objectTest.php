@@ -57,11 +57,10 @@ class objectTest extends testcase
 
         self::$em->clear();
         $e = null;
-        try
-        {
+        try {
             $loaded = new $classname($topic->id);
+        } catch ( \midgard_error_exception $e) {
         }
-        catch ( \midgard_error_exception $e){}
 
         $this->assertInstanceOf('midgard_error_exception', $e);
         $this->assert_error(MGD_ERR_NOT_EXISTS);
@@ -78,22 +77,20 @@ class objectTest extends testcase
         $this->assert_api('purge', $topic);
 
         $e = null;
-        try
-        {
+        try {
             $loaded = new $classname($id);
+        } catch ( \midgard_error_exception $e) {
         }
-        catch ( \midgard_error_exception $e){}
 
         $this->assertInstanceOf('midgard_error_exception', $e);
         $this->assertEquals(MGD_ERR_NOT_EXISTS, midgard_connection::get_instance()->get_error());
 
         $e = null;
-        try
-        {
+        try {
             $proxy = self::$em->getReference($classname, $id);
             $loaded = new $classname($id);
+        } catch ( \midgard_error_exception $e) {
         }
-        catch ( \midgard_error_exception $e){}
 
         $this->assertInstanceOf('midgard_error_exception', $e);
         $this->assertEquals(MGD_ERR_OBJECT_PURGED, midgard_connection::get_instance()->get_error());
@@ -1078,8 +1075,7 @@ class objectTest extends testcase
         $metadata->isapproved = $topic->metadata->isapproved;
         $metadata->authors = $topic->metadata->authors;
 
-        $expected = array
-        (
+        $expected = array(
             'id' => $topic->id,
             'guid' => $topic->guid,
             'name' => $topic->name,

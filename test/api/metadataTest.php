@@ -82,8 +82,7 @@ class metadataTest extends testcase
 
         $topic->name = __FUNCTION__ . '2'; // <== TODO: Without changing anything, doctrine won't update. Problem?
         $created = (int) $topic->metadata->created->format('U');
-        while ($created == time())
-        {
+        while ($created == time()) {
             usleep(100);
         }
         $topic->update();

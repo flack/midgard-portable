@@ -20,8 +20,7 @@ use Doctrine\DBAL\Types\Type as dtype;
 
 class driver implements driver_interface
 {
-    private $dbtypemap = array
-    (
+    private $dbtypemap = array(
         'unsigned integer' => array('type' => dtype::INTEGER, 'default' => 0), // <== UNSIGNED in Doctrine\DBAL\Schema\Column
         'integer' => array('type' => dtype::INTEGER, 'default' => 0),
         'boolean' => array('type' => dtype::BOOLEAN, 'default' => false),
@@ -65,13 +64,10 @@ class driver implements driver_interface
         $this->namespace = $namespace;
 
         $this->is_fresh_namespace = !array_key_exists($this->namespace, self::$processed_namespaces);
-        if ($this->is_fresh_namespace)
-        {
+        if ($this->is_fresh_namespace) {
             $this->manager = new manager($schemadirs, $this->namespace);
             self::$processed_namespaces[$this->namespace] = array("manager" => $this->manager);
-        }
-        else
-        {
+        } else {
             // reuse manager instance
             $this->manager = self::$processed_namespaces[$this->namespace]["manager"];
         }
@@ -107,8 +103,7 @@ class driver implements driver_interface
      */
     public function getAllClassNames()
     {
-        if ($this->types === null)
-        {
+        if ($this->types === null) {
             $this->initialize();
         }
 
@@ -120,8 +115,7 @@ class driver implements driver_interface
      */
     public function isTransient($classname)
     {
-        if ($this->types === null)
-        {
+        if ($this->types === null) {
             $this->initialize();
         }
         return !array_key_exists($classname, $this->types);
@@ -132,12 +126,10 @@ class driver implements driver_interface
      */
     public function loadMetadataForClass($classname, ClassMetadata $metadata)
     {
-        if ($this->types === null)
-        {
+        if ($this->types === null) {
             $this->initialize();
         }
-        if (!array_key_exists($classname, $this->types))
-        {
+        if (!array_key_exists($classname, $this->types)) {
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($classname);
         }
 
@@ -145,11 +137,9 @@ class driver implements driver_interface
 
         // TODO: extends
 
-        $table = array
-        (
+        $table = array(
             'name' => $type->table,
-            'options' => array
-            (
+            'options' => array(
                 //Doctrine's default on MySQL is InnoDB, and the foreign keys don't play well with Midgard logic
                 //TODO: Maybe at some point we could try to figure out how to explicitly disable foreign key constraint creation instead
                 'engine' => 'MyISAM'
@@ -164,20 +154,15 @@ class driver implements driver_interface
         $metadata->midgard['childtypes'] = $this->manager->get_child_classes($type->name);
         $metadata->midgard['field_aliases'] = $type->field_aliases;
 
-        foreach ($type->get_properties() as $name => $property)
-        {
+        foreach ($type->get_properties() as $name => $property) {
             // doctrine can handle id links only
             if (   $property->link
-                && $target_class = $this->manager->resolve_targetclass($property))
-            {
-                $link_mapping = array
-                (
+                && $target_class = $this->manager->resolve_targetclass($property)) {
+                $link_mapping = array(
                     'fieldName' => $property->name,
                     'targetEntity' => $target_class,
-                    'joinColumns' => array
-                    (
-                        array
-                        (
+                    'joinColumns' => array(
+                        array(
                             'name' => $property->field,
                             'referencedColumnName' => $property->link['field']
                         )
@@ -186,8 +171,7 @@ class driver implements driver_interface
                     'midgard:link_name' => $property->link['target'],
                 );
 
-                if ($link_mapping['fieldName'] == 'id')
-                {
+                if ($link_mapping['fieldName'] == 'id') {
                     $link_mapping['id'] = true;
                 }
 
@@ -195,23 +179,16 @@ class driver implements driver_interface
                 continue;
             }
 
-            if (empty($this->dbtypemap[$property->dbtype]))
-            {
+            if (empty($this->dbtypemap[$property->dbtype])) {
                 $mapping = $this->parse_dbtype($property);
-            }
-            else
-            {
+            } else {
                 $mapping = $this->dbtypemap[$property->dbtype];
             }
 
-            if ($property->unique)
-            {
-                if ($property->name == 'guid')
-                {
+            if ($property->unique) {
+                if ($property->name == 'guid') {
                     $mapping['unique'] = true;
-                }
-                else
-                {
+                } else {
                     //we can't set this as a real DB constraint because of softdelete and tree hierarchies
                     $metadata->midgard['unique_fields'][] = $property->name;
                 }
@@ -222,21 +199,16 @@ class driver implements driver_interface
             $mapping['midgard:description'] = $property->description;
 
             // its some other link (like guid link)
-            if ($property->noidlink)
-            {
+            if ($property->noidlink) {
                 $mapping['noidlink'] = $property->noidlink;
             }
 
-            if ($property->name == $type->primaryfield)
-            {
+            if ($property->name == $type->primaryfield) {
                 $mapping['id'] = true;
                 unset($mapping['default']);
-                if ($mapping['type'] == dtype::INTEGER)
-                {
+                if ($mapping['type'] == dtype::INTEGER) {
                     $metadata->setIdGeneratorType(CM::GENERATOR_TYPE_AUTO);
-                }
-                else
-                {
+                } else {
                     $metadata->setIdGeneratorType(CM::GENERATOR_TYPE_NONE);
                 }
             }
@@ -245,10 +217,8 @@ class driver implements driver_interface
 
             $metadata->mapField($mapping);
 
-            if ($property->index)
-            {
-                if (empty($metadata->table['indexes']))
-                {
+            if ($property->index) {
+                if (empty($metadata->table['indexes'])) {
                     $metadata->table['indexes'] = array();
                 }
                 $metadata->table['indexes'][$type->name . '_' . $property->name . '_idx'] = array('columns' => array($property->field));
@@ -258,32 +228,25 @@ class driver implements driver_interface
 
     private function parse_dbtype(property $property)
     {
-        if (strpos($property->dbtype, 'varchar') === 0)
-        {
-            $mapping = array
-            (
+        if (strpos($property->dbtype, 'varchar') === 0) {
+            $mapping = array(
                 'type' => dtype::STRING,
             );
 
-            if (substr($property->dbtype, -1) == ')')
-            {
+            if (substr($property->dbtype, -1) == ')') {
                 $mapping['length'] = (int) substr($property->dbtype, 8, -1);
                 return $mapping;
             }
 
-            if (substr($property->dbtype, -8) == ') binary')
-            {
+            if (substr($property->dbtype, -8) == ') binary') {
                 // see http://www.doctrine-project.org/jira/browse/DDC-1817
                 $mapping['length'] = (int) substr($property->dbtype, 8, -1);
                 $mapping['comment'] = 'BINARY';
                 return $mapping;
             }
-        }
-        else if (strpos($property->dbtype, 'set') === 0)
-        {
+        } elseif (strpos($property->dbtype, 'set') === 0) {
             // see http://docs.doctrine-project.org/en/latest/cookbook/mysql-enums.html
-            if (!empty($this->dbtypemap[$property->type]))
-            {
+            if (!empty($this->dbtypemap[$property->type])) {
                 $mapping = $this->dbtypemap[$property->type];
                 $mapping['comment'] = $property->dbtype;
                 return $mapping;

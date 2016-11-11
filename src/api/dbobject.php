@@ -63,13 +63,11 @@ abstract class dbobject implements ObjectManagerAware
     {
         $this->initialize();
         $properties = array_merge($this->cm->getFieldNames(), $this->cm->getAssociationNames(), array_keys($this->cm->midgard['field_aliases']));
-        $properties = array_filter($properties, function($input)
-        {
+        $properties = array_filter($properties, function ($input) {
             return (strpos($input, 'metadata_') === false);
         });
         $ret = array();
-        foreach ($properties as $property)
-        {
+        foreach ($properties as $property) {
             $ret[$property] = $this->__get($property);
         }
 
@@ -81,59 +79,39 @@ abstract class dbobject implements ObjectManagerAware
         $this->initialize();
 
         if (   !$this->cm->hasField($field)
-            && array_key_exists($field, $this->cm->midgard['field_aliases']))
-        {
+            && array_key_exists($field, $this->cm->midgard['field_aliases'])) {
             $field = $this->cm->midgard['field_aliases'][$field];
         }
-        if ($this->cm->isSingleValuedAssociation($field))
-        {
+        if ($this->cm->isSingleValuedAssociation($field)) {
             // mgd api only allows setting links identifiers, doctrine wants objects,
             // so it seems we need an expensive and pretty useless conversion..
-            if (empty($value))
-            {
+            if (empty($value)) {
                 $value = null;
-            }
-            else
-            {
+            } else {
                 if (   !is_object($this->$field)
-                    || $this->$field->id != $value)
-                {
+                    || $this->$field->id != $value) {
                     $this->changed_associations[$field] = true;
                 }
                 $classname = $this->cm->getAssociationTargetClass($field);
                 $value = connection::get_em()->getReference($classname, $value);
             }
-        }
-        else if ($this->cm->hasField($field))
-        {
+        } elseif ($this->cm->hasField($field)) {
             $mapping = $this->cm->getFieldMapping($field);
 
             if (   $mapping['type'] === 'string'
-                || $mapping['type'] == 'text')
-            {
+                || $mapping['type'] == 'text') {
                 $value = (string) $value;
-            }
-            else if ($mapping['type'] === 'integer')
-            {
+            } elseif ($mapping['type'] === 'integer') {
                 $value = (int) $value;
-            }
-            else if ($mapping['type'] === 'boolean')
-            {
+            } elseif ($mapping['type'] === 'boolean') {
                 $value = (boolean) $value;
-            }
-            else if ($mapping['type'] === 'float')
-            {
+            } elseif ($mapping['type'] === 'float') {
                 $value = (float) $value;
-            }
-            else if ($mapping['type'] === 'midgard_datetime')
-            {
+            } elseif ($mapping['type'] === 'midgard_datetime') {
                 if (   is_string($value)
-                    && $value !== '0000-00-00 00:00:00')
-                {
+                    && $value !== '0000-00-00 00:00:00') {
                     $value = new midgard_datetime($value);
-                }
-                else if (!($value instanceof midgard_datetime))
-                {
+                } elseif (!($value instanceof midgard_datetime)) {
                     $value = new midgard_datetime('0001-01-01 00:00:00');
                 }
             }
@@ -147,29 +125,24 @@ abstract class dbobject implements ObjectManagerAware
         $this->initialize();
 
         if (   !$this->cm->hasField($field)
-            && array_key_exists($field, $this->cm->midgard['field_aliases']))
-        {
+            && array_key_exists($field, $this->cm->midgard['field_aliases'])) {
             $field = $this->cm->midgard['field_aliases'][$field];
         }
 
-        if ($this->cm->isSingleValuedAssociation($field))
-        {
+        if ($this->cm->isSingleValuedAssociation($field)) {
             // mgd api only allows returning link identifiers, doctrine has objects,
             // so it seems we need a pretty useless conversion..
-            if (is_object($this->$field))
-            {
+            if (is_object($this->$field)) {
                 return (int) $this->$field->id;
             }
             return 0;
         }
         if (   $this->$field === null
-            && $this->cm->isIdentifier($field))
-        {
+            && $this->cm->isIdentifier($field)) {
             return 0;
         }
         if (   $this->$field instanceof midgard_datetime
-            && $this->$field->format('U') == -62169984000)
-        {
+            && $this->$field->format('U') == -62169984000) {
             //This is mainly needed for working with converted Legacy databases. Midgard2 somehow handles this internally
             //@todo Find a nicer solution and research how QB handles this
             $this->$field->setDate(1, 1, 1);
@@ -186,16 +159,14 @@ abstract class dbobject implements ObjectManagerAware
     protected function populate_from_entity(dbobject $entity)
     {
         $this->initialize();
-        foreach ($this->cm->reflFields as $name => $field)
-        {
+        foreach ($this->cm->reflFields as $name => $field) {
             $this->$name = $entity->$name;
         }
     }
 
     protected function initialize()
     {
-        if ($this->cm === null)
-        {
+        if ($this->cm === null) {
             $this->cm = connection::get_em()->getClassMetadata(get_class($this));
         }
     }

@@ -28,12 +28,10 @@ class sqllogger implements base_logger
     public function startQuery($sql, array $params = null, array $types = null)
     {
         $context = array();
-        if (!empty($params))
-        {
+        if (!empty($params)) {
             $context['params'] = $params;
         }
-        if (!empty($types))
-        {
+        if (!empty($types)) {
             $context['types'] = $types;
         }
         $this->logger->debug($sql, $context);

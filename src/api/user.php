@@ -38,26 +38,22 @@ class user extends dbobject
 
     public static function &get($properties)
     {
-
     }
 
     public static function &query($properties)
     {
-
     }
 
     public function __construct(array $properties = array())
     {
-        if (!empty($properties))
-        {
+        if (!empty($properties)) {
             $this->load_by_properties($properties);
         }
     }
 
     public function __set($field, $value)
     {
-        if ($field == 'guid')
-        {
+        if ($field == 'guid') {
             return;
         }
         parent::__set($field, $value);
@@ -66,14 +62,12 @@ class user extends dbobject
     private function load_by_properties(array $properties)
     {
         if (   !array_key_exists('authtype', $properties)
-            || !array_key_exists('login', $properties))
-        {
+            || !array_key_exists('login', $properties)) {
             throw exception::invalid_property_value();
         }
         $entity = connection::get_em()->getRepository('midgard:midgard_user')->findOneBy($properties);
 
-        if ($entity === null)
-        {
+        if ($entity === null) {
             throw exception::not_exists();
         }
         $this->populate_from_entity($entity);
@@ -81,8 +75,7 @@ class user extends dbobject
 
     public function login()
     {
-        if (empty($this->id))
-        {
+        if (empty($this->id)) {
             return false;
         }
         connection::set_user($this);
@@ -91,8 +84,7 @@ class user extends dbobject
 
     public function logout()
     {
-        if (empty($this->id))
-        {
+        if (empty($this->id)) {
             return false;
         }
         connection::set_user(null);
@@ -118,8 +110,7 @@ class user extends dbobject
     public function &get_person()
     {
         if (   $this->person_object === null
-            && $this->person !== null)
-        {
+            && $this->person !== null) {
             $this->person_object = connection::get_em()->getRepository('midgard:midgard_person')->findOneBy(array('guid' => $this->person));
         }
         return $this->person_object;
@@ -128,24 +119,19 @@ class user extends dbobject
     public function create()
     {
         if (   empty($this->authtype)
-            || !empty($this->id))
-        {
+            || !empty($this->id)) {
             exception::invalid_property_value();
             return false;
         }
-        if (!$this->is_unique())
-        {
+        if (!$this->is_unique()) {
             exception::duplicate();
             return false;
         }
         $this->guid = connection::generate_guid();
-        try
-        {
+        try {
             $om = new objectmanager(connection::get_em());
             $om->create($this);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             exception::internal($e);
             return false;
         }
@@ -156,23 +142,18 @@ class user extends dbobject
 
     public function update()
     {
-        if (empty($this->id) || !mgd_is_guid($this->guid))
-        {
+        if (empty($this->id) || !mgd_is_guid($this->guid)) {
             exception::invalid_property_value();
             return false;
         }
-        if (!$this->is_unique())
-        {
+        if (!$this->is_unique()) {
             exception::duplicate();
             return false;
         }
-        try
-        {
+        try {
             $om = new objectmanager(connection::get_em());
             $om->update($this);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             exception::internal($e);
             return false;
         }
@@ -182,19 +163,15 @@ class user extends dbobject
 
     public function delete()
     {
-        if (!mgd_is_guid($this->guid))
-        {
+        if (!mgd_is_guid($this->guid)) {
             exception::invalid_property_value();
             return false;
         }
 
-        try
-        {
+        try {
             $om = new objectmanager(connection::get_em());
             $om->purge($this);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             exception::internal($e);
             return false;
         }
@@ -206,22 +183,19 @@ class user extends dbobject
     protected function is_unique()
     {
         if (   empty($this->login)
-            || empty($this->authtype))
-        {
+            || empty($this->authtype)) {
             return true;
         }
 
         $qb = connection::get_em()->createQueryBuilder();
         $qb->from(get_class($this), 'c');
         $conditions = $qb->expr()->andX();
-        $parameters = array
-        (
+        $parameters = array(
             'login' => $this->login,
             'authtype' => $this->authtype
         );
 
-        if ($this->id)
-        {
+        if ($this->id) {
             $parameters['id'] = $this->id;
             $conditions->add($qb->expr()->neq('c.id', ':id'));
         }

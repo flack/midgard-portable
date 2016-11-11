@@ -47,14 +47,10 @@ class type
 
     public function __construct(SimpleXMLElement $attributes)
     {
-        foreach ($attributes as $name => $value)
-        {
-            if ($name == 'metadata')
-            {
+        foreach ($attributes as $name => $value) {
+            if ($name == 'metadata') {
                 $this->has_metadata = ($value === 'true');
-            }
-            else
-            {
+            } else {
                 $this->$name = (string) $value;
             }
         }
@@ -62,33 +58,24 @@ class type
 
     public function add_property(node $property, $name = null)
     {
-        if ($name === null)
-        {
+        if ($name === null) {
             $name = $property->name;
         }
 
-        if ($property instanceof mixin)
-        {
+        if ($property instanceof mixin) {
             $this->mixins[$name] = $property;
-        }
-        else
-        {
-            if ($property->parentfield)
-            {
+        } else {
+            if ($property->parentfield) {
                 $this->parentfield = $property->name;
                 if (   empty($this->parent)
-                    && $property->link)
-                {
+                    && $property->link) {
                     $this->parent = $property->link['target'];
                 }
             }
-            if (!array_key_exists($property->field, $this->dbfields))
-            {
+            if (!array_key_exists($property->field, $this->dbfields)) {
                 $this->properties[$name] = $property;
                 $this->dbfields[$property->field] = $property->name;
-            }
-            else if (!array_key_exists($property->name, $this->properties))
-            {
+            } elseif (!array_key_exists($property->name, $this->properties)) {
                 $this->field_aliases[$property->name] = $this->dbfields[$property->field];
             }
         }

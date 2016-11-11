@@ -24,8 +24,7 @@ class blob
 
     public function read_content()
     {
-        if ($this->exists())
-        {
+        if ($this->exists()) {
             return file_get_contents($this->get_path());
         }
         return null;
@@ -38,7 +37,6 @@ class blob
 
     public function remove_file()
     {
-
     }
 
     public function get_handler($mode = 'w')
@@ -48,8 +46,7 @@ class blob
 
     public function get_path()
     {
-        if (empty($this->attachment->location))
-        {
+        if (empty($this->attachment->location)) {
             $location = connection::generate_guid();
             $subdir1 = strtoupper(substr($location, 0, 1));
             $subdir2 = strtoupper(substr($location, 1, 1));

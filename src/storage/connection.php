@@ -34,8 +34,7 @@ class connection
      *
      * @var array
      */
-    private static $loglevels = array
-    (
+    private static $loglevels = array(
         'error' => Logger::ERROR,
         'warn' => Logger::WARNING,
         'warning' => Logger::WARNING,
@@ -80,8 +79,7 @@ class connection
      */
     public static function get_em()
     {
-        if (self::$instance === null)
-        {
+        if (self::$instance === null) {
             throw new \Exception('Not initialized');
         }
         return self::$instance->em;
@@ -94,8 +92,7 @@ class connection
 
     public static function set_user(user $user = null)
     {
-        if (self::$instance === null)
-        {
+        if (self::$instance === null) {
             throw new \Exception('Not initialized');
         }
         self::$instance->user = $user;
@@ -139,16 +136,14 @@ class connection
         midgard_connection::get_instance()->open_config($mgd_config);
 
         self::$parameters = array('driver' => $driver, 'db_config' => $db_config, 'dev_mode' => $dev_mode);
-        if (self::$autostart)
-        {
+        if (self::$autostart) {
             static::startup();
         }
     }
 
     public static function get_parameter($name)
     {
-        if (!array_key_exists($name, self::$parameters))
-        {
+        if (!array_key_exists($name, self::$parameters)) {
             throw new \RuntimeException('Parameter "' . $name . '" is not available');
         }
         return self::$parameters[$name];
@@ -159,8 +154,7 @@ class connection
      */
     public static function startup()
     {
-        if (empty(self::$parameters))
-        {
+        if (empty(self::$parameters)) {
             throw new \RuntimeError('Not initialized');
         }
         $driver = self::$parameters['driver'];
@@ -169,11 +163,9 @@ class connection
         $vardir = $driver->get_vardir();
         // generate and include midgard_objects.php if its a fresh namespace
         // otherwise it should be included already
-        if ($driver->is_fresh_namespace())
-        {
+        if ($driver->is_fresh_namespace()) {
             $entityfile = $vardir . '/midgard_objects.php';
-            if ($dev_mode)
-            {
+            if ($dev_mode) {
                 $classgenerator = new classgenerator($driver->get_manager(), $entityfile, $dev_mode);
                 $classgenerator->write($driver->get_namespace());
             }
@@ -186,8 +178,7 @@ class connection
         $config->addEntityNamespace('midgard', $driver->get_namespace());
         $config->setClassMetadataFactoryName('\\midgard\\portable\\mapping\\factory');
 
-        if (!array_key_exists('charset', $db_config))
-        {
+        if (!array_key_exists('charset', $db_config)) {
             $db_config['charset'] = 'utf8';
         }
 
@@ -195,15 +186,13 @@ class connection
         $em->getFilters()->enable('softdelete');
         $em->getEventManager()->addEventSubscriber(new subscriber);
 
-        if (!Type::hasType(datetime::TYPE))
-        {
+        if (!Type::hasType(datetime::TYPE)) {
             Type::addType(datetime::TYPE, 'midgard\portable\storage\type\datetime');
         }
 
         $midgard = midgard_connection::get_instance();
         $level = self::$loglevels[$midgard->get_loglevel()];
-        if ($level === Logger::DEBUG)
-        {
+        if ($level === Logger::DEBUG) {
             $logger = new Logger('doctrine');
             $logger->pushHandler(new StreamHandler($midgard->config->logfilename, $level));
 
@@ -220,22 +209,17 @@ class connection
      */
     public static function log()
     {
-        if (self::$logger === null)
-        {
+        if (self::$logger === null) {
             $midgard = midgard_connection::get_instance();
-            if ($midgard->config->logfilename)
-            {
+            if ($midgard->config->logfilename) {
                 $logdir = dirname($midgard->config->logfilename);
                 if (   !is_dir($logdir)
-                    && !mkdir($logdir, 0777, true))
-                {
+                    && !mkdir($logdir, 0777, true)) {
                     throw exception::user_data('Log directory could not be created');
                 }
                 self::$logger = new Logger('midgard-portable');
                 self::$logger->pushHandler(new StreamHandler($midgard->config->logfilename, self::$loglevels[$midgard->get_loglevel()]));
-            }
-            else
-            {
+            } else {
                 throw exception::user_data('log filename not set in config');
             }
         }

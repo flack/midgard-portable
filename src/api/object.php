@@ -28,14 +28,10 @@ abstract class object extends dbobject
      */
     public function __construct($id = null)
     {
-        if ($id !== null)
-        {
-            if (is_int($id))
-            {
+        if ($id !== null) {
+            if (is_int($id)) {
                 $this->get_by_id($id);
-            }
-            else if (is_string($id))
-            {
+            } elseif (is_string($id)) {
                 $this->get_by_guid($id);
             }
         }
@@ -48,8 +44,7 @@ abstract class object extends dbobject
      */
     private function get_collection($classname)
     {
-        if (!array_key_exists($classname, $this->collections))
-        {
+        if (!array_key_exists($classname, $this->collections)) {
             $this->collections[$classname] = new collection($classname);
         }
         return $this->collections[$classname];
@@ -58,13 +53,10 @@ abstract class object extends dbobject
     public function __debugInfo()
     {
         $ret = parent::__debugInfo();
-        if (property_exists($this, 'metadata'))
-        {
+        if (property_exists($this, 'metadata')) {
             $metadata = new \stdClass;
-            foreach ($this->cm->getFieldNames() as $name)
-            {
-                if (strpos($name, 'metadata_') !== false)
-                {
+            foreach ($this->cm->getFieldNames() as $name) {
+                if (strpos($name, 'metadata_') !== false) {
                     $fieldname = str_replace('metadata_', '', $name);
                     $metadata->$fieldname = $this->__get($name);
                 }
@@ -77,8 +69,7 @@ abstract class object extends dbobject
 
     public function __set($field, $value)
     {
-        if ($field == 'guid')
-        {
+        if ($field == 'guid') {
             return;
         }
         parent::__set($field, $value);
@@ -88,8 +79,7 @@ abstract class object extends dbobject
     {
         if (   $field === 'metadata'
             && property_exists($this, 'metadata')
-            && $this->metadata === null)
-        {
+            && $this->metadata === null) {
             $this->metadata = new metadata($this);
         }
 
@@ -98,8 +88,7 @@ abstract class object extends dbobject
 
     public function __call($method, $args)
     {
-        if ($method === 'list')
-        {
+        if ($method === 'list') {
             return $this->_list();
         }
         throw new \BadMethodCallException("Unknown method " . $method . " on " . get_class($this));
@@ -107,20 +96,14 @@ abstract class object extends dbobject
 
     protected function load_parent(array $candidates)
     {
-        foreach ($candidates as $candidate)
-        {
-            if ($this->$candidate !== null)
-            {
+        foreach ($candidates as $candidate) {
+            if ($this->$candidate !== null) {
                 //Proxies become stale if the object itself is detached, so we have to re-fetch
                 if (   $this->$candidate instanceof \Doctrine\ORM\Proxy\Proxy
-                    && $this->$candidate->__isInitialized())
-                {
-                    try
-                    {
+                    && $this->$candidate->__isInitialized()) {
+                    try {
                         $this->$candidate->get_by_id($this->$candidate->id);
-                    }
-                    catch (exception $e)
-                    {
+                    } catch (exception $e) {
                         connection::log()->error('Failed to refresh parent from proxy: ' . $e->getMessage());
                         return null;
                     }
@@ -135,31 +118,24 @@ abstract class object extends dbobject
     {
         $entity = connection::get_em()->find(get_class($this), $id);
 
-        if ($entity === null)
-        {
+        if ($entity === null) {
             throw exception::not_exists();
         }
         // According to Doctrine documentation, proxies should be transparent, but in practice,
         // there will be problems if we don't force-load
         if (   $entity instanceof \Doctrine\ORM\Proxy\Proxy
-            && !$entity->__isInitialized())
-        {
-            try
-            {
+            && !$entity->__isInitialized()) {
+            try {
                 $entity->__load();
-            }
-            catch (\Doctrine\ORM\EntityNotFoundException $e)
-            {
+            } catch (\Doctrine\ORM\EntityNotFoundException $e) {
                 throw exception::object_purged();
             }
         }
-        if ($entity->metadata_deleted)
-        {
+        if ($entity->metadata_deleted) {
             // This can happen when the "deleted" entity is still in EM's identity map
             throw exception::object_deleted();
         }
-        if (empty($entity->guid))
-        {
+        if (empty($entity->guid)) {
             // This can happen when a reference proxy to a purged entity is still in EM's identity map
             throw exception::object_purged();
         }
@@ -173,13 +149,11 @@ abstract class object extends dbobject
 
     public function get_by_guid($guid)
     {
-        if (!mgd_is_guid($guid))
-        {
+        if (!mgd_is_guid($guid)) {
             throw new \InvalidArgumentException("'$guid' is not a valid guid");
         }
         $entity = connection::get_em()->getRepository(get_class($this))->findOneBy(array('guid' => $guid));
-        if ($entity === null)
-        {
+        if ($entity === null) {
             throw exception::not_exists();
         }
         $this->populate_from_entity($entity);
@@ -191,27 +165,21 @@ abstract class object extends dbobject
 
     public function create()
     {
-        if (!empty($this->id))
-        {
+        if (!empty($this->id)) {
             exception::duplicate();
             return false;
         }
         if (   !$this->is_unique()
-            || !$this->check_parent())
-        {
+            || !$this->check_parent()) {
             return false;
         }
-        if (!$this->check_fields())
-        {
+        if (!$this->check_fields()) {
             return false;
         }
-        try
-        {
+        try {
             $om = new objectmanager(connection::get_em());
             $om->create($this);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             exception::internal($e);
             return false;
         }
@@ -223,22 +191,17 @@ abstract class object extends dbobject
 
     public function update()
     {
-        if (empty($this->id))
-        {
+        if (empty($this->id)) {
             midgard_connection::get_instance()->set_error(MGD_ERR_INTERNAL);
             return false;
         }
-        if (!$this->check_fields())
-        {
+        if (!$this->check_fields()) {
             return false;
         }
-        try
-        {
+        try {
             $om = new objectmanager(connection::get_em());
             $om->update($this);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             exception::internal($e);
             return false;
         }
@@ -253,33 +216,26 @@ abstract class object extends dbobject
      */
     public function delete($check_dependencies = true)
     {
-        if (empty($this->id))
-        {
+        if (empty($this->id)) {
             midgard_connection::get_instance()->set_error(MGD_ERR_INVALID_PROPERTY_VALUE);
             return false;
         }
         if (   $check_dependencies
-            && $this->has_dependents())
-        {
+            && $this->has_dependents()) {
             exception::has_dependants();
             return false;
         }
-        if (!($this instanceof metadata_interface))
-        {
+        if (!($this instanceof metadata_interface)) {
             return $this->purge($check_dependencies);
         }
-        if ($this->metadata_deleted)
-        {
+        if ($this->metadata_deleted) {
             return true;
         }
 
-        try
-        {
+        try {
             $om = new objectmanager(connection::get_em());
             $om->delete($this);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             exception::internal($e);
             return false;
         }
@@ -292,27 +248,22 @@ abstract class object extends dbobject
     {
         $this->initialize();
 
-        if (empty($this->cm->midgard['unique_fields']))
-        {
+        if (empty($this->cm->midgard['unique_fields'])) {
             return true;
         }
 
         $qb = connection::get_em()->createQueryBuilder();
         $qb->from(get_class($this), 'c');
         $conditions = $qb->expr()->andX();
-        if ($this->id)
-        {
-            $parameters = array
-            (
+        if ($this->id) {
+            $parameters = array(
                 'id' => $this->id
             );
             $conditions->add($qb->expr()->neq('c.id', ':id'));
         }
         $found = false;
-        foreach ($this->cm->midgard['unique_fields'] as $field)
-        {
-            if (empty($this->$field))
-            {
+        foreach ($this->cm->midgard['unique_fields'] as $field) {
+            if (empty($this->$field)) {
                 //empty names automatically pass according to Midgard logic
                 continue;
             }
@@ -321,20 +272,15 @@ abstract class object extends dbobject
             $found = true;
         }
 
-        if (!$found)
-        {
+        if (!$found) {
             return true;
         }
 
-        if (!empty($this->cm->midgard['upfield']))
-        {
+        if (!empty($this->cm->midgard['upfield'])) {
             // TODO: This needs to be changed so that value is always numeric, since this is how midgard does it
-            if ($this->{$this->cm->midgard['upfield']} === null)
-            {
+            if ($this->{$this->cm->midgard['upfield']} === null) {
                 $conditions->add($qb->expr()->isNull('c.' . $this->cm->midgard['upfield']));
-            }
-            else
-            {
+            } else {
                 $conditions->add($qb->expr()->eq('c.' . $this->cm->midgard['upfield'], ':' . $this->cm->midgard['upfield']));
                 $parameters[$this->cm->midgard['upfield']] = $this->{$this->cm->midgard['upfield']};
             }
@@ -345,8 +291,7 @@ abstract class object extends dbobject
         $qb->select("count(c)");
         $count = intval($qb->getQuery()->getSingleScalarResult());
 
-        if ($count !== 0)
-        {
+        if ($count !== 0) {
             exception::object_name_exists();
             return false;
         }
@@ -358,13 +303,11 @@ abstract class object extends dbobject
         $this->initialize();
 
         if (   empty($this->cm->midgard['parentfield'])
-            || empty($this->cm->midgard['parent']))
-        {
+            || empty($this->cm->midgard['parent'])) {
             return true;
         }
 
-        if (empty($this->{$this->cm->midgard['parentfield']}))
-        {
+        if (empty($this->{$this->cm->midgard['parentfield']})) {
             exception::object_no_parent();
             return false;
         }
@@ -375,12 +318,10 @@ abstract class object extends dbobject
     {
         $this->initialize();
 
-        foreach ($this->cm->fieldMappings as $name => $field)
-        {
+        foreach ($this->cm->fieldMappings as $name => $field) {
             if (   $field['midgard:midgard_type'] == translator::TYPE_GUID
                 && !empty($this->$name)
-                && !mgd_is_guid($this->$name))
-            {
+                && !mgd_is_guid($this->$name)) {
                 exception::invalid_property_value("'" . $name . "' property's value is not a guid.");
                 return false;
             }
@@ -404,8 +345,7 @@ abstract class object extends dbobject
 
         $stat = false;
 
-        if (!empty($this->cm->midgard['upfield']))
-        {
+        if (!empty($this->cm->midgard['upfield'])) {
             $qb = connection::get_em()->createQueryBuilder();
             $qb->from(get_class($this), 'c')
                 ->where('c.' . $this->cm->midgard['upfield'] . ' = ?0')
@@ -416,10 +356,8 @@ abstract class object extends dbobject
         }
 
         if (   !$stat
-            && !empty($this->cm->midgard['childtypes']))
-        {
-            foreach ($this->cm->midgard['childtypes'] as $typename => $parentfield)
-            {
+            && !empty($this->cm->midgard['childtypes'])) {
+            foreach ($this->cm->midgard['childtypes'] as $typename => $parentfield) {
                 $qb = connection::get_em()->createQueryBuilder();
                 $qb->from('midgard:' . $typename, 'c')
                     ->where('c.' . $parentfield . ' = ?0')
@@ -428,8 +366,7 @@ abstract class object extends dbobject
 
                 $results = intval($qb->getQuery()->getSingleScalarResult());
                 $stat = ($results > 0);
-                if ($stat)
-                {
+                if ($stat) {
                     break;
                 }
             }
@@ -452,8 +389,7 @@ abstract class object extends dbobject
     {
         $this->initialize();
 
-        if (!empty($this->cm->midgard['upfield']))
-        {
+        if (!empty($this->cm->midgard['upfield'])) {
             $qb = connection::get_em()->createQueryBuilder();
             $qb->from(get_class($this), 'c')
                 ->where('c.' . $this->cm->midgard['upfield'] . ' = ?0')
@@ -481,46 +417,37 @@ abstract class object extends dbobject
     public function get_by_path($path)
     {
         $parts = explode('/', trim($path, '/'));
-        if (empty($parts))
-        {
+        if (empty($parts)) {
             return false;
         }
         $this->initialize();
 
-        if (count($this->cm->midgard['unique_fields']) != 1)
-        {
+        if (count($this->cm->midgard['unique_fields']) != 1) {
             return false;
         }
 
         $field = $this->cm->midgard['unique_fields'][0];
 
-        if (!empty($this->cm->midgard['parent']))
-        {
+        if (!empty($this->cm->midgard['parent'])) {
             $parent_cm = connection::get_em()->getClassMetadata('midgard:' . $this->cm->midgard['parent']);
             $parentclass = $this->cm->fullyQualifiedClassName($this->cm->midgard['parent']);
             $parentfield = $parent_cm->midgard['upfield'];
             $upfield = $this->cm->midgard['parentfield'];
-        }
-        else if (!empty($this->cm->midgard['upfield']))
-        {
+        } elseif (!empty($this->cm->midgard['upfield'])) {
             $parentclass = get_class($this);
             $upfield = $this->cm->midgard['upfield'];
             $parentfield = $upfield;
-        }
-        else
-        {
+        } else {
             return false;
         }
 
         $name = array_pop($parts);
         $up = 0;
-        foreach ($parts as $part)
-        {
+        foreach ($parts as $part) {
             $qb = $this->get_uniquefield_query($parentclass, $field, $part, $parentfield, $up);
             $qb->select("c.id");
             $up = intval($qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR));
-            if ($up === 0)
-            {
+            if ($up === 0) {
                 exception::not_exists();
                 $this->id = 0;
                 $this->set_guid('');
@@ -533,8 +460,7 @@ abstract class object extends dbobject
 
         $entity = $qb->getQuery()->getOneOrNullResult();
 
-        if ($entity === null)
-        {
+        if ($entity === null) {
             exception::not_exists();
             $this->id = 0;
             $this->set_guid('');
@@ -554,21 +480,17 @@ abstract class object extends dbobject
         $qb->from($classname, 'c');
         $conditions = $qb->expr()->andX();
         $conditions->add($qb->expr()->eq('c.' . $field, ':' . $field));
-        $parameters = array
-        (
+        $parameters = array(
             $field => $part
         );
 
-        if (empty($up))
-        {
+        if (empty($up)) {
             // If the database was created by Midgard, it might contain 0 instead of NULL, so...
             $empty_conditions = $qb->expr()->orX()
                 ->add($qb->expr()->isNull('c.' . $upfield))
                 ->add($qb->expr()->eq('c.' . $upfield, '0'));
             $conditions->add($empty_conditions);
-        }
-        else
-        {
+        } else {
             $conditions->add($qb->expr()->eq('c.' . $upfield, ':' . $upfield));
             $parameters[$upfield] = $up;
         }
@@ -592,8 +514,7 @@ abstract class object extends dbobject
     public function list_parameters($domain = false)
     {
         $constraints = array();
-        if ($domain)
-        {
+        if ($domain) {
             $constraints[] = array("domain", "=", $domain);
         }
 
@@ -617,8 +538,7 @@ abstract class object extends dbobject
 
     public function get_parameter($domain, $name)
     {
-        if (!$this->guid)
-        {
+        if (!$this->guid) {
             return false;
         }
         $qb = connection::get_em()->createQueryBuilder();
@@ -629,46 +549,37 @@ abstract class object extends dbobject
             ->setParameters(array('domain' => $domain, 'name' => $name, 'parentguid' => $this->guid));
 
         // workaround for http://www.doctrine-project.org/jira/browse/DDC-2655
-        try
-        {
+        try {
             return $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR);
-        }
-        catch (\Doctrine\ORM\NoResultException $e)
-        {
+        } catch (\Doctrine\ORM\NoResultException $e) {
             return null;
         }
     }
 
     public function set_parameter($domain, $name, $value)
     {
-        $constraints = array
-        (
-            array ('domain', '=', $domain),
-            array ('name', '=', $name),
+        $constraints = array(
+            array('domain', '=', $domain),
+            array('name', '=', $name),
         );
         $params = $this->get_collection('midgard_parameter')->find($this->guid, $constraints);
 
         // check value
-        if ($value === false || $value === null || $value === "")
-        {
-            if (count($params) == 0)
-            {
+        if ($value === false || $value === null || $value === "") {
+            if (count($params) == 0) {
                 exception::not_exists();
                 return false;
             }
-            foreach ($params as $param)
-            {
+            foreach ($params as $param) {
                 $stat = $param->delete();
             }
             return $stat;
         }
 
         $om = new objectmanager(connection::get_em());
-        try
-        {
+        try {
             // create new
-            if (count($params) == 0)
-            {
+            if (count($params) == 0) {
                 $parameter = $om->new_instance(connection::get_em()->getClassMetadata('midgard:midgard_parameter')->getName());
                 $parameter->parentguid = $this->guid;
                 $parameter->domain = $domain;
@@ -677,17 +588,14 @@ abstract class object extends dbobject
                 $om->create($parameter);
             }
             // use existing
-            else
-            {
+            else {
                 $parameter = array_shift($params);
                 $parameter->value = $value;
                 $om->update($parameter);
             }
             midgard_connection::get_instance()->set_error(MGD_ERR_OK);
             return true;
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             exception::internal($e);
             return false;
         }
@@ -698,8 +606,7 @@ abstract class object extends dbobject
      */
     public function parameter($domain, $name, $value = '__UNINITIALIZED__')
     {
-        if ($value === '__UNINITIALIZED__')
-        {
+        if ($value === '__UNINITIALIZED__') {
             return $this->get_parameter($domain, $name);
         }
         return $this->set_parameter($domain, $name, $value);
@@ -740,8 +647,7 @@ abstract class object extends dbobject
     public function create_attachment($name, $title = '', $mimetype = '')
     {
         $existing = $this->get_collection('midgard_attachment')->find($this->guid, array('name' => $name));
-        if (count($existing) > 0)
-        {
+        if (count($existing) > 0) {
             exception::object_name_exists();
             return null;
         }
@@ -752,14 +658,11 @@ abstract class object extends dbobject
         $att->title = $title;
         $att->name = $name;
         $att->mimetype = $mimetype;
-        try
-        {
+        try {
             $om->create($att);
             midgard_connection::get_instance()->set_error(MGD_ERR_OK);
             return $att;
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             exception::internal($e);
             return null;
         }
@@ -776,31 +679,24 @@ abstract class object extends dbobject
      */
     public function purge($check_dependencies = true)
     {
-        if (empty($this->id))
-        {
+        if (empty($this->id)) {
             // This usually means that the object has been purged already
             exception::not_exists();
             return false;
         }
         if (   $check_dependencies
-            && $this->has_dependents())
-        {
+            && $this->has_dependents()) {
             exception::has_dependants();
             return false;
         }
 
-        try
-        {
+        try {
             $om = new objectmanager(connection::get_em());
             $om->purge($this);
-        }
-        catch (\Doctrine\ORM\EntityNotFoundException $e)
-        {
+        } catch (\Doctrine\ORM\EntityNotFoundException $e) {
             exception::not_exists();
             return false;
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             exception::internal($e);
             return false;
         }
@@ -854,42 +750,30 @@ abstract class object extends dbobject
     private function manage_meta_property($action, $value)
     {
         $user = connection::get_user();
-        if ($user === null)
-        {
+        if ($user === null) {
             exception::access_denied();
             return false;
         }
-        if ($action == 'lock')
-        {
+        if ($action == 'lock') {
             $flag = 'islocked';
-        }
-        else if ($action == 'approve')
-        {
+        } elseif ($action == 'approve') {
             $flag = 'isapproved';
-        }
-        else
-        {
+        } else {
             throw new exception('Unsupported action ' . $action);
         }
         // same val
-        if ($this->__get('metadata')->$flag === $value)
-        {
+        if ($this->__get('metadata')->$flag === $value) {
             return false;
         }
-        if ($value === false)
-        {
+        if ($value === false) {
             $action = 'un' . $action;
         }
 
-        if ($this->id)
-        {
-            try
-            {
+        if ($this->id) {
+            try {
                 $om = new objectmanager(connection::get_em());
                 $om->{$action}($this);
-            }
-            catch (\Exception $e)
-            {
+            } catch (\Exception $e) {
                 exception::internal($e);
                 return false;
             }
@@ -901,7 +785,7 @@ abstract class object extends dbobject
 
     public function approve()
     {
-       return $this->manage_meta_property("approve", true);
+        return $this->manage_meta_property("approve", true);
     }
 
     public function is_approved()
@@ -916,8 +800,7 @@ abstract class object extends dbobject
 
     public function lock()
     {
-        if ($this->is_locked())
-        {
+        if ($this->is_locked()) {
             exception::object_is_locked();
             return false;
         }

@@ -37,18 +37,15 @@ class subscriber implements EventSubscriber
         $em = $args->getEntityManager();
         $uow = $em->getUnitOfWork();
 
-        foreach ($uow->getScheduledEntityInsertions() as $entity)
-        {
+        foreach ($uow->getScheduledEntityInsertions() as $entity) {
             $this->on_create($entity, $em);
         }
 
-        foreach ($uow->getScheduledEntityUpdates() as $entity)
-        {
+        foreach ($uow->getScheduledEntityUpdates() as $entity) {
             $this->on_update($entity, $em);
         }
 
-        foreach ($uow->getScheduledEntityDeletions() as $entity)
-        {
+        foreach ($uow->getScheduledEntityDeletions() as $entity) {
             $this->on_remove($entity, $em);
         }
     }
@@ -56,10 +53,8 @@ class subscriber implements EventSubscriber
     private function on_create(dbobject $entity, EntityManagerInterface $em)
     {
         $cm = $em->getClassMetadata(get_class($entity));
-        if (!($entity instanceof repligard))
-        {
-            if (empty($entity->guid))
-            {
+        if (!($entity instanceof repligard)) {
+            if (empty($entity->guid)) {
                 $entity->set_guid(connection::generate_guid());
             }
             $om = new objectmanager($em);
@@ -72,14 +67,12 @@ class subscriber implements EventSubscriber
             $em->getUnitOfWork()->computeChangeSet($repligard_cm, $repligard_entry);
         }
 
-        if ($entity instanceof entity)
-        {
+        if ($entity instanceof entity) {
             $entity->metadata->created = new \midgard_datetime();
             // we copy here instead of creating a new, because otherwise we might have
             // a one second difference if the code runs at the right millisecond
             $entity->metadata->revised = $entity->metadata->created;
-            if ($user = connection::get_user())
-            {
+            if ($user = connection::get_user()) {
                 $entity->metadata_creator = $user->person;
                 $entity->metadata_revisor = $user->person;
             }
@@ -90,30 +83,24 @@ class subscriber implements EventSubscriber
 
     private function on_update(dbobject $entity, EntityManagerInterface $em)
     {
-        if ($entity instanceof entity)
-        {
+        if ($entity instanceof entity) {
             $cm = $em->getClassMetadata(get_class($entity));
             $entity->metadata_revised = new \midgard_datetime();
             $entity->metadata_revision++;
-            if ($user = connection::get_user())
-            {
+            if ($user = connection::get_user()) {
                 $entity->metadata_revisor = $user->person;
             }
             $entity->metadata->size = $this->calculate_size($cm, $entity);
             $em->getUnitOfWork()->recomputeSingleEntityChangeSet($cm, $entity);
         }
 
-        if (!($entity instanceof repligard))
-        {
+        if (!($entity instanceof repligard)) {
             $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $entity->guid));
 
             if (   $entity instanceof entity
-                && $entity->metadata->deleted)
-            {
+                && $entity->metadata->deleted) {
                 $repligard_entry->object_action = self::ACTION_DELETE;
-            }
-            else
-            {
+            } else {
                 $repligard_entry->object_action = self::ACTION_UPDATE;
             }
             $em->persist($repligard_entry);
@@ -123,8 +110,7 @@ class subscriber implements EventSubscriber
 
     private function on_remove(dbobject $entity, EntityManagerInterface $em)
     {
-        if (!($entity instanceof repligard))
-        {
+        if (!($entity instanceof repligard)) {
             $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $entity->guid));
             $repligard_entry->object_action = self::ACTION_PURGE;
             $em->persist($repligard_entry);
@@ -135,12 +121,10 @@ class subscriber implements EventSubscriber
     private function calculate_size(ClassMetadata $cm, entity $entity)
     {
         $size = 0;
-        foreach ($cm->getAssociationNames() as $name)
-        {
+        foreach ($cm->getAssociationNames() as $name) {
             $size += strlen($entity->$name);
         }
-        foreach ($cm->getFieldNames() as $name)
-        {
+        foreach ($cm->getFieldNames() as $name) {
             $size += strlen($entity->$name);
         }
         return $size;
@@ -152,13 +136,10 @@ class subscriber implements EventSubscriber
         $columns = $args->getColumns();
         $modified = false;
 
-        foreach ($columns as $name => &$config)
-        {
-            if ($platform->getName() === 'sqlite')
-            {
+        foreach ($columns as $name => &$config) {
+            if ($platform->getName() === 'sqlite') {
                 if (   !empty($config['primary'])
-                    && !empty($config['autoincrement']))
-                {
+                    && !empty($config['autoincrement'])) {
                     /*
                      * This is essentially a workaround for http://www.doctrine-project.org/jira/browse/DBAL-642
                      * It makes sure we get auto increment behavior similar to msyql (i.e. IDs unique during table's lifetime)
@@ -167,23 +148,18 @@ class subscriber implements EventSubscriber
                     $config['columnDefinition'] = 'INTEGER PRIMARY KEY AUTOINCREMENT';
                 }
                 if (   !empty($config['comment'])
-                    && $config['comment'] == 'BINARY')
-                {
+                    && $config['comment'] == 'BINARY') {
                     $modified = true;
                     $config['columnDefinition'] = $config['type']->getSQLDeclaration($config, $platform) . ' COLLATE BINARY' . $platform->getDefaultValueDeclarationSQL($config);
                 }
             }
-            if ($platform->getName() === 'mysql')
-            {
-                if (!empty($config['comment']))
-                {
-                    if ($config['comment'] == 'BINARY')
-                    {
+            if ($platform->getName() === 'mysql') {
+                if (!empty($config['comment'])) {
+                    if ($config['comment'] == 'BINARY') {
                         $modified = true;
                         $config['columnDefinition'] = $config['type']->getSQLDeclaration($config, $platform) . ' CHARACTER SET utf8 COLLATE utf8_bin' . $platform->getDefaultValueDeclarationSQL($config);
                     }
-                    if (substr(strtolower(trim($config['comment'])), 0, 3) == 'set')
-                    {
+                    if (substr(strtolower(trim($config['comment'])), 0, 3) == 'set') {
                         $modified = true;
                         $config['columnDefinition'] = $config['comment'] . $platform->getDefaultValueDeclarationSQL($config);
                     }
@@ -191,8 +167,7 @@ class subscriber implements EventSubscriber
             }
         }
 
-        if (!$modified)
-        {
+        if (!$modified) {
             return;
         }
 
@@ -205,18 +180,14 @@ class subscriber implements EventSubscriber
 
         $queryFields = $platform->getColumnDeclarationListSQL($columns);
 
-        if (!empty($options['uniqueConstraints']))
-        {
-            foreach ($options['uniqueConstraints'] as $name => $definition)
-            {
+        if (!empty($options['uniqueConstraints'])) {
+            foreach ($options['uniqueConstraints'] as $name => $definition) {
                 $queryFields .= ', ' . $platform->getUniqueConstraintDeclarationSQL($name, $definition);
             }
         }
 
-        if (!empty($options['foreignKeys']))
-        {
-            foreach ($options['foreignKeys'] as $foreignKey)
-            {
+        if (!empty($options['foreignKeys'])) {
+            foreach ($options['foreignKeys'] as $foreignKey) {
                 $queryFields .= ', ' . $platform->getForeignKeyDeclarationSQL($foreignKey);
             }
         }
@@ -224,23 +195,18 @@ class subscriber implements EventSubscriber
         $name = str_replace('.', '__', $table->getName());
         $args->addSql('CREATE TABLE ' . $name . ' (' . $queryFields . ')');
 
-        if (isset($options['alter']) && true === $options['alter'])
-        {
+        if (isset($options['alter']) && true === $options['alter']) {
             return;
         }
 
-        if (!empty($options['indexes']))
-        {
-            foreach ($options['indexes'] as $indexDef)
-            {
+        if (!empty($options['indexes'])) {
+            foreach ($options['indexes'] as $indexDef) {
                 $args->addSql($platform->getCreateIndexSQL($indexDef, $name));
             }
         }
 
-        if (!empty($options['unique']))
-        {
-            foreach ($options['unique'] as $indexDef)
-            {
+        if (!empty($options['unique'])) {
+            foreach ($options['unique'] as $indexDef) {
                 $args->addSql($platform->getCreateIndexSQL($indexDef, $name));
             }
         }
@@ -257,12 +223,10 @@ class subscriber implements EventSubscriber
         $column = array_change_key_case($args->getTableColumn(), CASE_LOWER);
         $type = strtok($column['type'], '()');
 
-        if ($type == 'enum')
-        {
+        if ($type == 'enum') {
             $args->preventDefault();
 
-            $options = array
-            (
+            $options = array(
                 'length' => 255,
                 'default' => isset($column['default']) ? $column['default'] : null,
                 'notnull' => (bool) ($column['null'] != 'YES'),
@@ -270,12 +234,9 @@ class subscriber implements EventSubscriber
             );
 
             $args->setColumn(new Column($column['field'], Type::getType(Type::STRING), $options));
-        }
-        else if ($type == 'datetime')
-        {
+        } elseif ($type == 'datetime') {
             $args->preventDefault();
-            $options = array
-            (
+            $options = array(
                 'default' => isset($column['default']) ? $column['default'] : null,
                 'notnull' => (bool) ($column['null'] != 'YES'),
             );
@@ -295,20 +256,17 @@ class subscriber implements EventSubscriber
     {
         $table = $args->getClassTable();
         if (   !$table->hasOption('engine')
-            || $table->getOption('engine') !== 'MyISAM')
-        {
+            || $table->getOption('engine') !== 'MyISAM') {
             return;
         }
-        foreach ($table->getForeignKeys() as $key)
-        {
+        foreach ($table->getForeignKeys() as $key) {
             $table->removeForeignKey($key->getName());
         }
     }
 
     public function getSubscribedEvents()
     {
-        return array
-        (
+        return array(
             Events::onFlush,
             dbal_events::onSchemaCreateTable, dbal_events::onSchemaColumnDefinition,
             ToolEvents::postGenerateSchemaTable

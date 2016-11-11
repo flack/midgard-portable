@@ -33,8 +33,7 @@ class config
     public function read_file_at_path($path)
     {
         if (   !file_exists($path)
-            || !is_readable($path))
-        {
+            || !is_readable($path)) {
             return false;
         }
         $parsed = parse_ini_file($path);
@@ -47,8 +46,7 @@ class config
     // TODO: find out if this could be moved to read_data()
     private function apply_config(array $config)
     {
-        $mapping = array
-        (
+        $mapping = array(
             'type' => 'dbtype',
             'name' => 'database',
             'username' => 'dbuser',
@@ -57,17 +55,13 @@ class config
             'logfilename' => 'logfile',
         );
 
-        foreach ($config as $key => $value)
-        {
+        foreach ($config as $key => $value) {
             $key = strtolower($key);
-            if (array_key_exists($key, $mapping))
-            {
+            if (array_key_exists($key, $mapping)) {
                 $key = $mapping[$key];
             }
-            if (property_exists($this, $key))
-            {
-                if (is_bool($this->$key))
-                {
+            if (property_exists($this, $key)) {
+                if (is_bool($this->$key)) {
                     $value = (boolean) $value;
                 }
                 $this->$key = $value;
@@ -77,12 +71,9 @@ class config
 
     public function read_file($name, $user = true) // <== TODO: check
     {
-        if (!$user)
-        {
+        if (!$user) {
             $prefix = '/etc/midgard2/conf.d';
-        }
-        else
-        {
+        } else {
             $prefix = getenv('HOME') . '/.midgard2/conf.d';
         }
         return $this->read_file_at_path($prefix . '/' . $name);
@@ -90,16 +81,12 @@ class config
 
     public function save_file($name, $user = true) // <== TODO: check
     {
-        if (!$user)
-        {
+        if (!$user) {
             $prefix = '/etc/midgard2/conf.d';
-        }
-        else
-        {
+        } else {
             $prefix = getenv('HOME') . '/.midgard2/conf.d';
         }
-        if (!file_exists($prefix))
-        {
+        if (!file_exists($prefix)) {
             mkdir($prefix, 0777, true);
         }
         $filename = $prefix . '/' . $name;
@@ -129,8 +116,7 @@ class config
         $contents .= $this->convert_to_storage('GdaThreads', $this->gdathreads);
 
         $stat = file_put_contents($filename, $contents);
-        if ($stat === false)
-        {
+        if ($stat === false) {
             return false;
         }
         return true;
@@ -138,12 +124,9 @@ class config
 
     private function convert_to_storage($key, $value)
     {
-        if (is_bool($value))
-        {
+        if (is_bool($value)) {
             $value = ($value) ? 'true' : 'false';
-        }
-        else if ($value === '')
-        {
+        } elseif ($value === '') {
             $value = '""';
         }
         return $key . ' = ' . $value . "\n\n";
@@ -151,24 +134,19 @@ class config
 
     public function read_data($data)
     {
-
     }
 
     public static function list_files($user = true) // <== TODO: check
     {
-
     }
 
     public function create_blobdir()
     {
         $subdirs = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F');
-        foreach ($subdirs as $dir)
-        {
-            foreach ($subdirs as $subdir)
-            {
+        foreach ($subdirs as $dir) {
+            foreach ($subdirs as $subdir) {
                 if (   !is_dir($this->blobdir . '/' . $dir . '/' . $subdir)
-                    && !mkdir($this->blobdir . '/' . $dir . '/' . $subdir, 0777, true))
-                {
+                    && !mkdir($this->blobdir . '/' . $dir . '/' . $subdir, 0777, true)) {
                     return false;
                 }
             }

@@ -260,5 +260,4 @@ class midgard_collectorTest extends testcase
         $data = $mc->get_subkey($key, 'id_alias');
         $this->assertEquals(self::$_topic->id, $data);
     }
-
 }

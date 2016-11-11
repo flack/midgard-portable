@@ -37,8 +37,7 @@ class midgard_storageTest extends testcase
         $this->assertInstanceOf('midgard\portable\mapping\classmetadata', $cm);
 
         $fqcn = $cm->fullyQualifiedClassName('midgard_user');
-        $tokens = array
-        (
+        $tokens = array(
             'authtype' => 'Plaintext',
             'login' => 'admin',
             'password' => 'password',

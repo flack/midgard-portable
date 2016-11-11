@@ -9,5 +9,4 @@ namespace midgard\portable\mgdschema;
 
 interface node
 {
-
 }

@@ -15,8 +15,7 @@ class classgeneratorTest extends testcase
     public function setUp()
     {
         $this->directory = TESTDIR . '__output';
-        if (is_dir($this->directory))
-        {
+        if (is_dir($this->directory)) {
             system("rm -rf " . escapeshellarg($this->directory));
         }
         mkdir($this->directory);

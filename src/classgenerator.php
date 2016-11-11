@@ -49,37 +49,27 @@ class classgenerator
     private function add_line($line)
     {
         $this->output .= $line;
-        if ($this->dev_mode)
-        {
+        if ($this->dev_mode) {
             $this->output .= "\n";
-        }
-        else
-        {
+        } else {
             $this->output .= ' ';
         }
     }
 
     public function write($namespace = '')
     {
-        if (file_exists($this->filename))
-        {
+        if (file_exists($this->filename)) {
             unlink($this->filename);
         }
 
         $types = $this->manager->get_types();
-        uasort($types, function($a, $b)
-        {
+        uasort($types, function ($a, $b) {
             if (   !empty($a->extends)
-                && !empty($b->extends))
-            {
+                && !empty($b->extends)) {
                 return strnatcmp($a->extends, $b->extends);
-            }
-            else if (!empty($a->extends))
-            {
+            } elseif (!empty($a->extends)) {
                 return -1;
-            }
-            else if (!empty($b->extends))
-            {
+            } elseif (!empty($b->extends)) {
                 return 1;
             }
             return 0;
@@ -87,8 +77,7 @@ class classgenerator
 
         $this->add_line('<?php');
 
-        if (!empty($namespace))
-        {
+        if (!empty($namespace)) {
             $this->add_line('namespace ' . $namespace . ';');
             $this->add_line('use midgard\\portable\\api\\object as midgard_object;');
             $this->add_line('use midgard_metadata;');
@@ -100,8 +89,7 @@ class classgenerator
         $this->add_line('use midgard\\portable\\api\\repligard as base_repligard;');
         $this->add_line('use midgard\\portable\\api\\attachment as base_attachment; ');
 
-        foreach ($types as $type)
-        {
+        foreach ($types as $type) {
             $this->convert_type($type);
         }
 
@@ -116,21 +104,17 @@ class classgenerator
     {
         $prefix = $this->get_class_prefix($namespace);
 
-        foreach ($this->manager->get_types() as $type)
-        {
+        foreach ($this->manager->get_types() as $type) {
             if (   $prefix !== ''
-                && !class_exists($type->name))
-            {
+                && !class_exists($type->name)) {
                 $this->add_line('class_alias( "' . $prefix . $type->name . '", "' . $type->name . '");');
             }
         }
 
-        foreach ($this->manager->get_inherited_mapping() as $child => $parent)
-        {
+        foreach ($this->manager->get_inherited_mapping() as $child => $parent) {
             $this->add_line('class_alias( "' . $prefix . $parent . '", "' . $prefix . $child . '");');
             if (   $prefix !== ''
-                && !class_exists($child))
-            {
+                && !class_exists($child)) {
                 $this->add_line('class_alias( "' . $prefix . $parent . '", "' . $child . '");');
             }
         }
@@ -138,8 +122,7 @@ class classgenerator
 
     private function get_class_prefix($namespace)
     {
-        if ($namespace === '')
-        {
+        if ($namespace === '') {
             return '';
         }
         return str_replace('\\', '\\\\', $namespace) . '\\\\';
@@ -160,21 +143,17 @@ class classgenerator
     private function write_properties(type $type)
     {
         $objects = array();
-        foreach ($type->get_mixins() as $name => $mixin)
-        {
+        foreach ($type->get_mixins() as $name => $mixin) {
             $this->add_line(' protected $' . $name . ';');
         }
 
-        foreach ($type->get_properties() as $name => $property)
-        {
-            if ($name == 'guid')
-            {
+        foreach ($type->get_properties() as $name => $property) {
+            if ($name == 'guid') {
                 continue;
             }
             $line = ' protected $' . $name;
             $default = null;
-            switch (translator::to_constant($property->type))
-            {
+            switch (translator::to_constant($property->type)) {
                 case translator::TYPE_BOOLEAN:
                     $default = 'false';
                     break;
@@ -182,8 +161,7 @@ class classgenerator
                     $default = '0.0';
                     break;
                 case translator::TYPE_UINT:
-                    if ($name == $type->primaryfield)
-                    {
+                    if ($name == $type->primaryfield) {
                         // no default value for identifier, because otherwise, Doctrine will think it's a detached entity
                         break;
                     }
@@ -202,8 +180,7 @@ class classgenerator
             if (   $default !== null
                    // we need to skip working links because in this case, Doctrine expects objects as values
                 && (   !$property->link
-                    || $this->manager->resolve_targetclass($property) === false))
-            {
+                    || $this->manager->resolve_targetclass($property) === false)) {
                 $line .= ' = ' . $default;
             }
             $this->add_line($line . ';');
@@ -213,11 +190,9 @@ class classgenerator
 
     private function write_constructor(array $objects)
     {
-        if (!empty($objects))
-        {
+        if (!empty($objects)) {
             $this->add_line('public function __construct($id = null) {');
-            foreach ($objects as $name => $code)
-            {
+            foreach ($objects as $name => $code) {
                 $this->add_line('$this->' . $name . ' = ' . $code . ';');
             }
             $this->add_line('parent::__construct($id);');
@@ -229,16 +204,13 @@ class classgenerator
     {
         $candidates = array();
 
-        if (!empty($type->upfield))
-        {
+        if (!empty($type->upfield)) {
             $candidates[] = $type->upfield;
         }
-        if (!empty($type->parentfield))
-        {
+        if (!empty($type->parentfield)) {
             $candidates[] = $type->parentfield;
         }
-        if (empty($candidates))
-        {
+        if (empty($candidates)) {
             return;
         }
 
@@ -251,17 +223,14 @@ class classgenerator
     {
         $this->add_line('class ' . $type->name . ' extends ' . $type->extends);
         $mixins = $type->get_mixins();
-        $interfaces = array_filter(array_map(function($name)
-        {
-            if (interface_exists('\\midgard\\portable\\storage\\' . $name . '\\entity'))
-            {
+        $interfaces = array_filter(array_map(function ($name) {
+            if (interface_exists('\\midgard\\portable\\storage\\' . $name . '\\entity')) {
                 return '\\midgard\\portable\\storage\\' . $name . '\\entity';
             }
             return false;
         }, array_keys($mixins)));
 
-        if (count($interfaces) > 0)
-        {
+        if (count($interfaces) > 0) {
             $this->add_line(' implements ' . implode(', ', $interfaces));
         }
         $this->add_line('{');

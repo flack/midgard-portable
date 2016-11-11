@@ -63,8 +63,7 @@ class manager
     public function get_child_classes($typename)
     {
         $this->initialize();
-        if (array_key_exists($typename, $this->child_classes))
-        {
+        if (array_key_exists($typename, $this->child_classes)) {
             return $this->child_classes[$typename];
         }
         return array();
@@ -75,20 +74,15 @@ class manager
         $this->initialize();
 
         $fqcn = $property->link['target'];
-        if (!empty($this->namespace))
-        {
+        if (!empty($this->namespace)) {
             $fqcn = $this->namespace . '\\' . $fqcn;
         }
 
         if (   array_key_exists($fqcn, $this->types)
-            || $property->link['target'] === $property->get_parent()->name)
-        {
+            || $property->link['target'] === $property->get_parent()->name) {
             $target_class = $property->link['target'];
-        }
-        else
-        {
-            if (!array_key_exists($property->link['target'], $this->merged_types))
-            {
+        } else {
+            if (!array_key_exists($property->link['target'], $this->merged_types)) {
                 throw new \Exception('Link to unknown class ' . $property->link['target']);
             }
             $target_class = $this->merged_types[$property->link['target']];
@@ -98,19 +92,15 @@ class manager
 
     private function initialize()
     {
-        if ($this->types !== null)
-        {
+        if ($this->types !== null) {
             return;
         }
         $reader = new xmlreader;
         $types = $reader->parse(dirname(dirname(__DIR__)) . '/xml/core.xml');
 
-        foreach ($this->schemadirs as $schemadir)
-        {
-            foreach (glob($schemadir . '*.xml', GLOB_NOSORT) as $filename)
-            {
-                if (!file_exists($filename))
-                {
+        foreach ($this->schemadirs as $schemadir) {
+            foreach (glob($schemadir . '*.xml', GLOB_NOSORT) as $filename) {
+                if (!file_exists($filename)) {
                     connection::log()->warning('File exists check for ' . $filename . ' returned false, skipping');
                     continue;
                 }
@@ -119,34 +109,27 @@ class manager
         }
 
         $tablemap = array();
-        foreach ($types as $name => $type)
-        {
-            if ($type->parent)
-            {
+        foreach ($types as $name => $type) {
+            if ($type->parent) {
                 $this->register_child_class($type);
             }
 
-            if (!array_key_exists($type->table, $tablemap))
-            {
+            if (!array_key_exists($type->table, $tablemap)) {
                 $tablemap[$type->table] = array();
             }
             $tablemap[$type->table][] = $type;
         }
 
-        foreach ($tablemap as $name => $types)
-        {
-            if (count($types) == 1)
-            {
+        foreach ($tablemap as $name => $types) {
+            if (count($types) == 1) {
                 $this->add_type($types[0]);
                 unset($tablemap[$name]);
             }
         }
 
         // We need to process those separately, to be sure the targets for rewriting links are present
-        while ($types = array_pop($tablemap))
-        {
-            if (!$this->create_merged_types($types))
-            {
+        while ($types = array_pop($tablemap)) {
+            if (!$this->create_merged_types($types)) {
                 array_push($types, $tablemap);
             }
         }
@@ -154,8 +137,7 @@ class manager
 
     private function register_child_class(type $type)
     {
-        if (!array_key_exists($type->parent, $this->child_classes))
-        {
+        if (!array_key_exists($type->parent, $this->child_classes)) {
             $this->child_classes[$type->parent] = array();
         }
         $this->child_classes[$type->parent][$type->name] = $type->parentfield;
@@ -167,34 +149,26 @@ class manager
     private function create_merged_types(array $types)
     {
         $root_type = null;
-        foreach ($types as $i => $type)
-        {
+        foreach ($types as $i => $type) {
             // TODO: We should have a second pass here that prefers classnames starting with midgard_
-            if ($type->extends === 'midgard_object')
-            {
+            if ($type->extends === 'midgard_object') {
                 $root_type = $type;
                 unset($types[$i]);
                 break;
             }
         }
-        if (empty($root_type))
-        {
+        if (empty($root_type)) {
             throw new \Exception('could not determine root type of merged group');
         }
 
-        foreach ($types as $type)
-        {
-            foreach ($type->get_properties() as $property)
-            {
-                if ($root_type->has_property($property->name))
-                {
+        foreach ($types as $type) {
+            foreach ($type->get_properties() as $property) {
+                if ($root_type->has_property($property->name)) {
                     $root_property = $root_type->get_property($property->name);
-                    if ($root_property->field !== $property->field)
-                    {
+                    if ($root_property->field !== $property->field) {
                         connection::log()->error('Naming collision in ' . $root_type->name . ': Field ' . $type->name . '.' . $property->name . ' cannot use column ' . $property->field);
                     }
-                    if ($root_property->type !== $property->type)
-                    {
+                    if ($root_property->type !== $property->type) {
                         connection::log()->warn('Naming collision in ' . $root_type->name . ': Field ' . $type->name . '.' . $property->name . ' cannot use type ' . $property->type);
                     }
                     continue;
@@ -202,13 +176,10 @@ class manager
                 $root_type->add_property($property);
             }
 
-            if (array_key_exists($type->name, $this->child_classes))
-            {
-                foreach ($this->child_classes[$type->name] as $childname => $parentfield)
-                {
+            if (array_key_exists($type->name, $this->child_classes)) {
+                foreach ($this->child_classes[$type->name] as $childname => $parentfield) {
                     $child_type = $this->get_type_by_shortname($childname);
-                    if ($child_type === null)
-                    {
+                    if ($child_type === null) {
                         return false;
                     }
 
@@ -226,19 +197,14 @@ class manager
     private function get_type_by_shortname($classname)
     {
         $fqcn = $classname;
-        if (!empty($this->namespace))
-        {
+        if (!empty($this->namespace)) {
             $fqcn = $this->namespace . '\\' . $classname;
         }
-        if (array_key_exists($fqcn, $this->types))
-        {
+        if (array_key_exists($fqcn, $this->types)) {
             return $this->types[$fqcn];
-        }
-        else if (array_key_exists($classname, $this->merged_types))
-        {
+        } elseif (array_key_exists($classname, $this->merged_types)) {
             $fqcn = $this->merged_types[$classname];
-            if (!empty($this->namespace))
-            {
+            if (!empty($this->namespace)) {
                 $fqcn = $this->namespace . '\\' . $fqcn;
             }
             return $this->types[$fqcn];
@@ -250,28 +216,22 @@ class manager
     {
         $classname = $type->name;
         // TODO: This should probably be in classgenerator
-        if ($classname === 'midgard_user')
-        {
+        if ($classname === 'midgard_user') {
             $type->extends = 'base_user';
         }
-        if ($classname === 'midgard_person')
-        {
+        if ($classname === 'midgard_person') {
             $type->extends = 'base_person';
         }
-        if ($classname === 'midgard_parameter')
-        {
+        if ($classname === 'midgard_parameter') {
             $type->extends = 'base_parameter';
         }
-        if ($classname === 'midgard_repligard')
-        {
+        if ($classname === 'midgard_repligard') {
             $type->extends = 'base_repligard';
         }
-        if ($classname === 'midgard_attachment')
-        {
+        if ($classname === 'midgard_attachment') {
             $type->extends = 'base_attachment';
         }
-        if (!empty($this->namespace))
-        {
+        if (!empty($this->namespace)) {
             $classname = $this->namespace . '\\' . $classname;
         }
         $this->types[$classname] = $type;

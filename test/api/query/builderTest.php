@@ -390,8 +390,8 @@ class midgard_query_builderTest extends testcase
         //should return topic + topic2
         $qb = new \midgard_query_builder($classname);
         $qb->begin_group('OR');
-            $qb->add_constraint('name', '=', $topic->name);
-            $qb->add_constraint('name', '=', $topic2->name);
+        $qb->add_constraint('name', '=', $topic->name);
+        $qb->add_constraint('name', '=', $topic2->name);
         $qb->end_group();
 
         $results = $qb->execute();
@@ -400,11 +400,11 @@ class midgard_query_builderTest extends testcase
         //should only return topic
         $qb = new \midgard_query_builder($classname);
         $qb->begin_group('OR');
-            $qb->add_constraint('name', '=', $topic->name);
-            $qb->begin_group('AND');
-                $qb->add_constraint('name', '=', $topic2->name);
-                $qb->add_constraint('name', '=', $topic3->name);
-            $qb->end_group();
+        $qb->add_constraint('name', '=', $topic->name);
+        $qb->begin_group('AND');
+        $qb->add_constraint('name', '=', $topic2->name);
+        $qb->add_constraint('name', '=', $topic3->name);
+        $qb->end_group();
         $qb->end_group();
 
         $results = $qb->execute();
@@ -413,12 +413,12 @@ class midgard_query_builderTest extends testcase
         //should only return topic2
         $qb = new \midgard_query_builder($classname);
         $qb->begin_group('OR');
-            $qb->add_constraint('name', '=', $topic->name);
-            $qb->add_constraint('name', '=', $topic2->name);
+        $qb->add_constraint('name', '=', $topic->name);
+        $qb->add_constraint('name', '=', $topic2->name);
         $qb->end_group();
         $qb->begin_group('OR');
-            $qb->add_constraint('name', '=', $topic2->name);
-            $qb->add_constraint('name', '=', $topic3->name);
+        $qb->add_constraint('name', '=', $topic2->name);
+        $qb->add_constraint('name', '=', $topic3->name);
         $qb->end_group();
 
         $results = $qb->execute();
@@ -428,11 +428,11 @@ class midgard_query_builderTest extends testcase
         //should return topic + topic2
         $qb = new \midgard_query_builder($classname);
         $qb->begin_group('OR');
-            $qb->add_constraint('name', '=' , $topic->name);
-            $qb->begin_group('AND');
-                $qb->add_constraint('name' , '=' , $topic2->name);
-                $qb->add_constraint('extra' , '=', $extra);
-            $qb->end_group();
+        $qb->add_constraint('name', '=', $topic->name);
+        $qb->begin_group('AND');
+        $qb->add_constraint('name', '=', $topic2->name);
+        $qb->add_constraint('extra', '=', $extra);
+        $qb->end_group();
         $qb->end_group();
 
         $results = $qb->execute();
@@ -442,10 +442,10 @@ class midgard_query_builderTest extends testcase
         //should return topic3+topic2
         $qb = new \midgard_query_builder($classname);
         $qb->begin_group('AND');
-            $qb->add_constraint('extra', '=' , $extra);
-            $qb->begin_group('OR');
-                $qb->add_constraint('name' , '=' , $topic2->name);
-                $qb->add_constraint('name' , '=' , $topic3->name);
+        $qb->add_constraint('extra', '=', $extra);
+        $qb->begin_group('OR');
+        $qb->add_constraint('name', '=', $topic2->name);
+        $qb->add_constraint('name', '=', $topic3->name);
             //$qb->end_group();
         //$qb->end_group();
 

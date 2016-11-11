@@ -229,7 +229,6 @@ class midgard_replicatorTest extends testcase
         $results = $qb->execute();
         $this->assertCount(1, $results);
         $this->assertTrue($results[0]->metadata->deleted);
-
     }
 
     public function test_import_object_purged()

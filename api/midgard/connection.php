@@ -31,8 +31,7 @@ class midgard_connection
 
     public static function get_instance()
     {
-        if (self::$instance === null)
-        {
+        if (self::$instance === null) {
             self::$instance = new static;
         }
         return self::$instance;
@@ -45,15 +44,13 @@ class midgard_connection
 
     public function open($name)
     {
-        if ($this->config !== null)
-        {
+        if ($this->config !== null) {
             $this->error_code = exception::INTERNAL;
             $this->error_string = 'MidgardConfig already associated with MidgardConnection';
             return false;
         }
         $config = new config;
-        if (!$config->read_file($name, false))
-        {
+        if (!$config->read_file($name, false)) {
             return false;
         }
         $this->config = $config;
@@ -62,7 +59,6 @@ class midgard_connection
 
     public function reopen()
     {
-
     }
 
     public function open_config(midgard_config $config)
@@ -76,9 +72,8 @@ class midgard_connection
         return is_object($this->config);
     }
 
-    public function connect($signal, $callback, $userdata = '???' )
+    public function connect($signal, $callback, $userdata = '???')
     {
-
     }
 
     public function get_error()
@@ -94,8 +89,7 @@ class midgard_connection
 
     public function get_error_string()
     {
-        if ($this->error_string === null)
-        {
+        if ($this->error_string === null) {
             return exception::get_error_string($this->error_code);
         }
         return $this->error_string;
@@ -108,17 +102,15 @@ class midgard_connection
 
     public function get_user()
     {
-        if (!$this->is_connected())
-        {
+        if (!$this->is_connected()) {
             return null;
         }
         return connection::get_user();
     }
 
-    public function set_loglevel($level, $callback = '???' )
+    public function set_loglevel($level, $callback = '???')
     {
-        if (!in_array($level, $this->available_loglevels))
-        {
+        if (!in_array($level, $this->available_loglevels)) {
             return false;
         }
         $this->loglevel = $level;
@@ -132,12 +124,10 @@ class midgard_connection
 
     public function list_auth_types()
     {
-
     }
 
     public function enable_workspace($toggle)
     {
-
     }
 
     public function is_enabled_workspace()
@@ -157,7 +147,6 @@ class midgard_connection
 
     public function enable_dbus($toggle)
     {
-
     }
 
     public function is_enabled_dbus()
@@ -167,7 +156,6 @@ class midgard_connection
 
     public function enable_quota($toggle)
     {
-
     }
 
     public function is_enabled_quota()
@@ -177,16 +165,13 @@ class midgard_connection
 
     public function get_workspace()
     {
-
     }
 
     public function set_workspace($workspace)
     {
-
     }
 
     public function get_content_manager()
     {
-
     }
 }

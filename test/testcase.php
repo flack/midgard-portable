@@ -26,16 +26,13 @@ class testcase extends \PHPUnit_Framework_TestCase
 
     protected static function prepare_connection($directory = '', $tmpdir = null, $ns = null)
     {
-        if ($tmpdir === null)
-        {
+        if ($tmpdir === null) {
             $tmpdir = sys_get_temp_dir();
         }
-        if ($ns === null)
-        {
+        if ($ns === null) {
             $ns = uniqid(get_called_class());
         }
-        $directories = array
-        (
+        $directories = array(
             TESTDIR . '__files/' . $directory
         );
 
@@ -84,13 +81,11 @@ class testcase extends \PHPUnit_Framework_TestCase
     protected function count_results($classname, $include_deleted = false)
     {
         self::$em->clear();
-        if ($include_deleted)
-        {
+        if ($include_deleted) {
             self::$em->getFilters()->disable('softdelete');
         }
         $count = self::$em->createQuery('SELECT COUNT(a) FROM ' . $classname . ' a')->getSingleScalarResult();
-        if ($include_deleted)
-        {
+        if ($include_deleted) {
             self::$em->getFilters()->enable('softdelete');
         }
 
@@ -107,5 +102,4 @@ class testcase extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(exception::get_error_string($error_code), exception::get_error_string(midgard_connection::get_instance()->get_error()), 'Unexpected error code');
     }
-
 }

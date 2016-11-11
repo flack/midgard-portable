@@ -20,25 +20,21 @@ class midgard_storage
         $ns = $em->getConfiguration()->getEntityNamespace("midgard");
 
         $cm_repligard = $em->getClassMetadata($ns . '\\midgard_repligard');
-        if (!self::create_class_storage($cm_repligard->getName()))
-        {
+        if (!self::create_class_storage($cm_repligard->getName())) {
             return false;
         }
         $cm_person = $em->getClassMetadata($ns . '\\midgard_person');
-        if (!self::create_class_storage($cm_person->getName()))
-        {
+        if (!self::create_class_storage($cm_person->getName())) {
             return false;
         }
         $cm_user = $em->getClassMetadata($ns . '\\midgard_user');
-        if (!self::create_class_storage($cm_user->getName()))
-        {
+        if (!self::create_class_storage($cm_user->getName())) {
             return false;
         }
 
         $admin = $em->find('midgard:midgard_user', 1);
 
-        if ($admin === null)
-        {
+        if ($admin === null) {
             $fqcn = $cm_person->getName();
             $person = new $fqcn;
             $person->firstname = 'Midgard';
@@ -65,13 +61,11 @@ class midgard_storage
         $em = connection::get_em();
 
         $cm = self::get_cm($em, $classname);
-        if ($cm === false)
-        {
+        if ($cm === false) {
             return false;
         }
 
-        if (!$em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName())))
-        {
+        if (!$em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName()))) {
             $tool = new SchemaTool($em);
             $tool->createSchema(array($cm));
         }
@@ -87,8 +81,7 @@ class midgard_storage
         $generator = new ProxyGenerator($em->getConfiguration()->getProxyDir(), $em->getConfiguration()->getProxyNamespace());
         $generator->setPlaceholder('baseProxyInterface', 'Doctrine\ORM\Proxy\Proxy');
         $filename = $generator->getProxyFileName($cm->getName());
-        if (file_exists($filename))
-        {
+        if (file_exists($filename)) {
             unlink($filename);
         }
         $generator->generateProxyClass($cm, $filename);
@@ -96,27 +89,20 @@ class midgard_storage
 
     private static function get_cm($em, $classname)
     {
-        if (!class_exists($classname))
-        {
+        if (!class_exists($classname)) {
             // if the class doesn't exist (e.g. for some_random_string), there is really nothing we could do
             return false;
         }
 
         $factory = $em->getMetadataFactory();
-        try
-        {
+        try {
             return $factory->getMetadataFor($classname);
-        }
-        catch (MappingException $e)
-        {
+        } catch (MappingException $e) {
             // add namespace
             $classname = $em->getConfiguration()->getEntityNamespace("midgard") . '\\' . $classname;
-            try
-            {
+            try {
                 return $factory->getMetadataFor($classname);
-            }
-            catch (MappingException $e)
-            {
+            } catch (MappingException $e) {
                 // check for merged classes (duplicate tablenames)
                 $classname = get_class(new $classname);
                 return $factory->getMetadataFor($classname);
@@ -136,13 +122,11 @@ class midgard_storage
     {
         $em = connection::get_em();
         $cm = self::get_cm($em, $classname);
-        if ($cm === false)
-        {
+        if ($cm === false) {
             return false;
         }
         $sm = $em->getConnection()->getSchemaManager();
-        if ($sm->tablesExist(array($cm->getTableName())))
-        {
+        if ($sm->tablesExist(array($cm->getTableName()))) {
             $tool = new SchemaTool($em);
             $conn = $em->getConnection();
             $from = $sm->createSchema();
@@ -150,15 +134,13 @@ class midgard_storage
 
             $comparator = new Comparator;
             $diff = $comparator->compare($from, $to);
-            if (!empty($diff->changedTables[$cm->getTableName()]->removedColumns))
-            {
+            if (!empty($diff->changedTables[$cm->getTableName()]->removedColumns)) {
                 $diff->changedTables[$cm->getTableName()]->removedColumns = array();
             }
             $sql = $diff->toSaveSql($conn->getDatabasePlatform());
 
 
-            foreach ($sql as $sql_line)
-            {
+            foreach ($sql as $sql_line) {
                 $conn->executeQuery($sql_line);
             }
 
@@ -179,8 +161,7 @@ class midgard_storage
         $em = connection::get_em();
 
         $cm = self::get_cm($em, $classname);
-        if ($cm === false)
-        {
+        if ($cm === false) {
             return false;
         }
 

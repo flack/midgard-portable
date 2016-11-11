@@ -24,8 +24,7 @@ class midgard_replicator
      */
     public static function export(dbobject $object)
     {
-        if (!mgd_is_guid($object->guid))
-        {
+        if (!mgd_is_guid($object->guid)) {
             return false;
         }
         throw new Exception('not implemented');
@@ -37,8 +36,7 @@ class midgard_replicator
      */
     public static function export_by_guid($guid)
     {
-        if (!mgd_is_guid($guid))
-        {
+        if (!mgd_is_guid($guid)) {
             midgard_connection::get_instance()->set_error(exception::INVALID_PROPERTY_VALUE);
             return false;
         }
@@ -51,8 +49,7 @@ class midgard_replicator
             ->getQuery()
             ->getSingleResult();
 
-        if ($result['object_action'] === subscriber::ACTION_PURGE)
-        {
+        if ($result['object_action'] === subscriber::ACTION_PURGE) {
             midgard_connection::get_instance()->set_error(exception::OBJECT_PURGED);
             return false;
         }
@@ -91,38 +88,29 @@ class midgard_replicator
         $node->addAttribute('guid', $object->guid);
         $node->addAttribute('purge', 'no');
 
-        if (mgd_is_guid($object->guid))
-        {
+        if (mgd_is_guid($object->guid)) {
             $node->addAttribute('action', self::get_object_action($object->guid));
         }
 
         $metadata = array();
 
-        foreach ($cm->getAssociationNames() as $name)
-        {
+        foreach ($cm->getAssociationNames() as $name) {
             $node->addChild($name, self::resolve_link_id($cm, $object, $name));
         }
-        foreach ($cm->getFieldNames() as $name)
-        {
-            if ($name == 'guid')
-            {
+        foreach ($cm->getFieldNames() as $name) {
+            if ($name == 'guid') {
                 continue;
             }
-            if (strpos($name, 'metadata_') === 0)
-            {
+            if (strpos($name, 'metadata_') === 0) {
                 $metadata[substr($name, 9)] = $object->$name;
-            }
-            else
-            {
+            } else {
                 $node->addChild($name, self::convert_value($object->$name));
             }
         }
 
-        if (!empty($metadata))
-        {
+        if (!empty($metadata)) {
             $mnode = $node->addChild('metadata');
-            foreach ($metadata as $name => $value)
-            {
+            foreach ($metadata as $name => $value) {
                 $mnode->addChild($name, self::convert_value($value));
             }
         }
@@ -151,21 +139,14 @@ class midgard_replicator
         $ret = array();
 
         $xml = new SimpleXMLElement($xml);
-        foreach ($xml as $node)
-        {
-            try
-            {
-                if ($node->getName() == 'midgard_blob')
-                {
+        foreach ($xml as $node) {
+            try {
+                if ($node->getName() == 'midgard_blob') {
                     $ret[] = self::blob_from_xml($node, $force);
-                }
-                else
-                {
+                } else {
                     $ret[] = self::object_from_xml($node, $force);
                 }
-            }
-            catch (\Exception $e)
-            {
+            } catch (\Exception $e) {
                 connection::log()->warning($e->getMessage());
             }
         }
@@ -178,16 +159,14 @@ class midgard_replicator
      */
     public static function import_object(dbobject $object, $force = false)
     {
-        if (!mgd_is_guid($object->guid))
-        {
+        if (!mgd_is_guid($object->guid)) {
             midgard_connection::get_instance()->set_error(exception::INVALID_PROPERTY_VALUE);
             return false;
         }
 
         $classname = get_class($object);
 
-        switch (self::get_object_action($object->guid))
-        {
+        switch (self::get_object_action($object->guid)) {
             case 'created':
             case 'updated':
                 $dbobject = new $classname($object->guid);
@@ -200,8 +179,7 @@ class midgard_replicator
                 break;
 
             case 'purged':
-                if (!$force)
-                {
+                if (!$force) {
                     return false;
                 }
                 $result = connection::get_em()
@@ -212,8 +190,7 @@ class midgard_replicator
                     ->getQuery()
                     ->execute();
 
-                if ($result == 0)
-                {
+                if ($result == 0) {
                     return false;
                 }
                 //fall-through
@@ -225,47 +202,37 @@ class midgard_replicator
         }
 
         if (   $dbobject->id > 0
-            && $dbobject->metadata->revised >= $object->metadata->revised)
-        {
+            && $dbobject->metadata->revised >= $object->metadata->revised) {
             midgard_connection::get_instance()->set_error(exception::OBJECT_IMPORTED);
             return false;
         }
 
         if (   $dbobject->metadata->deleted
-            && !$object->metadata->deleted)
-        {
-            if (!midgard_object_class::undelete($dbobject->guid))
-            {
+            && !$object->metadata->deleted) {
+            if (!midgard_object_class::undelete($dbobject->guid)) {
                 return false;
             }
             $dbobject->metadata_deleted = false;
-        }
-        else if (   !$dbobject->metadata->deleted
-                 && $object->metadata->deleted)
-        {
+        } elseif (   !$dbobject->metadata->deleted
+                 && $object->metadata->deleted) {
             return $dbobject->delete();
         }
 
         $cm = connection::get_em()->getClassMetadata(get_class($object));
 
-        foreach ($cm->getAssociationNames() as $name)
-        {
+        foreach ($cm->getAssociationNames() as $name) {
             $dbobject->$name = self::resolve_link_guid($cm, $name, $object->$name);
         }
-        foreach ($cm->getFieldNames() as $name)
-        {
-            if ($name == 'id')
-            {
+        foreach ($cm->getFieldNames() as $name) {
+            if ($name == 'id') {
                 continue;
             }
-            if (strpos($name, 'metadata_') === false)
-            {
+            if (strpos($name, 'metadata_') === false) {
                 $dbobject->$name = $object->$name;
             }
         }
         $dbobject->metadata->imported = new \midgard_datetime();
-        if ($dbobject->id > 0)
-        {
+        if ($dbobject->id > 0) {
             return $dbobject->update();
         }
 
@@ -278,14 +245,10 @@ class midgard_replicator
     public static function import_from_xml($xml, $force = false)
     {
         $objects = self::unserialize($xml, $force);
-        foreach ($objects as $object)
-        {
-            if ($object instanceof blob)
-            {
+        foreach ($objects as $object) {
+            if ($object instanceof blob) {
                 self::import_blob($object, $force);
-            }
-            else
-            {
+            } else {
                 self::import_object($object, $force);
             }
         }
@@ -303,8 +266,7 @@ class midgard_replicator
 
     private static function resolve_link_id(ClassMetadata $cm, dbobject $object, $name)
     {
-        if ($object->$name == 0)
-        {
+        if ($object->$name == 0) {
             return '0';
         }
         $target_class = $cm->getAssociationTargetClass($name);
@@ -320,8 +282,7 @@ class midgard_replicator
 
     private static function resolve_link_guid(ClassMetadata $cm, $name, $value)
     {
-        if (!mgd_is_guid($value))
-        {
+        if (!mgd_is_guid($value)) {
             return 0;
         }
         $target_class = $cm->getAssociationTargetClass($name);
@@ -348,29 +309,21 @@ class midgard_replicator
         $object = new $classname;
         $object->set_guid($node['guid']);
         $object->action = $node['action'];
-        foreach ($node as $child)
-        {
+        foreach ($node as $child) {
             $field = $child->getName();
-            if ($field == 'metadata')
-            {
-                foreach ($child as $mchild)
-                {
+            if ($field == 'metadata') {
+                foreach ($child as $mchild) {
                     $field = 'metadata_' . $mchild->getName();
                     $object->$field = (string) $mchild;
                 }
                 continue;
             }
             $value = (string) $child;
-            if ($cm->isSingleValuedAssociation($field))
-            {
-                try
-                {
+            if ($cm->isSingleValuedAssociation($field)) {
+                try {
                     $value = self::resolve_link_guid($cm, $field, $value);
-                }
-                catch (NoResultException $e)
-                {
-                    if (!$force)
-                    {
+                } catch (NoResultException $e) {
+                    if (!$force) {
                         throw $e;
                     }
                     $value = 0;
@@ -409,8 +362,7 @@ class midgard_replicator
             ->getScalarResult();
         $action = (empty($result)) ? 0 : (int) $result[0]['object_action'];
 
-        switch ($action)
-        {
+        switch ($action) {
             case subscriber::ACTION_CREATE:
                 return 'created';
             case subscriber::ACTION_UPDATE:
@@ -426,8 +378,7 @@ class midgard_replicator
 
     private static function convert_value($value)
     {
-        if ($value instanceof midgard_datetime)
-        {
+        if ($value instanceof midgard_datetime) {
             return $value->format('Y-m-d H:i:sO');
         }
         return $value;

@@ -16,8 +16,7 @@ class configTest extends testcase
     public function setUp()
     {
         $this->directory = TESTDIR . '__output';
-        if (is_dir($this->directory))
-        {
+        if (is_dir($this->directory)) {
             system("rm -rf " . escapeshellarg($this->directory));
         }
         mkdir($this->directory);
@@ -62,6 +61,6 @@ class configTest extends testcase
         $this->assertTrue($config->read_file_at_path($path));
         $this->assertTrue($config->tablecreate);
         $this->assertEquals('test', $config->database);
-        unlink ($path);
+        unlink($path);
     }
 }

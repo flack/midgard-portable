@@ -25,13 +25,11 @@ class datetime extends DateTimeType
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        if ($value === null)
-        {
+        if ($value === null) {
             return new midgard_datetime;
         }
         $val = date_base::createFromFormat($platform->getDateTimeFormatString(), $value);
-        if (!$val)
-        {
+        if (!$val) {
             throw ConversionException::conversionFailed($value, $this->getName());
         }
         return new midgard_datetime($val->format('Y-m-d H:i:s'));

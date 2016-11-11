@@ -74,14 +74,12 @@ abstract class query
 
     public function add_constraint($name, $operator, $value)
     {
-        if ($operator === 'INTREE')
-        {
+        if ($operator === 'INTREE') {
             $operator = 'IN';
             $targetclass = $this->classname;
             $fieldname = $name;
 
-            if (strpos($name, '.') !== false)
-            {
+            if (strpos($name, '.') !== false) {
                 $parsed = $this->parse_constraint_name($name);
                 $fieldname = $parsed['column'];
                 $targetclass = $parsed['targetclass'];
@@ -90,22 +88,17 @@ abstract class query
             $mapping = connection::get_em()->getClassMetadata($targetclass)->getAssociationMapping($fieldname);
             $parentfield = $name;
 
-            if ($mapping['targetEntity'] !== get_class($this))
-            {
+            if ($mapping['targetEntity'] !== get_class($this)) {
                 $cm = connection::get_em()->getClassMetadata($mapping['targetEntity']);
                 $parentfield = $cm->midgard['upfield'];
             }
 
             $value = (array) $value;
             $value = array_merge($value, $this->get_child_ids($mapping['targetEntity'], $parentfield, $value));
-        }
-        else if (   $operator === 'IN'
-                 || $operator === 'NOT IN')
-        {
+        } elseif (   $operator === 'IN'
+                 || $operator === 'NOT IN') {
             $value = array_values($value);
-        }
-        else if (!in_array($operator, array('=', '>', '<', '<>', '<=', '>=', 'LIKE', 'NOT LIKE')))
-        {
+        } elseif (!in_array($operator, array('=', '>', '<', '<>', '<=', '>=', 'LIKE', 'NOT LIKE'))) {
             return false;
         }
         $this->parameters++;
@@ -117,16 +110,12 @@ abstract class query
 
     public function add_order($name, $direction = 'ASC')
     {
-        if (!in_array($direction, array('ASC', 'DESC')))
-        {
+        if (!in_array($direction, array('ASC', 'DESC'))) {
             return false;
         }
-        try
-        {
+        try {
             $parsed = $this->parse_constraint_name($name);
-        }
-        catch (exception $e)
-        {
+        } catch (exception $e) {
             return false;
         }
 
@@ -172,16 +161,11 @@ abstract class query
 
     public function begin_group($operator = 'OR')
     {
-        if ($operator === 'OR')
-        {
+        if ($operator === 'OR') {
             $this->groupstack[] = $this->qb->expr()->orX();
-        }
-        else if ($operator === 'AND')
-        {
+        } elseif ($operator === 'AND') {
             $this->groupstack[] = $this->qb->expr()->andX();
-        }
-        else
-        {
+        } else {
             return false;
         }
 
@@ -190,19 +174,14 @@ abstract class query
 
     public function end_group()
     {
-        if (empty($this->groupstack))
-        {
+        if (empty($this->groupstack)) {
             return false;
         }
         $group = array_pop($this->groupstack);
-        if ($group->count() > 0)
-        {
-            if (!empty($this->groupstack))
-            {
+        if ($group->count() > 0) {
+            if (!empty($this->groupstack)) {
                 $this->get_current_group()->add($group);
-            }
-            else
-            {
+            } else {
                 $this->qb->andWhere($group);
             }
         }
@@ -215,8 +194,7 @@ abstract class query
      */
     protected function get_current_group()
     {
-        if (empty($this->groupstack))
-        {
+        if (empty($this->groupstack)) {
             $this->begin_group('AND');
         }
 
@@ -225,24 +203,21 @@ abstract class query
 
     protected function pre_execution()
     {
-        if ($this->include_deleted)
-        {
+        if ($this->include_deleted) {
             connection::get_em()->getFilters()->disable('softdelete');
         }
     }
 
     protected function post_execution()
     {
-        if ($this->include_deleted)
-        {
+        if ($this->include_deleted) {
             connection::get_em()->getFilters()->enable('softdelete');
         }
     }
 
     protected function add_collection_join($current_table, $targetclass)
     {
-        if (!array_key_exists($targetclass, $this->join_tables))
-        {
+        if (!array_key_exists($targetclass, $this->join_tables)) {
             $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
             $c = $this->join_tables[$targetclass] . ".parentguid = " . $current_table . ".guid";
             $this->qb->innerJoin("midgard:" . $targetclass, $this->join_tables[$targetclass], Join::WITH, $c);
@@ -253,18 +228,14 @@ abstract class query
     protected function add_join($current_table, $mrp, $property)
     {
         $targetclass = $mrp->get_link_name($property);
-        if (!array_key_exists($targetclass, $this->join_tables))
-        {
+        if (!array_key_exists($targetclass, $this->join_tables)) {
             $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
 
             // custom join
-            if ($mrp->is_special_link($property))
-            {
+            if ($mrp->is_special_link($property)) {
                 $c = $this->join_tables[$targetclass] . "." . $mrp->get_link_target($property) . " = " . $current_table . "." . $property;
                 $this->qb->innerJoin("midgard:" . $targetclass, $this->join_tables[$targetclass], Join::WITH, $c);
-            }
-            else
-            {
+            } else {
                 $this->qb->join($current_table . '.' . $property, $this->join_tables[$targetclass]);
             }
         }
@@ -279,25 +250,19 @@ abstract class query
         // metadata
         $name = str_replace('metadata.', 'metadata_', $name);
         $column = $name;
-        if (strpos($name, ".") !== false)
-        {
+        if (strpos($name, ".") !== false) {
             $parts = explode('.', $name);
             $column = array_pop($parts);
-            foreach ($parts as $part)
-            {
+            foreach ($parts as $part) {
                 if (   $part === 'parameter'
-                    || $part === 'attachment')
-                {
+                    || $part === 'attachment') {
                     $targetclass = 'midgard_' . $part;
                     $current_table = $this->add_collection_join($current_table, $targetclass);
-                }
-                else
-                {
+                } else {
                     $mrp = new \midgard_reflection_property($targetclass);
 
                     if (   !$mrp->is_link($part)
-                        && !$mrp->is_special_link($part))
-                    {
+                        && !$mrp->is_special_link($part)) {
                         throw exception::ok();
                     }
                     $targetclass = $mrp->get_link_name($part);
@@ -309,19 +274,16 @@ abstract class query
         }
 
         $cm = connection::get_em()->getClassMetadata($targetclass);
-        if (array_key_exists($column, $cm->midgard['field_aliases']))
-        {
+        if (array_key_exists($column, $cm->midgard['field_aliases'])) {
             $column = $cm->midgard['field_aliases'][$column];
         }
 
         if (   !$cm->hasField($column)
-            && !$cm->hasAssociation($column))
-        {
+            && !$cm->hasAssociation($column)) {
             throw exception::ok();
         }
 
-        return array
-        (
+        return array(
             'name' => $current_table . '.' . $column,
             'column' => $column,
             'targetclass' => $targetclass
@@ -334,49 +296,36 @@ abstract class query
         $expression = $operator . ' ?' . $this->parameters;
 
         if (   $operator === 'IN'
-            || $operator === 'NOT IN')
-        {
+            || $operator === 'NOT IN') {
             $expression = $operator . '( ?' . $this->parameters . ')';
         }
 
         if (   $value === 0
             || $value === null
-            || is_array($value))
-        {
+            || is_array($value)) {
             $cm = connection::get_em()->getClassMetadata($parsed['targetclass']);
-            if ($cm->hasAssociation($parsed['column']))
-            {
+            if ($cm->hasAssociation($parsed['column'])) {
                 $group = false;
                 // TODO: there seems to be no way to make Doctrine accept default values for association fields,
                 // so we need a silly workaorund for existing DBs
-                if ($operator === '<>' || $operator === '>')
-                {
+                if ($operator === '<>' || $operator === '>') {
                     $group = $this->qb->expr()->andX();
                     $group->add($parsed['name'] . ' IS NOT NULL');
-                }
-                else if ($operator === 'IN')
-                {
-                    if (array_search(0, $value) !== false)
-                    {
+                } elseif ($operator === 'IN') {
+                    if (array_search(0, $value) !== false) {
                         $group = $this->qb->expr()->orX();
                         $group->add($parsed['name'] . ' IS NULL');
                     }
-                }
-                else if ($operator === 'NOT IN')
-                {
-                    if (array_search(0, $value) === false)
-                    {
+                } elseif ($operator === 'NOT IN') {
+                    if (array_search(0, $value) === false) {
                         $group = $this->qb->expr()->orX();
                         $group->add($parsed['name'] . ' IS NULL');
                     }
-                }
-                else
-                {
+                } else {
                     $group = $this->qb->expr()->orX();
                     $group->add($parsed['name'] . ' IS NULL');
                 }
-                if ($group)
-                {
+                if ($group) {
                     $group->add($parsed['name'] . ' ' . $expression);
                     return $group;
                 }
@@ -388,8 +337,7 @@ abstract class query
 
     protected function check_groups()
     {
-        while (!empty($this->groupstack))
-        {
+        while (!empty($this->groupstack)) {
             $this->end_group();
         }
     }
@@ -407,8 +355,7 @@ abstract class query
         $this->post_execution();
 
         $ids = array_map('current', $results);
-        if (!empty($ids))
-        {
+        if (!empty($ids)) {
             $ids = array_merge($ids, $this->get_child_ids($targetclass, $fieldname, $ids));
         }
 

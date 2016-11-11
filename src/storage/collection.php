@@ -37,10 +37,8 @@ class collection
         $this->apply_qb_constraints($qb, $constraints);
         $params = $qb->execute();
         $deleted_count = 0;
-        foreach ($params as $param)
-        {
-            if ($param->delete())
-            {
+        foreach ($params as $param) {
+            if ($param->delete()) {
                 $deleted_count++;
             }
         }
@@ -53,10 +51,8 @@ class collection
         $this->apply_qb_constraints($qb, $constraints);
         $params = $qb->execute();
         $purged_count = 0;
-        foreach ($params as $param)
-        {
-            if ($param->purge())
-            {
+        foreach ($params as $param) {
+            if ($param->purge()) {
                 $purged_count++;
             }
         }
@@ -77,8 +73,7 @@ class collection
 
     private function apply_qb_constraints($qb, array $constraints)
     {
-        foreach ($constraints as $constraint)
-        {
+        foreach ($constraints as $constraint) {
             $qb->add_constraint($constraint[0], $constraint[1], $constraint[2]);
         }
         return $qb;

@@ -95,8 +95,7 @@ class property implements node
 
     public function set($name, $value)
     {
-        switch ($name)
-        {
+        switch ($name) {
             case 'unique':
             case 'index':
                 $value = ($value === 'yes');
@@ -106,8 +105,7 @@ class property implements node
                 $value = array();
                 $value['target'] = $tmp[0];
                 $value['field'] = $tmp[1];
-                if ($value['field'] !== 'id')
-                {
+                if ($value['field'] !== 'id') {
                     $this->noidlink = $value;
                     $value = null;
                     // Doctrine can't figure this out automatically, so we do it here
@@ -120,8 +118,7 @@ class property implements node
 
     public function set_multiple(array $attributes)
     {
-        foreach ($attributes as $name => $value)
-        {
+        foreach ($attributes as $name => $value) {
             $this->set($name, $value);
         }
     }
