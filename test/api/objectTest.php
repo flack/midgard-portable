@@ -240,6 +240,30 @@ class objectTest extends testcase
         $this->assertTrue($stat);
     }
 
+    public function test_create_duplicate_parentfield()
+    {
+        $sd_classname = self::$ns . '\\midgard_snippetdir';
+        $sn_classname = self::$ns . '\\midgard_snippet';
+
+        $sd = new $sd_classname;
+        $sd->name = __FUNCTION__;
+        $this->assert_api('create', $sd);
+
+        $sd2 = new $sd_classname;
+        $sd2->name = __FUNCTION__ . '2';
+        $this->assert_api('create', $sd2);
+
+        $sn = new $sn_classname;
+        $sn->name = 'dummy';
+        $sn->snippetdir = $sd->id;
+        $this->assert_api('create', $sn);
+
+        $sn2 = new $sn_classname;
+        $sn2->name = 'dummy';
+        $sn2->snippetdir = $sd2->id;
+        $this->assert_api('create', $sn2);
+    }
+
     public function test_create_invalid_guid_field()
     {
         $classname = self::$ns . '\\midgard_topic';

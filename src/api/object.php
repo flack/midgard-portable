@@ -284,6 +284,14 @@ abstract class object extends dbobject
                 $conditions->add($qb->expr()->eq('c.' . $this->cm->midgard['upfield'], ':' . $this->cm->midgard['upfield']));
                 $parameters[$this->cm->midgard['upfield']] = $this->{$this->cm->midgard['upfield']};
             }
+        } elseif (!empty($this->cm->midgard['parentfield'])) {
+            // TODO: This needs to be changed so that value is always numeric, since this is how midgard does it
+            if ($this->{$this->cm->midgard['parentfield']} === null) {
+                $conditions->add($qb->expr()->isNull('c.' . $this->cm->midgard['parentfield']));
+            } else {
+                $conditions->add($qb->expr()->eq('c.' . $this->cm->midgard['parentfield'], ':' . $this->cm->midgard['parentfield']));
+                $parameters[$this->cm->midgard['parentfield']] = $this->{$this->cm->midgard['parentfield']};
+            }
         }
         $qb->where($conditions)
             ->setParameters($parameters);
