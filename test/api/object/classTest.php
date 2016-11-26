@@ -139,4 +139,17 @@ class classTest extends testcase
         $refreshed = new $classname($topic->id);
         $this->assertFalse($refreshed->metadata->deleted);
     }
+
+    public function test_has_metadata()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $topic = new $classname;
+        $u_classname = self::$ns . '\\midgard_user';
+        $user = new $u_classname;
+
+        $this->assertTrue(midgard_object_class::has_metadata($classname));
+        $this->assertTrue(midgard_object_class::has_metadata($topic));
+        $this->assertFalse(midgard_object_class::has_metadata($u_classname));
+        $this->assertFalse(midgard_object_class::has_metadata($user));
+    }
 }

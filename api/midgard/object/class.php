@@ -9,6 +9,7 @@ use midgard\portable\storage\connection;
 use midgard\portable\storage\subscriber;
 use midgard\portable\api\error\exception;
 use midgard\portable\storage\objectmanager;
+use midgard\portable\api\metadata;
 
 class midgard_object_class
 {
@@ -125,6 +126,14 @@ class midgard_object_class
 
     public static function has_metadata($classname)
     {
+        if (is_string($classname)) {
+            $cm = connection::get_em()->getClassMetadata($classname);
+            return $cm->hasField('metadata_deleted');
+        }
+        if (is_object($classname)) {
+            return (isset($classname->metadata) && $classname->metadata instanceof metadata);
+        }
+        return false;
     }
 
     public static function get_schema_value($classname, $node_name)
