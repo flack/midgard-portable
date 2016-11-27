@@ -8,6 +8,7 @@
 namespace midgard\portable\test;
 
 use midgard_object_class;
+use midgard_connection;
 
 class classTest extends testcase
 {
@@ -131,13 +132,52 @@ class classTest extends testcase
     public function test_undelete()
     {
         $classname = self::$ns . '\\midgard_topic';
+        $con = midgard_connection::get_instance();
+
+        // test undelete on invalid guid
+        $stat = midgard_object_class::undelete("hello");
+        $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_NOT_EXISTS, $con->get_error(), $con->get_error_string());
+
+        // test undelete on not deleted topic
         $topic = new $classname;
-        $this->assert_api('create', $topic);
+        $topic->name = uniqid('t1' . time());
+        $topic->create();
+
+        $stat = midgard_object_class::undelete($topic->guid);
+        $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_INTERNAL, $con->get_error(), $con->get_error_string());
+
+        // test undelete on purged topic
+        $topic->purge();
+
+        $stat = midgard_object_class::undelete($topic->guid);
+        $this->assertFalse($stat);
+        $this->assertEquals(MGD_ERR_OBJECT_PURGED, $con->get_error(), $con->get_error_string());
+
+        // test undelete that should work
+        $initial = $this->count_results($classname);
+        $initial_all = $this->count_results($classname, true);
+
+        $topic = new $classname;
+        $name = uniqid(__FUNCTION__);
+        $topic->name = $name;
+        $topic->create();
+
         $this->assert_api('delete', $topic);
 
-        $this->assertTrue(midgard_object_class::undelete($topic->guid));
-        $refreshed = new $classname($topic->id);
-        $this->assertFalse($refreshed->metadata->deleted);
+        // after delete
+        $this->assertEquals($initial, $this->count_results($classname));
+        $this->assertEquals($initial_all + 1, $this->count_results($classname, true));
+
+        $topic->name = uniqid(__FUNCTION__ . time());
+        $stat = midgard_object_class::undelete($topic->guid);
+        $this->assertTrue($stat, $con->get_error_string());
+        $this->verify_unpersisted_changes($classname, $topic->guid, "name", $name);
+
+        // after undelete
+        $this->assertEquals($initial + 1, $this->count_results($classname));
+        $this->assertEquals($initial_all + 1, $this->count_results($classname, true));
     }
 
     public function test_has_metadata()

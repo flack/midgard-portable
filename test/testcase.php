@@ -92,6 +92,18 @@ class testcase extends \PHPUnit_Framework_TestCase
         return (int) $count;
     }
 
+    protected function verify_unpersisted_changes($classname, $guid, $cmp_field, $cmp_value)
+    {
+        // make sure unpersisted changes has not been persisted
+        $qb = new \midgard_query_builder($classname);
+        $qb->include_deleted();
+        $qb->add_constraint('guid', '=', $guid);
+        $results = $qb->execute();
+        $this->assertCount(1, $results);
+        $loaded = array_shift($results);
+        $this->assertEquals($cmp_value, $loaded->{$cmp_field}, "This object change for field \"" . $cmp_field . "\" should have not been persisted!");
+    }
+
     protected function assert_api($function, dbobject $object, $expected_error = MGD_ERR_OK)
     {
         $this->assertEquals(($expected_error === MGD_ERR_OK), $object->$function(), $function . '() returned: ' . midgard_connection::get_instance()->get_error_string());
