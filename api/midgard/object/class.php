@@ -9,7 +9,7 @@ use midgard\portable\storage\connection;
 use midgard\portable\storage\subscriber;
 use midgard\portable\api\error\exception;
 use midgard\portable\storage\objectmanager;
-use midgard\portable\api\metadata;
+use midgard\portable\storage\interfaces\metadata;
 
 class midgard_object_class
 {
@@ -36,6 +36,9 @@ class midgard_object_class
         if (    !$include_deleted
              && $result["object_action"] == subscriber::ACTION_DELETE) {
             throw exception::object_deleted();
+        }
+        if (!self::has_metadata($result["typename"])) {
+            throw exception::invalid_property_value();
         }
 
         return $result["typename"];
@@ -127,11 +130,10 @@ class midgard_object_class
     public static function has_metadata($classname)
     {
         if (is_string($classname)) {
-            $cm = connection::get_em()->getClassMetadata($classname);
-            return $cm->hasField('metadata_deleted');
+            return in_array('midgard\\portable\\storage\\interfaces\\metadata', class_implements($classname));
         }
         if (is_object($classname)) {
-            return (isset($classname->metadata) && $classname->metadata instanceof metadata);
+            return ($classname instanceof metadata);
         }
         return false;
     }

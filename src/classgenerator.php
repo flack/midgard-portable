@@ -143,9 +143,6 @@ class classgenerator
     private function write_properties(type $type)
     {
         $objects = array();
-        foreach ($type->get_mixins() as $name => $mixin) {
-            $this->add_line(' protected $' . $name . ';');
-        }
 
         foreach ($type->get_properties() as $name => $property) {
             if ($name == 'guid') {
@@ -224,8 +221,8 @@ class classgenerator
         $this->add_line('class ' . $type->name . ' extends ' . $type->extends);
         $mixins = $type->get_mixins();
         $interfaces = array_filter(array_map(function ($name) {
-            if (interface_exists('\\midgard\\portable\\storage\\' . $name . '\\entity')) {
-                return '\\midgard\\portable\\storage\\' . $name . '\\entity';
+            if (interface_exists('\\midgard\\portable\\storage\\interfaces\\' . $name)) {
+                return '\\midgard\\portable\\storage\\interfaces\\' . $name;
             }
             return false;
         }, array_keys($mixins)));

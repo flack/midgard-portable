@@ -7,7 +7,7 @@
 
 namespace midgard\portable\storage;
 
-use midgard\portable\storage\metadata\entity;
+use midgard\portable\storage\interfaces\metadata;
 use midgard\portable\api\dbobject;
 use midgard\portable\api\repligard;
 use midgard\portable\storage\type\datetime;
@@ -56,7 +56,9 @@ class subscriber implements EventSubscriber
         if (!($entity instanceof repligard)) {
             if (empty($entity->guid)) {
                 $entity->set_guid(connection::generate_guid());
+                $em->getUnitOfWork()->recomputeSingleEntityChangeSet($cm, $entity);
             }
+
             $om = new objectmanager($em);
             $repligard_cm = $em->getClassMetadata('midgard:midgard_repligard');
             $repligard_entry = $om->new_instance($repligard_cm->getName());
@@ -67,7 +69,7 @@ class subscriber implements EventSubscriber
             $em->getUnitOfWork()->computeChangeSet($repligard_cm, $repligard_entry);
         }
 
-        if ($entity instanceof entity) {
+        if ($entity instanceof metadata) {
             $entity->metadata->created = new \midgard_datetime();
             // we copy here instead of creating a new, because otherwise we might have
             // a one second difference if the code runs at the right millisecond
@@ -83,7 +85,7 @@ class subscriber implements EventSubscriber
 
     private function on_update(dbobject $entity, EntityManagerInterface $em)
     {
-        if ($entity instanceof entity) {
+        if ($entity instanceof metadata) {
             $cm = $em->getClassMetadata(get_class($entity));
             $entity->metadata_revised = new \midgard_datetime();
             $entity->metadata_revision++;
@@ -97,8 +99,8 @@ class subscriber implements EventSubscriber
         if (!($entity instanceof repligard)) {
             $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $entity->guid));
 
-            if (   $entity instanceof entity
-                && $entity->metadata->deleted) {
+            if (   $entity instanceof metadata
+                && $entity->{metadata::DELETED_FIELD}) {
                 $repligard_entry->object_action = self::ACTION_DELETE;
             } else {
                 $repligard_entry->object_action = self::ACTION_UPDATE;
@@ -118,7 +120,7 @@ class subscriber implements EventSubscriber
         }
     }
 
-    private function calculate_size(ClassMetadata $cm, entity $entity)
+    private function calculate_size(ClassMetadata $cm, metadata $entity)
     {
         $size = 0;
         foreach ($cm->getAssociationNames() as $name) {

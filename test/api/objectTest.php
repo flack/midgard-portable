@@ -347,7 +347,7 @@ class objectTest extends testcase
         $this->assertEquals($initial_all + 1, $all);
 
         // delete a topic that is already deleted
-        $this->assertTrue($topic->delete());
+        $this->assert_api('delete', $topic);
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;
@@ -403,21 +403,20 @@ class objectTest extends testcase
         $topic->name = $name;
         $topic->create();
 
-        $stat = $topic->delete();
-        $this->assertTrue($stat);
+        $this->assert_api('delete', $topic);
 
         // after delete
         $this->assertEquals($initial, $this->count_results($classname));
-        $this->assertEquals($initial_all+1, $this->count_results($classname, true));
+        $this->assertEquals($initial_all + 1, $this->count_results($classname, true));
 
         $topic->name = uniqid(__FUNCTION__ . time());
         $stat = call_user_func_array($classname . "::undelete", array($topic->guid));
-        $this->assertTrue($stat);
+        $this->assertTrue($stat, $con->get_error_string());
         $this->verify_unpersisted_changes($classname, $topic->guid, "name", $name);
 
         // after undelete
-        $this->assertEquals($initial+1, $this->count_results($classname));
-        $this->assertEquals($initial_all+1, $this->count_results($classname, true));
+        $this->assertEquals($initial + 1, $this->count_results($classname));
+        $this->assertEquals($initial_all + 1, $this->count_results($classname, true));
     }
 
     public function test_list()

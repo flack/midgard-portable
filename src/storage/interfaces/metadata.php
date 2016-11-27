@@ -5,9 +5,9 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
 
-namespace midgard\portable\storage\metadata;
+namespace midgard\portable\storage\interfaces;
 
-interface entity
+interface metadata
 {
     const DELETED_FIELD = 'metadata_deleted';
 }

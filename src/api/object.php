@@ -9,7 +9,7 @@ namespace midgard\portable\api;
 use midgard\portable\storage\connection;
 use midgard\portable\storage\objectmanager;
 use midgard\portable\storage\collection;
-use midgard\portable\storage\metadata\entity as metadata_interface;
+use midgard\portable\storage\interfaces\metadata as metadata_interface;
 use midgard\portable\mgdschema\translator;
 use midgard\portable\api\error\exception;
 use Doctrine\ORM\Query;
@@ -18,6 +18,8 @@ use Doctrine\Common\Persistence\Proxy;
 
 abstract class object extends dbobject
 {
+    protected $metadata; // compat with mgd behavior: If the schema has no metadata, the property is present anyway
+
     public $action = ''; // <== does this need to do anything?
 
     private $collections = array();
@@ -78,8 +80,8 @@ abstract class object extends dbobject
     public function __get($field)
     {
         if (   $field === 'metadata'
-            && property_exists($this, 'metadata')
-            && $this->metadata === null) {
+            && $this->metadata === null
+            && $this instanceof metadata_interface) {
             $this->metadata = new metadata($this);
         }
 
@@ -131,7 +133,7 @@ abstract class object extends dbobject
                 throw exception::object_purged();
             }
         }
-        if ($entity->metadata_deleted) {
+        if ($entity instanceof metadata_interface && $entity->{metadata_interface::DELETED_FIELD}) {
             // This can happen when the "deleted" entity is still in EM's identity map
             throw exception::object_deleted();
         }
@@ -226,9 +228,10 @@ abstract class object extends dbobject
             return false;
         }
         if (!($this instanceof metadata_interface)) {
-            return $this->purge($check_dependencies);
+            exception::invalid_property_value();
+            return false;
         }
-        if ($this->metadata_deleted) {
+        if ($this->{metadata_interface::DELETED_FIELD}) {
             return true;
         }
 
@@ -757,6 +760,10 @@ abstract class object extends dbobject
      */
     private function manage_meta_property($action, $value)
     {
+        if (!($this instanceof metadata_interface)) {
+            exception::no_metadata();
+            return false;
+        }
         $user = connection::get_user();
         if ($user === null) {
             exception::access_denied();
@@ -798,6 +805,10 @@ abstract class object extends dbobject
 
     public function is_approved()
     {
+        if (!($this instanceof metadata_interface)) {
+            exception::no_metadata();
+            return false;
+        }
         return $this->metadata_isapproved;
     }
 
@@ -817,6 +828,10 @@ abstract class object extends dbobject
 
     public function is_locked()
     {
+        if (!($this instanceof metadata_interface)) {
+            exception::no_metadata();
+            return false;
+        }
         return $this->metadata_islocked;
     }
 

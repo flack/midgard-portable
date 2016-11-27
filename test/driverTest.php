@@ -20,7 +20,7 @@ class driverTest extends testcase
         $driver = new driver(array(TESTDIR . '__files/'), $d, $ns);
         $classnames = $driver->getAllClassNames();
         $this->assertInternalType('array', $classnames);
-        $this->assertCount(11, $classnames);
+        $this->assertCount(12, $classnames);
     }
 
     public function test_loadMetadataForClass()

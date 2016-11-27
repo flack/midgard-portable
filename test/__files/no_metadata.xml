@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Schema xmlns="http://www.midgard-project.org/repligard/1.4">
+
+    <type name="midgard_no_metadata" table="no_metadata" metadata="false">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="name"     type="string" index="yes">
+            <description>URL name of the article</description>
+        </property>
+        <property name="extra1"   type="string">
+            <description>Extra string field</description>
+        </property>
+        <property name="extra2"   type="string">
+            <description>Extra string field</description>
+        </property>
+        <property name="extra3"   type="string">
+            <description>Extra string field</description>
+        </property>
+        <property name="type"     type="integer" index="yes">
+            <description>Type of the article</description>
+        </property>
+        <property name="up"       type="unsigned integer" link="midgard_article:id" upfield="up">
+            <description>Possible prior part of the article</description>
+        </property>
+        <property name="title"    type="string">
+            <description>Title of the article</description>
+        </property>
+        <property name="abstract" type="text">
+            <description>Short abstract of the article</description>
+        </property>
+        <property name="content"  type="text">
+            <description>Content of the article</description>
+        </property>
+        <property name="url"      type="string" index="yes">
+            <description>External URL of the article</description>
+        </property>
+        <property name="lang"     type="unsigned integer" link="midgard_language:id">
+            <description>Language the article is in</description>
+        </property>
+        <!-- Legacy -->
+        <property name="calstart" type="datetime">
+            <description>Date the article applies to (legacy field)</description>
+        </property>
+        <property name="caldays"  type="integer">
+            <description>Time range the article applies to, in days (legacy field)</description>
+        </property>
+        <property name="icon"     type="integer">
+            <description>Icon for the article (legacy field)</description>
+        </property>
+        <property name="view"     type="integer">
+            <description>View-scale for the article (legacy field)</description>
+        </property>
+        <property name="print"    type="integer">
+            <description>Print quality for the article (legacy field)</description>
+        </property>
+        <property name="score"    type="integer">
+            <description>Arrangement score of the article (legacy field)</description>
+        </property>
+    </type>
+
+</Schema>

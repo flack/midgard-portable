@@ -9,7 +9,7 @@ namespace midgard\portable\storage;
 
 use midgard\portable\api\dbobject;
 use midgard\portable\api\error\exception;
-use midgard\portable\storage\metadata\entity;
+use midgard\portable\storage\interfaces\metadata;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\UnitOfWork;
@@ -224,7 +224,7 @@ class objectmanager
 
     private function copy_metadata($source, $target, $action = 'update')
     {
-        if (!$source instanceof entity) {
+        if (!$source instanceof metadata) {
             return;
         }
 

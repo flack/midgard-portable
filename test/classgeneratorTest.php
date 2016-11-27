@@ -37,7 +37,7 @@ class classgeneratorTest extends testcase
         $this->assertInstanceOf($classname, $topic);
         $this->assertInstanceOf('midgard_metadata', $topic->metadata);
         $this->assertInstanceOf('midgard_datetime', $topic->metadata->created);
-        $this->assertInstanceOf('\\midgard\\portable\\storage\\metadata\\entity', $topic);
+        $this->assertInstanceOf('\\midgard\\portable\\storage\\interfaces\\metadata', $topic);
         $this->assertEquals(0, $topic->score);
         $this->assertEquals('0001-01-01 00:00:00', $topic->metadata->created->format('Y-m-d H:i:s'));
 
@@ -68,7 +68,7 @@ class classgeneratorTest extends testcase
         //$this->assertInstanceOf('midgard_group', $group);
         $this->assertInstanceOf('midgard_metadata', $group->metadata);
         $this->assertInstanceOf('midgard_datetime', $group->metadata->created);
-        $this->assertInstanceOf('\\midgard\\portable\\storage\\metadata\\entity', $group);
+        $this->assertInstanceOf('\\midgard\\portable\\storage\\interfaces\\metadata', $group);
         $this->assertEquals(0, $group->owner);
 
         $org_classname = $ns . '\\org_openpsa_organization';

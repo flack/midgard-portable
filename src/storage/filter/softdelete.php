@@ -7,7 +7,7 @@
 
 namespace midgard\portable\storage\filter;
 
-use midgard\portable\storage\metadata\entity;
+use midgard\portable\storage\interfaces\metadata;
 use Doctrine\ORM\Mapping\ClassMetaData;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 
@@ -15,9 +15,9 @@ class softdelete extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if (!$targetEntity->reflClass->implementsInterface('midgard\\portable\\storage\\metadata\\entity')) {
+        if (!$targetEntity->reflClass->implementsInterface('midgard\\portable\\storage\\interfaces\\metadata')) {
             return "";
         }
-        return $targetTableAlias . '.' . entity::DELETED_FIELD . ' = 0';
+        return $targetTableAlias . '.' . metadata::DELETED_FIELD . ' = 0';
     }
 }
