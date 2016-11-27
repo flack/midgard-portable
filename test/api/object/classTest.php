@@ -22,6 +22,7 @@ class classTest extends testcase
             $factory->getMetadataFor('midgard:midgard_topic'),
             $factory->getMetadataFor('midgard:midgard_article'),
             $factory->getMetadataFor('midgard:midgard_repligard'),
+            $factory->getMetadataFor('midgard:midgard_no_metadata'),
         );
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
@@ -103,6 +104,17 @@ class classTest extends testcase
         }
         $this->assertInstanceOf('midgard_error_exception', $e);
         $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
+    }
+
+    public function test_get_object_by_guid_no_metadata()
+    {
+        $classname = self::$ns . '\\midgard_no_metadata';
+
+        $topic = new $classname;
+        $this->assert_api('create', $topic);
+
+        $object = midgard_object_class::get_object_by_guid($topic->guid);
+        $this->assertInstanceOf($classname, $object);
     }
 
     public function test_get_property_up()

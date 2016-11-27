@@ -17,8 +17,7 @@ class midgard_object_class
     {
         $qb = connection::get_em()->createQueryBuilder();
         $qb->from('midgard:midgard_repligard', 'r')
-            ->addSelect('r.typename')
-            ->addSelect('r.object_action')
+            ->select('r.typename, r.object_action')
             ->where('r.guid = ?1')
             ->setParameter(1, $guid);
 
@@ -33,11 +32,10 @@ class midgard_object_class
         if ($result["object_action"] == subscriber::ACTION_PURGE) {
             throw exception::object_purged();
         }
-        if (    !$include_deleted
-             && $result["object_action"] == subscriber::ACTION_DELETE) {
+        if (!$include_deleted && $result["object_action"] == subscriber::ACTION_DELETE) {
             throw exception::object_deleted();
         }
-        if (!self::has_metadata($result["typename"])) {
+        if ($include_deleted && !self::has_metadata($result["typename"])) {
             throw exception::invalid_property_value();
         }
 
