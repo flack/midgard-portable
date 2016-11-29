@@ -8,7 +8,6 @@ namespace midgard\portable\mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 
-
 class factory extends ClassMetadataFactory
 {
     protected function newClassMetadataInstance($className)
