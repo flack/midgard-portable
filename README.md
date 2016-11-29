@@ -8,7 +8,7 @@ It currently contains the following functionality:
  - Support for most of the `midgard_object` API (CRUD, parameters, attachments, parent/up relations, softdelete, etc.)
  - Query Support for `midgard_query_builder`, `midgard_collector` and `midgard_object_class`
  - Metadata support, Repligard, `midgard_blob`, `midgard_user`
- - Partial support for database creation/update (`midgard_storage`) and reflection (`midgard_reflection_property`)
+ - Partial support for database creation/update (`midgard_storage`) and reflection (`midgard_reflection_property`, `midgard_reflector_object`)
 
 Usage
 --------
@@ -81,7 +81,7 @@ Known Issues & Limitations
  - Entities in Doctrine can only share the same table if there is a discriminator column which tells them apart.
    Currently, midgard-portable works around this by only registering one of the colliding classes which collects
    all properties of all affected classes. The others are then converted into aliases. This means that
-   if you have e.g. `midgard_person`` and `org_openpsa_person` schemas, you only get one entity class containing
+   if you have e.g. `midgard_person` and `org_openpsa_person` schemas, you only get one entity class containing
    the properties of both classes, and an a class alias for the second name. Which class becomes the actual class
    depends on the order the files are read, so for all practical purposes, it's random right now.
 
@@ -101,9 +101,9 @@ Known Issues & Limitations
 
 ### Runtime
 
- - It is not possible to run midgard-portable when the original Midgard (or Midgard2) extension is loaded. This is
-   problem could get addressed at some point, but it most likely wouldn't do any good, since the extension registers
-   all its classes on PHP startup, so that the adapter's classes would never get loaded.
+ - It is not possible to run midgard-portable when the original Midgard (or Midgard2) extension is loaded.
+   Even if we could work around the extensions' segfaults, it likely wouldn't do any good, since the extension registers
+   all its classes on PHP startup, so that the midgard-portable's classes would never get loaded.
 
  - Doctrine is somewhat stricter when it comes to referential integrity. So some of the more quirky behaviors of
    Midgard (like being able to purge parents while deleted children are still in the database) are more or less
