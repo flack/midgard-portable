@@ -15,7 +15,7 @@ class type
 
     public $table;
 
-    public $extends = 'midgard_object';
+    public $extends = '\\midgard\\portable\\api\\object';
 
     public $primaryfield;
 

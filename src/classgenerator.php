@@ -9,7 +9,6 @@ namespace midgard\portable;
 
 use midgard\portable\mgdschema\manager;
 use midgard\portable\mgdschema\type;
-use midgard\portable\mgdschema\mixin;
 use midgard\portable\mgdschema\property;
 use midgard\portable\mgdschema\translator;
 
