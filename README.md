@@ -44,7 +44,7 @@ Change the parameters as required. After calling `connection::initialize()`, you
 ./bin/vendor/midgard-portable schema
 ```
 
-It works very much like the `midgard-schema` tool of old, i.e. it will generate `midgard_object` classes based on MgdSchema XML files, and the accompanying mapping data and proxy classes. You will need to run this once during inital installation, and then again each time the MgdSchemas change.
+It works very much like the `midgard-schema` tool of old, i.e. it will generate `midgard_object` classes based on MgdSchema XML files, the accompanying mapping data and proxy classes, and also create/update the corresponding database tables. You will need to run this once during initial installation, and then again each time the MgdSchemas change.
 
 You can also use Doctrine's CLI runner and all the functionality it provides if you create a file under the name `cli-config.php`, with this content:
 
