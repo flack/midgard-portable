@@ -57,6 +57,9 @@ class midgard_object_class
         return new $classname($id);
     }
 
+    /**
+     * @return boolean
+     */
     public static function undelete($guid)
     {
         try {

@@ -18,10 +18,14 @@ class collection
         $this->classname = $classname;
     }
 
+    /**
+     * @param string $guid
+     * @return boolean
+     */
     public function is_empty($guid)
     {
         $qb = $this->get_qb($guid);
-        return ($qb->count() > 0);
+        return ($qb->count() == 0);
     }
 
     public function find($guid, array $constraints)
@@ -31,6 +35,11 @@ class collection
         return $qb->execute();
     }
 
+    /**
+     * @param string $guid
+     * @param array $constraints
+     * @return int
+     */
     public function delete($guid, array $constraints)
     {
         $qb = $this->get_qb($guid);
@@ -45,6 +54,11 @@ class collection
         return $deleted_count;
     }
 
+    /**
+     * @param string $guid
+     * @param array $constraints
+     * @return number
+     */
     public function purge($guid, array $constraints)
     {
         $qb = $this->get_qb($guid);

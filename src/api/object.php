@@ -15,6 +15,7 @@ use midgard\portable\api\error\exception;
 use Doctrine\ORM\Query;
 use midgard_connection;
 use Doctrine\Common\Persistence\Proxy;
+use Doctrine\ORM\QueryBuilder;
 
 abstract class object extends dbobject
 {
@@ -165,6 +166,9 @@ abstract class object extends dbobject
         return true;
     }
 
+    /**
+     * @return boolean
+     */
     public function create()
     {
         if (!empty($this->id)) {
@@ -191,6 +195,9 @@ abstract class object extends dbobject
         return ($this->id != 0);
     }
 
+    /**
+     * @return boolean
+     */
     public function update()
     {
         if (empty($this->id)) {
@@ -215,6 +222,8 @@ abstract class object extends dbobject
     /**
      * @todo: Tests indicate that $check_dependencies is ignored in the mgd2 extension,
      * so we might consider ignoring it, too
+     *
+     * @return boolean
      */
     public function delete($check_dependencies = true)
     {
@@ -483,7 +492,7 @@ abstract class object extends dbobject
     }
 
     /**
-     * @return int
+     * @return QueryBuilder
      */
     protected function get_uniquefield_query($classname, $field, $part, $upfield, $up)
     {
@@ -512,14 +521,20 @@ abstract class object extends dbobject
         return $qb;
     }
 
+    /**
+     * @return boolean
+     */
     public function parent()
     {
         return false;
     }
 
+    /**
+     * @return boolean
+     */
     public function has_parameters()
     {
-        return $this->get_collection('midgard_parameter')->is_empty($this->guid);
+        return !$this->get_collection('midgard_parameter')->is_empty($this->guid);
     }
 
     public function list_parameters($domain = false)
@@ -537,11 +552,19 @@ abstract class object extends dbobject
         return $this->get_collection('midgard_parameter')->find($this->guid, $constraints);
     }
 
+    /**
+     * @param array $constraints
+     * @return number
+     */
     public function delete_parameters(array $constraints = array())
     {
         return $this->get_collection('midgard_parameter')->delete($this->guid, $constraints);
     }
 
+    /**
+     * @param array $constraints
+     * @return number
+     */
     public function purge_parameters(array $constraints = array())
     {
         return $this->get_collection('midgard_parameter')->purge($this->guid, $constraints);
@@ -567,6 +590,12 @@ abstract class object extends dbobject
         }
     }
 
+    /**
+     * @param string $domain
+     * @param string $name
+     * @param mixed $value
+     * @return boolean
+     */
     public function set_parameter($domain, $name, $value)
     {
         $constraints = array(
@@ -623,9 +652,12 @@ abstract class object extends dbobject
         return $this->set_parameter($domain, $name, $value);
     }
 
+    /**
+     * @return boolean
+     */
     public function has_attachments()
     {
-        return $this->get_collection('midgard_attachment')->is_empty($this->guid);
+        return !$this->get_collection('midgard_attachment')->is_empty($this->guid);
     }
 
     public function list_attachments()
@@ -638,6 +670,10 @@ abstract class object extends dbobject
         return $this->get_collection('midgard_attachment')->find($this->guid, $constraints);
     }
 
+    /**
+     * @param array $constraints
+     * @return number
+     */
     public function delete_attachments(array $constraints = array())
     {
         return $this->get_collection('midgard_attachment')->delete($this->guid, $constraints);
@@ -679,6 +715,9 @@ abstract class object extends dbobject
         }
     }
 
+    /**
+     * @return boolean
+     */
     public static function serve_attachment($guid)
     {
         return false;
@@ -687,6 +726,7 @@ abstract class object extends dbobject
     /**
      * @todo: Tests indicate that $check_dependencies is ignored in the mgd2 extension,
      * so we might consider ignoring it, too
+     * @return boolean
      */
     public function purge($check_dependencies = true)
     {
@@ -716,26 +756,44 @@ abstract class object extends dbobject
         return true;
     }
 
+    /**
+     * @return boolean
+     */
     public static function undelete($guid)
     {
         return \midgard_object_class::undelete($guid);
     }
 
+    /**
+     * @return boolean
+     */
     public function connect($signal, $callback, $user_data)
     {
         return false;
     }
 
+    /**
+     * @return \midgard_query_builder
+     */
     public static function new_query_builder()
     {
         return new \midgard_query_builder(get_called_class());
     }
 
+    /**
+     *
+     * @param string $field
+     * @param mixed $value
+     * @return \midgard_collector
+     */
     public static function new_collector($field, $value)
     {
         return new \midgard_collector(get_called_class(), $field, $value);
     }
 
+    /**
+     * @return \midgard_reflection_property
+     */
     public static function new_reflection_property()
     {
         return new \midgard_reflection_property(get_called_class());
@@ -746,6 +804,9 @@ abstract class object extends dbobject
         parent::__set('guid', $guid);
     }
 
+    /**
+     * @return boolean
+     */
     public function emit($signal)
     {
         return false;
@@ -798,11 +859,17 @@ abstract class object extends dbobject
         return true;
     }
 
+    /**
+     * @return boolean
+     */
     public function approve()
     {
         return $this->manage_meta_property("approve", true);
     }
 
+    /**
+     * @return boolean
+     */
     public function is_approved()
     {
         if (!($this instanceof metadata_interface)) {
@@ -812,11 +879,17 @@ abstract class object extends dbobject
         return $this->metadata_isapproved;
     }
 
+    /**
+     * @return boolean
+     */
     public function unapprove()
     {
         return $this->manage_meta_property("approve", false);
     }
 
+    /**
+     * @return boolean
+     */
     public function lock()
     {
         if ($this->is_locked()) {
@@ -826,6 +899,9 @@ abstract class object extends dbobject
         return $this->manage_meta_property("lock", true);
     }
 
+    /**
+     * @return boolean
+     */
     public function is_locked()
     {
         if (!($this instanceof metadata_interface)) {
@@ -835,11 +911,17 @@ abstract class object extends dbobject
         return $this->metadata_islocked;
     }
 
+    /**
+     * @return boolean
+     */
     public function unlock()
     {
         return $this->manage_meta_property("lock", false);
     }
 
+    /**
+     * @return boolean
+     */
     public function get_workspace()
     {
         return false;
