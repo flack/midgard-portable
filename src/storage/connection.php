@@ -161,10 +161,10 @@ class connection
         $db_config = self::$parameters['db_config'];
         $dev_mode = self::$parameters['dev_mode'];
         $vardir = $driver->get_vardir();
-        // generate and include midgard_objects.php if its a fresh namespace
+        // generate and include entities file if its a fresh namespace
         // otherwise it should be included already
         if ($driver->is_fresh_namespace()) {
-            $entityfile = $vardir . '/midgard_objects.php';
+            $entityfile = $vardir . '/mgdschema_classes.php';
             if ($dev_mode) {
                 $classgenerator = new classgenerator($driver->get_manager(), $entityfile, $dev_mode);
                 $classgenerator->write($driver->get_namespace());

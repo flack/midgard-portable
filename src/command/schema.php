@@ -54,14 +54,14 @@ class schema extends Command
         require $path;
 
         $mgd_config = midgard_connection::get_instance()->config;
-        $mgdobjects_file = $mgd_config->vardir . '/midgard_objects.php';
-        if (   file_exists($mgdobjects_file)
-            && !unlink($mgdobjects_file)) {
-            throw new \RuntimeException('Could not unlink ' . $mgdobjects_file);
+        $mgdschema_file = $mgd_config->vardir . '/mgdschema_classes.php';
+        if (   file_exists($mgdschema_file)
+            && !unlink($mgdschema_file)) {
+            throw new \RuntimeException('Could not unlink ' . $mgdschema_file);
         }
         if (connection::get_parameter('dev_mode') !== true) {
             $driver = connection::get_parameter('driver');
-            $classgenerator = new classgenerator($driver->get_manager(), $mgdobjects_file);
+            $classgenerator = new classgenerator($driver->get_manager(), $mgdschema_file);
             $classgenerator->write($driver->get_namespace());
         }
         if (!file_exists($mgd_config->blobdir . '/0/0')) {

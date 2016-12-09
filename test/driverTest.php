@@ -62,9 +62,9 @@ class driverTest extends testcase
         $ns = uniqid(__CLASS__ . '\\' . __FUNCTION__);
         $d = sys_get_temp_dir();
         $driver = new driver(array(TESTDIR . '__files/duplicate_tablenames/'), $d, $ns);
-        $classgenerator = new classgenerator($driver->get_manager(), $d . '/midgard_objects.php');
+        $classgenerator = new classgenerator($driver->get_manager(), $d . '/mgdschema_classes.php');
         $classgenerator->write($ns);
-        include $d . '/midgard_objects.php';
+        include $d . '/mgdschema_classes.php';
 
         $classname = $ns . '\\midgard_member';
         $classname = get_class(new $classname);
