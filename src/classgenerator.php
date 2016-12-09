@@ -79,7 +79,6 @@ class classgenerator
         if (!empty($namespace)) {
             $this->add_line('namespace ' . $namespace . ';');
             $this->add_line('use midgard\\portable\\api\\object as midgard_object;');
-            $this->add_line('use midgard_metadata;');
             $this->add_line('use midgard_datetime;');
         }
         $this->add_line('use midgard\\portable\\api\\user as base_user;');
@@ -87,6 +86,7 @@ class classgenerator
         $this->add_line('use midgard\\portable\\api\\parameter as base_parameter;');
         $this->add_line('use midgard\\portable\\api\\repligard as base_repligard;');
         $this->add_line('use midgard\\portable\\api\\attachment as base_attachment; ');
+        $this->add_line('use midgard\\portable\\api\\metadata as midgard_metadata; ');
 
         foreach ($types as $type) {
             $this->convert_type($type);
@@ -223,6 +223,9 @@ class classgenerator
                 $line = translator::to_phptype($property->type) . ' $' . $name . ' ' . $property->description;
                 $this->add_line(' * @property ' . $line, true);
             }
+        }
+        foreach ($type->get_mixins() as $name => $mixin) {
+            $this->add_line(' * @property ' . $mixin->name . ' $' . $name, true);
         }
         $this->add_line('*/', true);
     }
