@@ -34,14 +34,12 @@ class type
     public $field_aliases = array();
 
     /**
-     *
-     * @var array
+     * @var mixin[]
      */
     protected $mixins = array();
 
     /**
-     *
-     * @var array
+     * @var property[]
      */
     private $properties = array();
 
@@ -86,11 +84,17 @@ class type
         return array_key_exists($name, $this->properties);
     }
 
+    /**
+     * @return property[]
+     */
     public function get_properties()
     {
         return $this->properties;
     }
 
+    /**
+     * @return mixin[]
+     */
     public function get_mixins()
     {
         return $this->mixins;

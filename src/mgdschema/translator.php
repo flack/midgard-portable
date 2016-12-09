@@ -33,6 +33,17 @@ class translator
         'float' => self::TYPE_FLOAT
     );
 
+    public static function to_phptype($typeattribute)
+    {
+        if (!array_key_exists($typeattribute, self::$typemap)) {
+            throw new \Exception('unknown type ' . $typeattribute);
+        }
+        $search = array('unsigned ', 'guid',   'datetime', 'text', 'longtext');
+        $replace = array('', 'string', 'midgard_datetime', 'string', 'string');
+
+        return str_replace($search, $replace, $typeattribute);
+    }
+
     public static function to_constant($typeattribute)
     {
         if (!array_key_exists($typeattribute, self::$typemap)) {

@@ -216,8 +216,20 @@ class classgenerator
         $this->add_line('}');
     }
 
+    private function write_annotations(type $type)
+    {
+        $this->add_line('/**');
+        foreach ($type->get_properties() as $name => $property) {
+            if (strpos($property->name, 'metadata_') !== 0) {
+                $this->add_line(' * @property ' . translator::to_phptype($property->type) . ' $' . $name . ' ' . $property->description);
+            }
+        }
+        $this->add_line('*/');
+    }
+
     private function begin_class(type $type)
     {
+        $this->write_annotations($type);
         $this->add_line('class ' . $type->name . ' extends ' . $type->extends);
         $mixins = $type->get_mixins();
         $interfaces = array_filter(array_map(function ($name) {
