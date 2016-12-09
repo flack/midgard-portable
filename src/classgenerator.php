@@ -45,10 +45,10 @@ class classgenerator
         $this->dev_mode = $dev_mode;
     }
 
-    private function add_line($line)
+    private function add_line($line, $force_break = false)
     {
         $this->output .= $line;
-        if ($this->dev_mode) {
+        if ($force_break || $this->dev_mode) {
             $this->output .= "\n";
         } else {
             $this->output .= ' ';
@@ -217,13 +217,14 @@ class classgenerator
 
     private function write_annotations(type $type)
     {
-        $this->add_line('/**');
+        $this->add_line('/**', true);
         foreach ($type->get_properties() as $name => $property) {
             if (strpos($property->name, 'metadata_') !== 0) {
-                $this->add_line(' * @property ' . translator::to_phptype($property->type) . ' $' . $name . ' ' . $property->description);
+                $line = translator::to_phptype($property->type) . ' $' . $name . ' ' . $property->description;
+                $this->add_line(' * @property ' . $line, true);
             }
         }
-        $this->add_line('*/');
+        $this->add_line('*/', true);
     }
 
     private function begin_class(type $type)
