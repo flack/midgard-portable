@@ -167,5 +167,6 @@ class schema extends Command
             $progress->advance();
         }
         $progress->finish();
+        $output->writeln('');
     }
 }
