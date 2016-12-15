@@ -1,14 +1,76 @@
 midgard-portable [![Build Status](https://travis-ci.org/flack/midgard-portable.svg?branch=master)](https://travis-ci.org/flack/midgard-portable) [![Code Coverage](https://scrutinizer-ci.com/g/flack/midgard-portable/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/flack/midgard-portable/?branch=master)
 ================
 
-This library provides as emulation of the Midgard API for Doctrine.
-It currently contains the following functionality:
+This library provides an ActiveRecord ORM built on top of Doctrine 2 and is modeled after the [Midgard](http://www.midgard-project.org) API. 
 
- - Creating Doctrine ClassMetadata and `midgard_dbobject` based Entity classes from MgdSchema XML files
- - Support for most of the `midgard_object` API (CRUD, parameters, attachments, parent/up relations, softdelete, etc.)
- - Query Support for `midgard_query_builder`, `midgard_collector` and `midgard_object_class`
- - Metadata support, Repligard, `midgard_blob`, `midgard_user`
- - Partial support for database creation/update (`midgard_storage`) and reflection (`midgard_reflection_property`, `midgard_reflector_object`)
+In a Nutshell
+-------------
+
+You can define your entities in XML (usually referred to MdgSchema):
+
+```xml
+<type name="my_person" table="person">
+    <property name="id" type="unsigned integer" primaryfield="id">
+        <description>Local database identifier</description>
+    </property>
+    <property name="firstname" type="string" index="yes">
+        <description>First name of the person</description>
+    </property>
+    <property name="lastname" type="string" index="yes">
+        <description>Last name of the person</description>
+    </property>
+</type>
+```
+
+Running `midgard-portable schema` will create a corresponding database table and a PHP class (usually referred to as the MgdSchema class). You can use this to read from and write to the DB:
+
+```php
+// create a new person
+$person = new my_person();
+$person->firstname = 'Alice';
+if ($person->create()) {
+    echo 'Created person #' . $person->id;
+}
+// load a new copy of the same person 
+$loaded = new my_person($person->id);
+$loaded->firstname = 'Bob';
+if ($loaded->update()) {
+    echo 'Person #' . $person->id . ' renamed from ' . $person->firstname . ' to ' . $loaded->firstname;
+}
+```
+
+midgard-portable automatically adds metadata to the record:
+
+```php
+$person = new my_person();
+$person->firstname = 'Alice';
+$person->create();
+sleep(1);
+$person->lastname = 'Cooper';
+$person->update();
+echo 'Person was created on ' . $person->metadata->created->format('Y-m-d H:i:s');
+echo  ' and last updated on ' . $person->metadata->updated->format('Y-m-d H:i:s');
+```
+
+It also supports soft-delete:
+
+```php
+$person = new my_person();
+$person->firstname = 'Alice';
+$person->create();
+$person->delete();
+try {
+    $loaded = new my_person($person->id);
+} catch (midgard_error_exception $e) {
+    echo $e->getMessage(); // prints "Object does not exist."
+}
+// Revert the deletion
+my_person::undelete($person->guid);
+// or remove the entry completely
+$person->purge();
+```
+
+There's also support for querying, object trees, links, working with files, import/export of data and lots more, but until there is time to document all that, you'll have to read the source to find out (the unit tests might also be a good starting point).
 
 Usage
 --------
@@ -20,8 +82,7 @@ To include `midgard-portable` in your application, simply `require` it in your `
 use midgard\portable\driver;
 use midgard\portable\storage\connection;
 
-$db_config = array
-(
+$db_config = array(
     'driver' => 'pdo_sqlite',
     'memory' => true
 );
@@ -54,12 +115,18 @@ require 'my_settings_file.php'; //This needs to contain the code shown above
 $entityManager = connection::get_em();
 ```
 
-Goals
+Midgard Compatibilty Notes
 -----
 
-For the moment, the goal is to implement enough of the Midgard API to run [openpsa](https://github.com/flack/openpsa)
-on. This means that both older features (like MultiLang or Sitegroups) and newer features (like Workspaces) are out of
-scope. But Pull Requests are of course welcome, so if anyone feels motivated to work on those areas, go right ahead!
+This library currently contains the following Midgard API functionality:
+
+ - Creating Doctrine ClassMetadata and `midgard_dbobject` based Entity classes from MgdSchema XML files
+ - Support for most of the `midgard_object` API (CRUD, parameters, attachments, parent/up relations, softdelete, etc.)
+ - Query Support for `midgard_query_builder`, `midgard_collector` and `midgard_object_class`
+ - Metadata support, Repligard, `midgard_blob`, `midgard_user`
+ - Partial support for database creation/update (`midgard_storage`) and reflection (`midgard_reflection_property`, `midgard_reflector_object`)
+
+This is all that is needed to run [openpsa](https://github.com/flack/openpsa). Both older Midgard features (like MultiLang or Sitegroups) and newer features (like Workspaces) are out of scope, but Pull Requests are of course welcome, so if anyone feels motivated to work on those areas, go right ahead!
 
 Structure
 --------
