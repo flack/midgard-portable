@@ -35,7 +35,7 @@ if ($person->create()) {
 $loaded = new my_person($person->id);
 $loaded->firstname = 'Bob';
 if ($loaded->update()) {
-    echo 'Person #' . $person->id . ' renamed from ' . $person->firstname . ' to ' . $loaded->firstname;
+    echo 'Renamed from ' . $person->firstname . ' to ' . $loaded->firstname;
 }
 ```
 
