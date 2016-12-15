@@ -1,6 +1,6 @@
 {
     "name": "openpsa/midgard-portable",
-    "description": "Pure PHP implementation of (parts of) the Midgard2 API",
+    "description": "ActiveRecord ORM built on top of Doctrine 2",
     "license": "LGPL",
     "authors": [
         {
