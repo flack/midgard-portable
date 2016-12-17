@@ -134,16 +134,6 @@ abstract class query
         return $count;
     }
 
-    public function set_lang($language)
-    {
-        throw new \Exception("Not implemented");
-    }
-
-    public function toggle_read_only($toggle = false)
-    {
-        throw new \Exception("Not implemented");
-    }
-
     public function set_limit($limit)
     {
         $this->qb->setMaxResults($limit);
