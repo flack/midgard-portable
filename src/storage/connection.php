@@ -122,6 +122,9 @@ class connection
      */
     public static function initialize(driver $driver, array $db_config, $dev_mode = false)
     {
+        if (extension_loaded('midgard') || extension_loaded('midgard2')) {
+            throw new \RuntimeException('midgard-portable cannot run while a Midgard extension is loaded');
+        }
         $vardir = $driver->get_vardir();
 
         $mgd_config = new config;
