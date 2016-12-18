@@ -15,6 +15,7 @@ use midgard\portable\api\error\exception;
 use midgard\portable\storage\type\datetime;
 use Doctrine\ORM\EntityManager;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Common\Cache\ClearableCache;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use midgard_connection;
@@ -107,6 +108,17 @@ class connection
     {
         $sql = 'SELECT ' . self::get_em()->getConnection()->getDatabasePlatform()->getGuidExpression();
         return md5(self::get_em()->getConnection()->query($sql)->fetchColumn(0));
+    }
+
+    /**
+     * Invalidate ClassMetadata cache
+     */
+    public static function invalidate_cache()
+    {
+        $cache = self::get_em()->getConfiguration()->getMetadataCacheImpl();
+        if ($cache && $cache instanceof ClearableCache) {
+            $cache->deleteAll();
+        }
     }
 
     /**

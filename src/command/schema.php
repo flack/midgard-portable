@@ -21,7 +21,6 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\DBAL\Schema\Comparator;
 use Symfony\Component\Console\Input\InputOption;
 use Doctrine\Common\Proxy\ProxyGenerator;
-use Doctrine\Common\Cache\ClearableCache;
 
 /**
  * (Re)generate mapping information from MgdSchema XMLs
@@ -70,10 +69,7 @@ class schema extends Command
         }
         connection::startup();
         $em = connection::get_em();
-        $cache = $em->getConfiguration()->getMetadataCacheImpl();
-        if ($cache && $cache instanceof ClearableCache) {
-            $cache->deleteAll();
-        }
+        connection::invalidate_cache();
         $cms = $em->getMetadataFactory()->getAllMetadata();
 
         // create storage
