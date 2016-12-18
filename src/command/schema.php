@@ -157,7 +157,7 @@ class schema extends Command
 
         foreach ($sql as $sql_line) {
             if ($output->getVerbosity() == OutputInterface::VERBOSITY_VERBOSE) {
-                $output->writeln('Executing <info>' . $sql_line . '</info>');
+                $output->writeln(' Executing <info>' . $sql_line . '</info>');
             }
             try {
                 $conn->executeQuery($sql_line);
