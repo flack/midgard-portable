@@ -48,13 +48,12 @@ class midgard_collector extends midgard_query_builder
             return false;
         }
 
-        try {
-            $property_select = $this->build_property_select($property);
-        } catch (exception $e) {
-            return false;
-        }
         if (!isset($this->value_properties[$property])) {
-            $this->value_properties[$property] = $property_select;
+            try {
+                $this->value_properties[$property] = $this->build_property_select($property);
+            } catch (exception $e) {
+                return false;
+            }
         }
         return true;
     }
