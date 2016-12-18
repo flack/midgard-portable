@@ -168,7 +168,7 @@ class connection
         // otherwise it should be included already
         if ($driver->is_fresh_namespace()) {
             $entityfile = $vardir . '/mgdschema_classes.php';
-            if ($dev_mode) {
+            if ($dev_mode || !file_exists($entityfile)) {
                 $classgenerator = new classgenerator($driver->get_manager(), $entityfile, $dev_mode);
                 $classgenerator->write($driver->get_namespace());
             }
