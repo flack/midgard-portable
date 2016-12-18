@@ -13,7 +13,7 @@ use midgard\portable\api\user;
 use midgard\portable\api\config;
 use midgard\portable\api\error\exception;
 use midgard\portable\storage\type\datetime;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityManager;
 use Doctrine\DBAL\Types\Type;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -60,7 +60,7 @@ class connection
     private $user;
 
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var \Doctrine\ORM\EntityManager
      */
     protected $em;
 
@@ -69,13 +69,13 @@ class connection
      */
     protected static $instance;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManager $em)
     {
         $this->em = $em;
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManagerInterface
+     * @return \Doctrine\ORM\EntityManager
      */
     public static function get_em()
     {
