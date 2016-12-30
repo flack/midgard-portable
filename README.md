@@ -70,7 +70,19 @@ my_person::undelete($person->guid);
 $person->purge();
 ```
 
-There's also support for querying, object trees, links, working with files, import/export of data and lots more, but until there is time to document all that, you'll have to read the source to find out (the unit tests might also be a good starting point).
+You can query entries like this:
+
+```php
+$qb = new midgard_query_builder('my_person');
+$qb->add_constraint('metadata.created', '>', '2012-12-10 10:00:00');
+$qb->add_order('firstname');
+foreach ($qb->execute() as $result) {
+    echo $result->lastname . "\n";
+}
+```
+Or, you simply use Doctrine's builtin `QueryBuilder`. 
+
+Then, there's object trees, links, working with files, import/export of data and lots more, but until there is time to document all that, you'll have to read the source to find out (the unit tests might also be a good starting point).
 
 Usage
 --------
