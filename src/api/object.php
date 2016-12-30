@@ -466,7 +466,12 @@ abstract class object extends dbobject
         foreach ($parts as $part) {
             $qb = $this->get_uniquefield_query($parentclass, $field, $part, $parentfield, $up);
             $qb->select("c.id");
-            $up = intval($qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR));
+            // workaround for http://www.doctrine-project.org/jira/browse/DDC-2655
+            try {
+                $up = intval($qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR));
+            } catch (\Doctrine\ORM\NoResultException $e) {
+                $up = 0;
+            }
             if ($up === 0) {
                 exception::not_exists();
                 $this->id = 0;

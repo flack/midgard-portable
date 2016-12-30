@@ -643,6 +643,9 @@ class objectTest extends testcase
         $this->assertFalse($x->get_by_path('/' . $sd->name . '/nonexistant'));
         $this->assertEquals('', $x->guid);
 
+        $this->assertFalse($x->get_by_path('/' . $sd->name . '-notavailable/nonexistant'));
+        $this->assertEquals('', $x->guid);
+
         $x = new $s_classname;
         $this->assertTrue($x->get_by_path('/' . $sd->name . '/' . $sn->name));
         $this->assertEquals($sn->guid, $x->guid);
