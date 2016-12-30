@@ -7,7 +7,7 @@
 
 function mgd_version()
 {
-    return '0.9.2-portable';
+    return '0.9.2-portable+git';
 }
 
 function mgd_is_guid($input)
