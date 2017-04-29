@@ -251,6 +251,15 @@ class driver implements driver_interface
                 $mapping['comment'] = $property->dbtype;
                 return $mapping;
             }
+        } elseif (strpos(strtolower($property->dbtype), 'decimal') === 0) {
+            $matches = array();
+            preg_match('/DECIMAL\((\d+),(\d+)\)/i', $property->dbtype, $matches);
+            $mapping = array(
+                'type' => dtype::DECIMAL,
+                'precision' => $matches[1],
+                'scale' => $matches[2]
+            );
+            return $mapping;
         }
 
         throw new \Exception($property->get_parent()->name . ': ' . $property->name . ' ' . $property->dbtype . ' not implemented yet');
