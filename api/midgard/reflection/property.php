@@ -12,7 +12,6 @@ use midgard\portable\mgdschema\translator;
 class midgard_reflection_property
 {
     /**
-     *
      * @var Doctrine\Common\Persistence\Mapping\ClassMetadata
      */
     private $cm;
@@ -28,6 +27,12 @@ class midgard_reflection_property
         $this->cm = $cmf->getMetadataFor($classname);
     }
 
+    /**
+     * Returns field's description, if any
+     *
+     * @param string $property
+     * @return string|NULL
+     */
     public function description($property)
     {
         if (!$this->cm->hasField($property)) {
@@ -45,6 +50,12 @@ class midgard_reflection_property
         return $this->cm->getFieldMapping($property);
     }
 
+    /**
+     * Is this field a link or not
+     *
+     * @param string $property
+     * @return boolean
+     */
     public function is_link($property)
     {
         if ($this->cm->hasAssociation($property)) {
@@ -62,6 +73,12 @@ class midgard_reflection_property
         return isset($mapping["noidlink"]);
     }
 
+    /**
+     * Returns the classname for the link target
+     *
+     * @param string $property
+     * @return string|NULL
+     */
     public function get_link_name($property)
     {
         if ($this->cm->hasAssociation($property)) {
@@ -78,6 +95,12 @@ class midgard_reflection_property
         return null;
     }
 
+    /**
+     * Returns the target field name
+     *
+     * @param string $property
+     * @return string|NULL
+     */
     public function get_link_target($property)
     {
         if ($this->cm->hasAssociation($property)) {
@@ -94,6 +117,12 @@ class midgard_reflection_property
         return null;
     }
 
+    /**
+     * Returns field type constant
+     *
+     * @param string $property
+     * @return integer
+     */
     public function get_midgard_type($property)
     {
         if ($this->cm->hasField($property)) {
