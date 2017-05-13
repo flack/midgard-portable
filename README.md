@@ -127,7 +127,7 @@ require 'my_settings_file.php'; //This needs to contain the code shown above
 $entityManager = connection::get_em();
 ```
 
-Midgard Compatibilty Notes
+Midgard Compatibility Notes
 -----
 
 This library currently contains the following Midgard API functionality:
@@ -212,3 +212,13 @@ Known Issues & Limitations
    by running the `midgard-portable schema` command
 
  - When converting a Midgard1 database directly to midgard-portable (with `openpsa/installer`), the primary key of the repligard table will change. In some situations, Doctrine may not be able to do this automatically, if you get an exception during the conversion, you can work around it by removing the primary key directly from the database
+ 
+ - newer MySQL version will throw `SQLSTATE[22007]: Invalid datetime format` errors on converted legacy databases, you can get around them by adding:
+ 
+ ```php
+         'driverOptions' => array(
+            1002 => "SET SESSION sql_mode='ALLOW_INVALID_DATES'"
+        ),
+ ```
+ 
+ to your $db_config
