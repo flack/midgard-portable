@@ -187,10 +187,9 @@ abstract class query
     }
 
     /**
-     *
      * @return Doctrine\ORM\Query\Expr:
      */
-    protected function get_current_group()
+    public function get_current_group()
     {
         if (empty($this->groupstack)) {
             $this->begin_group('AND');
