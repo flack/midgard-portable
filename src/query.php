@@ -60,6 +60,14 @@ abstract class query
 
     abstract public function execute();
 
+    /**
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function get_doctrine()
+    {
+        return $this->qb;
+    }
+
     public function add_constraint_with_property($name, $operator, $property)
     {
         //TODO: INTREE & IN operator functionality ?
