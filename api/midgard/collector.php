@@ -95,7 +95,7 @@ class midgard_collector extends midgard_query_builder
             }
         }
 
-        $this->qb->select(implode(", ", $properties));
+        $this->qb->addSelect(implode(", ", $properties));
         $this->pre_execution();
         $results = $this->qb->getQuery()->getArrayResult();
         $this->post_execution();

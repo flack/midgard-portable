@@ -31,7 +31,7 @@ class midgard_query_builder extends query
     public function execute()
     {
         $this->check_groups();
-        $this->qb->select('c');
+        $this->qb->addSelect('c');
         $this->pre_execution();
         $query = $this->qb->getQuery();
         $result = $query->getResult();
