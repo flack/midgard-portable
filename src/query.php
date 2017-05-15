@@ -133,12 +133,18 @@ abstract class query
 
     public function count()
     {
+        $select = $this->qb->getDQLPart('select');
         $this->check_groups();
         $this->qb->select("count(c.id)");
         $this->pre_execution();
         $count = intval($this->qb->getQuery()->getSingleScalarResult());
 
         $this->post_execution();
+        if (empty($select)) {
+            $this->qb->resetDQLPart('select');
+        } else {
+            $this->qb->add('select', $select);
+        }
         return $count;
     }
 
