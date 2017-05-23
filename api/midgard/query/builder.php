@@ -28,6 +28,9 @@ class midgard_query_builder extends query
         }
     }
 
+    /**
+     * @return midgard\portable\api\object[]
+     */
     public function execute()
     {
         $this->check_groups();
