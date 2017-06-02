@@ -28,6 +28,19 @@ class midgard_reflection_property
     }
 
     /**
+     * @param string $property The property name
+     * @param boolean $metadata Check metadata properties instead
+     * @return boolean Indicating existence
+     */
+    public function property_exists($property, $metadata = false)
+    {
+        if ($metadata) {
+            $property = 'metadata_' . $property;
+        }
+        return ($this->cm->hasField($property) || $this->cm->hasAssociation($property) || array_key_exists($property, $this->cm->midgard['field_aliases']));
+    }
+
+    /**
      * Returns field's description, if any
      *
      * @param string $property
