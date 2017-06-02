@@ -12,7 +12,7 @@ use midgard\portable\mgdschema\translator;
 class midgard_reflection_property
 {
     /**
-     * @var Doctrine\Common\Persistence\Mapping\ClassMetadata
+     * @var midgard\portable\mapping\classmetadata
      */
     private $cm;
 

@@ -49,4 +49,13 @@ class propertyTest extends testcase
         $this->assertEquals('Arrangement score of the topic (legacy field)', $ref->description('score'));
         $this->assertEquals(null, $ref->description('xxx'));
     }
+
+    public function test_property_exists()
+    {
+        $ref = new midgard_reflection_property('midgard_topic');
+        $this->assertFalse($ref->property_exists('xxx'));
+        $this->assertTrue($ref->property_exists('up'));
+        $this->assertTrue($ref->property_exists('title'));
+        $this->assertTrue($ref->property_exists('created', true));
+    }
 }
