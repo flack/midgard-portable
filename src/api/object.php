@@ -117,6 +117,10 @@ abstract class object extends dbobject
         return null;
     }
 
+    /**
+     * @param integer $id
+     * @return boolean
+     */
     public function get_by_id($id)
     {
         $entity = connection::get_em()->find(get_class($this), $id);
@@ -150,6 +154,10 @@ abstract class object extends dbobject
         return true;
     }
 
+    /**
+     * @param string $guid
+     * @return boolean
+     */
     public function get_by_guid($guid)
     {
         if (!mgd_is_guid($guid)) {
@@ -434,6 +442,10 @@ abstract class object extends dbobject
         return array();
     }
 
+    /**
+     * @param string $path
+     * @return boolean
+     */
     public function get_by_path($path)
     {
         $parts = explode('/', trim($path, '/'));

@@ -33,6 +33,10 @@ class midgard_collector extends midgard_query_builder
         }
     }
 
+    /**
+     * @param string $property
+     * @return boolean
+     */
     public function set_key_property($property)
     {
         // after execute there is no sense in changing the key property
@@ -44,6 +48,10 @@ class midgard_collector extends midgard_query_builder
         return true;
     }
 
+    /**
+     * @param string $property
+     * @return boolean
+     */
     public function add_value_property($property)
     {
         if ($this->_results !== null) {
@@ -82,6 +90,9 @@ class midgard_collector extends midgard_query_builder
         return $parsed['name'];
     }
 
+    /**
+     * @return boolean
+     */
     public function execute()
     {
         if ($this->_results !== null) {
@@ -168,8 +179,6 @@ class midgard_collector extends midgard_query_builder
     }
 
     /**
-     *
-     *
      * @return array
      */
     public function list_keys()
