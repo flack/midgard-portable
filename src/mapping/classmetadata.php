@@ -41,13 +41,13 @@ class classmetadata extends base_metadata
                 return $input;
             }
         });
-            if ($metadata === false) {
-                $properties[] = 'metadata';
-            } else {
-                $properties = array_map(function($input) {
-                    return str_replace('metadata_', '', $input);
-                }, $properties);
-            }
-            return $properties;
+        if ($metadata === false) {
+            $properties[] = 'metadata';
+        } else {
+            $properties = array_map(function($input) {
+                return str_replace('metadata_', '', $input);
+            }, $properties);
+        }
+        return $properties;
     }
 }
