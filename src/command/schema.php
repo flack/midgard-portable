@@ -27,6 +27,8 @@ use Doctrine\Common\Proxy\ProxyGenerator;
  */
 class schema extends Command
 {
+    public $connected = false;
+
     protected function configure()
     {
         $this->setName('schema')
@@ -37,21 +39,23 @@ class schema extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $path = $input->getArgument('config');
-        if (empty($path)) {
-            if (file_exists(OPENPSA_PROJECT_BASEDIR . 'config/midgard-portable.inc.php')) {
-                $path = OPENPSA_PROJECT_BASEDIR . 'config/midgard-portable.inc.php';
-            } else {
-                $dialog = $this->getHelper('question');
-                $path = $dialog->ask($input, $output, new Question('<question>Enter path to config file</question>'));
+        if (!$this->connected) {
+            $path = $input->getArgument('config');
+            if (empty($path)) {
+                if (file_exists(OPENPSA_PROJECT_BASEDIR . 'config/midgard-portable.inc.php')) {
+                    $path = OPENPSA_PROJECT_BASEDIR . 'config/midgard-portable.inc.php';
+                } else {
+                    $dialog = $this->getHelper('question');
+                    $path = $dialog->ask($input, $output, new Question('<question>Enter path to config file</question>'));
+                }
             }
+            if (!file_exists($path)) {
+                throw new \RuntimeException('Config file ' . $path . ' not found');
+            }
+            //we have to delay startup so that we can delete the entity class file before it gets included
+            connection::set_autostart(false);
+            require $path;
         }
-        if (!file_exists($path)) {
-            throw new \RuntimeException('Config file ' . $path . ' not found');
-        }
-        //we have to delay startup so that we can delete the entity class file before it gets included
-        connection::set_autostart(false);
-        require $path;
 
         $mgd_config = midgard_connection::get_instance()->config;
         $mgdschema_file = $mgd_config->vardir . '/mgdschema_classes.php';
