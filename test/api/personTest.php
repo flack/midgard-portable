@@ -35,8 +35,7 @@ class personTest extends testcase
         $member->gid = $grp->id;
         $this->assertTrue($member->create());
 
-        // disabled because of http://www.doctrine-project.org/jira/browse/DDC-2761
-        //self::$em->clear();
+        self::$em->clear();
 
         $member = new $member_class($member->id);
         $person = new $person_class($person->id);

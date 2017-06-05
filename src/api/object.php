@@ -478,12 +478,7 @@ abstract class object extends dbobject
         foreach ($parts as $part) {
             $qb = $this->get_uniquefield_query($parentclass, $field, $part, $parentfield, $up);
             $qb->select("c.id");
-            // workaround for http://www.doctrine-project.org/jira/browse/DDC-2655
-            try {
-                $up = intval($qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR));
-            } catch (\Doctrine\ORM\NoResultException $e) {
-                $up = 0;
-            }
+            $up = intval($qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR));
             if ($up === 0) {
                 exception::not_exists();
                 $this->id = 0;
@@ -599,12 +594,7 @@ abstract class object extends dbobject
             ->where('c.domain = :domain AND c.name = :name AND c.parentguid = :parentguid')
             ->setParameters(['domain' => $domain, 'name' => $name, 'parentguid' => $this->guid]);
 
-        // workaround for http://www.doctrine-project.org/jira/browse/DDC-2655
-        try {
-            return $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR);
-        } catch (\Doctrine\ORM\NoResultException $e) {
-            return null;
-        }
+        return $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR);
     }
 
     /**
