@@ -363,7 +363,7 @@ class objectTest extends testcase
         $this->assert_api('create', $topic);
         $this->assert_api('delete', $topic);
 
-        $stat = call_user_func_array($classname . "::undelete", array($topic->guid));
+        $stat = call_user_func_array($classname . "::undelete", [$topic->guid]);
         $this->assertTrue($stat);
         $refreshed = new $classname($topic->id);
         $this->assertFalse($refreshed->metadata->deleted);
@@ -381,7 +381,7 @@ class objectTest extends testcase
         $topic2->name = __FUNCTION__;
         $topic2->create();
 
-        $this->assertEquals(array(), $topic2->list());
+        $this->assertEquals([], $topic2->list());
         $children = $topic->list();
         $this->assertInternalType('array', $children);
         $this->assertCount(1, $children);
@@ -825,8 +825,8 @@ class objectTest extends testcase
         $this->assertCount(2, $params);
 
         // find for midcom.core domain only
-        $constraints = array();
-        $constraints[] = array("domain", "=", "midcom.core");
+        $constraints = [];
+        $constraints[] = ["domain", "=", "midcom.core"];
         $params = $topic->find_parameters($constraints);
         $this->assertCount(1, $params);
     }
@@ -840,14 +840,14 @@ class objectTest extends testcase
         $this->assertCount(2, $params);
 
         // use constraint so no params get deleted
-        $constraints = array();
-        $constraints[] = array("domain", "=", "false.domain");
+        $constraints = [];
+        $constraints[] = ["domain", "=", "false.domain"];
         $count = $topic->delete_parameters($constraints);
         $this->assertEquals(0, $count);
 
         // delete only core params
-        $constraints = array();
-        $constraints[] = array("domain", "=", "midcom.core");
+        $constraints = [];
+        $constraints[] = ["domain", "=", "midcom.core"];
         $count = $topic->delete_parameters($constraints);
         $this->assertEquals(1, $count);
 
@@ -873,14 +873,14 @@ class objectTest extends testcase
         $this->assertCount(2, $params);
 
         // use constraint so no params get deleted
-        $constraints = array();
-        $constraints[] = array("domain", "=", "false.domain");
+        $constraints = [];
+        $constraints[] = ["domain", "=", "false.domain"];
         $count = $topic->purge_parameters($constraints);
         $this->assertEquals(0, $count);
 
         // purge only core params
-        $constraints = array();
-        $constraints[] = array("domain", "=", "midcom.core");
+        $constraints = [];
+        $constraints[] = ["domain", "=", "midcom.core"];
         $count = $topic->purge_parameters($constraints);
         $this->assertEquals(1, $count);
 
@@ -1051,7 +1051,7 @@ class objectTest extends testcase
         $metadata->isapproved = $topic->metadata->isapproved;
         $metadata->authors = $topic->metadata->authors;
 
-        $expected = array(
+        $expected = [
             'id' => $topic->id,
             'guid' => $topic->guid,
             'name' => $topic->name,
@@ -1070,7 +1070,7 @@ class objectTest extends testcase
             'birthdate' => $topic->birthdate,
             'metadata' => $metadata
 
-        );
+        ];
         $this->assertEquals($expected, $topic->__debugInfo());
     }
 }

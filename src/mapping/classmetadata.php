@@ -10,14 +10,14 @@ use Doctrine\ORM\Mapping\ClassMetadata as base_metadata;
 
 class classmetadata extends base_metadata
 {
-    public $midgard = array(
+    public $midgard = [
         'parent' => null,
         'parentfield' => null,
         'upfield' => null,
-        'unique_fields' => array(),
-        'childtypes' => array(),
-        'field_aliases' => array()
-    );
+        'unique_fields' => [],
+        'childtypes' => [],
+        'field_aliases' => []
+    ];
 
     public function __sleep()
     {

@@ -102,7 +102,7 @@ class property implements node
                 break;
             case 'link':
                 $tmp = explode(':', $value);
-                $value = array();
+                $value = [];
                 $value['target'] = $tmp[0];
                 $value['field'] = $tmp[1];
                 if ($value['field'] !== 'id') {

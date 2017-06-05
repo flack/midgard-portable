@@ -46,14 +46,14 @@ class config
     // TODO: find out if this could be moved to read_data()
     private function apply_config(array $config)
     {
-        $mapping = array(
+        $mapping = [
             'type' => 'dbtype',
             'name' => 'database',
             'username' => 'dbuser',
             'password' => 'dbpass',
             'databasedir' => 'dbdir',
             'logfilename' => 'logfile',
-        );
+        ];
 
         foreach ($config as $key => $value) {
             $key = strtolower($key);
@@ -142,7 +142,7 @@ class config
 
     public function create_blobdir()
     {
-        $subdirs = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F');
+        $subdirs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'];
         foreach ($subdirs as $dir) {
             foreach ($subdirs as $subdir) {
                 if (   !is_dir($this->blobdir . '/' . $dir . '/' . $subdir)

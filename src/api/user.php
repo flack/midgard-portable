@@ -18,7 +18,7 @@ class user extends dbobject
 
     protected $id;
 
-    protected $properties = array();
+    protected $properties = [];
 
     protected $person;
 
@@ -44,7 +44,7 @@ class user extends dbobject
     {
     }
 
-    public function __construct(array $properties = array())
+    public function __construct(array $properties = [])
     {
         if (!empty($properties)) {
             $this->load_by_properties($properties);
@@ -111,7 +111,7 @@ class user extends dbobject
     {
         if (   $this->person_object === null
             && $this->person !== null) {
-            $this->person_object = connection::get_em()->getRepository('midgard:midgard_person')->findOneBy(array('guid' => $this->person));
+            $this->person_object = connection::get_em()->getRepository('midgard:midgard_person')->findOneBy(['guid' => $this->person]);
         }
         return $this->person_object;
     }
@@ -190,10 +190,10 @@ class user extends dbobject
         $qb = connection::get_em()->createQueryBuilder();
         $qb->from(get_class($this), 'c');
         $conditions = $qb->expr()->andX();
-        $parameters = array(
+        $parameters = [
             'login' => $this->login,
             'authtype' => $this->authtype
-        );
+        ];
 
         if ($this->id) {
             $parameters['id'] = $this->id;

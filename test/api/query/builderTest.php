@@ -14,7 +14,7 @@ class midgard_query_builderTest extends testcase
     {
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
-        $classes = array(
+        $classes = [
             self::$em->getClassMetadata('midgard:midgard_topic'),
             self::$em->getClassMetadata('midgard:midgard_parameter'),
             self::$em->getClassMetadata('midgard:midgard_article'),
@@ -22,7 +22,7 @@ class midgard_query_builderTest extends testcase
             self::$em->getClassMetadata('midgard:midgard_repligard'),
             self::$em->getClassMetadata('midgard:midgard_person'),
             self::$em->getClassMetadata('midgard:midgard_user')
-        );
+        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
     }
@@ -36,7 +36,7 @@ class midgard_query_builderTest extends testcase
     private function _create_topics($name_prefix)
     {
         $classname = self::$ns . '\\midgard_topic';
-        $topics = array();
+        $topics = [];
 
         $topics[0] = new $classname;
         $topics[0]->name = 'A_' . $name_prefix . 'testOne';
@@ -554,28 +554,28 @@ class midgard_query_builderTest extends testcase
         self::$em->clear();
 
         $qb = new \midgard_query_builder($classname);
-        $qb->add_constraint('id', 'IN', array($topics[0]->id, $topics[1]->id));
+        $qb->add_constraint('id', 'IN', [$topics[0]->id, $topics[1]->id]);
         $this->assertEquals(2, $qb->count());
 
         $qb = new \midgard_query_builder($classname);
-        $qb->add_constraint('id', 'NOT IN', array($topics[0]->id, $topics[1]->id));
+        $qb->add_constraint('id', 'NOT IN', [$topics[0]->id, $topics[1]->id]);
         $this->assertEquals(1, $qb->count());
         $results = $qb->execute();
         $this->assertEquals($topics[2]->id, $results[0]->id);
 
         $qb = new \midgard_query_builder($classname);
         // Array with string key is what collector normally returns
-        $qb->add_constraint('id', 'IN', array($topics[0]->guid => $topics[0]->id));
+        $qb->add_constraint('id', 'IN', [$topics[0]->guid => $topics[0]->id]);
         $this->assertEquals(1, $qb->count());
 
         $qb = new \midgard_query_builder($classname);
-        $qb->add_constraint('up', 'NOT IN', array($topics[0]->id, $topics[1]->id));
+        $qb->add_constraint('up', 'NOT IN', [$topics[0]->id, $topics[1]->id]);
         $this->assertEquals(1, $qb->count());
         $results = $qb->execute();
         $this->assertEquals($topics[0]->id, $results[0]->id);
 
         $qb = new \midgard_query_builder($classname);
-        $qb->add_constraint('up', 'IN', array($topics[0]->up));
+        $qb->add_constraint('up', 'IN', [$topics[0]->up]);
         $this->assertEquals(1, $qb->count());
         $results = $qb->execute();
         $this->assertEquals($topics[0]->id, $results[0]->id);
@@ -663,7 +663,7 @@ class midgard_query_builderTest extends testcase
         $topics = $this->_create_topics(__FUNCTION__);
 
         $cm = self::$em->getClassMetadata($classname);
-        $cm->midgard['field_aliases'] = array('name_alias' => 'name');
+        $cm->midgard['field_aliases'] = ['name_alias' => 'name'];
 
         $qb = new \midgard_query_builder($classname);
         $qb->add_constraint('name_alias', '=', $topics[0]->name);

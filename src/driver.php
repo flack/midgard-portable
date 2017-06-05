@@ -20,20 +20,20 @@ use Doctrine\DBAL\Types\Type as dtype;
 
 class driver implements driver_interface
 {
-    private $dbtypemap = array(
-        'unsigned integer' => array('type' => dtype::INTEGER, 'default' => 0), // <== UNSIGNED in Doctrine\DBAL\Schema\Column
-        'integer' => array('type' => dtype::INTEGER, 'default' => 0),
-        'boolean' => array('type' => dtype::BOOLEAN, 'default' => false),
-        'bool' => array('type' => dtype::BOOLEAN, 'default' => false),
-        'guid' => array('type' => dtype::STRING, 'length' => 80, 'default' => ''),
-        'varchar(80)' => array('type' => dtype::STRING, 'length' => 80, 'default' => ''),
-        'string' => array('type' => dtype::STRING, 'length' => 255, 'default' => ''),
-        'datetime' => array('type' => datetime::TYPE, 'default' => '0001-01-01 00:00:00'),
-        'text' => array('type' => dtype::TEXT),
-        'longtext' => array('type' => dtype::TEXT),
-        'float' => array('type' => dtype::FLOAT, 'default' => 0.0),
-        'double' => array('type' => dtype::FLOAT, 'default' => 0.0)
-    );
+    private $dbtypemap = [
+        'unsigned integer' => ['type' => dtype::INTEGER, 'default' => 0], // <== UNSIGNED in Doctrine\DBAL\Schema\Column
+        'integer' => ['type' => dtype::INTEGER, 'default' => 0],
+        'boolean' => ['type' => dtype::BOOLEAN, 'default' => false],
+        'bool' => ['type' => dtype::BOOLEAN, 'default' => false],
+        'guid' => ['type' => dtype::STRING, 'length' => 80, 'default' => ''],
+        'varchar(80)' => ['type' => dtype::STRING, 'length' => 80, 'default' => ''],
+        'string' => ['type' => dtype::STRING, 'length' => 255, 'default' => ''],
+        'datetime' => ['type' => datetime::TYPE, 'default' => '0001-01-01 00:00:00'],
+        'text' => ['type' => dtype::TEXT],
+        'longtext' => ['type' => dtype::TEXT],
+        'float' => ['type' => dtype::FLOAT, 'default' => 0.0],
+        'double' => ['type' => dtype::FLOAT, 'default' => 0.0]
+    ];
 
     private $vardir;
 
@@ -49,7 +49,7 @@ class driver implements driver_interface
      *
      * @var array
      */
-    private static $processed_namespaces = array();
+    private static $processed_namespaces = [];
 
     /**
      * indicates whether the current namespace has been used before
@@ -66,7 +66,7 @@ class driver implements driver_interface
         $this->is_fresh_namespace = !array_key_exists($this->namespace, self::$processed_namespaces);
         if ($this->is_fresh_namespace) {
             $this->manager = new manager($schemadirs, $this->namespace);
-            self::$processed_namespaces[$this->namespace] = array("manager" => $this->manager);
+            self::$processed_namespaces[$this->namespace] = ["manager" => $this->manager];
         } else {
             // reuse manager instance
             $this->manager = self::$processed_namespaces[$this->namespace]["manager"];
@@ -137,14 +137,14 @@ class driver implements driver_interface
 
         // TODO: extends
 
-        $table = array(
+        $table = [
             'name' => $type->table,
-            'options' => array(
+            'options' => [
                 //Doctrine's default on MySQL is InnoDB, and the foreign keys don't play well with Midgard logic
                 //TODO: Maybe at some point we could try to figure out how to explicitly disable foreign key constraint creation instead
                 'engine' => 'MyISAM'
-            )
-        );
+            ]
+        ];
 
         $metadata->setPrimaryTable($table);
 
@@ -158,18 +158,18 @@ class driver implements driver_interface
             // doctrine can handle id links only
             if (   $property->link
                 && $target_class = $this->manager->resolve_targetclass($property)) {
-                $link_mapping = array(
+                $link_mapping = [
                     'fieldName' => $property->name,
                     'targetEntity' => $target_class,
-                    'joinColumns' => array(
-                        array(
+                    'joinColumns' => [
+                        [
                             'name' => $property->field,
                             'referencedColumnName' => $property->link['field']
-                        )
-                    ),
+                        ]
+                    ],
                     'midgard:link_target' => $property->link['field'],
                     'midgard:link_name' => $property->link['target'],
-                );
+                ];
 
                 if ($link_mapping['fieldName'] == 'id') {
                     $link_mapping['id'] = true;
@@ -219,9 +219,9 @@ class driver implements driver_interface
 
             if ($property->index) {
                 if (empty($metadata->table['indexes'])) {
-                    $metadata->table['indexes'] = array();
+                    $metadata->table['indexes'] = [];
                 }
-                $metadata->table['indexes'][$type->name . '_' . $property->name . '_idx'] = array('columns' => array($property->field));
+                $metadata->table['indexes'][$type->name . '_' . $property->name . '_idx'] = ['columns' => [$property->field]];
             }
         }
     }
@@ -229,9 +229,9 @@ class driver implements driver_interface
     private function parse_dbtype(property $property)
     {
         if (strpos($property->dbtype, 'varchar') === 0) {
-            $mapping = array(
+            $mapping = [
                 'type' => dtype::STRING,
-            );
+            ];
 
             if (substr($property->dbtype, -1) == ')') {
                 $mapping['length'] = (int) substr($property->dbtype, 8, -1);
@@ -252,13 +252,13 @@ class driver implements driver_interface
                 return $mapping;
             }
         } elseif (strpos(strtolower($property->dbtype), 'decimal') === 0) {
-            $matches = array();
+            $matches = [];
             preg_match('/DECIMAL\((\d+),(\d+)\)/i', $property->dbtype, $matches);
-            $mapping = array(
+            $mapping = [
                 'type' => dtype::DECIMAL,
                 'precision' => $matches[1],
                 'scale' => $matches[2]
-            );
+            ];
             return $mapping;
         }
 

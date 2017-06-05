@@ -15,11 +15,11 @@ class midgard_repligardTest extends testcase
     {
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
-        $classes = array(
+        $classes = [
             self::$em->getClassMetadata(self::$ns . '\\midgard_topic'),
             self::$em->getClassMetadata('midgard:midgard_repligard'),
             self::$em->getClassMetadata('midgard:midgard_article')
-        );
+        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
     }
@@ -41,7 +41,7 @@ class midgard_repligardTest extends testcase
         $topic->name = __FUNCTION__;
         $topic->create();
         self::$em->clear();
-        $repligard_entry = self::$em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $topic->guid));
+        $repligard_entry = self::$em->getRepository('midgard:midgard_repligard')->findOneBy(['guid' => $topic->guid]);
         $this->assertInstanceOf(self::$ns . '\\midgard_repligard', $repligard_entry);
         $this->assertFalse(property_exists($repligard_entry, 'metadata'));
         $this->assertEquals(subscriber::ACTION_CREATE, $repligard_entry->object_action);
@@ -60,7 +60,7 @@ class midgard_repligardTest extends testcase
         $topic->update();
         self::$em->clear();
 
-        $repligard_entry = self::$em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $topic->guid));
+        $repligard_entry = self::$em->getRepository('midgard:midgard_repligard')->findOneBy(['guid' => $topic->guid]);
         $this->assertInstanceOf(self::$ns . '\\midgard_repligard', $repligard_entry);
         $this->assertFalse(property_exists($repligard_entry, 'metadata'));
         $this->assertEquals(subscriber::ACTION_UPDATE, $repligard_entry->object_action);
@@ -78,7 +78,7 @@ class midgard_repligardTest extends testcase
         $topic->delete();
         self::$em->clear();
 
-        $repligard_entry = self::$em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $topic->guid));
+        $repligard_entry = self::$em->getRepository('midgard:midgard_repligard')->findOneBy(['guid' => $topic->guid]);
         $this->assertInstanceOf(self::$ns . '\\midgard_repligard', $repligard_entry);
         $this->assertFalse(property_exists($repligard_entry, 'metadata'));
         $this->assertEquals(subscriber::ACTION_DELETE, $repligard_entry->object_action);
@@ -96,7 +96,7 @@ class midgard_repligardTest extends testcase
         $topic->purge();
         self::$em->clear();
 
-        $repligard_entry = self::$em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $topic->guid));
+        $repligard_entry = self::$em->getRepository('midgard:midgard_repligard')->findOneBy(['guid' => $topic->guid]);
         $this->assertInstanceOf(self::$ns . '\\midgard_repligard', $repligard_entry);
         $this->assertFalse(property_exists($repligard_entry, 'metadata'));
         $this->assertEquals(subscriber::ACTION_PURGE, $repligard_entry->object_action);

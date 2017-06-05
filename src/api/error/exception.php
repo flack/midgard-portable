@@ -41,7 +41,7 @@ class exception extends base_exception
     const TREE_IS_CIRCULAR = -26;
     const OBJECT_IS_LOCKED = -27;
 
-    private static $messages = array(
+    private static $messages = [
         self::OK => "MGD_ERR_OK",
         self::ACCESS_DENIED => "Access Denied.",
         self::NO_METADATA => "Metadata class not defined.",
@@ -69,7 +69,7 @@ class exception extends base_exception
         self::MISSED_DEPENDENCE => "Missed dependence for object.",
         self::TREE_IS_CIRCULAR => "Circular reference found in object's tree.",
         self::OBJECT_IS_LOCKED => "Object is locked",
-    );
+    ];
 
     public function __construct($message = "Undefined error", $code = self::ERROR, base_exception $previous = null)
     {
@@ -146,7 +146,7 @@ class exception extends base_exception
     public static function internal(base_exception $exception)
     {
         $message = self::$messages[self::INTERNAL];
-        connection::log()->critical($message, array('exception' => $exception));
+        connection::log()->critical($message, ['exception' => $exception]);
         return new self($message . '. ' . $exception->getMessage(), self::INTERNAL, $exception);
     }
 

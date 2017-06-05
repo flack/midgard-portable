@@ -18,11 +18,11 @@ class xmlreader
      *
      * @var array
      */
-    private $mixins = array();
+    private $mixins = [];
 
     public function parse($filename)
     {
-        $types = array();
+        $types = [];
         $parser = simplexml_load_file($filename);
         $parser->registerXPathNamespace('r', "http://www.midgard-project.org/repligard/1.4");
         $nodes = $parser->xpath('/r:Schema/r:type');
@@ -61,7 +61,7 @@ class xmlreader
         $attributes = $node->attributes();
         $property_name = null;
         $property_type = null;
-        $property_attributes = array();
+        $property_attributes = [];
         foreach ($attributes as $name => $value) {
             $value = (string) $value;
             switch ($name) {

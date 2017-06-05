@@ -27,7 +27,7 @@ class sqllogger implements base_logger
      */
     public function startQuery($sql, array $params = null, array $types = null)
     {
-        $context = array();
+        $context = [];
         if (!empty($params)) {
             $context['params'] = $params;
         }

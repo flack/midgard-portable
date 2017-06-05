@@ -141,7 +141,7 @@ class classgenerator
 
     private function write_properties(type $type)
     {
-        $objects = array();
+        $objects = [];
 
         foreach ($type->get_properties() as $name => $property) {
             if ($name == 'guid') {
@@ -198,7 +198,7 @@ class classgenerator
 
     private function write_parent_getter($type)
     {
-        $candidates = array();
+        $candidates = [];
 
         if (!empty($type->upfield)) {
             $candidates[] = $type->upfield;

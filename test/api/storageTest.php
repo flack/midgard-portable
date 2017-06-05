@@ -20,9 +20,9 @@ class midgard_storageTest extends testcase
     {
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
-        $classes = array(
+        $classes = [
             $factory->getMetadataFor('midgard:midgard_user'),
-        );
+        ];
         $tool->dropSchema($classes);
     }
 
@@ -37,11 +37,11 @@ class midgard_storageTest extends testcase
         $this->assertInstanceOf('midgard\portable\mapping\classmetadata', $cm);
 
         $fqcn = $cm->fullyQualifiedClassName('midgard_user');
-        $tokens = array(
+        $tokens = [
             'authtype' => 'Plaintext',
             'login' => 'admin',
             'password' => 'password',
-        );
+        ];
         $admin = new $fqcn($tokens);
         $this->assertEquals(2, $admin->usertype);
         $this->assertTrue(midgard_storage::create_base_storage());
@@ -58,7 +58,7 @@ class midgard_storageTest extends testcase
 
         $this->assertTrue(midgard_storage::create_class_storage('midgard_topic'));
         $this->assertTrue(midgard_storage::create_class_storage('midgard_topic'));
-        $this->assertTrue(self::$em->getConnection()->getSchemaManager()->tablesExist(array('topic')));
+        $this->assertTrue(self::$em->getConnection()->getSchemaManager()->tablesExist(['topic']));
         $this->assertFalse(midgard_storage::create_class_storage('nonexistent'));
 
         // check duplicate tablenames
@@ -87,7 +87,7 @@ class midgard_storageTest extends testcase
         $this->assertTrue(midgard_storage::create_class_storage('midgard_topic'));
 
         $cm = self::$em->getMetadataFactory()->getMetadataFor('midgard:midgard_topic');
-        $cm->mapField(array('type' => 'string', 'fieldName' => 'testproperty'));
+        $cm->mapField(['type' => 'string', 'fieldName' => 'testproperty']);
 
         $this->assertTrue(midgard_storage::update_class_storage('midgard_topic'));
         $table = self::$em->getConnection()->getSchemaManager()->createSchema()->getTable('topic');
@@ -99,7 +99,7 @@ class midgard_storageTest extends testcase
         $table = self::$em->getConnection()->getSchemaManager()->createSchema()->getTable('topic');
         $this->assertTrue($table->hasColumn('testproperty'));
 
-        $this->assertTrue(self::$em->getConnection()->getSchemaManager()->tablesExist(array('midgard_user')));
+        $this->assertTrue(self::$em->getConnection()->getSchemaManager()->tablesExist(['midgard_user']));
 
         // check duplicate tablenames
         self::prepare_dtn_connection();

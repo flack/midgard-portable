@@ -34,13 +34,13 @@ class manager
      *
      * @var array
      */
-    private $merged_types = array();
+    private $merged_types = [];
 
     /**
      *
      * @var array
      */
-    private $child_classes = array();
+    private $child_classes = [];
 
     public function __construct(array $schemadirs, $namespace)
     {
@@ -66,7 +66,7 @@ class manager
         if (array_key_exists($typename, $this->child_classes)) {
             return $this->child_classes[$typename];
         }
-        return array();
+        return [];
     }
 
     public function resolve_targetclass(property $property)
@@ -108,14 +108,14 @@ class manager
             }
         }
 
-        $tablemap = array();
+        $tablemap = [];
         foreach ($types as $name => $type) {
             if ($type->parent) {
                 $this->register_child_class($type);
             }
 
             if (!array_key_exists($type->table, $tablemap)) {
-                $tablemap[$type->table] = array();
+                $tablemap[$type->table] = [];
             }
             $tablemap[$type->table][] = $type;
         }
@@ -138,7 +138,7 @@ class manager
     private function register_child_class(type $type)
     {
         if (!array_key_exists($type->parent, $this->child_classes)) {
-            $this->child_classes[$type->parent] = array();
+            $this->child_classes[$type->parent] = [];
         }
         $this->child_classes[$type->parent][$type->name] = $type->parentfield;
     }

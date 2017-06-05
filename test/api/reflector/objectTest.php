@@ -48,7 +48,7 @@ class reflector_objectTest extends testcase
 
     public function test_list_children()
     {
-        $this->assertEquals(array('midgard_article' => ''), midgard_reflector_object::list_children(self::$ns . '\\midgard_topic'));
-        $this->assertEquals(array(), midgard_reflector_object::list_children(self::$ns . '\\midgard_user'));
+        $this->assertEquals(['midgard_article' => ''], midgard_reflector_object::list_children(self::$ns . '\\midgard_topic'));
+        $this->assertEquals([], midgard_reflector_object::list_children(self::$ns . '\\midgard_user'));
     }
 }

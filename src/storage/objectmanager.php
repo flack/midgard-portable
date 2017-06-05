@@ -209,7 +209,7 @@ class objectmanager
         //workaround for possible oid collisions in UnitOfWork
         //see http://www.doctrine-project.org/jira/browse/DDC-2785
         $counter = 0;
-        $candidates = array();
+        $candidates = [];
         do {
             $entity = new $classname;
             if ($counter++ > 100) {

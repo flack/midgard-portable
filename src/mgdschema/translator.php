@@ -19,7 +19,7 @@ class translator
     const TYPE_TIMESTAMP = 139645924049440;
     const TYPE_GUID = 139645923896704;
 
-    private static $typemap = array(
+    private static $typemap = [
         'unsigned integer' => self::TYPE_UINT,
         'integer' => self::TYPE_INT,
         'boolean' => self::TYPE_BOOLEAN,
@@ -31,15 +31,15 @@ class translator
         'text' => self::TYPE_LONGTEXT,
         'longtext' => self::TYPE_LONGTEXT,
         'float' => self::TYPE_FLOAT
-    );
+    ];
 
     public static function to_phptype($typeattribute)
     {
         if (!array_key_exists($typeattribute, self::$typemap)) {
             throw new \Exception('unknown type ' . $typeattribute);
         }
-        $search = array('unsigned ', 'guid',   'datetime', 'text', 'longtext');
-        $replace = array('', 'string', 'midgard_datetime', 'string', 'string');
+        $search = ['unsigned ', 'guid',   'datetime', 'text', 'longtext'];
+        $replace = ['', 'string', 'midgard_datetime', 'string', 'string'];
 
         return str_replace($search, $replace, $typeattribute);
     }

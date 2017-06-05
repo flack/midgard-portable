@@ -23,7 +23,7 @@ class midgard_collector extends midgard_query_builder
      */
     private $key_property = "guid";
 
-    private $value_properties = array();
+    private $value_properties = [];
 
     public function __construct($class, $field = null, $value = null)
     {
@@ -115,7 +115,7 @@ class midgard_collector extends midgard_query_builder
 
         $cm = connection::get_em()->getClassMetadata($this->classname);
         // map results by current key property
-        $results_map = array();
+        $results_map = [];
         foreach ($results as $result) {
             foreach ($result as $key => &$value) {
                 // for metadata fields remove the "metadata_" prefix
@@ -184,10 +184,10 @@ class midgard_collector extends midgard_query_builder
     public function list_keys()
     {
         if (!$this->_has_results()) {
-            return array();
+            return [];
         }
 
-        $keys = array();
+        $keys = [];
         foreach ($this->_results as $key => $result) {
             $keys[$key] = '';
         }

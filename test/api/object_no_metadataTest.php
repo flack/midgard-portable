@@ -116,7 +116,7 @@ class object_no_metadataTest extends testcase
         $topic->name = uniqid('t1' . time());
         $topic->create();
 
-        $stat = call_user_func_array($classname . "::undelete", array($topic->guid));
+        $stat = call_user_func_array($classname . "::undelete", [$topic->guid]);
         $this->assertFalse($stat);
         $this->assertEquals(MGD_ERR_INVALID_PROPERTY_VALUE, $con->get_error(), $con->get_error_string());
     }

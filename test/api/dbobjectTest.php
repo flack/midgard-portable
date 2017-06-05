@@ -16,11 +16,11 @@ class dbobjectTest extends testcase
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
-        $classes = array(
+        $classes = [
             $factory->getMetadataFor('midgard:midgard_language'),
             $factory->getMetadataFor('midgard:midgard_topic'),
             $factory->getMetadataFor('midgard:midgard_repligard'),
-        );
+        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
     }

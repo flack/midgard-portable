@@ -17,7 +17,7 @@ class driverTest extends testcase
     {
         $ns = uniqid(__CLASS__ . '\\' . __FUNCTION__);
         $d = sys_get_temp_dir();
-        $driver = new driver(array(TESTDIR . '__files/'), $d, $ns);
+        $driver = new driver([TESTDIR . '__files/'], $d, $ns);
         $classnames = $driver->getAllClassNames();
         $this->assertInternalType('array', $classnames);
         $this->assertCount(12, $classnames);
@@ -27,7 +27,7 @@ class driverTest extends testcase
     {
         $ns = uniqid(__CLASS__ . '\\' . __FUNCTION__);
         $d = sys_get_temp_dir();
-        $driver = new driver(array(TESTDIR . '__files/'), $d, $ns);
+        $driver = new driver([TESTDIR . '__files/'], $d, $ns);
         $metadata = new classmetadata($ns . '\\midgard_topic');
         $driver->loadMetadataForClass($ns . '\\midgard_topic', $metadata);
 
@@ -43,7 +43,7 @@ class driverTest extends testcase
     {
         $ns = uniqid(__CLASS__ . '\\' . __FUNCTION__);
         $d = sys_get_temp_dir();
-        $driver = new driver(array(TESTDIR . '__files/'), $d, $ns);
+        $driver = new driver([TESTDIR . '__files/'], $d, $ns);
         $metadata = new classmetadata($ns . '\\nonportable_dbtype');
         $driver->loadMetadataForClass($ns . '\\nonportable_dbtype', $metadata);
 
@@ -61,7 +61,7 @@ class driverTest extends testcase
     {
         $ns = uniqid(__CLASS__ . '\\' . __FUNCTION__);
         $d = sys_get_temp_dir();
-        $driver = new driver(array(TESTDIR . '__files/duplicate_tablenames/'), $d, $ns);
+        $driver = new driver([TESTDIR . '__files/duplicate_tablenames/'], $d, $ns);
         $classgenerator = new classgenerator($driver->get_manager(), $d . '/mgdschema_classes.php');
         $classgenerator->write($ns);
         include $d . '/mgdschema_classes.php';

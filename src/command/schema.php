@@ -82,11 +82,11 @@ class schema extends Command
             throw new \Exception("Failed to create base database structures" . midgard_connection::get_instance()->get_error_string());
         }
         $force = $input->getOption('force');
-        $to_update = array();
-        $to_create = array();
+        $to_update = [];
+        $to_create = [];
 
         foreach ($cms as $cm) {
-            if (!$em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName()))) {
+            if (!$em->getConnection()->getSchemaManager()->tablesExist([$cm->getTableName()])) {
                 $to_create[] = $cm;
             } else {
                 $to_update[] = $cm;
@@ -142,7 +142,7 @@ class schema extends Command
         $diff = $comparator->compare($from, $to);
         foreach ($diff->changedTables as $changed_table) {
             if (!empty($changed_table->removedColumns)) {
-                $changed_table->removedColumns = array();
+                $changed_table->removedColumns = [];
             }
         }
         $sql = $diff->toSaveSql($conn->getDatabasePlatform());

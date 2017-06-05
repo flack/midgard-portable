@@ -97,7 +97,7 @@ class subscriber implements EventSubscriber
         }
 
         if (!($entity instanceof repligard)) {
-            $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $entity->guid));
+            $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(['guid' => $entity->guid]);
 
             if (   $entity instanceof metadata
                 && $entity->{metadata::DELETED_FIELD}) {
@@ -113,7 +113,7 @@ class subscriber implements EventSubscriber
     private function on_remove(dbobject $entity, EntityManagerInterface $em)
     {
         if (!($entity instanceof repligard)) {
-            $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(array('guid' => $entity->guid));
+            $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(['guid' => $entity->guid]);
             $repligard_entry->object_action = self::ACTION_PURGE;
             $em->persist($repligard_entry);
             $em->getUnitOfWork()->computeChangeSet($em->getClassMetadata('midgard:midgard_repligard'), $repligard_entry);
@@ -228,20 +228,20 @@ class subscriber implements EventSubscriber
         if ($type == 'enum') {
             $args->preventDefault();
 
-            $options = array(
+            $options = [
                 'length' => 255,
                 'default' => isset($column['default']) ? $column['default'] : null,
                 'notnull' => (bool) ($column['null'] != 'YES'),
                 'comment' => $column['type']
-            );
+            ];
 
             $args->setColumn(new Column($column['field'], Type::getType(Type::STRING), $options));
         } elseif ($type == 'datetime') {
             $args->preventDefault();
-            $options = array(
+            $options = [
                 'default' => isset($column['default']) ? $column['default'] : null,
                 'notnull' => (bool) ($column['null'] != 'YES'),
-            );
+            ];
 
             $args->setColumn(new Column($column['field'], Type::getType(datetime::TYPE), $options));
         }
@@ -268,10 +268,10 @@ class subscriber implements EventSubscriber
 
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             Events::onFlush,
             dbal_events::onSchemaCreateTable, dbal_events::onSchemaColumnDefinition,
             ToolEvents::postGenerateSchemaTable
-        );
+        ];
     }
 }

@@ -65,9 +65,9 @@ class midgard_storage
             return false;
         }
 
-        if (!$em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName()))) {
+        if (!$em->getConnection()->getSchemaManager()->tablesExist([$cm->getTableName()])) {
             $tool = new SchemaTool($em);
-            $tool->createSchema(array($cm));
+            $tool->createSchema([$cm]);
         }
 
         self::generate_proxyfile($cm);
@@ -126,16 +126,16 @@ class midgard_storage
             return false;
         }
         $sm = $em->getConnection()->getSchemaManager();
-        if ($sm->tablesExist(array($cm->getTableName()))) {
+        if ($sm->tablesExist([$cm->getTableName()])) {
             $tool = new SchemaTool($em);
             $conn = $em->getConnection();
             $from = $sm->createSchema();
-            $to = $tool->getSchemaFromMetadata(array($cm));
+            $to = $tool->getSchemaFromMetadata([$cm]);
 
             $comparator = new Comparator;
             $diff = $comparator->compare($from, $to);
             if (!empty($diff->changedTables[$cm->getTableName()]->removedColumns)) {
-                $diff->changedTables[$cm->getTableName()]->removedColumns = array();
+                $diff->changedTables[$cm->getTableName()]->removedColumns = [];
             }
             $sql = $diff->toSaveSql($conn->getDatabasePlatform());
 
@@ -165,6 +165,6 @@ class midgard_storage
             return false;
         }
 
-        return $em->getConnection()->getSchemaManager()->tablesExist(array($cm->getTableName()));
+        return $em->getConnection()->getSchemaManager()->tablesExist([$cm->getTableName()]);
     }
 }

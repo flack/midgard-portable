@@ -43,13 +43,13 @@ abstract class query
      *
      * @var array
      */
-    protected $groupstack = array();
+    protected $groupstack = [];
 
     /**
      *
      * @var array
      */
-    protected $join_tables = array();
+    protected $join_tables = [];
 
     public function __construct($class)
     {
@@ -106,7 +106,7 @@ abstract class query
         } elseif (   $operator === 'IN'
                  || $operator === 'NOT IN') {
             $value = array_values($value);
-        } elseif (!in_array($operator, array('=', '>', '<', '<>', '<=', '>=', 'LIKE', 'NOT LIKE'))) {
+        } elseif (!in_array($operator, ['=', '>', '<', '<>', '<=', '>=', 'LIKE', 'NOT LIKE'])) {
             return false;
         }
         $this->parameters++;
@@ -118,7 +118,7 @@ abstract class query
 
     public function add_order($name, $direction = 'ASC')
     {
-        if (!in_array($direction, array('ASC', 'DESC'))) {
+        if (!in_array($direction, ['ASC', 'DESC'])) {
             return false;
         }
         try {
@@ -286,11 +286,11 @@ abstract class query
             throw exception::ok();
         }
 
-        return array(
+        return [
             'name' => $current_table . '.' . $column,
             'column' => $column,
             'targetclass' => $targetclass
-        );
+        ];
     }
 
     protected function build_constraint($name, $operator, $value)

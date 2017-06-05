@@ -25,7 +25,7 @@ class midgard_connection
 
     private $loglevel;
 
-    private $available_loglevels = array('error', 'warn', 'warning', 'info', 'message', 'debug');
+    private $available_loglevels = ['error', 'warn', 'warning', 'info', 'message', 'debug'];
 
     private $replication_enabled = true;
 

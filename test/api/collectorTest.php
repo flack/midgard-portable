@@ -16,13 +16,13 @@ class midgard_collectorTest extends testcase
     {
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
-        $classes = array(
+        $classes = [
             self::$em->getClassMetadata('midgard:midgard_topic'),
             self::$em->getClassMetadata('midgard:midgard_article'),
             self::$em->getClassMetadata('midgard:midgard_user'),
             self::$em->getClassMetadata('midgard:midgard_person'),
             self::$em->getClassMetadata('midgard:midgard_repligard'),
-        );
+        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
 
@@ -249,7 +249,7 @@ class midgard_collectorTest extends testcase
     {
         $classname = self::$ns . '\\midgard_topic';
         $cm = self::$em->getClassMetadata($classname);
-        $cm->midgard['field_aliases'] = array('id_alias' => 'id');
+        $cm->midgard['field_aliases'] = ['id_alias' => 'id'];
 
         $mc = new \midgard_collector($classname, 'id_alias', self::$_topic->id);
         $mc->add_value_property("id_alias");

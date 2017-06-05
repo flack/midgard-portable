@@ -23,7 +23,7 @@ abstract class object extends dbobject
 
     public $action = ''; // <== does this need to do anything?
 
-    private $collections = array();
+    private $collections = [];
 
     /**
      *
@@ -163,7 +163,7 @@ abstract class object extends dbobject
         if (!mgd_is_guid($guid)) {
             throw new \InvalidArgumentException("'$guid' is not a valid guid");
         }
-        $entity = connection::get_em()->getRepository(get_class($this))->findOneBy(array('guid' => $guid));
+        $entity = connection::get_em()->getRepository(get_class($this))->findOneBy(['guid' => $guid]);
         if ($entity === null) {
             throw exception::not_exists();
         }
@@ -276,9 +276,9 @@ abstract class object extends dbobject
         $qb->from(get_class($this), 'c');
         $conditions = $qb->expr()->andX();
         if ($this->id) {
-            $parameters = array(
+            $parameters = [
                 'id' => $this->id
-            );
+            ];
             $conditions->add($qb->expr()->neq('c.id', ':id'));
         }
         $found = false;
@@ -426,7 +426,7 @@ abstract class object extends dbobject
             return $qb->getQuery()->getResult();
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -439,7 +439,7 @@ abstract class object extends dbobject
      */
     public function list_children($classname)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -517,9 +517,9 @@ abstract class object extends dbobject
         $qb->from($classname, 'c');
         $conditions = $qb->expr()->andX();
         $conditions->add($qb->expr()->eq('c.' . $field, ':' . $field));
-        $parameters = array(
+        $parameters = [
             $field => $part
-        );
+        ];
 
         if (empty($up)) {
             // If the database was created by Midgard, it might contain 0 instead of NULL, so...
@@ -556,15 +556,15 @@ abstract class object extends dbobject
 
     public function list_parameters($domain = false)
     {
-        $constraints = array();
+        $constraints = [];
         if ($domain) {
-            $constraints[] = array("domain", "=", $domain);
+            $constraints[] = ["domain", "=", $domain];
         }
 
         return $this->get_collection('midgard_parameter')->find($this->guid, $constraints);
     }
 
-    public function find_parameters(array $constraints = array())
+    public function find_parameters(array $constraints = [])
     {
         return $this->get_collection('midgard_parameter')->find($this->guid, $constraints);
     }
@@ -573,7 +573,7 @@ abstract class object extends dbobject
      * @param array $constraints
      * @return number
      */
-    public function delete_parameters(array $constraints = array())
+    public function delete_parameters(array $constraints = [])
     {
         return $this->get_collection('midgard_parameter')->delete($this->guid, $constraints);
     }
@@ -582,7 +582,7 @@ abstract class object extends dbobject
      * @param array $constraints
      * @return number
      */
-    public function purge_parameters(array $constraints = array())
+    public function purge_parameters(array $constraints = [])
     {
         return $this->get_collection('midgard_parameter')->purge($this->guid, $constraints);
     }
@@ -597,7 +597,7 @@ abstract class object extends dbobject
             ->select('c.value')
             ->from('midgard:midgard_parameter', 'c')
             ->where('c.domain = :domain AND c.name = :name AND c.parentguid = :parentguid')
-            ->setParameters(array('domain' => $domain, 'name' => $name, 'parentguid' => $this->guid));
+            ->setParameters(['domain' => $domain, 'name' => $name, 'parentguid' => $this->guid]);
 
         // workaround for http://www.doctrine-project.org/jira/browse/DDC-2655
         try {
@@ -615,10 +615,10 @@ abstract class object extends dbobject
      */
     public function set_parameter($domain, $name, $value)
     {
-        $constraints = array(
-            array('domain', '=', $domain),
-            array('name', '=', $name),
-        );
+        $constraints = [
+            ['domain', '=', $domain],
+            ['name', '=', $name],
+        ];
         $params = $this->get_collection('midgard_parameter')->find($this->guid, $constraints);
 
         // check value
@@ -679,10 +679,10 @@ abstract class object extends dbobject
 
     public function list_attachments()
     {
-        return $this->get_collection('midgard_attachment')->find($this->guid, array());
+        return $this->get_collection('midgard_attachment')->find($this->guid, []);
     }
 
-    public function find_attachments(array $constraints = array())
+    public function find_attachments(array $constraints = [])
     {
         return $this->get_collection('midgard_attachment')->find($this->guid, $constraints);
     }
@@ -691,7 +691,7 @@ abstract class object extends dbobject
      * @param array $constraints
      * @return number
      */
-    public function delete_attachments(array $constraints = array())
+    public function delete_attachments(array $constraints = [])
     {
         return $this->get_collection('midgard_attachment')->delete($this->guid, $constraints);
     }
@@ -703,14 +703,14 @@ abstract class object extends dbobject
      * @return boolean False if one or more attachments couldn't be deleted
      * @todo Implement delete_blob & return value
      */
-    public function purge_attachments(array $constraints = array(), $delete_blob = true)
+    public function purge_attachments(array $constraints = [], $delete_blob = true)
     {
         return $this->get_collection('midgard_attachment')->purge($this->guid, $constraints);
     }
 
     public function create_attachment($name, $title = '', $mimetype = '')
     {
-        $existing = $this->get_collection('midgard_attachment')->find($this->guid, array('name' => $name));
+        $existing = $this->get_collection('midgard_attachment')->find($this->guid, ['name' => $name]);
         if (count($existing) > 0) {
             exception::object_name_exists();
             return null;

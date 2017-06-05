@@ -21,7 +21,7 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
      */
     public function test_onSchemaCreateTable($columns, $expected)
     {
-        $directories = array(TESTDIR . '__files/');
+        $directories = [TESTDIR . '__files/'];
         $tmpdir = sys_get_temp_dir();
         $ns = uniqid(__CLASS__);
         $driver = new driver($directories, $tmpdir, $ns);
@@ -30,7 +30,7 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
         $platform = $em->getConnection()->getDatabasePlatform();
 
         $table = new Table('dummy');
-        $options = array();
+        $options = [];
         $args = new SchemaCreateTableEventArgs($table, $columns, $options, $platform);
 
         $subscriber = new subscriber;
@@ -44,10 +44,10 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
 
     public function provider_onSchemaCreateTable()
     {
-        return array(
-            array(
-                array(
-                    'id' => array(
+        return [
+            [
+                [
+                    'id' => [
                         'name' => "id",
                         'type' => Type::getType(Type::INTEGER),
                         'default' => null,
@@ -62,15 +62,15 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
                         'comment' => null,
                         'version' => false,
                         'primary' => true
-                    )
-                ),
-                array(
-                    'sqlite' => array('CREATE TABLE dummy (id INTEGER PRIMARY KEY AUTOINCREMENT)'),
-                )
-            ),
-            array(
-                array(
-                    'password' => array(
+                    ]
+                ],
+                [
+                    'sqlite' => ['CREATE TABLE dummy (id INTEGER PRIMARY KEY AUTOINCREMENT)'],
+                ]
+            ],
+            [
+                [
+                    'password' => [
                         'name' => "password",
                         'type' => Type::getType(Type::STRING),
                         'default' => null,
@@ -84,16 +84,16 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
                         'columnDefinition' => null,
                         'comment' => 'BINARY',
                         'version' => false,
-                    )
-                ),
-                array(
-                    'sqlite' => array("CREATE TABLE dummy (password VARCHAR(13) COLLATE BINARY DEFAULT NULL)"),
-                    'mysql' => array("CREATE TABLE dummy (password VARCHAR(13) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT 'BINARY')"),
-                )
-            ),
-            array(
-                array(
-                    'settest' => array(
+                    ]
+                ],
+                [
+                    'sqlite' => ["CREATE TABLE dummy (password VARCHAR(13) COLLATE BINARY DEFAULT NULL)"],
+                    'mysql' => ["CREATE TABLE dummy (password VARCHAR(13) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT 'BINARY')"],
+                ]
+            ],
+            [
+                [
+                    'settest' => [
                         'name' => "settest",
                         'type' => Type::getType(Type::STRING),
                         'default' => null,
@@ -107,12 +107,12 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
                         'columnDefinition' => null,
                         'comment' => "set('auth')",
                         'version' => false,
-                    )
-                ),
-                array(
-                    'mysql' => array("CREATE TABLE dummy (settest set('auth') DEFAULT NULL COMMENT 'set(''auth'')')"),
-                )
-            )
-        );
+                    ]
+                ],
+                [
+                    'mysql' => ["CREATE TABLE dummy (settest set('auth') DEFAULT NULL COMMENT 'set(''auth'')')"],
+                ]
+            ]
+        ];
     }
 }

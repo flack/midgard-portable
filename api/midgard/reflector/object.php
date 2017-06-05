@@ -37,7 +37,7 @@ class midgard_reflector_object
     {
         $cm = connection::get_em()->getClassMetadata($classname);
         if (empty($cm->midgard['childtypes'])) {
-            return array();
+            return [];
         }
         // @todo We filter out useful information (parent field name) in the name of mgd2 compat.
         return array_fill_keys(array_keys($cm->midgard['childtypes']), '');

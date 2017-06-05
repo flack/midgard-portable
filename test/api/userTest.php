@@ -18,11 +18,11 @@ class userTest extends testcase
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
-        $classes = array(
+        $classes = [
             $factory->getMetadataFor('midgard:midgard_user'),
             $factory->getMetadataFor('midgard:midgard_person'),
             $factory->getMetadataFor('midgard:midgard_repligard'),
-        );
+        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
     }
@@ -77,7 +77,7 @@ class userTest extends testcase
         $this->assertTrue($stat, midgard_connection::get_instance()->get_error_string());
 
         self::$em->clear();
-        $tokens = array('authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password);
+        $tokens = ['authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password];
         $loaded = new $classname($tokens);
         $this->assertEquals($loaded->login, $user->login);
 
@@ -183,7 +183,7 @@ class userTest extends testcase
         $user->create();
         self::$em->clear();
 
-        $tokens = array('authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password);
+        $tokens = ['authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password];
 
         $user2 = new $classname($tokens);
         $stat = $user2->login();
@@ -205,7 +205,7 @@ class userTest extends testcase
         $user->create();
         self::$em->clear();
 
-        $tokens = array('authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password . 'x');
+        $tokens = ['authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password . 'x'];
 
         $user2 = new $classname($tokens);
     }
@@ -224,7 +224,7 @@ class userTest extends testcase
         $user->create();
         self::$em->clear();
 
-        $tokens = array('authtype' => $user->authtype, 'password' => $user->password);
+        $tokens = ['authtype' => $user->authtype, 'password' => $user->password];
 
         $user2 = new $classname($tokens);
     }

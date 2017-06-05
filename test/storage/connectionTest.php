@@ -15,7 +15,7 @@ class connectionTest extends \PHPUnit_Framework_TestCase
 {
     public function test_get_config()
     {
-        $directories = array(TESTDIR . '__files/');
+        $directories = [TESTDIR . '__files/'];
         $tmpdir = sys_get_temp_dir();
         $ns = uniqid(__CLASS__);
         $driver = new driver($directories, $tmpdir, $ns);

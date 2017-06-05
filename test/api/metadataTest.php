@@ -16,13 +16,13 @@ class metadataTest extends testcase
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
-        $classes = array(
+        $classes = [
             $factory->getMetadataFor('midgard:midgard_topic'),
             $factory->getMetadataFor('midgard:midgard_article'),
             $factory->getMetadataFor('midgard:midgard_user'),
             $factory->getMetadataFor('midgard:midgard_person'),
             $factory->getMetadataFor('midgard:midgard_repligard'),
-        );
+        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
         self::$person = self::create_user();

@@ -17,13 +17,13 @@ class classTest extends testcase
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
-        $classes = array(
+        $classes = [
             $factory->getMetadataFor('midgard:midgard_language'),
             $factory->getMetadataFor('midgard:midgard_topic'),
             $factory->getMetadataFor('midgard:midgard_article'),
             $factory->getMetadataFor('midgard:midgard_repligard'),
             $factory->getMetadataFor('midgard:midgard_no_metadata'),
-        );
+        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
     }

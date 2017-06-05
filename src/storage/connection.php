@@ -35,14 +35,14 @@ class connection
      *
      * @var array
      */
-    private static $loglevels = array(
+    private static $loglevels = [
         'error' => Logger::ERROR,
         'warn' => Logger::WARNING,
         'warning' => Logger::WARNING,
         'info' => Logger::NOTICE,
         'message' => Logger::INFO,
         'debug' => Logger::DEBUG
-    );
+    ];
 
     /**
      * Flag for automatically starting up during initialize
@@ -56,7 +56,7 @@ class connection
      *
      * @param array
      */
-    private static $parameters = array();
+    private static $parameters = [];
 
     private $user;
 
@@ -150,7 +150,7 @@ class connection
         // we open the config before startup to have logfile available
         midgard_connection::get_instance()->open_config($mgd_config);
 
-        self::$parameters = array('driver' => $driver, 'db_config' => $db_config, 'dev_mode' => $dev_mode);
+        self::$parameters = ['driver' => $driver, 'db_config' => $db_config, 'dev_mode' => $dev_mode];
         if (self::$autostart) {
             static::startup();
         }

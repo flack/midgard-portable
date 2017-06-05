@@ -60,7 +60,7 @@ class attachmentTest extends testcase
         $topic = new $t_classname;
         $topic->create();
 
-        $this->assertEquals(array(), $topic->list_attachments());
+        $this->assertEquals([], $topic->list_attachments());
 
         $classname = self::$ns . '\\midgard_attachment';
         $att = new $classname;
@@ -78,7 +78,7 @@ class attachmentTest extends testcase
         $topic = new $t_classname;
         $topic->create();
 
-        $this->assertEquals(array(), $topic->list_attachments());
+        $this->assertEquals([], $topic->list_attachments());
         $att = $topic->create_attachment('name');
         $this->assertEquals(MGD_ERR_OK, midgard_connection::get_instance()->get_error());
         $this->assertInstanceOf(self::$ns . '\\midgard_attachment', $att);

@@ -17,12 +17,12 @@ class midgard_replicatorTest extends testcase
     {
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
-        $classes = array(
+        $classes = [
             self::$em->getClassMetadata(self::$ns . '\\midgard_topic'),
             self::$em->getClassMetadata('midgard:midgard_repligard'),
             self::$em->getClassMetadata('midgard:midgard_article'),
             self::$em->getClassMetadata('midgard:midgard_attachment')
-        );
+        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
     }

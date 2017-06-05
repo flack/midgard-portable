@@ -32,9 +32,9 @@ class testcase extends \PHPUnit_Framework_TestCase
         if ($ns === null) {
             $ns = uniqid(get_called_class());
         }
-        $directories = array(
+        $directories = [
             TESTDIR . '__files/' . $directory
-        );
+        ];
 
         $driver = new driver($directories, $tmpdir, $ns);
         include TESTDIR . DIRECTORY_SEPARATOR . 'bootstrap.php';

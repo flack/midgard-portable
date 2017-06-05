@@ -29,7 +29,7 @@ abstract class dbobject implements ObjectManagerAware
      *
      * @var array
      */
-    protected $changed_associations = array();
+    protected $changed_associations = [];
 
     /**
      * {@inheritDoc}
@@ -66,7 +66,7 @@ abstract class dbobject implements ObjectManagerAware
         $properties = array_filter($properties, function ($input) {
             return (strpos($input, 'metadata_') === false);
         });
-        $ret = array();
+        $ret = [];
         foreach ($properties as $property) {
             $ret[$property] = $this->__get($property);
         }

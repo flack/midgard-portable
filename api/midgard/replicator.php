@@ -92,7 +92,7 @@ class midgard_replicator
             $node->addAttribute('action', self::get_object_action($object->guid));
         }
 
-        $metadata = array();
+        $metadata = [];
 
         foreach ($cm->getAssociationNames() as $name) {
             $node->addChild($name, self::resolve_link_id($cm, $object, $name));
@@ -136,7 +136,7 @@ class midgard_replicator
      */
     public static function unserialize($xml, $force = false)
     {
-        $ret = array();
+        $ret = [];
 
         $xml = new SimpleXMLElement($xml);
         foreach ($xml as $node) {

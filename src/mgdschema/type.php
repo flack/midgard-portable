@@ -27,21 +27,21 @@ class type
 
     public $has_metadata = true;
 
-    public $subtypes = array();
+    public $subtypes = [];
 
-    private $dbfields = array();
+    private $dbfields = [];
 
-    public $field_aliases = array();
+    public $field_aliases = [];
 
     /**
      * @var mixin[]
      */
-    protected $mixins = array();
+    protected $mixins = [];
 
     /**
      * @var property[]
      */
-    private $properties = array();
+    private $properties = [];
 
     public function __construct(SimpleXMLElement $attributes)
     {
