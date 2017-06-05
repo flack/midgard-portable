@@ -202,7 +202,7 @@ class midgard_replicator
         }
 
         if (   $dbobject->id > 0
-            && $dbobject->metadata->revised >= $object->metadata->revised) {
+            && $dbobject->metadata->revised->format('U') >= $object->metadata->revised->format('U')) {
             midgard_connection::get_instance()->set_error(exception::OBJECT_IMPORTED);
             return false;
         }

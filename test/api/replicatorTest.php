@@ -116,14 +116,14 @@ class midgard_replicatorTest extends testcase
         $ret = midgard_replicator::unserialize(midgard_replicator::serialize($object));
         $this->assertEquals($object->guid, $ret[0]->guid);
         $this->assertEquals($object->id, $ret[0]->id);
-        $this->assertEquals($object->metadata->created, $ret[0]->metadata->created);
+        $this->assertEquals($object->metadata->created->format('Y-m-d H:i:s'), $ret[0]->metadata->created->format('Y-m-d H:i:s'));
         $this->assertEquals('created', $ret[0]->action);
 
         $this->assert_api('update', $object);
         $ret = midgard_replicator::unserialize(midgard_replicator::serialize($object));
         $this->assertEquals($object->guid, $ret[0]->guid);
         $this->assertEquals($object->id, $ret[0]->id);
-        $this->assertEquals($object->metadata->revised, $ret[0]->metadata->revised);
+        $this->assertEquals($object->metadata->revised->format('Y-m-d H:i:s'), $ret[0]->metadata->revised->format('Y-m-d H:i:s'));
         $this->assertEquals('updated', $ret[0]->action);
 
         $this->assert_api('delete', $object);
