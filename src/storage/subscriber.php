@@ -167,6 +167,11 @@ class subscriber implements EventSubscriber
                     }
                 }
             }
+            if (   !empty($config['columnDefinition'])
+                && !empty($config['comment'])
+                && $platform->supportsInlineColumnComments()) {
+                $config['columnDefinition'] .=  " COMMENT " . $platform->quoteStringLiteral($config['comment']);
+            }
         }
 
         if (!$modified) {
