@@ -165,12 +165,10 @@ class subscriber implements EventSubscriber
                         $modified = true;
                         $config['columnDefinition'] = $config['comment'] . $platform->getDefaultValueDeclarationSQL($config);
                     }
+                    if (!empty($config['columnDefinition']) && $platform->supportsInlineColumnComments()) {
+                        $config['columnDefinition'] .=  " COMMENT " . $platform->quoteStringLiteral($config['comment']);
+                    }
                 }
-            }
-            if (   !empty($config['columnDefinition'])
-                && !empty($config['comment'])
-                && $platform->supportsInlineColumnComments()) {
-                $config['columnDefinition'] .=  " COMMENT " . $platform->quoteStringLiteral($config['comment']);
             }
         }
 
