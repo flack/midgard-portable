@@ -239,7 +239,7 @@ abstract class query
                 $c = $this->join_tables[$targetclass] . "." . $mrp->get_link_target($property) . " = " . $current_table . "." . $property;
                 $this->qb->innerJoin("midgard:" . $targetclass, $this->join_tables[$targetclass], Join::WITH, $c);
             } else {
-                $this->qb->join($current_table . '.' . $property, $this->join_tables[$targetclass]);
+                $this->qb->leftJoin($current_table . '.' . $property, $this->join_tables[$targetclass]);
             }
         }
         return $this->join_tables[$targetclass];
