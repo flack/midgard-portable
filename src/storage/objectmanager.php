@@ -133,10 +133,6 @@ class objectmanager
         $this->em->getFilters()->disable('softdelete');
         try {
             $entity = $this->em->merge($entity);
-            // If we don't refresh here, Doctrine might try to update before deleting and
-            // throw exceptions about new entities being found (most likely stale association proxies)
-            // @todo: In Doctrine 2.5, this behavior should be removed, so we may be able to remove this workaround
-            $this->em->refresh($entity);
         } catch (\Exception $e) {
             $this->em->getFilters()->enable('softdelete');
             throw $e;
