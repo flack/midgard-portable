@@ -16,6 +16,10 @@
         "monolog/monolog": "^1.9.1",
         "ext-xml": "*"
     },
+    "conflict": {
+        "ext-midgard": "*",
+        "ext-midgard2": "*"
+    },
     "bin": ["bin/midgard-portable"],
     "autoload": {
     	"classmap": ["api/"],

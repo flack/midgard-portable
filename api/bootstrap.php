@@ -9,11 +9,6 @@ use midgard\portable\storage\subscriber;
 use midgard\portable\mgdschema\translator;
 use midgard\portable\api\error\exception;
 
-if (   extension_loaded('midgard')
-    || extension_loaded('midgard2')) {
-    //TODO: Print some error?
-    return;
-}
 const MGD_OBJECT_ACTION_NONE = subscriber::ACTION_NONE;
 const MGD_OBJECT_ACTION_DELETE = subscriber::ACTION_DELETE;
 const MGD_OBJECT_ACTION_PURGE = subscriber::ACTION_PURGE;
