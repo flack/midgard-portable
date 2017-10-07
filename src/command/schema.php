@@ -162,7 +162,7 @@ class schema extends Command
         $progress->start(count($sql));
 
         foreach ($sql as $sql_line) {
-            if ($output->getVerbosity() == OutputInterface::VERBOSITY_VERBOSE) {
+            if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
                 $output->writeln(' Executing <info>' . $sql_line . '</info>');
             }
             try {
