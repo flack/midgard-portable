@@ -34,7 +34,8 @@ class schema extends Command
         $this->setName('schema')
             ->setDescription('(Re)generate mapping information from MgdSchema XMLs')
             ->addArgument('config', InputArgument::OPTIONAL, 'Full path to midgard-portable config file')
-            ->addOption('force', null, InputOption::VALUE_NONE, 'Ignore errors from DB');
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Ignore errors from DB')
+            ->addOption('delete', null, InputOption::VALUE_NONE, 'Delete columns/tables that are not defined in mgdschema');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -107,7 +108,8 @@ class schema extends Command
             }
         }
         if (!empty($to_update)) {
-            $this->process_updates($to_update, $output, $force);
+            $delete = $input->getOption('delete');
+            $this->process_updates($to_update, $output, $force, $delete);
         }
         $output->writeln('Generating proxies');
         $this->generate_proxyfiles($cms);
@@ -130,7 +132,7 @@ class schema extends Command
         }
     }
 
-    private function process_updates(array $to_update, OutputInterface $output, $force)
+    private function process_updates(array $to_update, OutputInterface $output, $force, $delete)
     {
         $em = connection::get_em();
         $conn = $em->getConnection();
@@ -140,13 +142,17 @@ class schema extends Command
 
         $comparator = new Comparator;
         $diff = $comparator->compare($from, $to);
-        foreach ($diff->changedTables as $changed_table) {
-            if (!empty($changed_table->removedColumns)) {
-                $changed_table->removedColumns = [];
-            }
-        }
-        $sql = $diff->toSaveSql($conn->getDatabasePlatform());
 
+        if (!$delete) {
+            foreach ($diff->changedTables as $changed_table) {
+                if (!empty($changed_table->removedColumns)) {
+                    $changed_table->removedColumns = [];
+                }
+            }
+            $sql = $diff->toSaveSql($conn->getDatabasePlatform());
+        } else {
+            $sql = $diff->toSql($conn->getDatabasePlatform());
+        }
         if (count($sql) == 0) {
             return;
         }
