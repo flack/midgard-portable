@@ -55,6 +55,19 @@ class midgard_query_builderTest extends testcase
         return $topics;
     }
 
+    public function test_fetch()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+        $initial = $this->count_results($classname);
+        $found = 0;
+
+        $qb = new \midgard_query_builder($classname);
+        foreach ($qb->iterate() as $result) {
+            $found++;
+        }
+        $this->assertEquals($found, $initial);
+    }
+
     public function test_execute()
     {
         $classname = self::$ns . '\\midgard_topic';

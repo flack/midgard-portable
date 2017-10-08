@@ -33,12 +33,31 @@ class midgard_query_builder extends query
      */
     public function execute()
     {
-        $this->check_groups();
-        $this->qb->addSelect('c');
-        $this->pre_execution();
-        $query = $this->qb->getQuery();
+        $query = $this->prepare_query();
         $result = $query->getResult();
         $this->post_execution();
         return $result;
+    }
+
+    /**
+     * @return midgard\portable\api\object[]
+     */
+    public function iterate()
+    {
+        $query = $this->prepare_query();
+        $resultset = $query->iterate();
+        $this->post_execution();
+        foreach ($resultset as $result) {
+            $this->qb->getEntityManager()->detach($result);
+            yield $result;
+        }
+    }
+
+    private function prepare_query()
+    {
+        $this->check_groups();
+        $this->qb->addSelect('c');
+        $this->pre_execution();
+        return $this->qb->getQuery();
     }
 }
