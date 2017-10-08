@@ -48,8 +48,8 @@ class midgard_query_builder extends query
         $resultset = $query->iterate();
         $this->post_execution();
         foreach ($resultset as $result) {
-            $this->qb->getEntityManager()->detach($result);
-            yield $result;
+            $this->qb->getEntityManager()->detach($result[0]);
+            yield $result[0];
         }
     }
 

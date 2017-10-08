@@ -55,9 +55,11 @@ class midgard_query_builderTest extends testcase
         return $topics;
     }
 
-    public function test_fetch()
+    public function test_iterate()
     {
         $classname = self::$ns . '\\midgard_topic';
+        $topics = $this->_create_topics(__FUNCTION__);
+        $this->assert_api('delete', $topics[2]);
         $initial = $this->count_results($classname);
         $found = 0;
 
@@ -65,6 +67,7 @@ class midgard_query_builderTest extends testcase
         foreach ($qb->iterate() as $result) {
             $found++;
         }
+
         $this->assertEquals($found, $initial);
     }
 
