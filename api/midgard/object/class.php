@@ -24,11 +24,9 @@ class midgard_object_class
         try {
             $result = $qb->getQuery()->getSingleResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
-            $result = null;
-        }
-        if ($result === null) {
             throw exception::not_exists();
         }
+
         if ($result["object_action"] == subscriber::ACTION_PURGE) {
             throw exception::object_purged();
         }

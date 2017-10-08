@@ -73,10 +73,7 @@ class manager
     {
         $this->initialize();
 
-        $fqcn = $property->link['target'];
-        if (!empty($this->namespace)) {
-            $fqcn = $this->namespace . '\\' . $fqcn;
-        }
+        $fqcn = $this->get_fcqn($property->link['target']);
 
         if (   array_key_exists($fqcn, $this->types)
             || $property->link['target'] === $property->get_parent()->name) {
@@ -196,17 +193,11 @@ class manager
 
     private function get_type_by_shortname($classname)
     {
-        $fqcn = $classname;
-        if (!empty($this->namespace)) {
-            $fqcn = $this->namespace . '\\' . $classname;
-        }
+        $fqcn = $this->get_fcqn($classname);
         if (array_key_exists($fqcn, $this->types)) {
             return $this->types[$fqcn];
         } elseif (array_key_exists($classname, $this->merged_types)) {
-            $fqcn = $this->merged_types[$classname];
-            if (!empty($this->namespace)) {
-                $fqcn = $this->namespace . '\\' . $fqcn;
-            }
+            $fqcn = $this->get_fcqn($this->merged_types[$classname]);
             return $this->types[$fqcn];
         }
         return null;
@@ -231,9 +222,14 @@ class manager
         if ($classname === 'midgard_attachment') {
             $type->extends = 'base_attachment';
         }
+        $this->types[$this->get_fcqn($classname)] = $type;
+    }
+
+    private function get_fcqn($classname)
+    {
         if (!empty($this->namespace)) {
-            $classname = $this->namespace . '\\' . $classname;
+            return $this->namespace . '\\' . $classname;
         }
-        $this->types[$classname] = $type;
+        return $classname;
     }
 }

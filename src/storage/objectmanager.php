@@ -133,11 +133,9 @@ class objectmanager
         $this->em->getFilters()->disable('softdelete');
         try {
             $entity = $this->em->merge($entity);
-        } catch (\Exception $e) {
+        } finally {
             $this->em->getFilters()->enable('softdelete');
-            throw $e;
         }
-        $this->em->getFilters()->enable('softdelete');
         $this->em->remove($entity);
         $this->em->flush($entity);
         $this->em->detach($entity);
