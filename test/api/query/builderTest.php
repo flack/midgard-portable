@@ -82,6 +82,7 @@ class midgard_query_builderTest extends testcase
         self::$em->clear();
 
         $qb = new \midgard_query_builder($classname);
+        $qb->add_order('id', 'DESC'); // out new object is the last one, i.e. the one with the highest ID
         $results = $qb->execute();
         $this->assertInternalType('array', $results);
         $this->assertCount($initial + 1, $results);
