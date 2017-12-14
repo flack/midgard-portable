@@ -14,10 +14,10 @@ use midgard\portable\mgdschema\translator;
 use midgard\portable\api\error\exception;
 use Doctrine\ORM\Query;
 use midgard_connection;
-use Doctrine\Common\Persistence\Proxy;
+use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\QueryBuilder;
 
-abstract class object extends dbobject
+abstract class mgdobject extends dbobject
 {
     protected $metadata; // compat with mgd behavior: If the schema has no metadata, the property is present anyway
 
@@ -102,7 +102,7 @@ abstract class object extends dbobject
         foreach ($candidates as $candidate) {
             if ($this->$candidate !== null) {
                 //Proxies become stale if the object itself is detached, so we have to re-fetch
-                if (   $this->$candidate instanceof \Doctrine\ORM\Proxy\Proxy
+                if (   $this->$candidate instanceof Proxy
                     && $this->$candidate->__isInitialized()) {
                     try {
                         $this->$candidate->get_by_id($this->$candidate->id);
@@ -130,7 +130,7 @@ abstract class object extends dbobject
         }
         // According to Doctrine documentation, proxies should be transparent, but in practice,
         // there will be problems if we don't force-load
-        if (   $entity instanceof \Doctrine\ORM\Proxy\Proxy
+        if (   $entity instanceof Proxy
             && !$entity->__isInitialized()) {
             try {
                 $entity->__load();

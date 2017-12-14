@@ -78,7 +78,7 @@ class classgenerator
 
         if (!empty($namespace)) {
             $this->add_line('namespace ' . $namespace . ';');
-            $this->add_line('use midgard\\portable\\api\\object as midgard_object;');
+            $this->add_line('use midgard\\portable\\api\\mgdobject as midgard_object;');
             $this->add_line('use midgard_datetime;');
         }
         $this->add_line('use midgard\\portable\\api\\user as base_user;');

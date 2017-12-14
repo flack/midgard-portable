@@ -29,7 +29,7 @@ class midgard_query_builder extends query
     }
 
     /**
-     * @return midgard\portable\api\object[]
+     * @return midgard\portable\api\mgdobject[]
      */
     public function execute()
     {
@@ -40,7 +40,7 @@ class midgard_query_builder extends query
     }
 
     /**
-     * @return midgard\portable\api\object[]
+     * @return midgard\portable\api\mgdobject[]
      */
     public function iterate()
     {

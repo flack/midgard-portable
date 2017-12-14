@@ -7,7 +7,7 @@
 
 namespace midgard\portable\api;
 
-class parameter extends object
+class parameter extends mgdobject
 {
     private $id = 0;
     protected $guid = '';

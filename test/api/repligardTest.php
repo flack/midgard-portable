@@ -29,7 +29,7 @@ class midgard_repligardTest extends testcase
         $classname = self::$ns . '\\midgard_repligard';
         $object = new $classname;
         $this->assertInstanceOf('\\midgard\\portable\\api\\dbobject', $object);
-        $this->assertNotInstanceOf('\\midgard\\portable\\api\\object', $object);
+        $this->assertNotInstanceOf('\\midgard\\portable\\api\\mgdobject', $object);
         $this->assertNotInstanceOf('\\midgard\\portable\\storage\\interfaces\\metadata', $object);
     }
 

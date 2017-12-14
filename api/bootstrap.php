@@ -58,7 +58,7 @@ const MGD_ERR_OBJECT_IS_LOCKED = exception::OBJECT_IS_LOCKED;
 class_alias('midgard\\portable\\api\\error\\exception', 'midgard_error_exception');
 class_alias('midgard\\portable\\api\\config', 'midgard_config');
 class_alias('midgard\\portable\\api\\dbobject', 'midgard_dbobject');
-class_alias('midgard\\portable\\api\\object', 'midgard_object');
+class_alias('midgard\\portable\\api\\mgdobject', 'midgard_object');
 class_alias('midgard\\portable\\api\\metadata', 'midgard_metadata');
 class_alias('midgard\\portable\\api\\blob', 'midgard_blob');
 

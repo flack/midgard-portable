@@ -148,7 +148,7 @@ class manager
         $root_type = null;
         foreach ($types as $i => $type) {
             // TODO: We should have a second pass here that prefers classnames starting with midgard_
-            if ($type->extends === '\\midgard\\portable\\api\\object') {
+            if ($type->extends === '\\midgard\\portable\\api\\mgdobject') {
                 $root_type = $type;
                 unset($types[$i]);
                 break;

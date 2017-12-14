@@ -33,7 +33,7 @@ class classgeneratorTest extends testcase
 
         $this->assertInstanceOf('midgard_dbobject', $topic);
         $this->assertInstanceOf('midgard_object', $topic);
-        $this->assertInstanceOf('\\midgard\\portable\\api\\object', $topic);
+        $this->assertInstanceOf('\\midgard\\portable\\api\\mgdobject', $topic);
         $this->assertInstanceOf($classname, $topic);
         $this->assertInstanceOf('midgard_metadata', $topic->metadata);
         $this->assertInstanceOf('midgard_datetime', $topic->metadata->created);
@@ -62,7 +62,7 @@ class classgeneratorTest extends testcase
 
         $this->assertInstanceOf('midgard_dbobject', $group);
         $this->assertInstanceOf('midgard_object', $group);
-        $this->assertInstanceOf('\\midgard\\portable\\api\\object', $group);
+        $this->assertInstanceOf('\\midgard\\portable\\api\\mgdobject', $group);
         $this->assertInstanceOf($classname, $group);
         // we can't test for non-namespaced classname, since some other test might have registered the alias already..
         //$this->assertInstanceOf('midgard_group', $group);
