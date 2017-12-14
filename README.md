@@ -94,11 +94,11 @@ To include `midgard-portable` in your application, simply `require` it in your `
 use midgard\portable\driver;
 use midgard\portable\storage\connection;
 
-$db_config = array(
+$db_config = [
     'driver' => 'pdo_sqlite',
     'memory' => true
-);
-$schema_dirs = array('/path/to/my/schemas/');
+];
+$schema_dirs = ['/path/to/my/schemas/'];
 $var_dir = '/path/to/vardir';
 $entity_namespace = '';
 $dev_mode = false;
@@ -123,6 +123,7 @@ You can also use Doctrine's CLI runner and all the functionality it provides if 
 
 ```php
 <?php
+use midgard\portable\storage\connection;
 require 'my_settings_file.php'; //This needs to contain the code shown above
 $entityManager = connection::get_em();
 ```
@@ -175,8 +176,7 @@ Known Issues & Limitations
    which entails a performance penalty. Also, some cases (like parent GUID links) are not supported yet
 
  - Metadata simulation is somewhat imperfect in the sense that the metadata columns are accessible through the
-   object itself (e.g. `$topic->metadata_deleted`). This will be changed once we drop PHP 5.3 support
-   by utilizing embedded objects (`Embeddable`) from Doctrine ORM 2.5.
+   object itself (e.g. `$topic->metadata_deleted`). This will be changed once we start utilizing embedded objects (`Embeddable`) from Doctrine ORM 2.5.
 
 ### Runtime
 
@@ -216,9 +216,9 @@ Known Issues & Limitations
  - newer MySQL version will throw `SQLSTATE[22007]: Invalid datetime format` errors on converted legacy databases, you can get around them by adding:
  
  ```php
-         'driverOptions' => array(
+        'driverOptions' => [
             1002 => "SET SESSION sql_mode='ALLOW_INVALID_DATES'"
-        ),
+        ],
  ```
  
- to your $db_config
+ to your `$db_config`
