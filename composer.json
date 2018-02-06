@@ -1,7 +1,7 @@
 {
     "name": "openpsa/midgard-portable",
     "description": "ActiveRecord ORM built on top of Doctrine 2",
-    "license": "LGPL",
+    "license": "LGPL-2.1-or-later",
     "authors": [
         {
             "name": "Andreas Flack",
