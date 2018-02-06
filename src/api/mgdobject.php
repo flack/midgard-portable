@@ -354,6 +354,18 @@ abstract class mgdobject extends dbobject
                 return false;
             }
         }
+        return $this->check_upfield();
+    }
+
+    private function check_upfield()
+    {
+        if (   !empty($this->id)
+            && !empty($this->cm->midgard['upfield'])
+            && $this->__get($this->cm->midgard['upfield']) === $this->id) {
+            exception::tree_is_circular();
+            return false;
+        }
+        // @todo this should be recursive
         return true;
     }
 

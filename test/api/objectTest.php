@@ -306,6 +306,16 @@ class objectTest extends testcase
         $this->assert_api('update', $topic, MGD_ERR_INVALID_PROPERTY_VALUE);
     }
 
+    public function test_update_circular_parent()
+    {
+        $classname = self::$ns . '\\midgard_topic';
+
+        $topic = new $classname;
+        $this->assert_api('create', $topic);
+        $topic->up = $topic->id;
+
+        $this->assert_api('update', $topic, MGD_ERR_TREE_IS_CIRCULAR);
+    }
 
     public function test_update_nonpersistent()
     {
