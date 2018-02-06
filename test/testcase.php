@@ -66,7 +66,7 @@ class testcase extends \PHPUnit_Framework_TestCase
     {
         // delete all, no matter what
         self::$em->getFilters()->disable('softdelete');
-        $q = self::$em->createQuery('DELETE FROM ' . $classname);
+        $q = self::$em->createQuery('DELETE ' . $classname . ' c');
         $count = $q->execute();
         self::$em->getFilters()->enable('softdelete');
         return $count;
