@@ -7,7 +7,7 @@
 
 function mgd_version()
 {
-    return '1.3.1';
+    return '1.3.1+git';
 }
 
 function mgd_is_guid($input)
