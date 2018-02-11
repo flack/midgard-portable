@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": ">=5.5",
-        "doctrine/orm": "^2.5.1",
+        "doctrine/orm": "^2.5.1 !=2.6.0",
         "symfony/console": ">=2.5.0",
         "monolog/monolog": "^1.9.1",
         "ext-xml": "*"
