@@ -191,7 +191,7 @@ abstract class query
     }
 
     /**
-     * @return \Doctrine\ORM\Query\Expr
+     * @return \Doctrine\ORM\Query\Expr\Composite
      */
     public function get_current_group()
     {
