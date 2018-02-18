@@ -9,9 +9,7 @@ namespace midgard\portable;
 
 use midgard\portable\storage\connection;
 use midgard\portable\api\error\exception;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query\Expr\Join;
-use Doctrine\ORM\Query\Expr;
 
 abstract class query
 {
@@ -193,7 +191,7 @@ abstract class query
     }
 
     /**
-     * @return Doctrine\ORM\Query\Expr:
+     * @return \Doctrine\ORM\Query\Expr
      */
     public function get_current_group()
     {

@@ -9,30 +9,29 @@ namespace midgard\portable;
 
 use midgard\portable\mgdschema\manager;
 use midgard\portable\mgdschema\translator;
-use midgard\portable\mgdschema\type;
 use midgard\portable\mgdschema\property;
 use midgard\portable\storage\type\datetime;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver as driver_interface;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\ClassMetadata as CM;
-use Doctrine\DBAL\Types\Type as dtype;
+use Doctrine\DBAL\Types\Type;
 
 class driver implements driver_interface
 {
     private $dbtypemap = [
-        'unsigned integer' => ['type' => dtype::INTEGER, 'default' => 0], // <== UNSIGNED in Doctrine\DBAL\Schema\Column
-        'integer' => ['type' => dtype::INTEGER, 'default' => 0],
-        'boolean' => ['type' => dtype::BOOLEAN, 'default' => false],
-        'bool' => ['type' => dtype::BOOLEAN, 'default' => false],
-        'guid' => ['type' => dtype::STRING, 'length' => 80, 'default' => ''],
-        'varchar(80)' => ['type' => dtype::STRING, 'length' => 80, 'default' => ''],
-        'string' => ['type' => dtype::STRING, 'length' => 255, 'default' => ''],
+        'unsigned integer' => ['type' => Type::INTEGER, 'default' => 0], // <== UNSIGNED in Doctrine\DBAL\Schema\Column
+        'integer' => ['type' => Type::INTEGER, 'default' => 0],
+        'boolean' => ['type' => Type::BOOLEAN, 'default' => false],
+        'bool' => ['type' => Type::BOOLEAN, 'default' => false],
+        'guid' => ['type' => Type::STRING, 'length' => 80, 'default' => ''],
+        'varchar(80)' => ['type' => Type::STRING, 'length' => 80, 'default' => ''],
+        'string' => ['type' => Type::STRING, 'length' => 255, 'default' => ''],
         'datetime' => ['type' => datetime::TYPE, 'default' => '0001-01-01 00:00:00'],
-        'text' => ['type' => dtype::TEXT],
-        'longtext' => ['type' => dtype::TEXT],
-        'float' => ['type' => dtype::FLOAT, 'default' => 0.0],
-        'double' => ['type' => dtype::FLOAT, 'default' => 0.0]
+        'text' => ['type' => Type::TEXT],
+        'longtext' => ['type' => Type::TEXT],
+        'float' => ['type' => Type::FLOAT, 'default' => 0.0],
+        'double' => ['type' => Type::FLOAT, 'default' => 0.0]
     ];
 
     private $vardir;
@@ -206,7 +205,7 @@ class driver implements driver_interface
             if ($property->name == $type->primaryfield) {
                 $mapping['id'] = true;
                 unset($mapping['default']);
-                if ($mapping['type'] == dtype::INTEGER) {
+                if ($mapping['type'] == Type::INTEGER) {
                     $metadata->setIdGeneratorType(CM::GENERATOR_TYPE_AUTO);
                 } else {
                     $metadata->setIdGeneratorType(CM::GENERATOR_TYPE_NONE);
@@ -230,7 +229,7 @@ class driver implements driver_interface
     {
         if (strpos($property->dbtype, 'varchar') === 0) {
             $mapping = [
-                'type' => dtype::STRING,
+                'type' => Type::STRING,
             ];
 
             if (substr($property->dbtype, -1) == ')') {
@@ -255,7 +254,7 @@ class driver implements driver_interface
             $matches = [];
             preg_match('/DECIMAL\((\d+),(\d+)\)/i', $property->dbtype, $matches);
             $mapping = [
-                'type' => dtype::DECIMAL,
+                'type' => Type::DECIMAL,
                 'precision' => $matches[1],
                 'scale' => $matches[2]
             ];

@@ -19,9 +19,9 @@ class datetime extends DateTimeType
 
     /**
      * @param string $value
-     * @param Doctrine\DBAL\Platforms\AbstractPlatform $platform
+     * @param AbstractPlatform $platform
      * @return DateTime|mixed|null
-     * @throws Doctrine\DBAL\Types\ConversionException
+     * @throws ConversionException
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
