@@ -565,7 +565,7 @@ abstract class mgdobject extends dbobject
     {
         $constraints = [];
         if ($domain) {
-            $constraints[] = ["domain", "=", $domain];
+            $constraints = ["domain" => $domain];
         }
 
         return $this->get_collection('midgard_parameter')->find($this->guid, $constraints);
@@ -618,8 +618,8 @@ abstract class mgdobject extends dbobject
     public function set_parameter($domain, $name, $value)
     {
         $constraints = [
-            ['domain', '=', $domain],
-            ['name', '=', $name],
+            'domain' => $domain,
+            'name' => $name,
         ];
         $params = $this->get_collection('midgard_parameter')->find($this->guid, $constraints);
 

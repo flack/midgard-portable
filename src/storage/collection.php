@@ -87,8 +87,8 @@ class collection
 
     private function apply_qb_constraints($qb, array $constraints)
     {
-        foreach ($constraints as $constraint) {
-            $qb->add_constraint($constraint[0], $constraint[1], $constraint[2]);
+        foreach ($constraints as $name => $value) {
+            $qb->add_constraint($name, '=', $value);
         }
         return $qb;
     }
