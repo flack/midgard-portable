@@ -43,10 +43,10 @@ class midgard_storage
 
             $fqcn = $cm_user->getName();
             $admin = new $fqcn;
-            $admin->authtype = 'Plaintext';
+            $admin->authtype = 'Legacy';
             $admin->authtypeid = 2;
             $admin->login = 'admin';
-            $admin->password = 'password';
+            $admin->password = password_hash('password', PASSWORD_DEFAULT);
             $admin->active = true;
             $admin->usertype = 2;
             $admin->set_person($person);

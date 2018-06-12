@@ -38,13 +38,13 @@ class midgard_storageTest extends testcase
 
         $fqcn = $cm->fullyQualifiedClassName('midgard_user');
         $tokens = [
-            'authtype' => 'Plaintext',
-            'login' => 'admin',
-            'password' => 'password',
+            'authtype' => 'Legacy',
+            'login' => 'admin'
         ];
         $admin = new $fqcn($tokens);
         $this->assertEquals(2, $admin->usertype);
         $this->assertTrue(midgard_storage::create_base_storage());
+        $this->assertTrue(password_verify('password', $admin->password));
     }
 
     private function assertCreateClassStorageSuccess($classname)
