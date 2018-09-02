@@ -650,10 +650,10 @@ class objectTest extends testcase
         $this->assertTrue($x->get_by_path('/' . $sd->name . '/' . $sd2->name));
         $this->assertEquals($sd2->guid, $x->guid);
 
-        $this->assertFalse($x->get_by_path('/' . $sd->name . '/nonexistant'));
+        $this->assertFalse($x->get_by_path('/' . $sd->name . '/nonexistent'));
         $this->assertEquals('', $x->guid);
 
-        $this->assertFalse($x->get_by_path('/' . $sd->name . '-notavailable/nonexistant'));
+        $this->assertFalse($x->get_by_path('/' . $sd->name . '-notavailable/nonexistent'));
         $this->assertEquals('', $x->guid);
 
         $x = new $s_classname;
@@ -724,7 +724,7 @@ class objectTest extends testcase
 
     public function test_get_parameter()
     {
-        // try retrieving parameter from non persistant object
+        // try retrieving parameter from non persistent object
         $classname = self::$ns . '\\midgard_topic';
         $topic = new $classname;
         $topic->name = __FUNCTION__;
@@ -805,7 +805,7 @@ class objectTest extends testcase
         $params = $topic->list_parameters("false.domain");
         $this->assertCount(0, $params);
 
-        // dont specify domain => get all
+        // don't specify domain => get all
         $params = $topic->list_parameters();
         $this->assertCount(3, $params);
 

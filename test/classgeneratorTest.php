@@ -45,7 +45,7 @@ class classgeneratorTest extends testcase
         $entity = new $classname;
 
         // without the default values in the mapping options, persisting the entity via em and flushing the em
-        // would cause an integrity violation for all midgard_datetime fields (that cant be NULL)
+        // would cause an integrity violation for all midgard_datetime fields (that can't be NULL)
         $this->assertInstanceOf('midgard_datetime', $entity->metadata->approved);
         $this->assertEquals('0001-01-01 00:00:00', $entity->metadata->approved->format('Y-m-d H:i:s'));
     }

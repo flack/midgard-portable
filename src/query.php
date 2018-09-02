@@ -308,7 +308,7 @@ abstract class query
             if ($cm->hasAssociation($parsed['column'])) {
                 $group = false;
                 // TODO: there seems to be no way to make Doctrine accept default values for association fields,
-                // so we need a silly workaorund for existing DBs
+                // so we need a silly workaround for existing DBs
                 if ($operator === '<>' || $operator === '>') {
                     $group = $this->qb->expr()->andX();
                     $group->add($parsed['name'] . ' IS NOT NULL');
