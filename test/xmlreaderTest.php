@@ -8,6 +8,8 @@
 namespace midgard\portable\test;
 
 use midgard\portable\xmlreader;
+use midgard\portable\mgdschema\type;
+use midgard\portable\api\mgdobject;
 
 class xmlreaderTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,10 +20,10 @@ class xmlreaderTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($types));
         $this->assertArrayHasKey('midgard_topic', $types);
         $type = $types['midgard_topic'];
-        $this->assertInstanceOf('midgard\\portable\\mgdschema\\type', $type);
+        $this->assertInstanceOf(type::class, $type);
         $this->assertEquals('midgard_topic', $type->name);
         $this->assertEquals('topic', $type->table);
-        $this->assertEquals('\\midgard\\portable\\api\\mgdobject', $type->extends);
+        $this->assertEquals('\\' . mgdobject::class, $type->extends);
         $this->assertEquals('up', $type->upfield);
         $this->assertEquals('id', $type->primaryfield);
 

@@ -8,6 +8,11 @@
 use midgard\portable\storage\subscriber;
 use midgard\portable\mgdschema\translator;
 use midgard\portable\api\error\exception;
+use midgard\portable\api\config;
+use midgard\portable\api\dbobject;
+use midgard\portable\api\mgdobject;
+use midgard\portable\api\metadata;
+use midgard\portable\api\blob;
 
 const MGD_OBJECT_ACTION_NONE = subscriber::ACTION_NONE;
 const MGD_OBJECT_ACTION_DELETE = subscriber::ACTION_DELETE;
@@ -55,11 +60,11 @@ const MGD_ERR_TREE_IS_CIRCULAR = exception::TREE_IS_CIRCULAR;
 const MGD_ERR_OBJECT_IS_LOCKED = exception::OBJECT_IS_LOCKED;
 
 // TODO: this should be moved into an autoloader function at some point
-class_alias('midgard\\portable\\api\\error\\exception', 'midgard_error_exception');
-class_alias('midgard\\portable\\api\\config', 'midgard_config');
-class_alias('midgard\\portable\\api\\dbobject', 'midgard_dbobject');
-class_alias('midgard\\portable\\api\\mgdobject', 'midgard_object');
-class_alias('midgard\\portable\\api\\metadata', 'midgard_metadata');
-class_alias('midgard\\portable\\api\\blob', 'midgard_blob');
+class_alias(exception::class, 'midgard_error_exception');
+class_alias(config::class, 'midgard_config');
+class_alias(dbobject::class, 'midgard_dbobject');
+class_alias(mgdobject::class, 'midgard_object');
+class_alias(metadata::class, 'midgard_metadata');
+class_alias(blob::class, 'midgard_blob');
 
 require 'functions.php';

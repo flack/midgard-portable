@@ -129,7 +129,7 @@ class midgard_object_class
     public static function has_metadata($classname)
     {
         if (is_string($classname)) {
-            return in_array('midgard\\portable\\storage\\interfaces\\metadata', class_implements($classname));
+            return in_array(metadata::class, class_implements($classname));
         }
         if (is_object($classname)) {
             return ($classname instanceof metadata);

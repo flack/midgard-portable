@@ -10,6 +10,13 @@ namespace midgard\portable;
 use midgard\portable\mgdschema\manager;
 use midgard\portable\mgdschema\type;
 use midgard\portable\mgdschema\translator;
+use midgard\portable\api\mgdobject;
+use midgard\portable\api\user;
+use midgard\portable\api\parameter;
+use midgard\portable\api\person;
+use midgard\portable\api\repligard;
+use midgard\portable\api\attachment;
+use midgard\portable\api\metadata;
 
 class classgenerator
 {
@@ -77,15 +84,15 @@ class classgenerator
 
         if (!empty($namespace)) {
             $this->add_line('namespace ' . $namespace . ';');
-            $this->add_line('use midgard\\portable\\api\\mgdobject as midgard_object;');
+            $this->add_line('use ' . mgdobject::class . ' as midgard_object;');
             $this->add_line('use midgard_datetime;');
         }
-        $this->add_line('use midgard\\portable\\api\\user as base_user;');
-        $this->add_line('use midgard\\portable\\api\\person as base_person;');
-        $this->add_line('use midgard\\portable\\api\\parameter as base_parameter;');
-        $this->add_line('use midgard\\portable\\api\\repligard as base_repligard;');
-        $this->add_line('use midgard\\portable\\api\\attachment as base_attachment; ');
-        $this->add_line('use midgard\\portable\\api\\metadata as midgard_metadata; ');
+        $this->add_line('use ' . user::class . ' as base_user;');
+        $this->add_line('use ' . person::class . ' as base_person;');
+        $this->add_line('use ' . parameter::class . ' as base_parameter;');
+        $this->add_line('use ' . repligard::class . ' as base_repligard;');
+        $this->add_line('use ' . attachment::class . ' as base_attachment; ');
+        $this->add_line('use ' . metadata::class . ' as midgard_metadata; ');
 
         foreach ($types as $type) {
             $this->convert_type($type);

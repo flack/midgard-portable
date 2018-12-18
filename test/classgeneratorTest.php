@@ -8,6 +8,9 @@
 namespace midgard\portable\test;
 
 
+use midgard\portable\api\mgdobject;
+use midgard\portable\storage\interfaces\metadata;
+
 class classgeneratorTest extends testcase
 {
     private $directory;
@@ -33,11 +36,11 @@ class classgeneratorTest extends testcase
 
         $this->assertInstanceOf('midgard_dbobject', $topic);
         $this->assertInstanceOf('midgard_object', $topic);
-        $this->assertInstanceOf('\\midgard\\portable\\api\\mgdobject', $topic);
+        $this->assertInstanceOf(mgdobject::class, $topic);
         $this->assertInstanceOf($classname, $topic);
         $this->assertInstanceOf('midgard_metadata', $topic->metadata);
         $this->assertInstanceOf('midgard_datetime', $topic->metadata->created);
-        $this->assertInstanceOf('\\midgard\\portable\\storage\\interfaces\\metadata', $topic);
+        $this->assertInstanceOf(metadata::class, $topic);
         $this->assertEquals(0, $topic->score);
         $this->assertEquals('0001-01-01 00:00:00', $topic->metadata->created->format('Y-m-d H:i:s'));
 
@@ -62,13 +65,13 @@ class classgeneratorTest extends testcase
 
         $this->assertInstanceOf('midgard_dbobject', $group);
         $this->assertInstanceOf('midgard_object', $group);
-        $this->assertInstanceOf('\\midgard\\portable\\api\\mgdobject', $group);
+        $this->assertInstanceOf(mgdobject::class, $group);
         $this->assertInstanceOf($classname, $group);
         // we can't test for non-namespaced classname, since some other test might have registered the alias already..
         //$this->assertInstanceOf('midgard_group', $group);
         $this->assertInstanceOf('midgard_metadata', $group->metadata);
         $this->assertInstanceOf('midgard_datetime', $group->metadata->created);
-        $this->assertInstanceOf('\\midgard\\portable\\storage\\interfaces\\metadata', $group);
+        $this->assertInstanceOf(metadata::class, $group);
         $this->assertEquals(0, $group->owner);
 
         $org_classname = $ns . '\\org_openpsa_organization';

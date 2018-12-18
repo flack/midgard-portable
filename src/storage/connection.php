@@ -19,6 +19,8 @@ use Doctrine\Common\Cache\ClearableCache;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use midgard_connection;
+use midgard\portable\storage\filter\softdelete;
+use midgard\portable\mapping\factory;
 
 class connection
 {
@@ -185,10 +187,10 @@ class connection
         }
 
         $config = \Doctrine\ORM\Tools\Setup::createConfiguration($dev_mode, $vardir . '/cache');
-        $config->addFilter('softdelete', 'midgard\\portable\\storage\\filter\\softdelete');
+        $config->addFilter('softdelete', softdelete::class);
         $config->setMetadataDriverImpl($driver);
         $config->addEntityNamespace('midgard', $driver->get_namespace());
-        $config->setClassMetadataFactoryName('\\midgard\\portable\\mapping\\factory');
+        $config->setClassMetadataFactoryName(factory::class);
 
         if (!array_key_exists('charset', $db_config)) {
             $db_config['charset'] = 'utf8';

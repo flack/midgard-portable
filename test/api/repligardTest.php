@@ -8,6 +8,9 @@
 namespace midgard\portable\test;
 
 use midgard\portable\storage\subscriber;
+use midgard\portable\api\dbobject;
+use midgard\portable\api\mgdobject;
+use midgard\portable\storage\interfaces\metadata;
 
 class midgard_repligardTest extends testcase
 {
@@ -28,9 +31,9 @@ class midgard_repligardTest extends testcase
     {
         $classname = self::$ns . '\\midgard_repligard';
         $object = new $classname;
-        $this->assertInstanceOf('\\midgard\\portable\\api\\dbobject', $object);
-        $this->assertNotInstanceOf('\\midgard\\portable\\api\\mgdobject', $object);
-        $this->assertNotInstanceOf('\\midgard\\portable\\storage\\interfaces\\metadata', $object);
+        $this->assertInstanceOf(dbobject::class, $object);
+        $this->assertNotInstanceOf(mgdobject::class, $object);
+        $this->assertNotInstanceOf(metadata::class, $object);
     }
 
     public function test_create()

@@ -15,7 +15,7 @@ class softdelete extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if (!$targetEntity->reflClass->implementsInterface('midgard\\portable\\storage\\interfaces\\metadata')) {
+        if (!$targetEntity->reflClass->implementsInterface(metadata::class)) {
             return "";
         }
         return $targetTableAlias . '.' . metadata::DELETED_FIELD . ' = 0';
