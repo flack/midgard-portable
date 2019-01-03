@@ -361,7 +361,8 @@ abstract class mgdobject extends dbobject
     {
         if (   !empty($this->id)
             && !empty($this->cm->midgard['upfield'])
-            && $this->__get($this->cm->midgard['upfield']) === $this->id) {
+            && $this->__get($this->cm->midgard['upfield']) === $this->id
+            && $this->cm->getAssociationMapping($this->cm->midgard['upfield'])['targetEntity'] === $this->cm->getName()) {
             exception::tree_is_circular();
             return false;
         }
