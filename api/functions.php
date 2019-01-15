@@ -15,5 +15,5 @@ function mgd_is_guid($input)
     if (!is_string($input)) {
         return false;
     }
-    return (preg_match('/[0-9a-f]{21,80}/', $input) === 1);
+    return preg_match('/^[0-9a-f]{21,80}/', $input) === 1;
 }

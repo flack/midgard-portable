@@ -15,5 +15,7 @@ class functionsTest extends testcase
         $this->assertFalse(mgd_is_guid(null));
         $this->assertTrue(mgd_is_guid('f0000000000000000000000000000000000f'));
         $this->assertFalse(mgd_is_guid('hi'));
+        $this->assertFalse(mgd_is_guid('xf0000000000000000000000000000000000f'));
+        $this->assertTrue(mgd_is_guid('f0000000000000000000000000000000000ff0000000000000000000000000000000000f'));
     }
 }
