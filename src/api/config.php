@@ -57,7 +57,7 @@ class config
 
         foreach ($config as $key => $value) {
             $key = strtolower($key);
-            if (array_key_exists($key, $mapping)) {
+            if (isset($mapping[$key])) {
                 $key = $mapping[$key];
             }
             if (property_exists($this, $key)) {

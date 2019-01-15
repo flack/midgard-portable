@@ -63,7 +63,7 @@ class manager
     public function get_child_classes($typename)
     {
         $this->initialize();
-        if (array_key_exists($typename, $this->child_classes)) {
+        if (isset($this->child_classes[$typename])) {
             return $this->child_classes[$typename];
         }
         return [];
@@ -75,16 +75,14 @@ class manager
 
         $fqcn = $this->get_fcqn($property->link['target']);
 
-        if (   array_key_exists($fqcn, $this->types)
+        if (   isset($this->types[$fqcn])
             || $property->link['target'] === $property->get_parent()->name) {
-            $target_class = $property->link['target'];
-        } else {
-            if (!array_key_exists($property->link['target'], $this->merged_types)) {
-                throw new \Exception('Link to unknown class ' . $property->link['target']);
-            }
-            $target_class = $this->merged_types[$property->link['target']];
+            return $property->link['target'];
         }
-        return $target_class;
+        if (!isset($this->merged_types[$property->link['target']])) {
+            throw new \Exception('Link to unknown class ' . $property->link['target']);
+        }
+        return $this->merged_types[$property->link['target']];
     }
 
     private function initialize()
@@ -111,7 +109,7 @@ class manager
                 $this->register_child_class($type);
             }
 
-            if (!array_key_exists($type->table, $tablemap)) {
+            if (!isset($tablemap[$type->table])) {
                 $tablemap[$type->table] = [];
             }
             $tablemap[$type->table][] = $type;
@@ -134,7 +132,7 @@ class manager
 
     private function register_child_class(type $type)
     {
-        if (!array_key_exists($type->parent, $this->child_classes)) {
+        if (!isset($this->child_classes[$type->parent])) {
             $this->child_classes[$type->parent] = [];
         }
         $this->child_classes[$type->parent][$type->name] = $type->parentfield;
@@ -173,7 +171,7 @@ class manager
                 $root_type->add_property($property);
             }
 
-            if (array_key_exists($type->name, $this->child_classes)) {
+            if (isset($this->child_classes[$type->name])) {
                 foreach ($this->child_classes[$type->name] as $childname => $parentfield) {
                     $child_type = $this->get_type_by_shortname($childname);
                     if ($child_type === null) {
@@ -194,8 +192,8 @@ class manager
     private function get_type_by_shortname($classname)
     {
         $fqcn = $this->get_fcqn($classname);
-        if (!array_key_exists($fqcn, $this->types)) {
-            if (!array_key_exists($classname, $this->merged_types)) {
+        if (!isset($this->types[$fqcn])) {
+            if (!isset($this->merged_types[$classname])) {
                 return null;
             }
             $fqcn = $this->get_fcqn($this->merged_types[$classname]);

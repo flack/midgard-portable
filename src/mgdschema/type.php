@@ -70,10 +70,10 @@ class type
                     $this->parent = $property->link['target'];
                 }
             }
-            if (!array_key_exists($property->field, $this->dbfields)) {
+            if (!isset($this->dbfields[$property->field])) {
                 $this->properties[$name] = $property;
                 $this->dbfields[$property->field] = $property->name;
-            } elseif (!array_key_exists($property->name, $this->properties)) {
+            } elseif (!isset($this->properties[$property->name])) {
                 $this->field_aliases[$property->name] = $this->dbfields[$property->field];
             }
         }
@@ -81,7 +81,7 @@ class type
 
     public function has_property($name)
     {
-        return array_key_exists($name, $this->properties);
+        return isset($this->properties[$name]);
     }
 
     /**

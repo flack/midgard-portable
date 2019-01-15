@@ -47,7 +47,7 @@ abstract class mgdobject extends dbobject
      */
     private function get_collection($classname)
     {
-        if (!array_key_exists($classname, $this->collections)) {
+        if (!isset($this->collections[$classname])) {
             $this->collections[$classname] = new collection($classname);
         }
         return $this->collections[$classname];

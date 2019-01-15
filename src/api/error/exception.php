@@ -220,7 +220,7 @@ class exception extends base_exception
 
     public static function get_error_string($code)
     {
-        if (!array_key_exists($code, self::$messages)) {
+        if (!isset(self::$messages[$code])) {
             return "Undefined error";
         }
         return self::$messages[$code];

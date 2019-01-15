@@ -62,7 +62,7 @@ class driver implements driver_interface
         $this->vardir = $vardir . '/';
         $this->namespace = $namespace;
 
-        $this->is_fresh_namespace = !array_key_exists($this->namespace, self::$processed_namespaces);
+        $this->is_fresh_namespace = !isset(self::$processed_namespaces[$this->namespace]);
         if ($this->is_fresh_namespace) {
             $this->manager = new manager($schemadirs, $this->namespace);
             self::$processed_namespaces[$this->namespace] = ["manager" => $this->manager];
@@ -117,7 +117,7 @@ class driver implements driver_interface
         if ($this->types === null) {
             $this->initialize();
         }
-        return !array_key_exists($classname, $this->types);
+        return !isset($this->types[$classname]);
     }
 
     /**
@@ -128,7 +128,7 @@ class driver implements driver_interface
         if ($this->types === null) {
             $this->initialize();
         }
-        if (!array_key_exists($classname, $this->types)) {
+        if (!isset($this->types[$classname])) {
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($classname);
         }
 

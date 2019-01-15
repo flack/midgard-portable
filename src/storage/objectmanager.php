@@ -83,7 +83,7 @@ class objectmanager
             if ($entity->$name === 0) {
                 //This is necessary to kill potential proxy objects pointing to purged entities
                 $entity->$name = 0;
-            } elseif (!array_key_exists($name, $changed_associations)) {
+            } elseif (!isset($changed_associations[$name])) {
                 $value = $cm->getReflectionProperty($name)->getValue($entity);
                 if ($value instanceof Proxy) {
                     //This makes sure that the associated entity doesn't end up in the changeset calculation

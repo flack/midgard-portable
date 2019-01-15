@@ -217,7 +217,7 @@ abstract class query
 
     protected function add_collection_join($current_table, $targetclass)
     {
-        if (!array_key_exists($targetclass, $this->join_tables)) {
+        if (!isset($this->join_tables[$targetclass])) {
             $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
             $c = $this->join_tables[$targetclass] . ".parentguid = " . $current_table . ".guid";
             $this->qb->innerJoin("midgard:" . $targetclass, $this->join_tables[$targetclass], Join::WITH, $c);
@@ -228,7 +228,7 @@ abstract class query
     protected function add_join($current_table, $mrp, $property)
     {
         $targetclass = $mrp->get_link_name($property);
-        if (!array_key_exists($targetclass, $this->join_tables)) {
+        if (!isset($this->join_tables[$targetclass])) {
             $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
 
             // custom join
@@ -273,7 +273,7 @@ abstract class query
         }
 
         $cm = connection::get_em()->getClassMetadata($targetclass);
-        if (array_key_exists($column, $cm->midgard['field_aliases'])) {
+        if (isset($cm->midgard['field_aliases'][$column])) {
             $column = $cm->midgard['field_aliases'][$column];
         }
 

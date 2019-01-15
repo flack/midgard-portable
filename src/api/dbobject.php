@@ -125,7 +125,7 @@ abstract class dbobject implements ObjectManagerAware
         $this->initialize();
 
         if (   !$this->cm->hasField($field)
-            && array_key_exists($field, $this->cm->midgard['field_aliases'])) {
+            && isset($field, $this->cm->midgard['field_aliases'][$field])) {
             $field = $this->cm->midgard['field_aliases'][$field];
         }
 

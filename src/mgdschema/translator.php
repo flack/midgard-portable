@@ -35,10 +35,10 @@ class translator
 
     public static function to_phptype($typeattribute)
     {
-        if (!array_key_exists($typeattribute, self::$typemap)) {
+        if (!isset(self::$typemap[$typeattribute])) {
             throw new \Exception('unknown type ' . $typeattribute);
         }
-        $search = ['unsigned ', 'guid',   'datetime', 'text', 'longtext'];
+        $search = ['unsigned ', 'guid',   'datetime', 'longtext', 'text'];
         $replace = ['', 'string', 'midgard_datetime', 'string', 'string'];
 
         return str_replace($search, $replace, $typeattribute);
@@ -46,7 +46,7 @@ class translator
 
     public static function to_constant($typeattribute)
     {
-        if (!array_key_exists($typeattribute, self::$typemap)) {
+        if (!isset(self::$typemap[$typeattribute])) {
             throw new \Exception('unknown type ' . $typeattribute);
         }
         return self::$typemap[$typeattribute];
