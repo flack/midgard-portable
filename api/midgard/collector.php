@@ -104,7 +104,7 @@ class midgard_collector extends midgard_query_builder
             try {
                 $properties[] = $this->build_property_select($this->key_property);
             } catch (exception $e) {
-                throw new exception('Property "' . $this->key_property . '" not found in "' . $this->classname . '"', exception::INVALID_PROPERTY);
+                throw new exception('Property "' . $this->key_property . '" not found in "' . $this->classname . '"', exception::INVALID_PROPERTY, $e);
             }
         }
 
