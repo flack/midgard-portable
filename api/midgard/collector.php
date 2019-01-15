@@ -161,7 +161,7 @@ class midgard_collector extends midgard_query_builder
      */
     public function get_subkey($key, $property)
     {
-        if (!$this->_has_results() || !isset($this->_results[$key]) || !isset($this->_results[$key][$property])) {
+        if (!$this->_has_results() || !isset($this->_results[$key][$property])) {
             return false;
         }
         return $this->_results[$key][$property];
@@ -175,7 +175,7 @@ class midgard_collector extends midgard_query_builder
     private function _has_results()
     {
         // execute was not called or we got an empty resultset
-        return !($this->_results === null || count($this->_results) == 0);
+        return !empty($this->_results);
     }
 
     /**

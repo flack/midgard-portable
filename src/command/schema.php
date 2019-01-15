@@ -152,7 +152,7 @@ class schema extends Command
             }
             $sql = $diff->toSaveSql($conn->getDatabasePlatform());
         }
-        if (count($sql) == 0) {
+        if (empty($sql)) {
             return;
         }
 

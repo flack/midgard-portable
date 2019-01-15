@@ -79,7 +79,7 @@ abstract class dbobject implements ObjectManagerAware
         $this->initialize();
 
         if (   !$this->cm->hasField($field)
-            && array_key_exists($field, $this->cm->midgard['field_aliases'])) {
+            && isset($field, $this->cm->midgard['field_aliases'][$field])) {
             $field = $this->cm->midgard['field_aliases'][$field];
         }
         if ($this->cm->isSingleValuedAssociation($field)) {
@@ -88,7 +88,7 @@ abstract class dbobject implements ObjectManagerAware
             if (empty($value)) {
                 $value = null;
             } else {
-                if (   !is_object($this->$field)
+                if (   !\is_object($this->$field)
                     || $this->$field->id != $value) {
                     $this->changed_associations[$field] = true;
                 }
@@ -108,7 +108,7 @@ abstract class dbobject implements ObjectManagerAware
             } elseif ($mapping['type'] === 'float') {
                 $value = (float) $value;
             } elseif ($mapping['type'] === 'midgard_datetime') {
-                if (   is_string($value)
+                if (   \is_string($value)
                     && $value !== '0000-00-00 00:00:00') {
                     $value = new midgard_datetime($value);
                 } elseif (!($value instanceof midgard_datetime)) {

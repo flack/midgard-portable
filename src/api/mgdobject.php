@@ -626,7 +626,7 @@ abstract class mgdobject extends dbobject
 
         // check value
         if (in_array($value, [false, null, ''], true)) {
-            if (count($params) == 0) {
+            if (empty($params)) {
                 exception::not_exists();
                 return false;
             }
@@ -639,7 +639,7 @@ abstract class mgdobject extends dbobject
         $om = new objectmanager(connection::get_em());
         try {
             // create new
-            if (count($params) == 0) {
+            if (empty($params)) {
                 $parameter = $om->new_instance(connection::get_em()->getClassMetadata('midgard:midgard_parameter')->getName());
                 $parameter->parentguid = $this->guid;
                 $parameter->domain = $domain;
@@ -649,7 +649,7 @@ abstract class mgdobject extends dbobject
             }
             // use existing
             else {
-                $parameter = array_shift($params);
+                $parameter = $params[0];
                 $parameter->value = $value;
                 $om->update($parameter);
             }
@@ -714,7 +714,7 @@ abstract class mgdobject extends dbobject
     public function create_attachment($name, $title = '', $mimetype = '')
     {
         $existing = $this->get_collection('midgard_attachment')->find($this->guid, ['name' => $name]);
-        if (count($existing) > 0) {
+        if (!empty($existing)) {
             exception::object_name_exists();
             return null;
         }

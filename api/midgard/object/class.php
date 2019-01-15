@@ -71,11 +71,11 @@ class midgard_object_class
         $qb->include_deleted();
         $qb->add_constraint('guid', '=', $guid);
         $results = $qb->execute();
-        if (count($results) === 0) {
+        if (empty($results)) {
             exception::not_exists();
             return false;
         }
-        $entity = array_shift($results);
+        $entity = $results[0];
 
         if (!$entity->metadata_deleted) {
             exception::internal(new \Exception("Object is not deleted."));

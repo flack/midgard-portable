@@ -250,7 +250,7 @@ class classgenerator
             return false;
         }, array_keys($mixins)));
 
-        if (count($interfaces) > 0) {
+        if (!empty($interfaces)) {
             $this->add_line(' implements ' . implode(', ', $interfaces));
         }
         $this->add_line('{');
