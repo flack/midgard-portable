@@ -132,7 +132,7 @@ class midgard_object_class
             return in_array(metadata::class, class_implements($classname));
         }
         if (is_object($classname)) {
-            return ($classname instanceof metadata);
+            return $classname instanceof metadata;
         }
         return false;
     }

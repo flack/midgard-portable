@@ -65,7 +65,7 @@ class midgard_replicator
             ->execute();
 
         midgard_connection::get_instance()->set_error(exception::OK);
-        return ($result > 0);
+        return $result > 0;
     }
 
     /**

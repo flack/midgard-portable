@@ -69,23 +69,22 @@ class config
         }
     }
 
+    private function get_prefix($user)
+    {
+        if ($user) {
+            return getenv('HOME') . '/.midgard2/conf.d';
+        }
+        return '/etc/midgard2/conf.d';
+    }
+
     public function read_file($name, $user = true) // <== TODO: check
     {
-        if (!$user) {
-            $prefix = '/etc/midgard2/conf.d';
-        } else {
-            $prefix = getenv('HOME') . '/.midgard2/conf.d';
-        }
-        return $this->read_file_at_path($prefix . '/' . $name);
+        return $this->read_file_at_path($this->get_prefix($user) . '/' . $name);
     }
 
     public function save_file($name, $user = true) // <== TODO: check
     {
-        if (!$user) {
-            $prefix = '/etc/midgard2/conf.d';
-        } else {
-            $prefix = getenv('HOME') . '/.midgard2/conf.d';
-        }
+        $prefix = $this->get_prefix($user);
         if (!file_exists($prefix)) {
             mkdir($prefix, 0777, true);
         }
@@ -125,7 +124,7 @@ class config
     private function convert_to_storage($key, $value)
     {
         if (is_bool($value)) {
-            $value = ($value) ? 'true' : 'false';
+            $value = $value ? 'true' : 'false';
         } elseif ($value === '') {
             $value = '""';
         }

@@ -233,23 +233,22 @@ class subscriber implements EventSubscriber
         $type = strtok($column['type'], '()');
 
         if ($type == 'enum') {
-            $args->preventDefault();
-
             $options = [
                 'length' => 255,
                 'default' => isset($column['default']) ? $column['default'] : null,
-                'notnull' => (bool) ($column['null'] != 'YES'),
+                'notnull' => $column['null'] != 'YES',
                 'comment' => $column['type']
             ];
 
+            $args->preventDefault();
             $args->setColumn(new Column($column['field'], Type::getType(Type::STRING), $options));
         } elseif ($type == 'datetime') {
-            $args->preventDefault();
             $options = [
                 'default' => isset($column['default']) ? $column['default'] : null,
-                'notnull' => (bool) ($column['null'] != 'YES'),
+                'notnull' => $column['null'] != 'YES',
             ];
 
+            $args->preventDefault();
             $args->setColumn(new Column($column['field'], Type::getType(datetime::TYPE), $options));
         }
     }

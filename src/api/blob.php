@@ -48,8 +48,8 @@ class blob
     {
         if (empty($this->attachment->location)) {
             $location = connection::generate_guid();
-            $subdir1 = strtoupper(substr($location, 0, 1));
-            $subdir2 = strtoupper(substr($location, 1, 1));
+            $subdir1 = strtoupper($location[0]);
+            $subdir2 = strtoupper($location[1]);
             $this->attachment->location = $subdir1 . DIRECTORY_SEPARATOR . $subdir2 . DIRECTORY_SEPARATOR . $location;
         }
         $blobdir = midgard_connection::get_instance()->config->blobdir;

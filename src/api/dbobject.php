@@ -64,7 +64,7 @@ abstract class dbobject implements ObjectManagerAware
         $this->initialize();
         $properties = array_merge($this->cm->getFieldNames(), $this->cm->getAssociationNames(), array_keys($this->cm->midgard['field_aliases']));
         $properties = array_filter($properties, function ($input) {
-            return (strpos($input, 'metadata_') === false);
+            return strpos($input, 'metadata_') === false;
         });
         $ret = [];
         foreach ($properties as $property) {

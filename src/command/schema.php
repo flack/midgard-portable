@@ -87,10 +87,10 @@ class schema extends Command
         $to_create = [];
 
         foreach ($cms as $cm) {
-            if (!$em->getConnection()->getSchemaManager()->tablesExist([$cm->getTableName()])) {
-                $to_create[] = $cm;
-            } else {
+            if ($em->getConnection()->getSchemaManager()->tablesExist([$cm->getTableName()])) {
                 $to_update[] = $cm;
+            } else {
+                $to_create[] = $cm;
             }
         }
 
@@ -102,9 +102,8 @@ class schema extends Command
             } catch (\Exception $e) {
                 if (!$force) {
                     throw $e;
-                } else {
-                    $output->writeln('<error>' . $e->getMessage() . '</error>');
                 }
+                $output->writeln('<error>' . $e->getMessage() . '</error>');
             }
         }
         if (!empty($to_update)) {
@@ -143,15 +142,15 @@ class schema extends Command
         $comparator = new Comparator;
         $diff = $comparator->compare($from, $to);
 
-        if (!$delete) {
+        if ($delete) {
+            $sql = $diff->toSql($conn->getDatabasePlatform());
+        } else {
             foreach ($diff->changedTables as $changed_table) {
                 if (!empty($changed_table->removedColumns)) {
                     $changed_table->removedColumns = [];
                 }
             }
             $sql = $diff->toSaveSql($conn->getDatabasePlatform());
-        } else {
-            $sql = $diff->toSql($conn->getDatabasePlatform());
         }
         if (count($sql) == 0) {
             return;
@@ -170,9 +169,8 @@ class schema extends Command
             } catch (\Exception $e) {
                 if (!$force) {
                     throw $e;
-                } else {
-                    $output->writeln('<error>' . $e->getMessage() . '</error>');
                 }
+                $output->writeln('<error>' . $e->getMessage() . '</error>');
             }
 
             $progress->advance();

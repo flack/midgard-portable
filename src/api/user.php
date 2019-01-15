@@ -98,7 +98,7 @@ class user extends dbobject
 
     public function is_admin()
     {
-        return ($this->usertype == 2);
+        return $this->usertype == 2;
     }
 
     public function set_person(person $person)
@@ -137,7 +137,7 @@ class user extends dbobject
         }
 
         midgard_connection::get_instance()->set_error(MGD_ERR_OK);
-        return (!empty($this->id));
+        return !empty($this->id);
     }
 
     public function update()
@@ -206,8 +206,8 @@ class user extends dbobject
             ->setParameters($parameters);
 
         $qb->select("count(c)");
-        $count = intval($qb->getQuery()->getSingleScalarResult());
+        $count = (int) $qb->getQuery()->getSingleScalarResult();
 
-        return ($count === 0);
+        return $count === 0;
     }
 }

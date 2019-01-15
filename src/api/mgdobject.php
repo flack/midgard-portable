@@ -200,7 +200,7 @@ abstract class mgdobject extends dbobject
 
         midgard_connection::get_instance()->set_error(MGD_ERR_OK);
 
-        return ($this->id != 0);
+        return $this->id != 0;
     }
 
     /**
@@ -317,7 +317,7 @@ abstract class mgdobject extends dbobject
             ->setParameters($parameters);
 
         $qb->select("count(c)");
-        $count = intval($qb->getQuery()->getSingleScalarResult());
+        $count = (int) $qb->getQuery()->getSingleScalarResult();
 
         if ($count !== 0) {
             exception::object_name_exists();
@@ -392,8 +392,8 @@ abstract class mgdobject extends dbobject
                 ->where('c.' . $this->cm->midgard['upfield'] . ' = ?0')
                 ->setParameter(0, $this->id)
                 ->select("COUNT(c)");
-            $results = intval($qb->getQuery()->getSingleScalarResult());
-            $stat = ($results > 0);
+            $results = (int) $qb->getQuery()->getSingleScalarResult();
+            $stat = $results > 0;
         }
 
         if (   !$stat
@@ -405,8 +405,8 @@ abstract class mgdobject extends dbobject
                     ->setParameter(0, $this->id)
                     ->select("COUNT(c)");
 
-                $results = intval($qb->getQuery()->getSingleScalarResult());
-                $stat = ($results > 0);
+                $results = (int) $qb->getQuery()->getSingleScalarResult();
+                $stat = $results > 0;
                 if ($stat) {
                     break;
                 }
@@ -491,7 +491,7 @@ abstract class mgdobject extends dbobject
         foreach ($parts as $part) {
             $qb = $this->get_uniquefield_query($parentclass, $field, $part, $parentfield, $up);
             $qb->select("c.id");
-            $up = intval($qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR));
+            $up = (int) $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR);
             if ($up === 0) {
                 exception::not_exists();
                 $this->id = 0;
@@ -625,7 +625,7 @@ abstract class mgdobject extends dbobject
         $params = $this->get_collection('midgard_parameter')->find($this->guid, $constraints);
 
         // check value
-        if ($value === false || $value === null || $value === "") {
+        if (in_array($value, [false, null, ''], true)) {
             if (count($params) == 0) {
                 exception::not_exists();
                 return false;

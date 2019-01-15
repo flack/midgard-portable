@@ -72,9 +72,11 @@ class classgenerator
             if (   !empty($a->extends)
                 && !empty($b->extends)) {
                 return strnatcmp($a->extends, $b->extends);
-            } elseif (!empty($a->extends)) {
+            }
+            if (!empty($a->extends)) {
                 return -1;
-            } elseif (!empty($b->extends)) {
+            }
+            if (!empty($b->extends)) {
                 return 1;
             }
             return 0;

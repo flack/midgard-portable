@@ -37,7 +37,7 @@ class midgard_reflection_property
         if ($metadata) {
             $property = 'metadata_' . $property;
         }
-        return ($this->cm->hasField($property) || $this->cm->hasAssociation($property) || array_key_exists($property, $this->cm->midgard['field_aliases']));
+        return $this->cm->hasField($property) || $this->cm->hasAssociation($property) || array_key_exists($property, $this->cm->midgard['field_aliases']);
     }
 
     /**
@@ -80,7 +80,7 @@ class midgard_reflection_property
     public function is_special_link($property)
     {
         $mapping = $this->get_mapping($property);
-        if ($this->cm->hasAssociation($property) || is_null($mapping)) {
+        if ($this->cm->hasAssociation($property) || $mapping === null) {
             return false;
         }
         return isset($mapping["noidlink"]);
@@ -99,7 +99,7 @@ class midgard_reflection_property
             return $mapping['midgard:link_name'];
         }
         $mapping = $this->get_mapping($property);
-        if (is_null($mapping)) {
+        if ($mapping === null) {
             return null;
         }
         if (isset($mapping["noidlink"]["target"])) {
@@ -121,7 +121,7 @@ class midgard_reflection_property
             return $mapping['midgard:link_target'];
         }
         $mapping = $this->get_mapping($property);
-        if (is_null($mapping)) {
+        if ($mapping === null) {
             return null;
         }
         if (isset($mapping["noidlink"]["field"])) {
@@ -141,7 +141,8 @@ class midgard_reflection_property
         if ($this->cm->hasField($property)) {
             $mapping = $this->cm->getFieldMapping($property);
             return $mapping['midgard:midgard_type'];
-        } elseif ($this->cm->hasAssociation($property)) {
+        }
+        if ($this->cm->hasAssociation($property)) {
             // for now, only PK fields are supported, which are always IDs, so..
             return translator::TYPE_UINT;
         }

@@ -194,13 +194,13 @@ class manager
     private function get_type_by_shortname($classname)
     {
         $fqcn = $this->get_fcqn($classname);
-        if (array_key_exists($fqcn, $this->types)) {
-            return $this->types[$fqcn];
-        } elseif (array_key_exists($classname, $this->merged_types)) {
+        if (!array_key_exists($fqcn, $this->types)) {
+            if (!array_key_exists($classname, $this->merged_types)) {
+                return null;
+            }
             $fqcn = $this->get_fcqn($this->merged_types[$classname]);
-            return $this->types[$fqcn];
         }
-        return null;
+        return $this->types[$fqcn];
     }
 
     private function add_type(type $type)

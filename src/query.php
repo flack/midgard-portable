@@ -101,8 +101,7 @@ abstract class query
 
             $value = (array) $value;
             $value = array_merge($value, $this->get_child_ids($mapping['targetEntity'], $parentfield, $value));
-        } elseif (   $operator === 'IN'
-                 || $operator === 'NOT IN') {
+        } elseif (in_array($operator, ['IN', 'NOT IN'], true)) {
             $value = array_values($value);
         } elseif (!in_array($operator, ['=', '>', '<', '<>', '<=', '>=', 'LIKE', 'NOT LIKE'])) {
             return false;
@@ -135,7 +134,7 @@ abstract class query
         $this->check_groups();
         $this->qb->select("count(c.id)");
         $this->pre_execution();
-        $count = intval($this->qb->getQuery()->getSingleScalarResult());
+        $count = (int) $this->qb->getQuery()->getSingleScalarResult();
 
         $this->post_execution();
         if (empty($select)) {
@@ -181,10 +180,10 @@ abstract class query
         }
         $group = array_pop($this->groupstack);
         if ($group->count() > 0) {
-            if (!empty($this->groupstack)) {
-                $this->get_current_group()->add($group);
-            } else {
+            if (empty($this->groupstack)) {
                 $this->qb->andWhere($group);
+            } else {
+                $this->get_current_group()->add($group);
             }
         }
         return true;
@@ -255,8 +254,7 @@ abstract class query
             $parts = explode('.', $name);
             $column = array_pop($parts);
             foreach ($parts as $part) {
-                if (   $part === 'parameter'
-                    || $part === 'attachment') {
+                if (in_array($part, ['parameter', 'attachment'], true)) {
                     $targetclass = 'midgard_' . $part;
                     $current_table = $this->add_collection_join($current_table, $targetclass);
                 } else {
@@ -296,8 +294,7 @@ abstract class query
         $parsed = $this->parse_constraint_name($name);
         $expression = $operator . ' ?' . $this->parameters;
 
-        if (   $operator === 'IN'
-            || $operator === 'NOT IN') {
+        if (in_array($operator, ['IN', 'NOT IN'], true)) {
             $expression = $operator . '( ?' . $this->parameters . ')';
         }
 
@@ -309,7 +306,7 @@ abstract class query
                 $group = false;
                 // TODO: there seems to be no way to make Doctrine accept default values for association fields,
                 // so we need a silly workaround for existing DBs
-                if ($operator === '<>' || $operator === '>') {
+                if (in_array($operator, ['<>', '>'], true)) {
                     $group = $this->qb->expr()->andX();
                     $group->add($parsed['name'] . ' IS NOT NULL');
                 } elseif ($operator === 'IN') {

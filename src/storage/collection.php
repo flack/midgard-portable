@@ -25,7 +25,7 @@ class collection
     public function is_empty($guid)
     {
         $qb = $this->get_qb($guid);
-        return ($qb->count() == 0);
+        return $qb->count() == 0;
     }
 
     public function find($guid, array $constraints)
