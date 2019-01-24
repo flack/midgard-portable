@@ -101,6 +101,9 @@ class property implements node
                 $value = ($value === 'yes');
                 break;
             case 'link':
+                if (strpos($value, ':') < 1) {
+                    throw new \InvalidArgumentException('link target "' . $value . '" in ' . $this->mgdschematype->name . '::' . $this->name . ' is invalid ');
+                }
                 $tmp = explode(':', $value);
                 $value = [];
                 $value['target'] = $tmp[0];
