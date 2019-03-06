@@ -85,7 +85,21 @@ class subscriber implements EventSubscriber
 
     private function on_update(dbobject $entity, EntityManagerInterface $em)
     {
+        if ($entity instanceof repligard) {
+            return;
+        }
+        $check_repligard = true;
+        $deleted = false;
         if ($entity instanceof metadata) {
+            $deleted = $entity->{metadata::DELETED_FIELD};
+            $cs = $em->getUnitOfWork()->getEntityChangeSet($entity);
+            // We only need to update repligard if we're coming from create (revision 0)
+            // or if we delete/undelete
+            if (   !array_key_exists('metadata_deleted', $cs)
+                && $entity->metadata_revision > 0)  {
+                $check_repligard = false;
+            }
+
             $cm = $em->getClassMetadata(get_class($entity));
             $entity->metadata_revised = new \midgard_datetime();
             $entity->metadata_revision++;
@@ -96,11 +110,10 @@ class subscriber implements EventSubscriber
             $em->getUnitOfWork()->recomputeSingleEntityChangeSet($cm, $entity);
         }
 
-        if (!($entity instanceof repligard)) {
+        if ($check_repligard) {
             $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(['guid' => $entity->guid]);
 
-            if (   $entity instanceof metadata
-                && $entity->{metadata::DELETED_FIELD}) {
+            if ($deleted) {
                 $repligard_entry->object_action = self::ACTION_DELETE;
             } else {
                 $repligard_entry->object_action = self::ACTION_UPDATE;
