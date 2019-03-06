@@ -59,7 +59,7 @@ class objectTest extends testcase
         $e = null;
         try {
             $loaded = new $classname($topic->id);
-        } catch ( \midgard_error_exception $e) {
+        } catch (\midgard_error_exception $e) {
         }
 
         $this->assertInstanceOf('midgard_error_exception', $e);
@@ -79,7 +79,7 @@ class objectTest extends testcase
         $e = null;
         try {
             $loaded = new $classname($id);
-        } catch ( \midgard_error_exception $e) {
+        } catch (\midgard_error_exception $e) {
         }
 
         $this->assertInstanceOf('midgard_error_exception', $e);
@@ -89,7 +89,7 @@ class objectTest extends testcase
         try {
             $proxy = self::$em->getReference($classname, $id);
             $loaded = new $classname($id);
-        } catch ( \midgard_error_exception $e) {
+        } catch (\midgard_error_exception $e) {
         }
 
         $this->assertInstanceOf('midgard_error_exception', $e);
@@ -955,6 +955,7 @@ class objectTest extends testcase
         $this->assertTrue($topic->is_locked());
         $this->assert_api('lock', $topic, MGD_ERR_OBJECT_IS_LOCKED);
         $this->assertEquals($person->guid, $topic->metadata->locker);
+        $this->assertEquals(0, $topic->metadata->revision);
 
         $loaded = new $classname($topic->id);
         $this->assertTrue($loaded->is_locked());

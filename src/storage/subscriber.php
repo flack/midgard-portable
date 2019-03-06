@@ -100,14 +100,22 @@ class subscriber implements EventSubscriber
                 $check_repligard = false;
             }
 
-            $cm = $em->getClassMetadata(get_class($entity));
-            $entity->metadata_revised = new \midgard_datetime();
-            $entity->metadata_revision++;
-            if ($user = connection::get_user()) {
-                $entity->metadata_revisor = $user->person;
+            $create_revision = true;
+            if (array_key_exists('metadata_locked', $cs)) {
+                $lock_fields = array_flip(['metadata_locked', 'metadata_islocked', 'metadata_locker']);
+                $create_revision = !empty(array_diff_key($cs, $lock_fields));
             }
-            $entity->metadata->size = $this->calculate_size($cm, $entity);
-            $em->getUnitOfWork()->recomputeSingleEntityChangeSet($cm, $entity);
+
+            if ($create_revision) {
+                $cm = $em->getClassMetadata(get_class($entity));
+                $entity->metadata_revised = new \midgard_datetime();
+                $entity->metadata_revision++;
+                if ($user = connection::get_user()) {
+                    $entity->metadata_revisor = $user->person;
+                }
+                $entity->metadata->size = $this->calculate_size($cm, $entity);
+                $em->getUnitOfWork()->recomputeSingleEntityChangeSet($cm, $entity);
+            }
         }
 
         if ($check_repligard) {
