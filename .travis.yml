@@ -16,4 +16,4 @@ before_script:
   - composer install
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS mp_test;'; fi"
 
-script: DB=travis/$DB phpunit --debug
+script: DB=travis/$DB vendor/bin/phpunit --debug
