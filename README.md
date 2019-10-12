@@ -6,7 +6,7 @@ This library provides an ActiveRecord ORM built on top of Doctrine 2 and is mode
 In a Nutshell
 -------------
 
-You can define your entities in XML (usually referred to MdgSchema):
+You can define your entities in XML (usually referred to MgdSchema):
 
 ```xml
 <type name="my_person" table="person">
