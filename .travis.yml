@@ -12,6 +12,9 @@ env:
   - DB=mysql
   - DB=sqlite
 
+services:
+  - mysql
+
 before_script:
   - composer install
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS mp_test;'; fi"
