@@ -137,7 +137,7 @@ class driver implements driver_interface
         // TODO: extends
 
         $table = [
-            'name' => $type->table,
+            'name' => '`' . $type->table . '`',
             'options' => [
                 //Doctrine's default on MySQL is InnoDB, and the foreign keys don't play well with Midgard logic
                 //TODO: Maybe at some point we could try to figure out how to explicitly disable foreign key constraint creation instead
