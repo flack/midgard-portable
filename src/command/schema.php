@@ -38,7 +38,7 @@ class schema extends Command
             ->addOption('delete', null, InputOption::VALUE_NONE, 'Delete columns/tables that are not defined in mgdschema');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         if (!$this->connected) {
             $path = $input->getArgument('config');
@@ -114,6 +114,7 @@ class schema extends Command
         $this->generate_proxyfiles($cms);
 
         $output->writeln('Done');
+        return 0;
     }
 
     private function generate_proxyfiles(array $cms)
