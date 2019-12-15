@@ -45,7 +45,7 @@ class configTest extends testcase
         $this->assertEquals('MySQL', $config->dbtype);
         $this->assertEquals('/tmp/blobs', $config->blobdir);
         $this->assertEquals('/tmp/dbdir', $config->dbdir);
-        $this->assertTrue($config->tablecreate);
+        $this->assertEquals(3306, $config->port);
     }
 
     public function test_save_file()

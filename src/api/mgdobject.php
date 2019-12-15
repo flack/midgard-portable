@@ -785,14 +785,6 @@ abstract class mgdobject extends dbobject
     }
 
     /**
-     * @return boolean
-     */
-    public function connect($signal, $callback, $user_data)
-    {
-        return false;
-    }
-
-    /**
      * @return \midgard_query_builder
      */
     public static function new_query_builder()
@@ -822,14 +814,6 @@ abstract class mgdobject extends dbobject
     public function set_guid($guid)
     {
         parent::__set('guid', $guid);
-    }
-
-    /**
-     * @return boolean
-     */
-    public function emit($signal)
-    {
-        return false;
     }
 
     /**
@@ -937,13 +921,5 @@ abstract class mgdobject extends dbobject
     public function unlock()
     {
         return $this->manage_meta_property("lock", false);
-    }
-
-    /**
-     * @return boolean
-     */
-    public function get_workspace()
-    {
-        return false;
     }
 }

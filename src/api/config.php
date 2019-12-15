@@ -17,9 +17,6 @@ class config
     public $host = 'localhost';
     public $logfilename = '';
     public $loglevel = 'warn';
-    public $tablecreate = false;
-    public $tableupdate = false;
-    public $testunit = false;
     public $midgardusername = 'admin';
     public $midgardpassword = 'password';
     public $authtype = '';
@@ -28,7 +25,6 @@ class config
     public $sharedir = '/usr/share/midgard2';
     public $vardir = '/var/lib/midgard2';
     public $cachedir = '/var/cache/midgard2';
-    public $gdathreads = false;
 
     public function read_file_at_path($path)
     {
@@ -105,14 +101,10 @@ class config
         $contents .= "DefaultLanguage = pl\n\n";
         $contents .= $this->convert_to_storage('Logfile', $this->logfilename);
         $contents .= $this->convert_to_storage('Loglevel', $this->loglevel);
-        $contents .= $this->convert_to_storage('TableCreate', $this->tablecreate);
-        $contents .= $this->convert_to_storage('TableUpdate', $this->tableupdate);
-        $contents .= $this->convert_to_storage('TestUnit', $this->testunit);
         $contents .= $this->convert_to_storage('MidgardUsername', $this->midgardusername);
         $contents .= $this->convert_to_storage('MidgardPassword', $this->midgardpassword);
         $contents .= $this->convert_to_storage('AuthType', $this->authtype);
         $contents .= $this->convert_to_storage('PamFile', $this->pamfile);
-        $contents .= $this->convert_to_storage('GdaThreads', $this->gdathreads);
 
         $stat = file_put_contents($filename, $contents);
         if ($stat === false) {

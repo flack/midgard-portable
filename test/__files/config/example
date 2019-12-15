@@ -30,12 +30,6 @@ Logfile=/tmp/log/midgard/midgard.log
 
 Loglevel=message
 
-TableCreate=true
-
-TableUpdate=true
-
-TestUnit=true
-
 MidgardUsername=root
 
 MidgardPassword=password
@@ -43,5 +37,3 @@ MidgardPassword=password
 AuthType=PAM
 
 PamFile=mypamfile
-
-GdaThreads=true

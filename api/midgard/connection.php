@@ -72,10 +72,6 @@ class midgard_connection
         return is_object($this->config);
     }
 
-    public function connect($signal, $callback, $userdata = '???')
-    {
-    }
-
     public function get_error()
     {
         return $this->error_code;
@@ -126,15 +122,6 @@ class midgard_connection
     {
     }
 
-    public function enable_workspace($toggle)
-    {
-    }
-
-    public function is_enabled_workspace()
-    {
-        return false;
-    }
-
     public function enable_replication($toggle)
     {
         $this->replication_enabled = (bool) $toggle;
@@ -143,35 +130,5 @@ class midgard_connection
     public function is_enabled_replication()
     {
         return $this->replication_enabled;
-    }
-
-    public function enable_dbus($toggle)
-    {
-    }
-
-    public function is_enabled_dbus()
-    {
-        return false;
-    }
-
-    public function enable_quota($toggle)
-    {
-    }
-
-    public function is_enabled_quota()
-    {
-        return false;
-    }
-
-    public function get_workspace()
-    {
-    }
-
-    public function set_workspace($workspace)
-    {
-    }
-
-    public function get_content_manager()
-    {
     }
 }
