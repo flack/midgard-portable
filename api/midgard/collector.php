@@ -186,11 +186,6 @@ class midgard_collector extends midgard_query_builder
         if (!$this->_has_results()) {
             return [];
         }
-
-        $keys = [];
-        foreach ($this->_results as $key => $result) {
-            $keys[$key] = '';
-        }
-        return $keys;
+        return array_fill_keys(array_keys($this->_results), '');
     }
 }
