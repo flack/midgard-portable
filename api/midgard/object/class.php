@@ -122,10 +122,6 @@ class midgard_object_class
         return $cm->midgard['parentfield'];
     }
 
-    public static function connect_default($classname, $signal, $callback, $userdata = null) // <== check!
-    {
-    }
-
     public static function has_metadata($classname)
     {
         if (is_string($classname)) {
