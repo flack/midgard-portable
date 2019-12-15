@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=5.5",
+        "php": ">=7.0",
         "doctrine/orm": "^2.5.1 !=2.6.0",
         "symfony/console": ">=2.5.0",
         "monolog/monolog": "^1.9.1",
@@ -18,10 +18,6 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8 | ^5.7"
-    },
-    "conflict": {
-        "ext-midgard": "*",
-        "ext-midgard2": "*"
     },
     "bin": ["bin/midgard-portable"],
     "autoload": {
