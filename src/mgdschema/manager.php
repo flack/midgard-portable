@@ -63,10 +63,7 @@ class manager
     public function get_child_classes($typename)
     {
         $this->initialize();
-        if (isset($this->child_classes[$typename])) {
-            return $this->child_classes[$typename];
-        }
-        return [];
+        return $this->child_classes[$typename] ?? [];
     }
 
     public function resolve_targetclass(property $property)

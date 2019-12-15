@@ -147,11 +147,7 @@ class midgard_collector extends midgard_query_builder
      */
     public function get($key)
     {
-        if (   !$this->_has_results()
-            || !isset($this->_results[$key])) {
-            return false;
-        }
-        return $this->_results[$key];
+        return $this->_results[$key] ?? false;
     }
 
     /**
@@ -161,10 +157,7 @@ class midgard_collector extends midgard_query_builder
      */
     public function get_subkey($key, $property)
     {
-        if (!$this->_has_results() || !isset($this->_results[$key][$property])) {
-            return false;
-        }
-        return $this->_results[$key][$property];
+        return $this->_results[$key][$property] ?? false;
     }
 
     /**

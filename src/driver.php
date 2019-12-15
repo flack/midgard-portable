@@ -178,11 +178,7 @@ class driver implements driver_interface
                 continue;
             }
 
-            if (empty($this->dbtypemap[$property->dbtype])) {
-                $mapping = $this->parse_dbtype($property);
-            } else {
-                $mapping = $this->dbtypemap[$property->dbtype];
-            }
+            $mapping = $this->dbtypemap[$property->dbtype] ?? $this->parse_dbtype($property);
 
             if ($property->unique) {
                 if ($property->name == 'guid') {

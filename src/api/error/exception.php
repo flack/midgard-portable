@@ -220,9 +220,6 @@ class exception extends base_exception
 
     public static function get_error_string($code)
     {
-        if (!isset(self::$messages[$code])) {
-            return "Undefined error";
-        }
-        return self::$messages[$code];
+        return self::$messages[$code] ?? "Undefined error";
     }
 }

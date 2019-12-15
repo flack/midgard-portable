@@ -27,10 +27,7 @@ class midgard_reflector_object
     public static function get_property_unique($classname)
     {
         $cm = connection::get_em()->getClassMetadata($classname);
-        if (empty($cm->midgard['unique_fields'])) {
-            return null;
-        }
-        return $cm->midgard['unique_fields'][0];
+        return $cm->midgard['unique_fields'][0] ?? null;
     }
 
     public static function list_children($classname)

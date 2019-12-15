@@ -79,11 +79,10 @@ class midgard_reflection_property
 
     public function is_special_link($property)
     {
-        $mapping = $this->get_mapping($property);
-        if ($this->cm->hasAssociation($property) || $mapping === null) {
+        if ($this->cm->hasAssociation($property)) {
             return false;
         }
-        return isset($mapping["noidlink"]);
+        return $this->get_mapping($property)["noidlink"] ?? false;
     }
 
     /**
@@ -98,14 +97,8 @@ class midgard_reflection_property
             $mapping = $this->cm->getAssociationMapping($property);
             return $mapping['midgard:link_name'];
         }
-        $mapping = $this->get_mapping($property);
-        if ($mapping === null) {
-            return null;
-        }
-        if (isset($mapping["noidlink"]["target"])) {
-            return $mapping["noidlink"]["target"];
-        }
-        return null;
+
+        return $this->get_mapping($property)["noidlink"]["target"] ?? null;
     }
 
     /**
@@ -121,13 +114,8 @@ class midgard_reflection_property
             return $mapping['midgard:link_target'];
         }
         $mapping = $this->get_mapping($property);
-        if ($mapping === null) {
-            return null;
-        }
-        if (isset($mapping["noidlink"]["field"])) {
-            return $mapping["noidlink"]["field"];
-        }
-        return null;
+
+        return $this->get_mapping($property)["noidlink"]["field"] ?? null;
     }
 
     /**

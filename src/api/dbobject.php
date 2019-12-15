@@ -79,7 +79,7 @@ abstract class dbobject implements ObjectManagerAware
         $this->initialize();
 
         if (   !$this->cm->hasField($field)
-            && isset($field, $this->cm->midgard['field_aliases'][$field])) {
+            && isset($this->cm->midgard['field_aliases'][$field])) {
             $field = $this->cm->midgard['field_aliases'][$field];
         }
         if ($this->cm->isSingleValuedAssociation($field)) {
@@ -125,7 +125,7 @@ abstract class dbobject implements ObjectManagerAware
         $this->initialize();
 
         if (   !$this->cm->hasField($field)
-            && isset($field, $this->cm->midgard['field_aliases'][$field])) {
+            && isset($this->cm->midgard['field_aliases'][$field])) {
             $field = $this->cm->midgard['field_aliases'][$field];
         }
 

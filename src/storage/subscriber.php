@@ -256,7 +256,7 @@ class subscriber implements EventSubscriber
         if ($type == 'enum') {
             $options = [
                 'length' => 255,
-                'default' => isset($column['default']) ? $column['default'] : null,
+                'default' => $column['default'] ?? null,
                 'notnull' => $column['null'] != 'YES',
                 'comment' => $column['type']
             ];
@@ -265,7 +265,7 @@ class subscriber implements EventSubscriber
             $args->setColumn(new Column($column['field'], Type::getType(Type::STRING), $options));
         } elseif ($type == 'datetime') {
             $options = [
-                'default' => isset($column['default']) ? $column['default'] : null,
+                'default' => $column['default'] ?? null,
                 'notnull' => $column['null'] != 'YES',
             ];
 
