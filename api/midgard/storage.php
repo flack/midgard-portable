@@ -151,11 +151,6 @@ class midgard_storage
         return false;
     }
 
-    public static function delete_class_storage($classname)
-    {
-        return false;
-    }
-
     public static function class_storage_exists($classname)
     {
         $em = connection::get_em();

@@ -132,8 +132,4 @@ class midgard_object_class
         }
         return false;
     }
-
-    public static function get_schema_value($classname, $node_name)
-    {
-    }
 }

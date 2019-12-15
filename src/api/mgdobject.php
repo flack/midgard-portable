@@ -736,14 +736,6 @@ abstract class mgdobject extends dbobject
     }
 
     /**
-     * @return boolean
-     */
-    public static function serve_attachment($guid)
-    {
-        return false;
-    }
-
-    /**
      * @todo: Tests indicate that $check_dependencies is ignored in the mgd2 extension,
      * so we might consider ignoring it, too
      * @return boolean

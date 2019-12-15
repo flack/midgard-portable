@@ -36,14 +36,6 @@ class user extends dbobject
 
     protected $usertype = 0;
 
-    public static function &get($properties)
-    {
-    }
-
-    public static function &query($properties)
-    {
-    }
-
     public function __construct(array $properties = [])
     {
         if (!empty($properties)) {
@@ -89,11 +81,6 @@ class user extends dbobject
         }
         connection::set_user(null);
         return true;
-    }
-
-    public function is_user()
-    {
-        return false;
     }
 
     public function is_admin()

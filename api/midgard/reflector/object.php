@@ -55,29 +55,4 @@ class midgard_reflector_object
         }
         return 'midgard_metadata';
     }
-
-    public static function get_schema_value($classname, $node_name)
-    {
-        throw new Exception('Not implemented yet');
-    }
-
-    public static function is_mixin($classname)
-    {
-        return false;
-    }
-
-    public static function is_interface($classname)
-    {
-        return false;
-    }
-
-    public static function is_abstract($classname)
-    {
-        return false;
-    }
-
-    public static function list_defined_properties($classname)
-    {
-        throw new Exception('Not implemented yet');
-    }
 }

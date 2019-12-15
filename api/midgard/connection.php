@@ -57,10 +57,6 @@ class midgard_connection
         return true;
     }
 
-    public function reopen()
-    {
-    }
-
     public function open_config(midgard_config $config)
     {
         $this->config = $config;
@@ -116,10 +112,6 @@ class midgard_connection
     public function get_loglevel()
     {
         return $this->loglevel;
-    }
-
-    public function list_auth_types()
-    {
     }
 
     public function enable_replication($toggle)

@@ -123,14 +123,6 @@ class config
         return $key . ' = ' . $value . "\n\n";
     }
 
-    public function read_data($data)
-    {
-    }
-
-    public static function list_files($user = true) // <== TODO: check
-    {
-    }
-
     public function create_blobdir()
     {
         $subdirs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'];
