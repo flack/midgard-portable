@@ -113,7 +113,6 @@ class midgard_reflection_property
             $mapping = $this->cm->getAssociationMapping($property);
             return $mapping['midgard:link_target'];
         }
-        $mapping = $this->get_mapping($property);
 
         return $this->get_mapping($property)["noidlink"]["field"] ?? null;
     }
