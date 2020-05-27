@@ -7,9 +7,9 @@
 namespace midgard\portable\api;
 
 use midgard\portable\storage\connection;
-use Doctrine\Common\Persistence\ObjectManagerAware;
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\ObjectManagerAware;
+use Doctrine\Persistence\ObjectManager;
+use Doctrine\Persistence\Mapping\ClassMetadata;
 use midgard_datetime;
 
 abstract class dbobject implements ObjectManagerAware

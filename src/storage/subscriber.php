@@ -12,7 +12,7 @@ use midgard\portable\api\dbobject;
 use midgard\portable\api\repligard;
 use midgard\portable\storage\type\datetime;
 use Doctrine\Common\EventSubscriber;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnFlushEventArgs;
