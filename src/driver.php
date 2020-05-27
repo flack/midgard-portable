@@ -57,7 +57,7 @@ class driver implements driver_interface
      */
     private $is_fresh_namespace;
 
-    public function __construct(array $schemadirs, $vardir, $namespace = 'midgard\\portable\\entities')
+    public function __construct(array $schemadirs, string $vardir, string $namespace = 'midgard\\portable\\entities')
     {
         $this->vardir = $vardir . '/';
         $this->namespace = $namespace;
@@ -72,22 +72,22 @@ class driver implements driver_interface
         }
     }
 
-    public function is_fresh_namespace()
+    public function is_fresh_namespace() : bool
     {
         return $this->is_fresh_namespace;
     }
 
-    public function get_namespace()
+    public function get_namespace() : string
     {
         return $this->namespace;
     }
 
-    public function get_manager()
+    public function get_manager() : manager
     {
         return $this->manager;
     }
 
-    public function get_vardir()
+    public function get_vardir() : string
     {
         return rtrim($this->vardir, '/');
     }
@@ -100,7 +100,7 @@ class driver implements driver_interface
     /**
      * {@inheritDoc}
      */
-    public function getAllClassNames()
+    public function getAllClassNames() : array
     {
         if ($this->types === null) {
             $this->initialize();
@@ -112,7 +112,7 @@ class driver implements driver_interface
     /**
      * {@inheritDoc}
      */
-    public function isTransient($classname)
+    public function isTransient($classname) : bool
     {
         if ($this->types === null) {
             $this->initialize();
@@ -221,7 +221,7 @@ class driver implements driver_interface
         }
     }
 
-    private function parse_dbtype(property $property)
+    private function parse_dbtype(property $property) : array
     {
         if (strpos($property->dbtype, 'varchar') === 0) {
             $mapping = [

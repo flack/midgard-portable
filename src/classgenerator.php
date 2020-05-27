@@ -44,14 +44,14 @@ class classgenerator
      */
     private $dev_mode = false;
 
-    public function __construct(manager $manager, $filename, $dev_mode = false)
+    public function __construct(manager $manager, string $filename, bool $dev_mode = false)
     {
         $this->manager = $manager;
         $this->filename = $filename;
         $this->dev_mode = $dev_mode;
     }
 
-    private function add_line($line, $force_break = false)
+    private function add_line(string $line, bool $force_break = false)
     {
         $this->output .= $line;
         if ($force_break || $this->dev_mode) {
@@ -61,7 +61,7 @@ class classgenerator
         }
     }
 
-    public function write($namespace = '')
+    public function write(string $namespace = '')
     {
         if (file_exists($this->filename)) {
             unlink($this->filename);
@@ -107,7 +107,7 @@ class classgenerator
         file_put_contents($this->filename, $this->output);
     }
 
-    private function register_aliases($namespace)
+    private function register_aliases(string $namespace)
     {
         $prefix = $this->get_class_prefix($namespace);
 
@@ -127,7 +127,7 @@ class classgenerator
         }
     }
 
-    private function get_class_prefix($namespace)
+    private function get_class_prefix(string $namespace) : string
     {
         if ($namespace === '') {
             return '';
@@ -147,7 +147,7 @@ class classgenerator
         $this->end_class();
     }
 
-    private function write_properties(type $type)
+    private function write_properties(type $type) : array
     {
         $objects = [];
 
@@ -204,7 +204,7 @@ class classgenerator
         }
     }
 
-    private function write_parent_getter($type)
+    private function write_parent_getter(type $type)
     {
         $candidates = [];
 

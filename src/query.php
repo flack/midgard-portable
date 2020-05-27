@@ -10,6 +10,7 @@ namespace midgard\portable;
 use midgard\portable\storage\connection;
 use midgard\portable\api\error\exception;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\QueryBuilder;
 
 abstract class query
 {
@@ -49,7 +50,7 @@ abstract class query
      */
     protected $join_tables = [];
 
-    public function __construct($class)
+    public function __construct(string $class)
     {
         $this->classname = $class;
         $this->qb = connection::get_em()->createQueryBuilder();
@@ -58,10 +59,7 @@ abstract class query
 
     abstract public function execute();
 
-    /**
-     * @return \Doctrine\ORM\QueryBuilder
-     */
-    public function get_doctrine()
+    public function get_doctrine() : QueryBuilder
     {
         return $this->qb;
     }

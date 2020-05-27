@@ -20,7 +20,7 @@ class xmlreader
      */
     private $mixins = [];
 
-    public function parse($filename)
+    public function parse(string $filename) : array
     {
         $types = [];
         $parser = simplexml_load_file($filename);
@@ -36,7 +36,7 @@ class xmlreader
         return $types;
     }
 
-    private function parse_type(SimpleXMLElement $node)
+    private function parse_type(SimpleXMLElement $node) : type
     {
         $type = new type($node->attributes());
         $node->registerXPathNamespace('r', "http://www.midgard-project.org/repligard/1.4");
@@ -53,7 +53,7 @@ class xmlreader
         return $type;
     }
 
-    private function add_property(type $type, SimpleXMLElement $node, $prefix = '')
+    private function add_property(type $type, SimpleXMLElement $node, string $prefix = '')
     {
         if ($prefix !== '') {
             $prefix .= '_';
@@ -95,7 +95,7 @@ class xmlreader
         $type->add_property($property);
     }
 
-    private function add_mixin($name, type $type)
+    private function add_mixin(string $name, type $type)
     {
         if (empty($this->mixins[$name])) {
             $schema = simplexml_load_file(dirname(__DIR__) . '/xml/' . $name . '.xml');
