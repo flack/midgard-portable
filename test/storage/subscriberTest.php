@@ -13,8 +13,9 @@ use midgard\portable\storage\subscriber;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Event\SchemaCreateTableEventArgs;
 use Doctrine\DBAL\Schema\Table;
+use PHPUnit\Framework\TestCase;
 
-class subscriberTest extends \PHPUnit_Framework_TestCase
+class subscriberTest extends TestCase
 {
     /**
      * @dataProvider provider_onSchemaCreateTable
@@ -25,6 +26,7 @@ class subscriberTest extends \PHPUnit_Framework_TestCase
         $tmpdir = sys_get_temp_dir();
         $ns = uniqid(__CLASS__);
         $driver = new driver($directories, $tmpdir, $ns);
+        $this->assertTrue($driver->is_fresh_namespace());
         include TESTDIR . DIRECTORY_SEPARATOR . 'bootstrap.php';
         $em = connection::get_em();
         $platform = $em->getConnection()->getDatabasePlatform();

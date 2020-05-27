@@ -7,11 +7,11 @@
 
 namespace midgard\portable\test\api;
 
-use PHPUnit_Framework_TestCase;
 use midgard_connection;
 use midgard_config;
+use PHPUnit\Framework\TestCase;
 
-class connectionTest extends PHPUnit_Framework_TestCase
+class connectionTest extends TestCase
 {
     public function test_set_error()
     {

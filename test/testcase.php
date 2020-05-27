@@ -12,8 +12,9 @@ use midgard\portable\api\dbobject;
 use midgard\portable\api\error\exception;
 use midgard\portable\storage\connection;
 use midgard_connection;
+use PHPUnit\Framework\TestCase as basecase;
 
-class testcase extends \PHPUnit_Framework_TestCase
+class testcase extends basecase
 {
     public static $ns;
 

@@ -26,6 +26,7 @@ class objectTest extends testcase
     {
         $classname = self::$ns . '\\midgard_topic';
         $topic = new $classname;
+        $this->assertIsString($topic->name);
     }
 
     public function test_load()

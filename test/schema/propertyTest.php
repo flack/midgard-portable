@@ -10,8 +10,9 @@ namespace midgard\portable\test\schema;
 use midgard\portable\mgdschema\property;
 use midgard\portable\mgdschema\type;
 use SimpleXMLElement;
+use PHPUnit\Framework\TestCase;
 
-class propertyTest extends \PHPUnit_Framework_TestCase
+class propertyTest extends TestCase
 {
     public function test_set()
     {

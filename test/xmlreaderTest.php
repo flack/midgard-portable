@@ -10,8 +10,9 @@ namespace midgard\portable\test;
 use midgard\portable\xmlreader;
 use midgard\portable\mgdschema\type;
 use midgard\portable\api\mgdobject;
+use PHPUnit\Framework\TestCase;
 
-class xmlreaderTest extends \PHPUnit_Framework_TestCase
+class xmlreaderTest extends TestCase
 {
     public function test_topic()
     {

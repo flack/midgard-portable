@@ -10,8 +10,9 @@ namespace midgard\portable\test;
 use midgard\portable\driver;
 use midgard\portable\storage\connection;
 use midgard_connection;
+use PHPUnit\Framework\TestCase;
 
-class connectionTest extends \PHPUnit_Framework_TestCase
+class connectionTest extends TestCase
 {
     public function test_get_config()
     {
