@@ -14,7 +14,6 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Event\SchemaCreateTableEventArgs;
 use Doctrine\DBAL\Schema\Table;
 use PHPUnit\Framework\TestCase;
-use Doctrine\DBAL\Types\Types;
 
 class subscriberTest extends TestCase
 {
@@ -52,7 +51,7 @@ class subscriberTest extends TestCase
                 [
                     'id' => [
                         'name' => "id",
-                        'type' => Type::getType(Types::INTEGER),
+                        'type' => Type::getType(Type::INTEGER),
                         'default' => null,
                         'notnull' => true,
                         'length' => null,
@@ -75,7 +74,7 @@ class subscriberTest extends TestCase
                 [
                     'password' => [
                         'name' => "password",
-                        'type' => Type::getType(Types::STRING),
+                        'type' => Type::getType(Type::STRING),
                         'default' => null,
                         'notnull' => false,
                         'length' => 13,
@@ -98,7 +97,7 @@ class subscriberTest extends TestCase
                 [
                     'settest' => [
                         'name' => "settest",
-                        'type' => Type::getType(Types::STRING),
+                        'type' => Type::getType(Type::STRING),
                         'default' => null,
                         'notnull' => false,
                         'length' => 13,
