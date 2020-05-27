@@ -15,23 +15,23 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver as driver_interface;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\ClassMetadata as CM;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 
 class driver implements driver_interface
 {
     private $dbtypemap = [
-        'unsigned integer' => ['type' => Type::INTEGER, 'default' => 0], // <== UNSIGNED in Doctrine\DBAL\Schema\Column
-        'integer' => ['type' => Type::INTEGER, 'default' => 0],
-        'boolean' => ['type' => Type::BOOLEAN, 'default' => false],
-        'bool' => ['type' => Type::BOOLEAN, 'default' => false],
-        'guid' => ['type' => Type::STRING, 'length' => 80, 'default' => ''],
-        'varchar(80)' => ['type' => Type::STRING, 'length' => 80, 'default' => ''],
-        'string' => ['type' => Type::STRING, 'length' => 255, 'default' => ''],
+        'unsigned integer' => ['type' => Types::INTEGER, 'default' => 0], // <== UNSIGNED in Doctrine\DBAL\Schema\Column
+        'integer' => ['type' => Types::INTEGER, 'default' => 0],
+        'boolean' => ['type' => Types::BOOLEAN, 'default' => false],
+        'bool' => ['type' => Types::BOOLEAN, 'default' => false],
+        'guid' => ['type' => Types::STRING, 'length' => 80, 'default' => ''],
+        'varchar(80)' => ['type' => Types::STRING, 'length' => 80, 'default' => ''],
+        'string' => ['type' => Types::STRING, 'length' => 255, 'default' => ''],
         'datetime' => ['type' => datetime::TYPE, 'default' => '0001-01-01 00:00:00'],
-        'text' => ['type' => Type::TEXT],
-        'longtext' => ['type' => Type::TEXT],
-        'float' => ['type' => Type::FLOAT, 'default' => 0.0],
-        'double' => ['type' => Type::FLOAT, 'default' => 0.0]
+        'text' => ['type' => Types::TEXT],
+        'longtext' => ['type' => Types::TEXT],
+        'float' => ['type' => Types::FLOAT, 'default' => 0.0],
+        'double' => ['type' => Types::FLOAT, 'default' => 0.0]
     ];
 
     private $vardir;
@@ -201,7 +201,7 @@ class driver implements driver_interface
             if ($property->name == $type->primaryfield) {
                 $mapping['id'] = true;
                 unset($mapping['default']);
-                if ($mapping['type'] == Type::INTEGER) {
+                if ($mapping['type'] == Types::INTEGER) {
                     $metadata->setIdGeneratorType(CM::GENERATOR_TYPE_AUTO);
                 } else {
                     $metadata->setIdGeneratorType(CM::GENERATOR_TYPE_NONE);
@@ -225,7 +225,7 @@ class driver implements driver_interface
     {
         if (strpos($property->dbtype, 'varchar') === 0) {
             $mapping = [
-                'type' => Type::STRING,
+                'type' => Types::STRING,
             ];
 
             if (substr($property->dbtype, -1) == ')') {
@@ -250,7 +250,7 @@ class driver implements driver_interface
             $matches = [];
             preg_match('/DECIMAL\((\d+),(\d+)\)/i', $property->dbtype, $matches);
             $mapping = [
-                'type' => Type::DECIMAL,
+                'type' => Types::DECIMAL,
                 'precision' => $matches[1],
                 'scale' => $matches[2]
             ];
