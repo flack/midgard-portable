@@ -33,7 +33,7 @@ class translator
         'float' => self::TYPE_FLOAT
     ];
 
-    public static function to_phptype($typeattribute)
+    public static function to_phptype(string $typeattribute) : string
     {
         if (!isset(self::$typemap[$typeattribute])) {
             throw new \Exception('unknown type ' . $typeattribute);
@@ -44,7 +44,7 @@ class translator
         return str_replace($search, $replace, $typeattribute);
     }
 
-    public static function to_constant($typeattribute)
+    public static function to_constant(string $typeattribute) : int
     {
         if (!isset(self::$typemap[$typeattribute])) {
             throw new \Exception('unknown type ' . $typeattribute);

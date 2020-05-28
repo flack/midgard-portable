@@ -77,10 +77,7 @@ class connection
         $this->em = $em;
     }
 
-    /**
-     * @return \Doctrine\ORM\EntityManager
-     */
-    public static function get_em()
+    public static function get_em() : EntityManager
     {
         if (self::$instance === null) {
             throw new \Exception('Not initialized');
@@ -88,7 +85,7 @@ class connection
         return self::$instance->em;
     }
 
-    public static function get_user()
+    public static function get_user() : ?user
     {
         return self::$instance->user;
     }
@@ -103,10 +100,8 @@ class connection
 
     /**
      * Generate a new GUID
-     *
-     * @return string The generated GUID
      */
-    public static function generate_guid()
+    public static function generate_guid() : string
     {
         $sql = 'SELECT ' . self::get_em()->getConnection()->getDatabasePlatform()->getGuidExpression();
         return md5(self::get_em()->getConnection()->query($sql)->fetchColumn(0));
@@ -126,7 +121,7 @@ class connection
     /**
      * Toggle autostart
      */
-    public static function set_autostart($autostart)
+    public static function set_autostart(bool $autostart)
     {
         self::$autostart = $autostart;
     }
@@ -134,7 +129,7 @@ class connection
     /**
      * Initialize Midgard connection
      */
-    public static function initialize(driver $driver, array $db_config, $dev_mode = false)
+    public static function initialize(driver $driver, array $db_config, bool $dev_mode = false)
     {
         $vardir = $driver->get_vardir();
 
@@ -155,7 +150,7 @@ class connection
         }
     }
 
-    public static function get_parameter($name)
+    public static function get_parameter(string $name)
     {
         if (!array_key_exists($name, self::$parameters)) {
             throw new \RuntimeException('Parameter "' . $name . '" is not available');
@@ -218,10 +213,8 @@ class connection
 
     /**
      * Get Logger instance
-     *
-     * @return Logger
      */
-    public static function log()
+    public static function log() : Logger
     {
         if (self::$logger === null) {
             $midgard = midgard_connection::get_instance();

@@ -78,94 +78,94 @@ class exception extends base_exception
         parent::__construct($message, $code, $previous);
     }
 
-    public static function ok()
+    public static function ok() : self
     {
         return new self(self::$messages[self::OK], self::OK);
     }
 
-    public static function access_denied()
+    public static function access_denied() : self
     {
         return new self(self::$messages[self::ACCESS_DENIED], self::ACCESS_DENIED);
     }
 
-    public static function no_metadata()
+    public static function no_metadata() : self
     {
         return new self(self::$messages[self::NO_METADATA], self::NO_METADATA);
     }
 
-    public static function not_object()
+    public static function not_object() : self
     {
         return new self(self::$messages[self::NOT_OBJECT], self::NOT_OBJECT);
     }
 
-    public static function not_exists()
+    public static function not_exists() : self
     {
         return new self(self::$messages[self::NOT_EXISTS], self::NOT_EXISTS);
     }
 
-    public static function invalid_name()
+    public static function invalid_name() : self
     {
         return new self(self::$messages[self::INVALID_NAME], self::INVALID_NAME);
     }
 
-    public static function duplicate()
+    public static function duplicate() : self
     {
         return new self(self::$messages[self::DUPLICATE], self::DUPLICATE);
     }
 
-    public static function has_dependants()
+    public static function has_dependants() : self
     {
         return new self(self::$messages[self::HAS_DEPENDANTS], self::HAS_DEPENDANTS);
     }
 
-    public static function range()
+    public static function range() : self
     {
         return new self(self::$messages[self::RANGE], self::RANGE);
     }
 
-    public static function not_connected()
+    public static function not_connected() : self
     {
         return new self(self::$messages[self::NOT_CONNECTED], self::NOT_CONNECTED);
     }
 
-    public static function sg_notfound()
+    public static function sg_notfound() : self
     {
         return new self(self::$messages[self::SG_NOTFOUND], self::SG_NOTFOUND);
     }
 
-    public static function invalid_object()
+    public static function invalid_object() : self
     {
         return new self(self::$messages[self::INVALID_OBJECT], self::INVALID_OBJECT);
     }
 
-    public static function quota()
+    public static function quota() : self
     {
         return new self(self::$messages[self::QUOTA], self::QUOTA);
     }
 
-    public static function internal(base_exception $exception)
+    public static function internal(base_exception $exception) : self
     {
         $message = self::$messages[self::INTERNAL];
         connection::log()->critical($message, ['exception' => $exception]);
         return new self($message . '. ' . $exception->getMessage(), self::INTERNAL, $exception);
     }
 
-    public static function object_name_exists()
+    public static function object_name_exists() : self
     {
         return new self(self::$messages[self::OBJECT_NAME_EXISTS], self::OBJECT_NAME_EXISTS);
     }
 
-    public static function object_no_storage()
+    public static function object_no_storage() : self
     {
         return new self(self::$messages[self::OBJECT_NO_STORAGE], self::OBJECT_NO_STORAGE);
     }
 
-    public static function object_no_parent()
+    public static function object_no_parent() : self
     {
         return new self(self::$messages[self::OBJECT_NO_PARENT], self::OBJECT_NO_PARENT);
     }
 
-    public static function invalid_property_value($message = null)
+    public static function invalid_property_value($message = null) : self
     {
         if ($message == null) {
             $message = self::$messages[self::INVALID_PROPERTY_VALUE];
@@ -173,52 +173,52 @@ class exception extends base_exception
         return new self($message, self::INVALID_PROPERTY_VALUE);
     }
 
-    public static function invalid_property()
+    public static function invalid_property() : self
     {
         return new self(self::$messages[self::INVALID_PROPERTY], self::INVALID_PROPERTY);
     }
 
-    public static function user_data($message = 'Unknown error')
+    public static function user_data($message = 'Unknown error') : self
     {
         return new self($message, self::USER_DATA);
     }
 
-    public static function object_deleted()
+    public static function object_deleted() : self
     {
         return new self(self::$messages[self::OBJECT_DELETED], self::OBJECT_DELETED);
     }
 
-    public static function object_purged()
+    public static function object_purged() : self
     {
         return new self(self::$messages[self::OBJECT_PURGED], self::OBJECT_PURGED);
     }
 
-    public static function object_exported()
+    public static function object_exported() : self
     {
         return new self(self::$messages[self::OBJECT_EXPORTED], self::OBJECT_EXPORTED);
     }
 
-    public static function object_imported()
+    public static function object_imported() : self
     {
         return new self(self::$messages[self::OBJECT_IMPORTED], self::OBJECT_IMPORTED);
     }
 
-    public static function missed_dependence()
+    public static function missed_dependence() : self
     {
         return new self(self::$messages[self::MISSED_DEPENDENCE], self::MISSED_DEPENDENCE);
     }
 
-    public static function tree_is_circular()
+    public static function tree_is_circular() : self
     {
         return new self(self::$messages[self::TREE_IS_CIRCULAR], self::TREE_IS_CIRCULAR);
     }
 
-    public static function object_is_locked()
+    public static function object_is_locked() : self
     {
         return new self(self::$messages[self::OBJECT_IS_LOCKED], self::OBJECT_IS_LOCKED);
     }
 
-    public static function get_error_string($code)
+    public static function get_error_string(int $code) : string
     {
         return self::$messages[$code] ?? "Undefined error";
     }

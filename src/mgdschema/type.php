@@ -79,7 +79,7 @@ class type
         }
     }
 
-    public function has_property($name)
+    public function has_property($name) : bool
     {
         return isset($this->properties[$name]);
     }
@@ -87,7 +87,7 @@ class type
     /**
      * @return property[]
      */
-    public function get_properties()
+    public function get_properties() : array
     {
         return $this->properties;
     }
@@ -95,17 +95,12 @@ class type
     /**
      * @return mixin[]
      */
-    public function get_mixins()
+    public function get_mixins() : array
     {
         return $this->mixins;
     }
 
-    /**
-     *
-     * @param string $name
-     * @return node
-     */
-    public function get_property($name)
+    public function get_property(string $name) : node
     {
         //@todo Error reporting
         return $this->properties[$name];

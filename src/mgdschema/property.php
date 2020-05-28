@@ -88,7 +88,7 @@ class property implements node
         $this->index = ($type == 'guid' && $name != 'guid');
     }
 
-    public function get_parent()
+    public function get_parent() : type
     {
         return $this->mgdschematype;
     }

@@ -17,8 +17,7 @@ abstract class dbobject implements ObjectManagerAware
     protected $guid = '';
 
     /**
-     *
-     * @var ClassMetadata
+     * @var \midgard\portable\mapping\classmetadata
      */
     protected $cm;
 

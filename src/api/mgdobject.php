@@ -26,7 +26,6 @@ abstract class mgdobject extends dbobject
     private $collections = [];
 
     /**
-     *
      * @param mixed $id ID or GUID
      */
     public function __construct($id = null)
@@ -41,11 +40,10 @@ abstract class mgdobject extends dbobject
     }
 
     /**
-     *
      * @param string $classname
      * @return collection
      */
-    private function get_collection($classname)
+    private function get_collection(string $classname) : collection
     {
         if (!isset($this->collections[$classname])) {
             $this->collections[$classname] = new collection($classname);
@@ -264,7 +262,7 @@ abstract class mgdobject extends dbobject
         return true;
     }
 
-    private function is_unique()
+    private function is_unique() : bool
     {
         $this->initialize();
 
@@ -326,7 +324,7 @@ abstract class mgdobject extends dbobject
         return true;
     }
 
-    private function check_parent()
+    private function check_parent() : bool
     {
         $this->initialize();
 
@@ -342,7 +340,7 @@ abstract class mgdobject extends dbobject
         return true;
     }
 
-    private function check_fields()
+    private function check_fields() : bool
     {
         $this->initialize();
 
@@ -357,7 +355,7 @@ abstract class mgdobject extends dbobject
         return $this->check_upfield();
     }
 
-    private function check_upfield()
+    private function check_upfield() : bool
     {
         if (   !empty($this->id)
             && !empty($this->cm->midgard['upfield'])
@@ -423,10 +421,8 @@ abstract class mgdobject extends dbobject
 
     /**
      * This function is called list() in Midgard, but that doesn't work in plain PHP
-     *
-     * @return array
      */
-    private function _list()
+    private function _list() : array
     {
         $this->initialize();
 
@@ -815,7 +811,7 @@ abstract class mgdobject extends dbobject
      * @param bool $value
      * @return boolean
      */
-    private function manage_meta_property($action, $value)
+    private function manage_meta_property($action, $value) : bool
     {
         if (!($this instanceof metadata_interface)) {
             exception::no_metadata();

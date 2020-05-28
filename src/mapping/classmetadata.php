@@ -30,7 +30,7 @@ class classmetadata extends base_metadata
      * @param boolean $metadata Return metadata properties instead
      * @return string[]
      */
-    public function get_schema_properties($metadata = false)
+    public function get_schema_properties(bool $metadata = false) : array
     {
         if ($metadata === true) {
             $metadata = 0;

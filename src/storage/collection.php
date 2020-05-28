@@ -13,34 +13,25 @@ class collection
 {
     private $classname;
 
-    public function __construct($classname)
+    public function __construct(string $classname)
     {
         $this->classname = $classname;
     }
 
-    /**
-     * @param string $guid
-     * @return boolean
-     */
-    public function is_empty($guid)
+    public function is_empty(string $guid) : bool
     {
         $qb = $this->get_qb($guid);
         return $qb->count() == 0;
     }
 
-    public function find($guid, array $constraints)
+    public function find(string $guid, array $constraints) : array
     {
         $qb = $this->get_qb($guid);
         $this->apply_qb_constraints($qb, $constraints);
         return $qb->execute();
     }
 
-    /**
-     * @param string $guid
-     * @param array $constraints
-     * @return int
-     */
-    public function delete($guid, array $constraints)
+    public function delete(string $guid, array $constraints) : int
     {
         $qb = $this->get_qb($guid);
         $this->apply_qb_constraints($qb, $constraints);
@@ -54,12 +45,7 @@ class collection
         return $deleted_count;
     }
 
-    /**
-     * @param string $guid
-     * @param array $constraints
-     * @return number
-     */
-    public function purge($guid, array $constraints)
+    public function purge(string $guid, array $constraints) : int
     {
         $qb = $this->get_qb($guid);
         $this->apply_qb_constraints($qb, $constraints);
@@ -73,23 +59,17 @@ class collection
         return $purged_count;
     }
 
-    /**
-     *
-     * @param string $guid
-     * @return \midgard_query_builder
-     */
-    private function get_qb($guid)
+    private function get_qb(string $guid) : midgard_query_builder
     {
-        $qb = new \midgard_query_builder('midgard:' . $this->classname);
+        $qb = new midgard_query_builder('midgard:' . $this->classname);
         $qb->add_constraint('parentguid', '=', $guid);
         return $qb;
     }
 
-    private function apply_qb_constraints($qb, array $constraints)
+    private function apply_qb_constraints(midgard_query_builder $qb, array $constraints)
     {
         foreach ($constraints as $name => $value) {
             $qb->add_constraint($name, '=', $value);
         }
-        return $qb;
     }
 }

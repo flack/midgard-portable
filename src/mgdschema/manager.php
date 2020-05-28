@@ -138,7 +138,7 @@ class manager
     /**
      * This sort of provides a workaround for situations where two tables use the same name
      */
-    private function create_merged_types(array $types)
+    private function create_merged_types(array $types) : bool
     {
         $root_type = null;
         foreach ($types as $i => $type) {
@@ -186,7 +186,7 @@ class manager
         return true;
     }
 
-    private function get_type_by_shortname($classname)
+    private function get_type_by_shortname($classname) : type
     {
         $fqcn = $this->get_fcqn($classname);
         if (!isset($this->types[$fqcn])) {
@@ -220,7 +220,7 @@ class manager
         $this->types[$this->get_fcqn($classname)] = $type;
     }
 
-    private function get_fcqn($classname)
+    private function get_fcqn(string $classname) : string
     {
         if (!empty($this->namespace)) {
             return $this->namespace . '\\' . $classname;

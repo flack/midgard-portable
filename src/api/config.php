@@ -65,7 +65,7 @@ class config
         }
     }
 
-    private function get_prefix($user)
+    private function get_prefix($user) : string
     {
         if ($user) {
             return getenv('HOME') . '/.midgard2/conf.d';
@@ -113,7 +113,7 @@ class config
         return true;
     }
 
-    private function convert_to_storage($key, $value)
+    private function convert_to_storage($key, $value) : string
     {
         if (is_bool($value)) {
             $value = $value ? 'true' : 'false';
