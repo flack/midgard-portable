@@ -26,7 +26,7 @@
     "autoload": {
     	"classmap": ["api/"],
         "psr-4": { "midgard\\portable\\": "src/" },
-        "files": ["api/bootstrap.php"]
+        "files": ["api/aliases.php", "api/functions.php"]
     },
     "extra": {
         "branch-alias": {

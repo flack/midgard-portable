@@ -66,5 +66,3 @@ class_alias(dbobject::class, 'midgard_dbobject');
 class_alias(mgdobject::class, 'midgard_object');
 class_alias(metadata::class, 'midgard_metadata');
 class_alias(blob::class, 'midgard_blob');
-
-require 'functions.php';
