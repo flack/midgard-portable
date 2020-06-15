@@ -13,25 +13,21 @@ use midgard\portable\storage\connection;
 class manager
 {
     /**
-     *
-     * @var array
+     * @var type[]
      */
     private $types;
 
     /**
-     *
-     * @var array
+     * @var string[]
      */
     private $schemadirs;
 
     /**
-     *
      * @var string
      */
     private $namespace;
 
     /**
-     *
      * @var array
      */
     private $merged_types = [];
@@ -48,19 +44,22 @@ class manager
         $this->namespace = $namespace;
     }
 
-    public function get_types()
+    /**
+     * @return type[]
+     */
+    public function get_types() : array
     {
         $this->initialize();
         return $this->types;
     }
 
-    public function get_inherited_mapping()
+    public function get_inherited_mapping() : array
     {
         $this->initialize();
         return $this->merged_types;
     }
 
-    public function get_child_classes($typename)
+    public function get_child_classes($typename) : array
     {
         $this->initialize();
         return $this->child_classes[$typename] ?? [];
@@ -137,9 +136,15 @@ class manager
 
     /**
      * This sort of provides a workaround for situations where two tables use the same name
+     *
+     * @param type[] $types
      */
     private function create_merged_types(array $types) : bool
     {
+        usort($types, function(type $a, type $b) {
+            return strcasecmp($a->name, $b->name);
+        });
+
         $root_type = null;
         foreach ($types as $i => $type) {
             // TODO: We should have a second pass here that prefers classnames starting with midgard_

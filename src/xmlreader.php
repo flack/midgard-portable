@@ -20,6 +20,9 @@ class xmlreader
      */
     private $mixins = [];
 
+    /**
+     * @return type[]
+     */
     public function parse(string $filename) : array
     {
         $types = [];
