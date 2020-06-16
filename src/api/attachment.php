@@ -18,7 +18,7 @@ class attachment extends mgdobject
     protected $mimetype = '';
     protected $parentguid = '';
 
-    public function create()
+    public function create() : bool
     {
         if (empty($this->parentguid)) {
             return false;

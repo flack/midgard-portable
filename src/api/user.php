@@ -65,7 +65,7 @@ class user extends dbobject
         $this->populate_from_entity($entity);
     }
 
-    public function login()
+    public function login() : bool
     {
         if (empty($this->id)) {
             return false;
@@ -74,7 +74,7 @@ class user extends dbobject
         return true;
     }
 
-    public function logout()
+    public function logout() : bool
     {
         if (empty($this->id)) {
             return false;
@@ -83,7 +83,7 @@ class user extends dbobject
         return true;
     }
 
-    public function is_admin()
+    public function is_admin() : bool
     {
         return $this->usertype == 2;
     }
@@ -94,7 +94,7 @@ class user extends dbobject
         $this->person = $person->guid;
     }
 
-    public function &get_person()
+    public function &get_person() : person
     {
         if (   $this->person_object === null
             && $this->person !== null) {
@@ -103,7 +103,7 @@ class user extends dbobject
         return $this->person_object;
     }
 
-    public function create()
+    public function create() : bool
     {
         if (   empty($this->authtype)
             || !empty($this->id)) {
@@ -127,7 +127,7 @@ class user extends dbobject
         return !empty($this->id);
     }
 
-    public function update()
+    public function update() : bool
     {
         if (empty($this->id) || !mgd_is_guid($this->guid)) {
             exception::invalid_property_value();
@@ -148,7 +148,7 @@ class user extends dbobject
         return true;
     }
 
-    public function delete()
+    public function delete() : bool
     {
         if (!mgd_is_guid($this->guid)) {
             exception::invalid_property_value();
@@ -167,7 +167,7 @@ class user extends dbobject
         return true;
     }
 
-    protected function is_unique()
+    protected function is_unique() : bool
     {
         if (   empty($this->login)
             || empty($this->authtype)) {

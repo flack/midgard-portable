@@ -42,10 +42,7 @@ abstract class dbobject implements ObjectManagerAware
         $this->cm = $classmetadata;
     }
 
-    /**
-     * @return array
-     */
-    public function __get_changed_associations()
+    public function __get_changed_associations() : array
     {
         return $this->changed_associations;
     }

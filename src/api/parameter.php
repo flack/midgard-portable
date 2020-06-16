@@ -17,7 +17,7 @@ class parameter extends mgdobject
     protected $value = '';
     protected $parentguid = '';
 
-    public function get_label()
+    public function get_label() : string
     {
         return $this->domain . " " . $this->name;
     }

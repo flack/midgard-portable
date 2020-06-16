@@ -11,6 +11,7 @@ use midgard\portable\storage\connection;
 use midgard\portable\api\error\exception;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query\Expr\Composite;
 
 abstract class query
 {
@@ -64,7 +65,7 @@ abstract class query
         return $this->qb;
     }
 
-    public function add_constraint_with_property($name, $operator, $property)
+    public function add_constraint_with_property($name, $operator, $property) : bool
     {
         //TODO: INTREE & IN operator functionality ?
         $parsed = $this->parse_constraint_name($name);
@@ -76,7 +77,7 @@ abstract class query
         return true;
     }
 
-    public function add_constraint($name, $operator, $value)
+    public function add_constraint($name, $operator, $value) : bool
     {
         if ($operator === 'INTREE') {
             $operator = 'IN';
@@ -111,7 +112,7 @@ abstract class query
         return true;
     }
 
-    public function add_order($name, $direction = 'ASC')
+    public function add_order($name, $direction = 'ASC') : bool
     {
         if (!in_array($direction, ['ASC', 'DESC'])) {
             return false;
@@ -126,7 +127,7 @@ abstract class query
         return true;
     }
 
-    public function count()
+    public function count() : int
     {
         $select = $this->qb->getDQLPart('select');
         $this->check_groups();
@@ -158,7 +159,7 @@ abstract class query
         $this->include_deleted = true;
     }
 
-    public function begin_group($operator = 'OR')
+    public function begin_group($operator = 'OR') : bool
     {
         if ($operator === 'OR') {
             $this->groupstack[] = $this->qb->expr()->orX();
@@ -171,7 +172,7 @@ abstract class query
         return true;
     }
 
-    public function end_group()
+    public function end_group() : bool
     {
         if (empty($this->groupstack)) {
             return false;
@@ -187,10 +188,7 @@ abstract class query
         return true;
     }
 
-    /**
-     * @return \Doctrine\ORM\Query\Expr\Composite
-     */
-    public function get_current_group()
+    public function get_current_group() : Composite
     {
         if (empty($this->groupstack)) {
             $this->begin_group('AND');
@@ -213,7 +211,7 @@ abstract class query
         }
     }
 
-    protected function add_collection_join($current_table, $targetclass)
+    protected function add_collection_join($current_table, $targetclass) : string
     {
         if (!isset($this->join_tables[$targetclass])) {
             $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
@@ -223,7 +221,7 @@ abstract class query
         return $this->join_tables[$targetclass];
     }
 
-    protected function add_join($current_table, $mrp, $property)
+    protected function add_join($current_table, $mrp, $property) : string
     {
         $targetclass = $mrp->get_link_name($property);
         if (!isset($this->join_tables[$targetclass])) {
@@ -240,7 +238,7 @@ abstract class query
         return $this->join_tables[$targetclass];
     }
 
-    protected function parse_constraint_name($name)
+    protected function parse_constraint_name($name) : array
     {
         $current_table = 'c';
         $targetclass = $this->classname;
@@ -338,7 +336,7 @@ abstract class query
         }
     }
 
-    private function get_child_ids($targetclass, $fieldname, array $parent_values)
+    private function get_child_ids($targetclass, $fieldname, array $parent_values) : array
     {
         $qb = connection::get_em()->createQueryBuilder();
         $qb->from($targetclass, 'c')

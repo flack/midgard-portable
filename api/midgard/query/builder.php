@@ -10,7 +10,7 @@ use midgard\portable\api\error\exception;
 
 class midgard_query_builder extends query
 {
-    public function add_constraint_with_property($name, $operator, $value)
+    public function add_constraint_with_property($name, $operator, $value) : bool
     {
         try {
             return parent::add_constraint_with_property($name, $operator, $value);
@@ -19,7 +19,7 @@ class midgard_query_builder extends query
         }
     }
 
-    public function add_constraint($name, $operator, $value)
+    public function add_constraint($name, $operator, $value) : bool
     {
         try {
             return parent::add_constraint($name, $operator, $value);

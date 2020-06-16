@@ -22,7 +22,7 @@ class blob
         $this->attachment = $attachment;
     }
 
-    public function read_content()
+    public function read_content() : ?string
     {
         if ($this->exists()) {
             return file_get_contents($this->get_path());
@@ -30,7 +30,7 @@ class blob
         return null;
     }
 
-    public function write_content($content)
+    public function write_content($content) : bool
     {
         return file_put_contents($this->get_path(), $content) !== false;
     }
@@ -44,7 +44,7 @@ class blob
         return fopen($this->get_path(), $mode);
     }
 
-    public function get_path()
+    public function get_path() : string
     {
         if (empty($this->attachment->location)) {
             $location = connection::generate_guid();
@@ -56,7 +56,7 @@ class blob
         return $blobdir . DIRECTORY_SEPARATOR . $this->attachment->location;
     }
 
-    public function exists()
+    public function exists() : bool
     {
         return file_exists($this->get_path());
     }

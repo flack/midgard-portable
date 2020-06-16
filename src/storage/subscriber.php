@@ -145,7 +145,7 @@ class subscriber implements EventSubscriber
         }
     }
 
-    private function calculate_size(ClassMetadata $cm, metadata $entity)
+    private function calculate_size(ClassMetadata $cm, metadata $entity) : int
     {
         $size = 0;
         foreach ($cm->getAssociationNames() as $name) {

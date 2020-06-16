@@ -196,9 +196,8 @@ class objectmanager
 
     /**
      * @param string $classname
-     * @return dbobject
      */
-    public function new_instance($classname)
+    public function new_instance($classname) : dbobject
     {
         //workaround for possible oid collisions in UnitOfWork
         //see http://www.doctrine-project.org/jira/browse/DDC-2785

@@ -65,7 +65,7 @@ class manager
         return $this->child_classes[$typename] ?? [];
     }
 
-    public function resolve_targetclass(property $property)
+    public function resolve_targetclass(property $property) : string
     {
         $this->initialize();
 
