@@ -35,9 +35,8 @@ class midgard_collector extends midgard_query_builder
 
     /**
      * @param string $property
-     * @return boolean
      */
-    public function set_key_property($property)
+    public function set_key_property($property) : bool
     {
         // after execute there is no sense in changing the key property
         if ($this->_results !== null) {
@@ -50,9 +49,8 @@ class midgard_collector extends midgard_query_builder
 
     /**
      * @param string $property
-     * @return boolean
      */
-    public function add_value_property($property)
+    public function add_value_property($property) : bool
     {
         if ($this->_results !== null) {
             return false;
@@ -68,7 +66,7 @@ class midgard_collector extends midgard_query_builder
         return true;
     }
 
-    protected function build_property_select($property)
+    protected function build_property_select($property) : string
     {
         $parsed = $this->parse_constraint_name($property);
 
@@ -90,10 +88,7 @@ class midgard_collector extends midgard_query_builder
         return $parsed['name'];
     }
 
-    /**
-     * @return boolean
-     */
-    public function execute()
+    public function execute() : bool
     {
         if ($this->_results !== null) {
             return false;
@@ -162,19 +157,14 @@ class midgard_collector extends midgard_query_builder
 
     /**
      * check whether we got any results to work on
-     *
-     * @return boolean
      */
-    private function _has_results()
+    private function _has_results() : bool
     {
         // execute was not called or we got an empty resultset
         return !empty($this->_results);
     }
 
-    /**
-     * @return array
-     */
-    public function list_keys()
+    public function list_keys() : array
     {
         if (!$this->_has_results()) {
             return [];

@@ -14,7 +14,7 @@ use midgard\portable\storage\connection;
 
 class midgard_storage
 {
-    public static function create_base_storage()
+    public static function create_base_storage() : bool
     {
         $em = connection::get_em();
         $ns = $em->getConfiguration()->getEntityNamespace("midgard");
@@ -56,7 +56,7 @@ class midgard_storage
         return true;
     }
 
-    public static function create_class_storage($classname)
+    public static function create_class_storage($classname) : bool
     {
         $em = connection::get_em();
 
@@ -118,7 +118,7 @@ class midgard_storage
      *
      * @param string $classname The MgdSchema class to work on
      */
-    public static function update_class_storage($classname)
+    public static function update_class_storage($classname) : bool
     {
         $em = connection::get_em();
         $cm = self::get_cm($em, $classname);
@@ -151,7 +151,7 @@ class midgard_storage
         return false;
     }
 
-    public static function class_storage_exists($classname)
+    public static function class_storage_exists($classname) : bool
     {
         $em = connection::get_em();
 

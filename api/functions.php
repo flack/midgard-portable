@@ -5,12 +5,12 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
 
-function mgd_version()
+function mgd_version() : string
 {
     return '1.6.0+git';
 }
 
-function mgd_is_guid($input)
+function mgd_is_guid($input) : bool
 {
     if (!is_string($input)) {
         return false;

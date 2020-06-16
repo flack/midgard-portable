@@ -8,6 +8,7 @@
 use midgard\portable\storage\connection;
 use midgard\portable\api\error\exception;
 use midgard\portable\api\config;
+use midgard\portable\api\user;
 
 class midgard_connection
 {
@@ -29,7 +30,7 @@ class midgard_connection
 
     private $replication_enabled = true;
 
-    public static function get_instance()
+    public static function get_instance() : self
     {
         if (self::$instance === null) {
             self::$instance = new static;
@@ -37,12 +38,12 @@ class midgard_connection
         return self::$instance;
     }
 
-    public function copy()
+    public function copy() : self
     {
         return clone self::$instance;
     }
 
-    public function open($name)
+    public function open($name) : bool
     {
         if ($this->config !== null) {
             $this->error_code = exception::INTERNAL;
@@ -63,7 +64,7 @@ class midgard_connection
         $this->set_loglevel($config->loglevel);
     }
 
-    public function is_connected()
+    public function is_connected() : bool
     {
         return is_object($this->config);
     }
@@ -92,7 +93,7 @@ class midgard_connection
         $this->error_string = $string;
     }
 
-    public function get_user()
+    public function get_user() : ?user
     {
         if (!$this->is_connected()) {
             return null;
@@ -100,7 +101,7 @@ class midgard_connection
         return connection::get_user();
     }
 
-    public function set_loglevel($level, $callback = '???')
+    public function set_loglevel($level, $callback = '???') : bool
     {
         if (!in_array($level, $this->available_loglevels)) {
             return false;
@@ -119,7 +120,7 @@ class midgard_connection
         $this->replication_enabled = (bool) $toggle;
     }
 
-    public function is_enabled_replication()
+    public function is_enabled_replication() : bool
     {
         return $this->replication_enabled;
     }

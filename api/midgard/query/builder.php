@@ -53,7 +53,7 @@ class midgard_query_builder extends query
         }
     }
 
-    private function prepare_query()
+    private function prepare_query() : \Doctrine\ORM\Query
     {
         $this->check_groups();
         $this->qb->addSelect('c');

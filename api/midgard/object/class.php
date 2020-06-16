@@ -10,10 +10,11 @@ use midgard\portable\storage\subscriber;
 use midgard\portable\api\error\exception;
 use midgard\portable\storage\objectmanager;
 use midgard\portable\storage\interfaces\metadata;
+use midgard\portable\api\dbobject;
 
 class midgard_object_class
 {
-    private static function resolve_classname($guid, $include_deleted = false)
+    private static function resolve_classname($guid, $include_deleted = false) : string
     {
         $qb = connection::get_em()->createQueryBuilder();
         $qb->from('midgard:midgard_repligard', 'r')
@@ -40,13 +41,13 @@ class midgard_object_class
         return $result["typename"];
     }
 
-    public static function resolve_fqn($classname)
+    public static function resolve_fqn($classname) : string
     {
         $cm = connection::get_em()->getClassMetadata('midgard:' . $classname);
         return $cm->name;
     }
 
-    public static function factory($classname, $id = null)
+    public static function factory($classname, $id = null) : ?dbobject
     {
         if ($classname === null) {
             return null;
@@ -58,7 +59,7 @@ class midgard_object_class
     /**
      * @return boolean
      */
-    public static function undelete($guid)
+    public static function undelete($guid) : bool
     {
         try {
             $classname = self::resolve_classname($guid, true);
@@ -122,7 +123,7 @@ class midgard_object_class
         return $cm->midgard['parentfield'];
     }
 
-    public static function has_metadata($classname)
+    public static function has_metadata($classname) : bool
     {
         if (is_string($classname)) {
             return in_array(metadata::class, class_implements($classname));

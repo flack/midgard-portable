@@ -19,10 +19,7 @@ use Doctrine\ORM\NoResultException;
 
 class midgard_replicator
 {
-    /**
-     * @return boolean Indicating success
-     */
-    public static function export(dbobject $object)
+    public static function export(dbobject $object) : bool
     {
         if (!mgd_is_guid($object->guid)) {
             return false;
@@ -31,10 +28,7 @@ class midgard_replicator
         return true;
     }
 
-    /**
-     * @return boolean Indicating success
-     */
-    public static function export_by_guid($guid)
+    public static function export_by_guid($guid) : bool
     {
         if (!mgd_is_guid($guid)) {
             midgard_connection::get_instance()->set_error(exception::INVALID_PROPERTY_VALUE);
@@ -134,7 +128,7 @@ class midgard_replicator
     /**
      * @return dbobject[] Array of objects read from input XML
      */
-    public static function unserialize($xml, $force = false)
+    public static function unserialize($xml, $force = false) : array
     {
         $ret = [];
 
@@ -154,10 +148,7 @@ class midgard_replicator
         return $ret;
     }
 
-    /**
-     * @return boolean Indicating success
-     */
-    public static function import_object(dbobject $object, $force = false)
+    public static function import_object(dbobject $object, $force = false) : bool
     {
         if (!mgd_is_guid($object->guid)) {
             midgard_connection::get_instance()->set_error(exception::INVALID_PROPERTY_VALUE);
@@ -296,13 +287,7 @@ class midgard_replicator
             ->getSingleScalarResult();
     }
 
-    /**
-     *
-     * @param SimpleXMLElement $node
-     * @param boolean $force
-     * @return dbobject
-     */
-    private static function object_from_xml(SimpleXMLElement $node, $force)
+    private static function object_from_xml(SimpleXMLElement $node, bool $force) : dbobject
     {
         $cm = connection::get_em()->getClassMetadata('midgard:' . $node->getName());
         $classname = $cm->getName();
@@ -335,13 +320,7 @@ class midgard_replicator
         return $object;
     }
 
-    /**
-     *
-     * @param SimpleXMLElement $node
-     * @param boolean $force
-     * @return dbobject
-     */
-    private static function blob_from_xml(SimpleXMLElement $node, $force)
+    private static function blob_from_xml(SimpleXMLElement $node, bool $force) : blob
     {
         $attachment = midgard_object_class::get_object_by_guid((string) $node['guid']);
 
@@ -350,7 +329,7 @@ class midgard_replicator
         return $blob;
     }
 
-    private static function get_object_action($guid)
+    private static function get_object_action($guid) : string
     {
         $result = connection::get_em()
             ->createQueryBuilder()

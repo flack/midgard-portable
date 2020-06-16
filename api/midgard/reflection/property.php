@@ -32,7 +32,7 @@ class midgard_reflection_property
      * @param boolean $metadata Check metadata properties instead
      * @return boolean Indicating existence
      */
-    public function property_exists($property, $metadata = false)
+    public function property_exists($property, $metadata = false) : bool
     {
         if ($metadata) {
             $property = 'metadata_' . $property;
@@ -44,9 +44,8 @@ class midgard_reflection_property
      * Returns field's description, if any
      *
      * @param string $property
-     * @return string|NULL
      */
-    public function description($property)
+    public function description($property) : ?string
     {
         if (!$this->cm->hasField($property)) {
             return null;
@@ -55,7 +54,7 @@ class midgard_reflection_property
         return $mapping['midgard:description'];
     }
 
-    public function get_mapping($property)
+    public function get_mapping($property) : ?array
     {
         if (!$this->cm->hasField($property)) {
             return null;
@@ -69,7 +68,7 @@ class midgard_reflection_property
      * @param string $property
      * @return boolean
      */
-    public function is_link($property)
+    public function is_link($property) : bool
     {
         if ($this->cm->hasAssociation($property)) {
             return true;
@@ -77,21 +76,20 @@ class midgard_reflection_property
         return $this->is_special_link($property);
     }
 
-    public function is_special_link($property)
+    public function is_special_link($property) : bool
     {
         if ($this->cm->hasAssociation($property)) {
             return false;
         }
-        return $this->get_mapping($property)["noidlink"] ?? false;
+        return !empty($this->get_mapping($property)["noidlink"]);
     }
 
     /**
      * Returns the classname for the link target
      *
      * @param string $property
-     * @return string|NULL
      */
-    public function get_link_name($property)
+    public function get_link_name($property) : ?string
     {
         if ($this->cm->hasAssociation($property)) {
             $mapping = $this->cm->getAssociationMapping($property);
@@ -105,9 +103,8 @@ class midgard_reflection_property
      * Returns the target field name
      *
      * @param string $property
-     * @return string|NULL
      */
-    public function get_link_target($property)
+    public function get_link_target($property) : ?string
     {
         if ($this->cm->hasAssociation($property)) {
             $mapping = $this->cm->getAssociationMapping($property);
@@ -123,7 +120,7 @@ class midgard_reflection_property
      * @param string $property
      * @return integer
      */
-    public function get_midgard_type($property)
+    public function get_midgard_type($property) : int
     {
         if ($this->cm->hasField($property)) {
             $mapping = $this->cm->getFieldMapping($property);
