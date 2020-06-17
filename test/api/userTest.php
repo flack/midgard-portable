@@ -207,7 +207,7 @@ class userTest extends testcase
 
         $tokens = ['authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password . 'x'];
 
-        $user2 = new $classname($tokens);
+        new $classname($tokens);
     }
 
     /**
@@ -226,7 +226,7 @@ class userTest extends testcase
 
         $tokens = ['authtype' => $user->authtype, 'password' => $user->password];
 
-        $user2 = new $classname($tokens);
+        new $classname($tokens);
     }
 
     public function test_logout()

@@ -342,7 +342,7 @@ class midgard_query_builderTest extends testcase
     public function test_limit()
     {
         $classname = self::$ns . '\\midgard_topic';
-        $topics = $this->_create_topics(__FUNCTION__);
+        $this->_create_topics(__FUNCTION__);
 
         $qb = new \midgard_query_builder($classname);
         $qb->set_limit(1);

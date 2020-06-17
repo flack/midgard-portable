@@ -8,7 +8,6 @@
 namespace midgard\portable\test;
 
 use midgard\portable\driver;
-use midgard\portable\storage\connection;
 use midgard_connection;
 use PHPUnit\Framework\TestCase;
 
@@ -21,7 +20,6 @@ class connectionTest extends TestCase
         $ns = uniqid(__CLASS__);
         $driver = new driver($directories, $tmpdir, $ns);
         include TESTDIR . DIRECTORY_SEPARATOR . 'bootstrap.php';
-        $em = connection::get_em();
         $config = midgard_connection::get_instance()->config;
 
         $this->assertInstanceOf('midgard_config', $config);

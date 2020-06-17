@@ -59,7 +59,7 @@ class objectTest extends testcase
         self::$em->clear();
         $e = null;
         try {
-            $loaded = new $classname($topic->id);
+            new $classname($topic->id);
         } catch (\midgard_error_exception $e) {
         }
 
@@ -79,7 +79,7 @@ class objectTest extends testcase
 
         $e = null;
         try {
-            $loaded = new $classname($id);
+            new $classname($id);
         } catch (\midgard_error_exception $e) {
         }
 
@@ -89,7 +89,7 @@ class objectTest extends testcase
         $e = null;
         try {
             $proxy = self::$em->getReference($classname, $id);
-            $loaded = new $classname($id);
+            new $classname($id);
         } catch (\midgard_error_exception $e) {
         }
 
@@ -115,7 +115,7 @@ class objectTest extends testcase
     public function test_load_invalid_guid()
     {
         $classname = self::$ns . '\\midgard_topic';
-        $topic = new $classname('xxx');
+        new $classname('xxx');
     }
 
     public function test_get_by_id()
@@ -157,7 +157,7 @@ class objectTest extends testcase
         // This causes the entity to become registered in IdentityMap
         $qb = new \midgard_query_builder($classname);
         $qb->add_constraint('id', '=', $topic->id);
-        $result = $qb->execute();
+        $qb->execute();
 
         $topic->name = __FUNCTION__ . '2';
         $topic->update();
@@ -175,7 +175,7 @@ class objectTest extends testcase
     public function test_load_unknown_id()
     {
         $classname = self::$ns . '\\midgard_topic';
-        $topic = new $classname(999999999);
+        new $classname(999999999);
     }
 
     public function test_get_by_guid()
@@ -581,7 +581,6 @@ class objectTest extends testcase
     public function test_parent_purge()
     {
         $classname = self::$ns . '\\midgard_snippetdir';
-        $sn_class = self::$ns . '\\midgard_snippet';
 
         $sd = new $classname;
         $sd->name = __FUNCTION__;
@@ -973,7 +972,7 @@ class objectTest extends testcase
 
         $this->assertFalse($topic->unlock());
 
-        $person = self::create_user();
+        self::create_user();
 
         $this->assertFalse($topic->unlock());
         $this->assertTrue($topic->lock());
@@ -1023,7 +1022,7 @@ class objectTest extends testcase
 
         $this->assertFalse($topic->unapprove());
 
-        $person = self::create_user();
+        self::create_user();
 
         $this->assertFalse($topic->unapprove());
         $this->assertTrue($topic->approve());

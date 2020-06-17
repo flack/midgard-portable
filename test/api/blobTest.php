@@ -84,6 +84,7 @@ class blobTest extends testcase
         $blob = new blob($att);
         $this->assertFalse($blob->exists());
         $handle = $blob->get_handler();
+        $this->assertIsResource($handle);
         $this->assertTrue($blob->exists());
     }
 
@@ -95,6 +96,7 @@ class blobTest extends testcase
         $blob = new blob($att);
         $this->assertNull($blob->read_content());
         $handle = $blob->get_handler();
+        $this->assertIsResource($handle);
         $this->assertSame('', $blob->read_content());
     }
 

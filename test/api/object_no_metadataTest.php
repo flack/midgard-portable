@@ -6,7 +6,6 @@
  */
 
 namespace midgard\portable\test;
-use midgard\portable\storage\connection;
 use midgard_connection;
 
 class object_no_metadataTest extends testcase
