@@ -280,23 +280,19 @@ abstract class mgdobject extends dbobject
             return true;
         }
 
-        if (!empty($this->cm->midgard['upfield'])) {
-            // TODO: This needs to be changed so that value is always numeric, since this is how midgard does it
-            if ($this->{$this->cm->midgard['upfield']} === null) {
-                $conditions->add($qb->expr()->isNull('c.' . $this->cm->midgard['upfield']));
-            } else {
-                $conditions->add($qb->expr()->eq('c.' . $this->cm->midgard['upfield'], ':' . $this->cm->midgard['upfield']));
-                $parameters[$this->cm->midgard['upfield']] = $this->{$this->cm->midgard['upfield']};
-            }
-        } elseif (!empty($this->cm->midgard['parentfield'])) {
-            // TODO: This needs to be changed so that value is always numeric, since this is how midgard does it
-            if ($this->{$this->cm->midgard['parentfield']} === null) {
-                $conditions->add($qb->expr()->isNull('c.' . $this->cm->midgard['parentfield']));
-            } else {
-                $conditions->add($qb->expr()->eq('c.' . $this->cm->midgard['parentfield'], ':' . $this->cm->midgard['parentfield']));
-                $parameters[$this->cm->midgard['parentfield']] = $this->{$this->cm->midgard['parentfield']};
+        foreach (['upfield', 'parentfield'] as $candidate) {
+            if (!empty($this->cm->midgard[$candidate])) {
+                // TODO: This needs to be changed so that value is always numeric, since this is how midgard does it
+                if ($this->{$this->cm->midgard[$candidate]} === null) {
+                    $conditions->add($qb->expr()->isNull('c.' . $this->cm->midgard[$candidate]));
+                } else {
+                    $conditions->add($qb->expr()->eq('c.' . $this->cm->midgard[$candidate], ':' . $this->cm->midgard[$candidate]));
+                    $parameters[$this->cm->midgard[$candidate]] = $this->{$this->cm->midgard[$candidate]};
+                }
+                break;
             }
         }
+
         $qb->where($conditions)
             ->setParameters($parameters);
 
