@@ -8,7 +8,7 @@
 namespace midgard\portable\test;
 use midgard_connection;
 
-class object_no_metadataTest extends testcase
+class mgdobject_no_metadataTest extends testcase
 {
     public static function setupBeforeClass()
     {

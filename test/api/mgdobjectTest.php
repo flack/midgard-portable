@@ -9,7 +9,7 @@ namespace midgard\portable\test;
 use midgard\portable\storage\connection;
 use midgard_connection;
 
-class objectTest extends testcase
+class mgdobjectTest extends testcase
 {
     public static function setupBeforeClass()
     {
