@@ -40,7 +40,7 @@ class blobTest extends testcase
 
         $blob = new blob($att);
         $handle = $blob->get_handler();
-        $this->assertInternalType('resource', $handle);
+        $this->assertIsResource($handle);
         $metadata = stream_get_meta_data($handle);
         $this->assertEquals('w', $metadata['mode']);
     }

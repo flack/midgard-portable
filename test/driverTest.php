@@ -19,7 +19,7 @@ class driverTest extends testcase
         $d = sys_get_temp_dir();
         $driver = new driver([TESTDIR . '__files/'], $d, $ns);
         $classnames = $driver->getAllClassNames();
-        $this->assertInternalType('array', $classnames);
+        $this->assertIsArray($classnames);
         $this->assertCount(12, $classnames);
     }
 

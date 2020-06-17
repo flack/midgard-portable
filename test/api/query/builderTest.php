@@ -84,9 +84,9 @@ class midgard_query_builderTest extends testcase
         $qb = new \midgard_query_builder($classname);
         $qb->add_order('id', 'DESC'); // out new object is the last one, i.e. the one with the highest ID
         $results = $qb->execute();
-        $this->assertInternalType('array', $results);
+        $this->assertIsArray($results);
         $this->assertCount($initial + 1, $results);
-        $this->assertInternalType('object', $results[0]);
+        $this->assertIsObject($results[0]);
         $this->assertEquals($classname, get_class($results[0]));
         $this->assertEquals($topic->metadata->created->format('Y-m-d H:i:s'), $results[0]->metadata->created->format('Y-m-d H:i:s'));
     }

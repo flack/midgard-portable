@@ -394,7 +394,7 @@ class objectTest extends testcase
 
         $this->assertEquals([], $topic2->list());
         $children = $topic->list();
-        $this->assertInternalType('array', $children);
+        $this->assertIsArray($children);
         $this->assertCount(1, $children);
         $this->assertSame($topic2->id, $children[0]->id);
     }

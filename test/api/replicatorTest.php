@@ -32,7 +32,7 @@ class midgard_replicatorTest extends testcase
         $classname = self::$ns . '\\midgard_topic';
         $object = new $classname;
         $ret = midgard_replicator::serialize($object);
-        $this->assertInternalType('string', $ret);
+        $this->assertIsString($ret);
         $actual = new SimpleXMLElement($ret);
         $expected = new SimpleXMLElement(dirname(__DIR__) . '/__files/replicator/new_topic.xml', 0, true);
         $this->assertEquals($expected->midgard_topic->attributes(), $actual->midgard_topic->attributes());

@@ -25,7 +25,7 @@ class propertyTest extends TestCase
         $property->set('type', 'test3');
         $property->set('link', 'midgard_topic:id');
         $this->assertEquals('test2', $property->dbtype);
-        $this->assertInternalType('array', $property->link);
+        $this->assertIsArray($property->link);
         $this->assertArrayHasKey('target', $property->link);
         $this->assertArrayHasKey('field', $property->link);
         $this->assertEquals('midgard_topic', $property->link['target']);

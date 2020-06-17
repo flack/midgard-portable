@@ -42,7 +42,7 @@ class personTest extends testcase
         $this->assertEquals($person->id, $member->uid);
 
         $parent = $member->get_parent();
-        $this->assertInternalType('object', $parent);
+        $this->assertIsObject($parent);
         $this->assertEquals($grp->guid, $parent->guid);
 
         $this->assertTrue($grp->has_dependents());
