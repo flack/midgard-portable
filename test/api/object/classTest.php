@@ -120,25 +120,16 @@ class classTest extends testcase
 
     public function test_get_property_up()
     {
-        $classname = self::$ns . '\\midgard_topic';
-        $topic = new $classname;
-
-        $up = midgard_object_class::get_property_up($topic);
+        $up = midgard_object_class::get_property_up(self::$ns . '\\midgard_topic');
         $this->assertEquals('up', $up);
     }
 
     public function test_get_property_parent()
     {
-        $classname = self::$ns . '\\midgard_article';
-        $article = new $classname;
-
-        $parentfield = midgard_object_class::get_property_parent($article);
+        $parentfield = midgard_object_class::get_property_parent(self::$ns . '\\midgard_article');
         $this->assertEquals('topic', $parentfield);
 
-        $classname = self::$ns . '\\midgard_person';
-        $person = new $classname;
-
-        $parentfield = midgard_object_class::get_property_parent($person);
+        $parentfield = midgard_object_class::get_property_parent(self::$ns . '\\midgard_person');
         $this->assertNull($parentfield);
     }
 

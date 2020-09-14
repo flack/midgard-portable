@@ -102,20 +102,14 @@ class midgard_object_class
         return self::factory($type, $guid);
     }
 
-    public static function get_property_up($classname)
+    public static function get_property_up(string $classname)
     {
-        if (is_object($classname)) {
-            $classname = get_class($classname);
-        }
         $cm = connection::get_em()->getClassMetadata($classname);
         return $cm->midgard['upfield'];
     }
 
-    public static function get_property_parent($classname)
+    public static function get_property_parent(string $classname)
     {
-        if (is_object($classname)) {
-            $classname = get_class($classname);
-        }
         $cm = connection::get_em()->getClassMetadata($classname);
         return $cm->midgard['parentfield'];
     }

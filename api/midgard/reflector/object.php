@@ -14,12 +14,12 @@ class midgard_reflector_object
         return 'id';
     }
 
-    public static function get_property_up($classname)
+    public static function get_property_up(string $classname)
     {
         return midgard_object_class::get_property_up($classname);
     }
 
-    public static function get_property_parent($classname)
+    public static function get_property_parent(string $classname)
     {
         return midgard_object_class::get_property_parent($classname);
     }

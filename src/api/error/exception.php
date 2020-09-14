@@ -167,7 +167,7 @@ class exception extends base_exception
 
     public static function invalid_property_value(string $message = null) : self
     {
-        if ($message == null) {
+        if ($message === null) {
             $message = self::$messages[self::INVALID_PROPERTY_VALUE];
         }
         return new self($message, self::INVALID_PROPERTY_VALUE);
