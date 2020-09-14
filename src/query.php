@@ -65,7 +65,7 @@ abstract class query
         return $this->qb;
     }
 
-    public function add_constraint_with_property(string $name, string $operator, string $property) : bool
+    public function add_constraint_with_property(string $name, string $operator, string $property)
     {
         //TODO: INTREE & IN operator functionality ?
         $parsed = $this->parse_constraint_name($name);
@@ -73,11 +73,9 @@ abstract class query
         $constraint = $parsed['name'] . ' ' . $operator . ' ' . $parsed_property['name'];
 
         $this->get_current_group()->add($constraint);
-
-        return true;
     }
 
-    public function add_constraint(string $name, string $operator, $value) : bool
+    public function add_constraint(string $name, string $operator, $value)
     {
         if ($operator === 'INTREE') {
             $operator = 'IN';
@@ -103,13 +101,11 @@ abstract class query
         } elseif (in_array($operator, ['IN', 'NOT IN'], true)) {
             $value = array_values($value);
         } elseif (!in_array($operator, ['=', '>', '<', '<>', '<=', '>=', 'LIKE', 'NOT LIKE'])) {
-            return false;
+            throw new exception('Invalid operator');
         }
         $this->parameters++;
         $this->get_current_group()->add($this->build_constraint($name, $operator, $value));
         $this->qb->setParameter($this->parameters, $value);
-
-        return true;
     }
 
     public function add_order(string $name, string $direction = 'ASC') : bool

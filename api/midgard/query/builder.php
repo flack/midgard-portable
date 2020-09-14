@@ -13,19 +13,21 @@ class midgard_query_builder extends query
     public function add_constraint_with_property(string $name, string $operator, string $property) : bool
     {
         try {
-            return parent::add_constraint_with_property($name, $operator, $property);
+            parent::add_constraint_with_property($name, $operator, $property);
         } catch (exception $e) {
             return false;
         }
+        return true;
     }
 
     public function add_constraint(string $name, string $operator, $value) : bool
     {
         try {
-            return parent::add_constraint($name, $operator, $value);
+            parent::add_constraint($name, $operator, $value);
         } catch (exception $e) {
             return false;
         }
+        return true;
     }
 
     /**
