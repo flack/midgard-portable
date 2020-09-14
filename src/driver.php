@@ -94,7 +94,9 @@ class driver implements driver_interface
 
     private function initialize()
     {
-        $this->types = $this->manager->get_types();
+        if ($this->types === null) {
+            $this->types = $this->manager->get_types();
+        }
     }
 
     /**
@@ -102,10 +104,7 @@ class driver implements driver_interface
      */
     public function getAllClassNames() : array
     {
-        if ($this->types === null) {
-            $this->initialize();
-        }
-
+        $this->initialize();
         return array_keys($this->types);
     }
 
@@ -114,9 +113,7 @@ class driver implements driver_interface
      */
     public function isTransient($classname) : bool
     {
-        if ($this->types === null) {
-            $this->initialize();
-        }
+        $this->initialize();
         return !isset($this->types[$classname]);
     }
 
@@ -125,9 +122,7 @@ class driver implements driver_interface
      */
     public function loadMetadataForClass($classname, ClassMetadata $metadata)
     {
-        if ($this->types === null) {
-            $this->initialize();
-        }
+        $this->initialize();
         if (!isset($this->types[$classname])) {
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($classname);
         }
