@@ -10,10 +10,11 @@ namespace midgard\portable\test;
 use midgard\portable\storage\connection;
 use midgard_connection;
 use Doctrine\ORM\UnitOfWork;
+use midgard\portable\api\error\exception;
 
 class userTest extends testcase
 {
-    public static function setupBeforeClass()
+    public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
@@ -191,9 +192,6 @@ class userTest extends testcase
         $this->assertEquals($user->id, connection::get_user()->id);
     }
 
-    /**
-     * @expectedException midgard_error_exception
-     */
     public function test_login_with_wrong_credentials()
     {
         $classname = self::$ns . '\\midgard_user';
@@ -207,12 +205,10 @@ class userTest extends testcase
 
         $tokens = ['authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password . 'x'];
 
+        $this->expectException(exception::class);
         new $classname($tokens);
     }
 
-    /**
-     * @expectedException midgard_error_exception
-     */
     public function test_login_with_invalid_credentials()
     {
         $classname = self::$ns . '\\midgard_user';
@@ -226,6 +222,7 @@ class userTest extends testcase
 
         $tokens = ['authtype' => $user->authtype, 'password' => $user->password];
 
+        $this->expectException(exception::class);
         new $classname($tokens);
     }
 

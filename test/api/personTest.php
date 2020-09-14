@@ -9,7 +9,7 @@ namespace midgard\portable\test;
 
 class personTest extends testcase
 {
-    public static function setupBeforeClass()
+    public static function setupBeforeClass() : void
     {
         self::prepare_connection('membership/');
 

@@ -15,7 +15,7 @@ class classgeneratorTest extends testcase
 {
     private $directory;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->directory = TESTDIR . '__output';
         if (is_dir($this->directory)) {

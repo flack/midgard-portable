@@ -8,10 +8,11 @@
 namespace midgard\portable\test;
 use midgard\portable\storage\connection;
 use midgard_connection;
+use midgard\portable\api\error\exception;
 
 class mgdobjectTest extends testcase
 {
-    public static function setupBeforeClass()
+    public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
 
@@ -109,12 +110,10 @@ class mgdobjectTest extends testcase
         $this->assertEquals('', $loaded->name);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function test_load_invalid_guid()
     {
         $classname = self::$ns . '\\midgard_topic';
+        $this->expectException(\InvalidArgumentException::class);
         new $classname('xxx');
     }
 
@@ -169,12 +168,10 @@ class mgdobjectTest extends testcase
         $this->assertEquals($topic->name, $loaded->name);
     }
 
-    /**
-     * @expectedException midgard_error_exception
-     */
     public function test_load_unknown_id()
     {
         $classname = self::$ns . '\\midgard_topic';
+        $this->expectException(exception::class);
         new $classname(999999999);
     }
 

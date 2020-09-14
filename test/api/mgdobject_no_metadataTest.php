@@ -10,7 +10,7 @@ use midgard_connection;
 
 class mgdobject_no_metadataTest extends testcase
 {
-    public static function setupBeforeClass()
+    public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
 

@@ -12,7 +12,7 @@ class midgard_collectorTest extends testcase
 {
     protected static $_topic;
 
-    public static function setupBeforeClass()
+    public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);

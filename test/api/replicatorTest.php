@@ -13,7 +13,7 @@ use midgard\portable\api\blob;
 
 class midgard_replicatorTest extends testcase
 {
-    public static function setupBeforeClass()
+    public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);

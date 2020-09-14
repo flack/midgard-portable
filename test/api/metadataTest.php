@@ -11,7 +11,7 @@ class metadataTest extends testcase
 {
     protected static $person;
 
-    public static function setupBeforeClass()
+    public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);

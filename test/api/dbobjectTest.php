@@ -11,7 +11,7 @@ use Doctrine\ORM\UnitOfWork;
 
 class dbobjectTest extends testcase
 {
-    public static function setupBeforeClass()
+    public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);

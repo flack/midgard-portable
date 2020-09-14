@@ -20,7 +20,7 @@ class testcase extends basecase
 
     public static $em;
 
-    public static function setupBeforeClass()
+    public static function setupBeforeClass() : void
     {
         self::prepare_connection();
     }
