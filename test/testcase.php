@@ -25,7 +25,7 @@ class testcase extends basecase
         self::prepare_connection();
     }
 
-    protected static function prepare_connection($directory = '', $tmpdir = null, $ns = null)
+    public static function prepare_connection(string $directory = '', $tmpdir = null, $ns = null) : driver
     {
         if ($tmpdir === null) {
             $tmpdir = sys_get_temp_dir();
@@ -38,9 +38,21 @@ class testcase extends basecase
         ];
 
         $driver = new driver($directories, $tmpdir, $ns);
-        include TESTDIR . DIRECTORY_SEPARATOR . 'bootstrap.php';
+
+        $db = getenv('DB');
+        if (!empty($db)) {
+            $db_config = require __DIR__ . DIRECTORY_SEPARATOR . $db . '.inc';
+        } else {
+            $db_config = [
+                'memory' => true,
+                'driver' => 'pdo_sqlite'
+            ];
+        }
+        connection::initialize($driver, $db_config, true);
+
         self::$em = connection::get_em();
         self::$ns = $ns;
+        return $driver;
     }
 
     protected static function create_user()

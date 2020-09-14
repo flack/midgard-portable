@@ -7,13 +7,13 @@
 
 namespace midgard\portable\test;
 
-use midgard\portable\driver;
 use midgard\portable\storage\connection;
 use midgard\portable\storage\subscriber;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Event\SchemaCreateTableEventArgs;
 use Doctrine\DBAL\Schema\Table;
 use PHPUnit\Framework\TestCase;
+use midgard\portable\test\testcase as mgdcase;
 
 class subscriberTest extends TestCase
 {
@@ -22,25 +22,23 @@ class subscriberTest extends TestCase
      */
     public function test_onSchemaCreateTable($columns, $expected)
     {
-        $directories = [TESTDIR . '__files/'];
-        $tmpdir = sys_get_temp_dir();
-        $ns = uniqid(__CLASS__);
-        $driver = new driver($directories, $tmpdir, $ns);
-        $this->assertTrue($driver->is_fresh_namespace());
-        include TESTDIR . DIRECTORY_SEPARATOR . 'bootstrap.php';
+        mgdcase::prepare_connection('', null, uniqid(__CLASS__));
+
         $em = connection::get_em();
         $platform = $em->getConnection()->getDatabasePlatform();
 
         $table = new Table('dummy');
         $options = [];
-        $args = new SchemaCreateTableEventArgs($table, $columns, $options, $platform);
+        $event = new SchemaCreateTableEventArgs($table, $columns, $options, $platform);
 
         $subscriber = new subscriber;
-        $subscriber->onSchemaCreateTable($args);
+        $subscriber->onSchemaCreateTable($event);
 
         $pf_name = strtolower($platform->getName());
         if (array_key_exists($pf_name, $expected)) {
-            $this->assertEquals($expected[$pf_name], $args->getSql());
+            $this->assertEquals($expected[$pf_name], $event->getSql());
+        } else {
+            $this->assertFalse($event->isDefaultPrevented());
         }
     }
 

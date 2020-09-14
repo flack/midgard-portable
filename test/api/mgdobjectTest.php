@@ -61,7 +61,7 @@ class mgdobjectTest extends testcase
         $e = null;
         try {
             new $classname($topic->id);
-        } catch (\midgard_error_exception $e) {
+        } catch (exception $e) {
         }
 
         $this->assertInstanceOf('midgard_error_exception', $e);
@@ -81,7 +81,7 @@ class mgdobjectTest extends testcase
         $e = null;
         try {
             new $classname($id);
-        } catch (\midgard_error_exception $e) {
+        } catch (exception $e) {
         }
 
         $this->assertInstanceOf('midgard_error_exception', $e);
@@ -91,7 +91,7 @@ class mgdobjectTest extends testcase
         try {
             $proxy = self::$em->getReference($classname, $id);
             new $classname($id);
-        } catch (\midgard_error_exception $e) {
+        } catch (exception $e) {
         }
 
         $this->assertInstanceOf('midgard_error_exception', $e);

@@ -7,20 +7,17 @@
 
 namespace midgard\portable\test;
 
-use midgard\portable\driver;
 use midgard_connection;
 use PHPUnit\Framework\TestCase;
+use midgard\portable\test\testcase as mgdcase;
 
 class connectionTest extends TestCase
 {
     public function test_get_config()
     {
-        $directories = [TESTDIR . '__files/'];
-        $tmpdir = sys_get_temp_dir();
-        $ns = uniqid(__CLASS__);
-        $driver = new driver($directories, $tmpdir, $ns);
-        include TESTDIR . DIRECTORY_SEPARATOR . 'bootstrap.php';
+        $driver = mgdcase::prepare_connection('', null, uniqid(__CLASS__));
         $config = midgard_connection::get_instance()->config;
+        $tmpdir = $driver->get_vardir();
 
         $this->assertInstanceOf('midgard_config', $config);
         $this->assertEquals($tmpdir, $config->vardir);

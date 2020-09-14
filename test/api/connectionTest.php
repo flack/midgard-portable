@@ -8,8 +8,8 @@
 namespace midgard\portable\test\api;
 
 use midgard_connection;
-use midgard_config;
 use PHPUnit\Framework\TestCase;
+use midgard\portable\api\config;
 
 class connectionTest extends TestCase
 {
@@ -36,7 +36,7 @@ class connectionTest extends TestCase
 
         $connection = new midgard_connection;
         $this->assertFalse($connection->open('test'));
-        $connection->open_config(new midgard_config);
+        $connection->open_config(new config);
 
         $this->assertFalse($connection->open('test'));
         $this->assertEquals(MGD_ERR_INTERNAL, $connection->get_error());
@@ -44,7 +44,7 @@ class connectionTest extends TestCase
 
     public function test_open_config()
     {
-        $config = new midgard_config;
+        $config = new config;
         $config->loglevel = 'message';
         $connection = new midgard_connection;
         $connection->open_config($config);

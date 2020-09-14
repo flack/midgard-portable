@@ -9,6 +9,7 @@ namespace midgard\portable\test;
 
 use midgard_object_class;
 use midgard_connection;
+use midgard\portable\api\error\exception;
 
 class classTest extends testcase
 {
@@ -56,8 +57,8 @@ class classTest extends testcase
 
         $e = null;
         try {
-            $object = midgard_object_class::get_object_by_guid('111111111111111111111111111111111111111111111111111');
-        } catch (\midgard_error_exception $e) {
+            midgard_object_class::get_object_by_guid('111111111111111111111111111111111111111111111111111');
+        } catch (exception $e) {
         }
         $this->assertInstanceOf('midgard_error_exception', $e);
         $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
@@ -72,8 +73,8 @@ class classTest extends testcase
 
         $e = null;
         try {
-            $object = midgard_object_class::get_object_by_guid($topic->guid);
-        } catch (\midgard_error_exception $e) {
+            midgard_object_class::get_object_by_guid($topic->guid);
+        } catch (exception $e) {
         }
         $this->assertInstanceOf('midgard_error_exception', $e);
         $this->assertEquals(MGD_ERR_OBJECT_DELETED, \midgard_connection::get_instance()->get_error());
@@ -88,8 +89,8 @@ class classTest extends testcase
 
         $e = null;
         try {
-            $object = midgard_object_class::get_object_by_guid($topic->guid);
-        } catch (\midgard_error_exception $e) {
+            midgard_object_class::get_object_by_guid($topic->guid);
+        } catch (exception $e) {
         }
         $this->assertInstanceOf('midgard_error_exception', $e);
         $this->assertEquals(MGD_ERR_OBJECT_PURGED, \midgard_connection::get_instance()->get_error());
@@ -99,8 +100,8 @@ class classTest extends testcase
     {
         $e = null;
         try {
-            $object = midgard_object_class::get_object_by_guid('XXX');
-        } catch (\midgard_error_exception $e) {
+            midgard_object_class::get_object_by_guid('XXX');
+        } catch (exception $e) {
         }
         $this->assertInstanceOf('midgard_error_exception', $e);
         $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
