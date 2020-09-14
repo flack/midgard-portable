@@ -164,7 +164,7 @@ class connection
     public static function startup()
     {
         if (empty(self::$parameters)) {
-            throw new \RuntimeError('Not initialized');
+            throw new \RuntimeException('Not initialized');
         }
         $driver = self::$parameters['driver'];
         $db_config = self::$parameters['db_config'];

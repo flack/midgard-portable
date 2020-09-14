@@ -58,7 +58,7 @@ class midgard_connection
         return true;
     }
 
-    public function open_config(midgard_config $config)
+    public function open_config(config $config)
     {
         $this->config = $config;
         $this->set_loglevel($config->loglevel);
