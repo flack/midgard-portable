@@ -77,7 +77,7 @@ class property implements node
      */
     private $mgdschematype;
 
-    public function __construct(type $parent, $name, $type)
+    public function __construct(type $parent, string $name, string $type)
     {
         $this->mgdschematype = $parent;
         $this->name = $name;
@@ -93,7 +93,7 @@ class property implements node
         return $this->mgdschematype;
     }
 
-    public function set($name, $value)
+    public function set(string $name, $value)
     {
         switch ($name) {
             case 'unique':

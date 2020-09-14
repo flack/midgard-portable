@@ -25,7 +25,7 @@ class midgard_collector extends midgard_query_builder
 
     private $value_properties = [];
 
-    public function __construct($class, $field = null, $value = null)
+    public function __construct(string $class, string $field = null, $value = null)
     {
         parent::__construct($class);
         if ($field) {
@@ -33,10 +33,7 @@ class midgard_collector extends midgard_query_builder
         }
     }
 
-    /**
-     * @param string $property
-     */
-    public function set_key_property($property) : bool
+    public function set_key_property(string $property) : bool
     {
         // after execute there is no sense in changing the key property
         if ($this->_results !== null) {
@@ -47,10 +44,7 @@ class midgard_collector extends midgard_query_builder
         return true;
     }
 
-    /**
-     * @param string $property
-     */
-    public function add_value_property($property) : bool
+    public function add_value_property(string $property) : bool
     {
         if ($this->_results !== null) {
             return false;
@@ -66,7 +60,7 @@ class midgard_collector extends midgard_query_builder
         return true;
     }
 
-    protected function build_property_select($property) : string
+    protected function build_property_select(string $property) : string
     {
         $parsed = $this->parse_constraint_name($property);
 
@@ -150,7 +144,7 @@ class midgard_collector extends midgard_query_builder
      * @param string $key
      * @param string $property
      */
-    public function get_subkey($key, $property)
+    public function get_subkey($key, string $property)
     {
         return $this->_results[$key][$property] ?? false;
     }

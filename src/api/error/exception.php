@@ -165,7 +165,7 @@ class exception extends base_exception
         return new self(self::$messages[self::OBJECT_NO_PARENT], self::OBJECT_NO_PARENT);
     }
 
-    public static function invalid_property_value($message = null) : self
+    public static function invalid_property_value(string $message = null) : self
     {
         if ($message == null) {
             $message = self::$messages[self::INVALID_PROPERTY_VALUE];
@@ -178,7 +178,7 @@ class exception extends base_exception
         return new self(self::$messages[self::INVALID_PROPERTY], self::INVALID_PROPERTY);
     }
 
-    public static function user_data($message = 'Unknown error') : self
+    public static function user_data(string $message = 'Unknown error') : self
     {
         return new self($message, self::USER_DATA);
     }

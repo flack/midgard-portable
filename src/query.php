@@ -65,7 +65,7 @@ abstract class query
         return $this->qb;
     }
 
-    public function add_constraint_with_property($name, $operator, $property) : bool
+    public function add_constraint_with_property(string $name, string $operator, string $property) : bool
     {
         //TODO: INTREE & IN operator functionality ?
         $parsed = $this->parse_constraint_name($name);
@@ -77,7 +77,7 @@ abstract class query
         return true;
     }
 
-    public function add_constraint($name, $operator, $value) : bool
+    public function add_constraint(string $name, string $operator, $value) : bool
     {
         if ($operator === 'INTREE') {
             $operator = 'IN';
@@ -112,7 +112,7 @@ abstract class query
         return true;
     }
 
-    public function add_order($name, $direction = 'ASC') : bool
+    public function add_order(string $name, string $direction = 'ASC') : bool
     {
         if (!in_array($direction, ['ASC', 'DESC'])) {
             return false;
@@ -159,7 +159,7 @@ abstract class query
         $this->include_deleted = true;
     }
 
-    public function begin_group($operator = 'OR') : bool
+    public function begin_group(string $operator = 'OR') : bool
     {
         if ($operator === 'OR') {
             $this->groupstack[] = $this->qb->expr()->orX();
@@ -211,7 +211,7 @@ abstract class query
         }
     }
 
-    protected function add_collection_join($current_table, $targetclass) : string
+    protected function add_collection_join(string $current_table, string $targetclass) : string
     {
         if (!isset($this->join_tables[$targetclass])) {
             $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
@@ -221,7 +221,7 @@ abstract class query
         return $this->join_tables[$targetclass];
     }
 
-    protected function add_join($current_table, $mrp, $property) : string
+    protected function add_join(string $current_table, \midgard_reflection_property $mrp, string $property) : string
     {
         $targetclass = $mrp->get_link_name($property);
         if (!isset($this->join_tables[$targetclass])) {
@@ -238,7 +238,7 @@ abstract class query
         return $this->join_tables[$targetclass];
     }
 
-    protected function parse_constraint_name($name) : array
+    protected function parse_constraint_name(string $name) : array
     {
         $current_table = 'c';
         $targetclass = $this->classname;
@@ -285,7 +285,7 @@ abstract class query
         ];
     }
 
-    protected function build_constraint($name, $operator, $value)
+    protected function build_constraint(string $name, string $operator, $value)
     {
         $parsed = $this->parse_constraint_name($name);
         $expression = $operator . ' ?' . $this->parameters;
@@ -336,7 +336,7 @@ abstract class query
         }
     }
 
-    private function get_child_ids($targetclass, $fieldname, array $parent_values) : array
+    private function get_child_ids(string $targetclass, string $fieldname, array $parent_values) : array
     {
         $qb = connection::get_em()->createQueryBuilder();
         $qb->from($targetclass, 'c')

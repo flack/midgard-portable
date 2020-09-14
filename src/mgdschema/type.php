@@ -54,7 +54,7 @@ class type
         }
     }
 
-    public function add_property(node $property, $name = null)
+    public function add_property(node $property, string $name = null)
     {
         if ($name === null) {
             $name = $property->name;
@@ -79,7 +79,7 @@ class type
         }
     }
 
-    public function has_property($name) : bool
+    public function has_property(string $name) : bool
     {
         return isset($this->properties[$name]);
     }

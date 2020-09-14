@@ -43,7 +43,7 @@ class midgard_connection
         return clone self::$instance;
     }
 
-    public function open($name) : bool
+    public function open(string $name) : bool
     {
         if ($this->config !== null) {
             $this->error_code = exception::INTERNAL;
@@ -88,7 +88,7 @@ class midgard_connection
         return $this->error_string;
     }
 
-    public function set_error_string($string)
+    public function set_error_string(string $string)
     {
         $this->error_string = $string;
     }
@@ -115,9 +115,9 @@ class midgard_connection
         return $this->loglevel;
     }
 
-    public function enable_replication($toggle)
+    public function enable_replication(bool $toggle)
     {
-        $this->replication_enabled = (bool) $toggle;
+        $this->replication_enabled = $toggle;
     }
 
     public function is_enabled_replication() : bool

@@ -38,7 +38,7 @@ class manager
      */
     private $child_classes = [];
 
-    public function __construct(array $schemadirs, $namespace)
+    public function __construct(array $schemadirs, string $namespace)
     {
         $this->schemadirs = $schemadirs;
         $this->namespace = $namespace;
@@ -59,7 +59,7 @@ class manager
         return $this->merged_types;
     }
 
-    public function get_child_classes($typename) : array
+    public function get_child_classes(string $typename) : array
     {
         $this->initialize();
         return $this->child_classes[$typename] ?? [];
@@ -191,7 +191,7 @@ class manager
         return true;
     }
 
-    private function get_type_by_shortname($classname) : type
+    private function get_type_by_shortname(string $classname) : type
     {
         $fqcn = $this->get_fcqn($classname);
         if (!isset($this->types[$fqcn])) {

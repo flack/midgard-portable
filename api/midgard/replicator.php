@@ -28,7 +28,7 @@ class midgard_replicator
         return true;
     }
 
-    public static function export_by_guid($guid) : bool
+    public static function export_by_guid(string $guid) : bool
     {
         if (!mgd_is_guid($guid)) {
             midgard_connection::get_instance()->set_error(exception::INVALID_PROPERTY_VALUE);
@@ -65,7 +65,7 @@ class midgard_replicator
     /**
      * @return string XML document containing purged object information
      */
-    public static function export_purged($class, $startdate = null, $enddate = null)
+    public static function export_purged(string $class, $startdate = null, $enddate = null)
     {
         throw new Exception('not implemented');
     }
@@ -73,7 +73,7 @@ class midgard_replicator
     /**
      * @return string XML representation of the object
      */
-    public static function serialize(dbobject $object)
+    public static function serialize(dbobject $object) : string
     {
         $xml = new SimpleXMLElement('<midgard_object xmlns="http://www.midgard-project.org/midgard_object/1.8"/>');
 
@@ -115,7 +115,7 @@ class midgard_replicator
     /**
      * @return string XML representation of the blob (content is base64 encoded)
      */
-    public static function serialize_blob(attachment $object)
+    public static function serialize_blob(attachment $object) : string
     {
         $blob = new blob($object);
         $xml = new SimpleXMLElement('<midgard_object xmlns="http://www.midgard-project.org/midgard_object/1.8"/>');
@@ -128,7 +128,7 @@ class midgard_replicator
     /**
      * @return dbobject[] Array of objects read from input XML
      */
-    public static function unserialize($xml, $force = false) : array
+    public static function unserialize(string $xml, bool $force = false) : array
     {
         $ret = [];
 
@@ -148,7 +148,7 @@ class midgard_replicator
         return $ret;
     }
 
-    public static function import_object(dbobject $object, $force = false) : bool
+    public static function import_object(dbobject $object, bool $force = false) : bool
     {
         if (!mgd_is_guid($object->guid)) {
             midgard_connection::get_instance()->set_error(exception::INVALID_PROPERTY_VALUE);
@@ -230,10 +230,7 @@ class midgard_replicator
         return $dbobject->create();
     }
 
-    /**
-     * @return boolean Indicating success
-     */
-    public static function import_from_xml($xml, $force = false)
+    public static function import_from_xml(string $xml, bool $force = false)
     {
         $objects = self::unserialize($xml, $force);
         foreach ($objects as $object) {
@@ -245,17 +242,12 @@ class midgard_replicator
         }
     }
 
-    /**
-     *
-     * @param blob $blob
-     * @param boolean $force
-     */
-    private static function import_blob(blob $blob, $force)
+    private static function import_blob(blob $blob, bool $force)
     {
         $blob->write_content($blob->content);
     }
 
-    private static function resolve_link_id(ClassMetadata $cm, dbobject $object, $name)
+    private static function resolve_link_id(ClassMetadata $cm, dbobject $object, string $name) : string
     {
         if ($object->$name == 0) {
             return '0';
@@ -271,7 +263,7 @@ class midgard_replicator
             ->getSingleScalarResult();
     }
 
-    private static function resolve_link_guid(ClassMetadata $cm, $name, $value)
+    private static function resolve_link_guid(ClassMetadata $cm, string $name, string $value) : int
     {
         if (!mgd_is_guid($value)) {
             return 0;
@@ -329,7 +321,7 @@ class midgard_replicator
         return $blob;
     }
 
-    private static function get_object_action($guid) : string
+    private static function get_object_action(string $guid) : string
     {
         $result = connection::get_em()
             ->createQueryBuilder()

@@ -26,10 +26,9 @@ class config
     public $vardir = '/var/lib/midgard2';
     public $cachedir = '/var/cache/midgard2';
 
-    public function read_file_at_path($path) : bool
+    public function read_file_at_path(string $path) : bool
     {
-        if (   !file_exists($path)
-            || !is_readable($path)) {
+        if (!is_readable($path)) {
             return false;
         }
         $parsed = parse_ini_file($path);
@@ -65,7 +64,7 @@ class config
         }
     }
 
-    private function get_prefix($user) : string
+    private function get_prefix(bool $user) : string
     {
         if ($user) {
             return getenv('HOME') . '/.midgard2/conf.d';
@@ -73,12 +72,12 @@ class config
         return '/etc/midgard2/conf.d';
     }
 
-    public function read_file($name, $user = true) : bool // <== TODO: check
+    public function read_file(string $name, bool $user = true) : bool // <== TODO: check
     {
         return $this->read_file_at_path($this->get_prefix($user) . '/' . $name);
     }
 
-    public function save_file($name, $user = true) : bool // <== TODO: check
+    public function save_file(string $name, bool $user = true) : bool // <== TODO: check
     {
         $prefix = $this->get_prefix($user);
         if (!file_exists($prefix)) {
@@ -109,7 +108,7 @@ class config
         return file_put_contents($filename, $contents) !== false;
     }
 
-    private function convert_to_storage($key, $value) : string
+    private function convert_to_storage(string $key, $value) : string
     {
         if (is_bool($value)) {
             $value = $value ? 'true' : 'false';

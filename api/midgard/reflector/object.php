@@ -9,7 +9,7 @@ use midgard\portable\storage\connection;
 
 class midgard_reflector_object
 {
-    public static function get_property_primary($classname) : string
+    public static function get_property_primary(string $classname) : string
     {
         return 'id';
     }
@@ -24,13 +24,13 @@ class midgard_reflector_object
         return midgard_object_class::get_property_parent($classname);
     }
 
-    public static function get_property_unique($classname)
+    public static function get_property_unique(string $classname)
     {
         $cm = connection::get_em()->getClassMetadata($classname);
         return $cm->midgard['unique_fields'][0] ?? null;
     }
 
-    public static function list_children($classname) : array
+    public static function list_children(string $classname) : array
     {
         $cm = connection::get_em()->getClassMetadata($classname);
         if (empty($cm->midgard['childtypes'])) {

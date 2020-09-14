@@ -11,6 +11,7 @@ use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Mapping\MappingException;
 use midgard\portable\storage\connection;
+use Doctrine\ORM\EntityManager;
 
 class midgard_storage
 {
@@ -56,12 +57,12 @@ class midgard_storage
         return true;
     }
 
-    public static function create_class_storage($classname) : bool
+    public static function create_class_storage(string $classname) : bool
     {
         $em = connection::get_em();
 
         $cm = self::get_cm($em, $classname);
-        if ($cm === false) {
+        if ($cm === null) {
             return false;
         }
 
@@ -87,11 +88,11 @@ class midgard_storage
         $generator->generateProxyClass($cm, $filename);
     }
 
-    private static function get_cm($em, $classname)
+    private static function get_cm(EntityManager $em, string $classname) : ?\Doctrine\ORM\Mapping\ClassMetadata
     {
         if (!class_exists($classname)) {
             // if the class doesn't exist (e.g. for some_random_string), there is really nothing we could do
-            return false;
+            return null;
         }
 
         $factory = $em->getMetadataFactory();
@@ -115,14 +116,12 @@ class midgard_storage
      *
      * this does not use SchemaTool's updateSchema, since this would delete columns that are no longer
      * in the MgdSchema definition
-     *
-     * @param string $classname The MgdSchema class to work on
      */
-    public static function update_class_storage($classname) : bool
+    public static function update_class_storage(string $classname) : bool
     {
         $em = connection::get_em();
         $cm = self::get_cm($em, $classname);
-        if ($cm === false) {
+        if ($cm === null) {
             return false;
         }
         $sm = $em->getConnection()->getSchemaManager();
@@ -151,15 +150,12 @@ class midgard_storage
         return false;
     }
 
-    public static function class_storage_exists($classname) : bool
+    public static function class_storage_exists(string $classname) : bool
     {
         $em = connection::get_em();
-
-        $cm = self::get_cm($em, $classname);
-        if ($cm === false) {
-            return false;
+        if ($cm = self::get_cm($em, $classname)) {
+            return $em->getConnection()->getSchemaManager()->tablesExist([$cm->getTableName()]);
         }
-
-        return $em->getConnection()->getSchemaManager()->tablesExist([$cm->getTableName()]);
+        return false;
     }
 }

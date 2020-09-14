@@ -17,7 +17,7 @@ class blob
 
     protected $attachment;
 
-    public function __construct(attachment $attachment, $encoding = 'UTF-8')
+    public function __construct(attachment $attachment, string $encoding = 'UTF-8')
     {
         $this->attachment = $attachment;
     }
@@ -39,7 +39,7 @@ class blob
     {
     }
 
-    public function get_handler($mode = 'w')
+    public function get_handler(string $mode = 'w')
     {
         return fopen($this->get_path(), $mode);
     }

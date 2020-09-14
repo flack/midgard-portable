@@ -14,7 +14,7 @@ use midgard\portable\api\dbobject;
 
 class midgard_object_class
 {
-    private static function resolve_classname($guid, $include_deleted = false) : string
+    private static function resolve_classname(string $guid, bool $include_deleted = false) : string
     {
         $qb = connection::get_em()->createQueryBuilder();
         $qb->from('midgard:midgard_repligard', 'r')
@@ -41,13 +41,13 @@ class midgard_object_class
         return $result["typename"];
     }
 
-    public static function resolve_fqn($classname) : string
+    public static function resolve_fqn(string $classname) : string
     {
         $cm = connection::get_em()->getClassMetadata('midgard:' . $classname);
         return $cm->name;
     }
 
-    public static function factory($classname, $id = null) : ?dbobject
+    public static function factory(?string $classname, $id = null) : ?dbobject
     {
         if ($classname === null) {
             return null;
@@ -56,10 +56,7 @@ class midgard_object_class
         return new $classname($id);
     }
 
-    /**
-     * @return boolean
-     */
-    public static function undelete($guid) : bool
+    public static function undelete(string $guid) : bool
     {
         try {
             $classname = self::resolve_classname($guid, true);
@@ -95,7 +92,7 @@ class midgard_object_class
         return true;
     }
 
-    public static function get_object_by_guid($guid)
+    public static function get_object_by_guid(string $guid) : dbobject
     {
         if (!mgd_is_guid($guid)) {
             throw exception::not_exists();

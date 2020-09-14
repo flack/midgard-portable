@@ -66,14 +66,14 @@ class objectmanager
      *
      * @todo: This may or may not be a bug in Doctrine
      */
-    private function copy_associations($source, $target)
+    private function copy_associations(dbobject $source, dbobject $target)
     {
         foreach ($this->em->getClassMetadata(get_class($source))->getAssociationNames() as $name) {
             $target->$name = $source->$name;
         }
     }
 
-    private function kill_potential_proxies($entity)
+    private function kill_potential_proxies(dbobject $entity)
     {
         $classname = ClassUtils::getRealClass(get_class($entity));
         $cm = $this->em->getClassMetadata($classname);
@@ -194,10 +194,7 @@ class objectmanager
         $this->copy_metadata($ref, $entity, 'lock');
     }
 
-    /**
-     * @param string $classname
-     */
-    public function new_instance($classname) : dbobject
+    public function new_instance(string $classname) : dbobject
     {
         //workaround for possible oid collisions in UnitOfWork
         //see http://www.doctrine-project.org/jira/browse/DDC-2785
@@ -215,7 +212,7 @@ class objectmanager
         return $entity;
     }
 
-    private function copy_metadata($source, $target, $action = 'update')
+    private function copy_metadata(dbobject $source, dbobject $target, string $action = 'update')
     {
         if (!$source instanceof metadata) {
             return;

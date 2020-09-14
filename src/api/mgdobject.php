@@ -111,10 +111,7 @@ abstract class mgdobject extends dbobject
         return null;
     }
 
-    /**
-     * @param integer $id
-     */
-    public function get_by_id($id) : bool
+    public function get_by_id(int $id) : bool
     {
         $entity = connection::get_em()->find(get_class($this), $id);
 
@@ -147,10 +144,7 @@ abstract class mgdobject extends dbobject
         return true;
     }
 
-    /**
-     * @param string $guid
-     */
-    public function get_by_guid($guid) : bool
+    public function get_by_guid(string $guid) : bool
     {
         if (!mgd_is_guid($guid)) {
             throw new \InvalidArgumentException("'$guid' is not a valid guid");
@@ -217,7 +211,7 @@ abstract class mgdobject extends dbobject
      * @todo: Tests indicate that $check_dependencies is ignored in the mgd2 extension,
      * so we might consider ignoring it, too
      */
-    public function delete($check_dependencies = true) : bool
+    public function delete(bool $check_dependencies = true) : bool
     {
         if (empty($this->id)) {
             midgard_connection::get_instance()->set_error(MGD_ERR_INVALID_PROPERTY_VALUE);
@@ -424,18 +418,13 @@ abstract class mgdobject extends dbobject
      * This should return child objects, but only if they are of a different type
      * For all other input, an empty array is returned
      * (not implemented yet)
-     *
-     * @param string $classname
      */
-    public function list_children($classname) : array
+    public function list_children(string $classname) : array
     {
         return [];
     }
 
-    /**
-     * @param string $path
-     */
-    public function get_by_path($path) : bool
+    public function get_by_path(string $path) : bool
     {
         $parts = explode('/', trim($path, '/'));
         if (empty($parts)) {
@@ -492,7 +481,7 @@ abstract class mgdobject extends dbobject
         return true;
     }
 
-    protected function get_uniquefield_query($classname, $field, $part, $upfield, $up) : QueryBuilder
+    protected function get_uniquefield_query(string $classname, string $field, string $part, string $upfield, int $up) : QueryBuilder
     {
         $qb = connection::get_em()->createQueryBuilder();
         $qb->from($classname, 'c');
@@ -532,7 +521,7 @@ abstract class mgdobject extends dbobject
         return !$this->get_collection('midgard_parameter')->is_empty($this->guid);
     }
 
-    public function list_parameters($domain = false) : array
+    public function list_parameters(string $domain = null) : array
     {
         $constraints = [];
         if ($domain) {
@@ -557,7 +546,7 @@ abstract class mgdobject extends dbobject
         return $this->get_collection('midgard_parameter')->purge($this->guid, $constraints);
     }
 
-    public function get_parameter($domain, $name)
+    public function get_parameter(string $domain, string $name)
     {
         if (!$this->guid) {
             return false;
@@ -572,12 +561,7 @@ abstract class mgdobject extends dbobject
         return $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR);
     }
 
-    /**
-     * @param string $domain
-     * @param string $name
-     * @param mixed $value
-     */
-    public function set_parameter($domain, $name, $value) : bool
+    public function set_parameter(string $domain, string $name, $value) : bool
     {
         $constraints = [
             'domain' => $domain,
@@ -625,7 +609,7 @@ abstract class mgdobject extends dbobject
     /**
      * The signature is a little different from original, because Doctrine doesn't support func_get_args() in proxies
      */
-    public function parameter($domain, $name, $value = '__UNINITIALIZED__')
+    public function parameter(string $domain, string $name, $value = '__UNINITIALIZED__')
     {
         if ($value === '__UNINITIALIZED__') {
             return $this->get_parameter($domain, $name);
@@ -654,18 +638,15 @@ abstract class mgdobject extends dbobject
     }
 
     /**
-     *
-     * @param array $constraints
-     * @param boolean $delete_blob
      * @return boolean False if one or more attachments couldn't be deleted
      * @todo Implement delete_blob & return value
      */
-    public function purge_attachments(array $constraints = [], $delete_blob = true)
+    public function purge_attachments(array $constraints = [], bool $delete_blob = true)
     {
         return $this->get_collection('midgard_attachment')->purge($this->guid, $constraints);
     }
 
-    public function create_attachment($name, $title = '', $mimetype = '') : ?attachment
+    public function create_attachment(string $name, string $title = '', string $mimetype = '') : ?attachment
     {
         $existing = $this->get_collection('midgard_attachment')->find($this->guid, ['name' => $name]);
         if (!empty($existing)) {
@@ -693,7 +674,7 @@ abstract class mgdobject extends dbobject
      * @todo: Tests indicate that $check_dependencies is ignored in the mgd2 extension,
      * so we might consider ignoring it, too
      */
-    public function purge($check_dependencies = true) : bool
+    public function purge(bool $check_dependencies = true) : bool
     {
         if (empty($this->id)) {
             // This usually means that the object has been purged already
@@ -721,7 +702,7 @@ abstract class mgdobject extends dbobject
         return true;
     }
 
-    public static function undelete($guid) : bool
+    public static function undelete(string $guid) : bool
     {
         return \midgard_object_class::undelete($guid);
     }
@@ -731,12 +712,7 @@ abstract class mgdobject extends dbobject
         return new \midgard_query_builder(get_called_class());
     }
 
-    /**
-     *
-     * @param string $field
-     * @param mixed $value
-     */
-    public static function new_collector($field, $value) : \midgard_collector
+    public static function new_collector(string $field, $value) : \midgard_collector
     {
         return new \midgard_collector(get_called_class(), $field, $value);
     }
@@ -746,18 +722,15 @@ abstract class mgdobject extends dbobject
         return new \midgard_reflection_property(get_called_class());
     }
 
-    public function set_guid($guid)
+    public function set_guid(string $guid)
     {
         parent::__set('guid', $guid);
     }
 
     /**
      * Helper for managing the isapproved and islocked metadata properties
-     *
-     * @param string $action the property to manage (either approve or lock)
-     * @param bool $value
      */
-    private function manage_meta_property($action, $value) : bool
+    private function manage_meta_property(string $action, bool $value) : bool
     {
         if (!($this instanceof metadata_interface)) {
             exception::no_metadata();
