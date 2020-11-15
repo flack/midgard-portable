@@ -16,6 +16,8 @@
         "monolog/monolog": "^1.9.1",
         "ext-xml": "*"
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "conflict": {
         "doctrine/common": "3.0.1"
     },
