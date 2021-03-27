@@ -16,7 +16,8 @@ class classmetadata extends base_metadata
         'upfield' => null,
         'unique_fields' => [],
         'childtypes' => [],
-        'field_aliases' => []
+        'field_aliases' => [],
+        'field_order' => []
     ];
 
     public function __sleep()
@@ -35,8 +36,7 @@ class classmetadata extends base_metadata
         if ($metadata === true) {
             $metadata = 0;
         }
-        $properties = array_merge($this->getFieldNames(), $this->getAssociationNames(), array_keys($this->midgard['field_aliases']));
-        $properties = array_filter($properties, function($input) use ($metadata) {
+        $properties = array_filter($this->midgard['field_order'], function($input) use ($metadata) {
             if (strpos($input, 'metadata_') === $metadata) {
                 return $input;
             }

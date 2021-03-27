@@ -142,13 +142,15 @@ class driver implements driver_interface
 
         $metadata->setPrimaryTable($table);
 
+        $properties = $type->get_properties();
         $metadata->midgard['parent'] = $type->parent;
         $metadata->midgard['parentfield'] = $type->parentfield;
         $metadata->midgard['upfield'] = $type->upfield;
         $metadata->midgard['childtypes'] = $this->manager->get_child_classes($type->name);
         $metadata->midgard['field_aliases'] = $type->field_aliases;
+        $metadata->midgard['field_order'] = array_keys($properties);
 
-        foreach ($type->get_properties() as $name => $property) {
+        foreach ($properties as $name => $property) {
             // doctrine can handle id links only
             if (   $property->link
                 && $target_class = $this->manager->resolve_targetclass($property)) {
