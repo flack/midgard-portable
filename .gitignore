@@ -3,3 +3,9 @@
 /test/__output
 .directory
 *.*~
+
+.buildpath
+.settings
+.project
+
+.phpunit.result.cache
