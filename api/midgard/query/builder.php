@@ -47,11 +47,11 @@ class midgard_query_builder extends query
     public function iterate()
     {
         $query = $this->prepare_query();
-        $resultset = $query->iterate();
+        $resultset = $query->toIterable();
         $this->post_execution();
         foreach ($resultset as $result) {
-            $this->qb->getEntityManager()->detach($result[0]);
-            yield $result[0];
+            $this->qb->getEntityManager()->detach($result);
+            yield $result;
         }
     }
 

@@ -10,8 +10,8 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
-        "doctrine/orm": "^2.7.3",
+        "php": ">=7.2",
+        "doctrine/orm": "^2.8",
         "symfony/console": ">=3.0.0",
         "monolog/monolog": "^1.9.1",
         "ext-xml": "*"
@@ -22,7 +22,7 @@
         "doctrine/common": "3.0.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.5 || ^8.5"
+        "phpunit/phpunit": "^8.5"
     },
     "bin": ["bin/midgard-portable"],
     "autoload": {
