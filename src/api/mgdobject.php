@@ -18,7 +18,7 @@ use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * @property midgard_metadata $metadata
+ * @property metadata $metadata
  */
 abstract class mgdobject extends dbobject
 {
