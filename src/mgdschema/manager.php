@@ -90,7 +90,7 @@ class manager
         $types = $reader->parse(dirname(__DIR__, 2) . '/xml/core.xml');
 
         foreach ($this->schemadirs as $schemadir) {
-            foreach (glob($schemadir . '*.xml', GLOB_NOSORT) as $filename) {
+            foreach (glob($schemadir . '*.xml') as $filename) {
                 if (!file_exists($filename)) {
                     connection::log()->warning('File exists check for ' . $filename . ' returned false, skipping');
                     continue;
