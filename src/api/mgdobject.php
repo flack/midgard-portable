@@ -256,10 +256,9 @@ abstract class mgdobject extends dbobject
         $qb = connection::get_em()->createQueryBuilder();
         $qb->from(get_class($this), 'c');
         $conditions = $qb->expr()->andX();
+        $parameters = [];
         if ($this->id) {
-            $parameters = [
-                'id' => $this->id
-            ];
+            $parameters['id'] = $this->id;
             $conditions->add($qb->expr()->neq('c.id', ':id'));
         }
         $found = false;
