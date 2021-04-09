@@ -7,6 +7,15 @@
 
 namespace midgard\portable\api;
 
+/**
+ * @property integer $id Local non-replication-safe database identifier
+ * @property string $name Filename of the attachment
+ * @property string $title Title of the attachment
+ * @property string $location Location of the attachment in the blob directory structure
+ * @property string $mimetype MIME type of the attachment
+ * @property string $parentguid GUID of the object the attachment is attached to
+ * @property string $guid
+ */
 class attachment extends mgdobject
 {
     private $id = 0;

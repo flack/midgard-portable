@@ -7,6 +7,14 @@
 
 namespace midgard\portable\api;
 
+/**
+ * @property integer $id Local non-replication-safe database identifier
+ * @property string $domain Namespace of the parameter
+ * @property string $name Key of the parameter
+ * @property string $value Value of the parameter
+ * @property string $parentguid GUID of the object the parameter extends
+ * @property string $guid
+ */
 class parameter extends mgdobject
 {
     private $id = 0;

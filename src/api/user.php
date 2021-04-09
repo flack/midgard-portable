@@ -12,6 +12,17 @@ use midgard\portable\storage\objectmanager;
 use midgard\portable\api\error\exception;
 use midgard_connection;
 
+/**
+ * @property integer $id
+ * @property string $login
+ * @property string $password
+ * @property boolean $active
+ * @property string $authtype
+ * @property integer $authtypeid
+ * @property integer $usertype
+ * @property string $person
+ * @property string $guid
+ */
 class user extends dbobject
 {
     private $person_object;

@@ -7,6 +7,12 @@
 
 namespace midgard\portable\api;
 
+/**
+ * @property integer $id Local non-replication-safe database identifier
+ * @property string $guid
+ * @property string $firstname First name of the person
+ * @property string $lastname Last name of the person
+ */
 class person extends mgdobject
 {
     private $id = 0;

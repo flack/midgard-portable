@@ -17,6 +17,9 @@ use midgard_connection;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\QueryBuilder;
 
+/**
+ * @property midgard_metadata $metadata
+ */
 abstract class mgdobject extends dbobject
 {
     protected $metadata; // compat with mgd behavior: If the schema has no metadata, the property is present anyway

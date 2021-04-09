@@ -9,6 +9,11 @@ namespace midgard\portable\api;
 
 use midgard\portable\storage\subscriber;
 
+/**
+ * @property string $guid
+ * @property string $typename
+ * @property integer $object_action
+ */
 class repligard extends dbobject
 {
     protected $id = 0;
