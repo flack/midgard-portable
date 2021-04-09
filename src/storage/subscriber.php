@@ -23,6 +23,7 @@ use Doctrine\DBAL\Event\SchemaCreateTableEventArgs;
 use Doctrine\DBAL\Event\SchemaColumnDefinitionEventArgs;
 use Doctrine\ORM\Tools\ToolEvents;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
+use Doctrine\DBAL\Types\Types;
 
 class subscriber implements EventSubscriber
 {
@@ -262,7 +263,7 @@ class subscriber implements EventSubscriber
             ];
 
             $args->preventDefault();
-            $args->setColumn(new Column($column['field'], Type::getType(Type::STRING), $options));
+            $args->setColumn(new Column($column['field'], Type::getType(Types::STRING), $options));
         } elseif ($type == 'datetime') {
             $options = [
                 'default' => $column['default'] ?? null,
