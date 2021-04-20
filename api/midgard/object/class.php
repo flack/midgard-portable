@@ -41,7 +41,7 @@ class midgard_object_class
         return $result["typename"];
     }
 
-    public static function resolve_fqn(string $classname) : string
+    private static function resolve_fqcn(string $classname) : string
     {
         $cm = connection::get_em()->getClassMetadata('midgard:' . $classname);
         return $cm->name;
@@ -52,7 +52,7 @@ class midgard_object_class
         if ($classname === null) {
             return null;
         }
-        $classname = self::resolve_fqn($classname);
+        $classname = self::resolve_fqcn($classname);
         return new $classname($id);
     }
 
@@ -63,7 +63,7 @@ class midgard_object_class
         } catch (exception $e) {
             return false;
         }
-        $classname = self::resolve_fqn($classname);
+        $classname = self::resolve_fqcn($classname);
 
         $qb = new \midgard_query_builder($classname);
         $qb->include_deleted();
@@ -102,13 +102,13 @@ class midgard_object_class
         return self::factory($type, $guid);
     }
 
-    public static function get_property_up(string $classname)
+    public static function get_property_up(string $classname) : ?string
     {
         $cm = connection::get_em()->getClassMetadata($classname);
         return $cm->midgard['upfield'];
     }
 
-    public static function get_property_parent(string $classname)
+    public static function get_property_parent(string $classname) : ?string
     {
         $cm = connection::get_em()->getClassMetadata($classname);
         return $cm->midgard['parentfield'];

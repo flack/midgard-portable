@@ -45,14 +45,10 @@ class midgard_reflection_property
      */
     public function description(string $property) : ?string
     {
-        if (!$this->cm->hasField($property)) {
-            return null;
-        }
-        $mapping = $this->cm->getFieldMapping($property);
-        return $mapping['midgard:description'];
+        return $this->get_mapping($property)['midgard:description'] ?? null;
     }
 
-    public function get_mapping(string $property) : ?array
+    private function get_mapping(string $property) : ?array
     {
         if (!$this->cm->hasField($property)) {
             return null;
@@ -65,10 +61,7 @@ class midgard_reflection_property
      */
     public function is_link(string $property) : bool
     {
-        if ($this->cm->hasAssociation($property)) {
-            return true;
-        }
-        return $this->is_special_link($property);
+        return $this->cm->hasAssociation($property) || $this->is_special_link($property);
     }
 
     public function is_special_link(string $property) : bool
@@ -111,8 +104,7 @@ class midgard_reflection_property
     public function get_midgard_type(string $property) : int
     {
         if ($this->cm->hasField($property)) {
-            $mapping = $this->cm->getFieldMapping($property);
-            return $mapping['midgard:midgard_type'];
+            return $this->get_mapping($property)['midgard:midgard_type'];
         }
         if ($this->cm->hasAssociation($property)) {
             // for now, only PK fields are supported, which are always IDs, so..

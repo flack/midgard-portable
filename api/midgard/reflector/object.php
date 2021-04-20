@@ -14,17 +14,17 @@ class midgard_reflector_object
         return 'id';
     }
 
-    public static function get_property_up(string $classname)
+    public static function get_property_up(string $classname) : ?string
     {
         return midgard_object_class::get_property_up($classname);
     }
 
-    public static function get_property_parent(string $classname)
+    public static function get_property_parent(string $classname) : ?string
     {
         return midgard_object_class::get_property_parent($classname);
     }
 
-    public static function get_property_unique(string $classname)
+    public static function get_property_unique(string $classname) : ?string
     {
         $cm = connection::get_em()->getClassMetadata($classname);
         return $cm->midgard['unique_fields'][0] ?? null;
