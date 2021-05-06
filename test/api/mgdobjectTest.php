@@ -984,6 +984,7 @@ class mgdobjectTest extends testcase
         $this->assertFalse($loaded->is_locked());
         $this->assertEquals($locker, $loaded->metadata->locker);
         $this->assertEquals($locked, $loaded->metadata->locked);
+        $this->assertEquals(0, $topic->metadata->revision);
     }
 
     public function test_approve()

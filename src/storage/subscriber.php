@@ -102,7 +102,7 @@ class subscriber implements EventSubscriber
             }
 
             $create_revision = true;
-            if (array_key_exists('metadata_locked', $cs)) {
+            if (array_key_exists('metadata_islocked', $cs)) {
                 $lock_fields = array_flip(['metadata_locked', 'metadata_islocked', 'metadata_locker']);
                 $create_revision = !empty(array_diff_key($cs, $lock_fields));
             }
