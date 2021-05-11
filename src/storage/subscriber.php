@@ -279,7 +279,7 @@ class subscriber implements EventSubscriber
      * This is mostly a workaround for the fact that SchemaTool wants to create FKs on
      * each run since it doesn't detect that MyISAM tables don't support them
      *
-     * @see http://www.doctrine-project.org/jira/browse/DDC-3460
+     * @see https://github.com/doctrine/orm/issues/4270
      * @param GenerateSchemaTableEventArgs $args
      */
     public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $args)

@@ -35,7 +35,7 @@ class objectmanager
         }
 
         //workaround for possible oid collisions in UnitOfWork
-        //see http://www.doctrine-project.org/jira/browse/DDC-2785
+        //see https://github.com/doctrine/orm/issues/3037
         if ($this->em->getUnitOfWork()->getEntityState($entity) != UnitOfWork::STATE_NEW) {
             connection::log()->warning('oid collision during create detected, detaching ' . spl_object_hash($entity));
             $this->em->detach($entity);
@@ -101,7 +101,7 @@ class objectmanager
         $copy = new $classname($entity->id);
 
         //workaround for possible oid collisions in UnitOfWork
-        //see http://www.doctrine-project.org/jira/browse/DDC-2785
+        //see https://github.com/doctrine/orm/issues/3037
         if ($this->em->getUnitOfWork()->getEntityState($copy) != UnitOfWork::STATE_DETACHED) {
             connection::log()->warning('oid collision during delete detected, detaching ' . spl_object_hash($copy));
             $this->em->detach($copy);
@@ -197,7 +197,7 @@ class objectmanager
     public function new_instance(string $classname) : dbobject
     {
         //workaround for possible oid collisions in UnitOfWork
-        //see http://www.doctrine-project.org/jira/browse/DDC-2785
+        //see https://github.com/doctrine/orm/issues/3037
         $counter = 0;
         $candidates = [];
         do {
