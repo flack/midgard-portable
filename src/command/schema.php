@@ -21,6 +21,7 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\DBAL\Schema\Comparator;
 use Symfony\Component\Console\Input\InputOption;
 use Doctrine\Common\Proxy\ProxyGenerator;
+use Doctrine\DBAL\Schema\Column;
 
 /**
  * (Re)generate mapping information from MgdSchema XMLs
@@ -140,19 +141,35 @@ class schema extends Command
         $from = $conn->getSchemaManager()->createSchema();
         $to = $tool->getSchemaFromMetadata($to_update);
 
-        $comparator = new Comparator;
-        $diff = $comparator->compare($from, $to);
+        $diff = (new Comparator)->compare($from, $to);
+
+        /*
+         * Since we normally don't delete old columns, we have to disable DBAL's renaming
+         * detection, because otherwise a new column might just reuse an outdated one (keeping the values)
+         */
+        foreach ($diff->changedTables as $changed_table) {
+            if (!empty($changed_table->renamedColumns)) {
+                if (empty($changed_table->addedColumns)) {
+                    $changed_table->addedColumns = [];
+                }
+
+                foreach ($changed_table->renamedColumns as $name => $column) {
+                    $changed_table->addedColumns[$column->getName()] = $column;
+                    $changed_table->removedColumns[$name] = new Column($name, $column->getType());
+                }
+                $changed_table->renamedColumns = [];
+            }
+            if (!$delete) {
+                $changed_table->removedColumns = [];
+            }
+        }
 
         if ($delete) {
             $sql = $diff->toSql($conn->getDatabasePlatform());
         } else {
-            foreach ($diff->changedTables as $changed_table) {
-                if (!empty($changed_table->removedColumns)) {
-                    $changed_table->removedColumns = [];
-                }
-            }
             $sql = $diff->toSaveSql($conn->getDatabasePlatform());
         }
+
         if (empty($sql)) {
             return;
         }
