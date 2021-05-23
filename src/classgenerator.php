@@ -21,19 +21,16 @@ use midgard\portable\api\metadata;
 class classgenerator
 {
     /**
-     *
      * @var string
      */
     private $output;
 
     /**
-     *
      * @var string
      */
     private $filename;
 
     /**
-     *
      * @var manager
      */
     private $manager;
@@ -226,7 +223,12 @@ class classgenerator
     private function write_annotations(type $type)
     {
         $this->add_line('/**', true);
-        foreach ($type->get_properties() as $name => $property) {
+        $properties = $type->get_properties();
+        foreach ($type->field_aliases as $alias => $target) {
+            $properties[$alias] = clone $properties[$target];
+            $properties[$alias]->description = 'Alias for ' . $target;
+        }
+        foreach ($properties as $name => $property) {
             if (strpos($property->name, 'metadata_') !== 0) {
                 $line = translator::to_phptype($property->type) . ' $' . $name;
                 if ($property->description) {
