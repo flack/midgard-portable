@@ -228,7 +228,10 @@ class classgenerator
         $this->add_line('/**', true);
         foreach ($type->get_properties() as $name => $property) {
             if (strpos($property->name, 'metadata_') !== 0) {
-                $line = translator::to_phptype($property->type) . ' $' . $name . ' ' . $property->description;
+                $line = translator::to_phptype($property->type) . ' $' . $name;
+                if ($property->description) {
+                    $line .= ' ' . trim($property->description);
+                }
                 $this->add_line(' * @property ' . $line, true);
             }
         }
