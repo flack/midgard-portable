@@ -13,6 +13,7 @@
         "php": ">=7.2",
         "doctrine/orm": "^2.8",
         "symfony/console": ">=3.0.0",
+        "symfony/cache": ">=4.4.0",
         "monolog/monolog": "^1.9.1",
         "ext-xml": "*"
     },
