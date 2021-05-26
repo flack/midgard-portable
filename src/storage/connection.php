@@ -102,8 +102,7 @@ class connection
      */
     public static function generate_guid() : string
     {
-        $sql = 'SELECT ' . self::get_em()->getConnection()->getDatabasePlatform()->getGuidExpression();
-        return md5(self::get_em()->getConnection()->executeQuery($sql)->fetchColumn(0));
+        return bin2hex(random_bytes(16));
     }
 
     /**
