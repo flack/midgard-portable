@@ -269,6 +269,9 @@ class subscriber implements EventSubscriber
                 'default' => $column['default'] ?? null,
                 'notnull' => $column['null'] != 'YES',
             ];
+            if ($options['default'] == "'0001-01-01 00:00:00'") {
+                $options['default'] = '0001-01-01 00:00:00';
+            }
 
             $args->preventDefault();
             $args->setColumn(new Column($column['field'], Type::getType(datetime::TYPE), $options));
