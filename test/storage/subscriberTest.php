@@ -48,29 +48,6 @@ class subscriberTest extends TestCase
         return [
             [
                 [
-                    'id' => [
-                        'name' => "id",
-                        'type' => Type::getType(Types::INTEGER),
-                        'default' => null,
-                        'notnull' => true,
-                        'length' => null,
-                        'precision' => 10,
-                        'scale' => 0,
-                        'fixed' => false,
-                        'unsigned' => false,
-                        'autoincrement' => true,
-                        'columnDefinition' => null,
-                        'comment' => null,
-                        'version' => false,
-                        'primary' => true
-                    ]
-                ],
-                [
-                    'sqlite' => ['CREATE TABLE dummy (id INTEGER PRIMARY KEY AUTOINCREMENT)'],
-                ]
-            ],
-            [
-                [
                     'password' => [
                         'name' => "password",
                         'type' => Type::getType(Types::STRING),

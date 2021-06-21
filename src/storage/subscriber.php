@@ -165,15 +165,6 @@ class subscriber implements EventSubscriber
 
         foreach ($columns as $name => &$config) {
             if ($platform->getName() === 'sqlite') {
-                if (   !empty($config['primary'])
-                    && !empty($config['autoincrement'])) {
-                    /*
-                     * This is essentially a workaround for http://www.doctrine-project.org/jira/browse/DBAL-642
-                     * It makes sure we get auto increment behavior similar to msyql (i.e. IDs unique during table's lifetime)
-                     */
-                    $modified = true;
-                    $config['columnDefinition'] = 'INTEGER PRIMARY KEY AUTOINCREMENT';
-                }
                 if (   !empty($config['comment'])
                     && $config['comment'] == 'BINARY') {
                     $modified = true;
