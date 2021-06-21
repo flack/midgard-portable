@@ -15,8 +15,6 @@ use Doctrine\DBAL\Types\DateTimeType;
 
 class datetime extends DateTimeType
 {
-    const TYPE = 'midgard_datetime';
-
     /**
      * @param string $value
      * @param AbstractPlatform $platform

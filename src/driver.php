@@ -10,7 +10,6 @@ namespace midgard\portable;
 use midgard\portable\mgdschema\manager;
 use midgard\portable\mgdschema\translator;
 use midgard\portable\mgdschema\property;
-use midgard\portable\storage\type\datetime;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver as driver_interface;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -27,7 +26,7 @@ class driver implements driver_interface
         'guid' => ['type' => Types::STRING, 'length' => 80, 'default' => ''],
         'varchar(80)' => ['type' => Types::STRING, 'length' => 80, 'default' => ''],
         'string' => ['type' => Types::STRING, 'length' => 255, 'default' => ''],
-        'datetime' => ['type' => datetime::TYPE, 'default' => '0001-01-01 00:00:00'],
+        'datetime' => ['type' => Types::DATETIME_MUTABLE, 'default' => '0001-01-01 00:00:00'],
         'text' => ['type' => Types::TEXT],
         'longtext' => ['type' => Types::TEXT],
         'float' => ['type' => Types::FLOAT, 'default' => 0.0],

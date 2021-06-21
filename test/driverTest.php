@@ -35,7 +35,7 @@ class driverTest extends testcase
         $this->assertArrayHasKey('score', $metadata->fieldMappings);
 
         $mapping = $metadata->fieldMappings['metadata_approved'];
-        $this->assertEquals("midgard_datetime", $mapping["type"]);
+        $this->assertEquals("datetime", $mapping["type"]);
         $this->assertEquals("0001-01-01 00:00:00", $mapping["default"]);
     }
 

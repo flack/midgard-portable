@@ -38,7 +38,7 @@ class translator
         if (!isset(self::$typemap[$typeattribute])) {
             throw new \Exception('unknown type ' . $typeattribute);
         }
-        $search = ['unsigned ', 'guid',   'datetime', 'longtext', 'text'];
+        $search = ['unsigned ', 'guid', 'datetime', 'longtext', 'text'];
         $replace = ['', 'string', 'midgard_datetime', 'string', 'string'];
 
         return str_replace($search, $replace, $typeattribute);

@@ -20,6 +20,7 @@ use Monolog\Handler\StreamHandler;
 use midgard_connection;
 use midgard\portable\storage\filter\softdelete;
 use midgard\portable\mapping\factory;
+use Doctrine\DBAL\Types\Types;
 
 class connection
 {
@@ -192,9 +193,7 @@ class connection
         $em->getFilters()->enable('softdelete');
         $em->getEventManager()->addEventSubscriber(new subscriber);
 
-        if (!Type::hasType(datetime::TYPE)) {
-            Type::addType(datetime::TYPE, 'midgard\portable\storage\type\datetime');
-        }
+        Type::overrideType(Types::DATETIME_MUTABLE, datetime::class);
 
         $midgard = midgard_connection::get_instance();
         $level = self::$loglevels[$midgard->get_loglevel()];

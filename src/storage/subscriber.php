@@ -10,7 +10,6 @@ namespace midgard\portable\storage;
 use midgard\portable\storage\interfaces\metadata;
 use midgard\portable\api\dbobject;
 use midgard\portable\api\repligard;
-use midgard\portable\storage\type\datetime;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
@@ -247,7 +246,6 @@ class subscriber implements EventSubscriber
      * This function contains workarounds for reading existing Midgard databases
      *
      * ENUM fields are converted to string for now (Like in the XML reader)
-     * DATETIME files use our custom datetime type
      */
     public function onSchemaColumnDefinition(SchemaColumnDefinitionEventArgs $args)
     {
@@ -264,17 +262,6 @@ class subscriber implements EventSubscriber
 
             $args->preventDefault();
             $args->setColumn(new Column($column['field'], Type::getType(Types::STRING), $options));
-        } elseif ($type == 'datetime') {
-            $options = [
-                'default' => $column['default'] ?? null,
-                'notnull' => $column['null'] != 'YES',
-            ];
-            if ($options['default'] == "'0001-01-01 00:00:00'") {
-                $options['default'] = '0001-01-01 00:00:00';
-            }
-
-            $args->preventDefault();
-            $args->setColumn(new Column($column['field'], Type::getType(datetime::TYPE), $options));
         }
     }
 
