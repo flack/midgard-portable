@@ -7,11 +7,11 @@
 
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Proxy\ProxyGenerator;
-use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Mapping\MappingException;
 use midgard\portable\storage\connection;
 use Doctrine\ORM\EntityManager;
+use midgard\portable\command\schema;
 
 class midgard_storage
 {
@@ -130,14 +130,8 @@ class midgard_storage
             $conn = $em->getConnection();
             $from = $sm->createSchema();
             $to = $tool->getSchemaFromMetadata([$cm]);
-
-            $comparator = new Comparator;
-            $diff = $comparator->compare($from, $to);
-            if (!empty($diff->changedTables[$cm->getTableName()]->removedColumns)) {
-                $diff->changedTables[$cm->getTableName()]->removedColumns = [];
-            }
+            $diff = schema::diff($from, $to, false);
             $sql = $diff->toSaveSql($conn->getDatabasePlatform());
-
 
             foreach ($sql as $sql_line) {
                 $conn->executeQuery($sql_line);
