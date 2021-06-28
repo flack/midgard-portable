@@ -10,7 +10,7 @@ jobs:
   build:
 
     runs-on: Ubuntu-20.04
-
+    
     services:
       mysql:
         image: mysql:5.7
@@ -43,6 +43,10 @@ jobs:
         php-version: "${{ matrix.php-versions }}"
         extensions: "${{ env.extensions }}"
 
+    - name: Start MySQL service
+      if: "${{ matrix.db == 'mysql' }}"
+      run: sudo /etc/init.d/mysql start
+      
     - name: Cache Composer packages
       id: composer-cache
       uses: actions/cache@v2
