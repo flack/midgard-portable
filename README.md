@@ -1,7 +1,7 @@
-midgard-portable [![Build Status](https://travis-ci.org/flack/midgard-portable.svg?branch=master)](https://travis-ci.org/flack/midgard-portable) [![Code Coverage](https://scrutinizer-ci.com/g/flack/midgard-portable/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/flack/midgard-portable/?branch=master)
+midgard-portable [![Code Coverage](https://scrutinizer-ci.com/g/flack/midgard-portable/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/flack/midgard-portable/?branch=master)
 ================
 
-This library provides an ActiveRecord ORM built on top of Doctrine 2 and is modeled after the [Midgard](http://www.midgard-project.org) API. 
+This library provides an ActiveRecord ORM built on top of Doctrine 2 and is modeled after the [Midgard](http://www.midgard-project.org) API.
 
 In a Nutshell
 -------------
@@ -31,7 +31,7 @@ $person->firstname = 'Alice';
 if ($person->create()) {
     echo 'Created person #' . $person->id;
 }
-// load a new copy of the same person 
+// load a new copy of the same person
 $loaded = new my_person($person->id);
 $loaded->firstname = 'Bob';
 if ($loaded->update()) {
@@ -80,7 +80,7 @@ foreach ($qb->execute() as $result) {
     echo $result->lastname . "\n";
 }
 ```
-Or, you simply use Doctrine's builtin `QueryBuilder`. 
+Or, you simply use Doctrine's builtin `QueryBuilder`.
 
 Then, there's object trees, links, working with files, import/export of data and lots more, but until there is time to document all that, you'll have to read the source to find out (the unit tests might also be a good starting point).
 
@@ -127,4 +127,3 @@ use midgard\portable\storage\connection;
 require 'my_settings_file.php'; //This needs to contain the code shown above
 $entityManager = connection::get_em();
 ```
-
