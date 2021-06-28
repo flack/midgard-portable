@@ -16,8 +16,8 @@ jobs:
         image: mysql:5.7
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
-          MYSQL_USER: 'travis'
-          MYSQL_PASSWORD: ''
+          MYSQL_USER: 'test'
+          MYSQL_PASSWORD: 'test'
           MYSQL_DATABASE: mp_test
         ports:
           - 3306/tcp
