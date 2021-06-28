@@ -11,8 +11,18 @@ jobs:
 
     runs-on: Ubuntu-20.04
 
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: true
+          MYSQL_ROOT_PASSWORD: ''
+          MYSQL_DATABASE: mp_test
+        ports:
+          - 3306/tcp
+
     env:
-      extensions: intl,mysql,sqlite
+      extensions: intl,memcached,apcu
 
     strategy:
       matrix:
@@ -22,11 +32,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Configure for MySQL
-      if: "${{ matrix.db == 'mysql' }}"
-      run: |
-        mysql -e 'create database IF NOT EXISTS mp_test;'
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -50,4 +55,5 @@ jobs:
 
     - name: Run test suite
       run: vendor/bin/phpunit
-      env: ${{ matrix.db }}
+      env: 
+        DB: "${{ matrix.db }}"
