@@ -1,4 +1,4 @@
-name: PHP Composer
+name: PHPUnit
 
 on:
   push:
@@ -41,6 +41,10 @@ jobs:
         ini-values: date.timezone=Europe/Berlin
         php-version: "${{ matrix.php-versions }}"
         extensions: "${{ env.extensions }}"
+
+    - name: Start MySQL service
+      if: "${{ matrix.db == 'mysql' }}"
+      run: sudo /etc/init.d/mysql start
 
     - name: Cache Composer packages
       id: composer-cache
