@@ -45,7 +45,7 @@ jobs:
       if: "${{ matrix.db == 'mysql' }}"
       run: |
         sudo /etc/init.d/mysql start
-        mysql -e 'create database IF NOT EXISTS mp_test;'
+        mysql -h 127.0.0.1 -u root -proot -e 'create database IF NOT EXISTS mp_test;'
       
     - name: Cache Composer packages
       id: composer-cache
