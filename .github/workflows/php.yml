@@ -46,7 +46,7 @@ jobs:
     - name: Start MySQL service
       if: "${{ matrix.db == 'mysql' }}"
       run: |
-        mysql -h localhost --port=${{ job.services.mysql.ports[3306] }} -u root -proot -e 'create database IF NOT EXISTS mp_test;'
+        mysql --h=localhost --port=${{ job.services.mysql.ports[3306] }} -u root -proot -e 'create database IF NOT EXISTS mp_test;'
       
     - name: Cache Composer packages
       id: composer-cache
