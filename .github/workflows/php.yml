@@ -16,7 +16,8 @@ jobs:
         image: mysql:5.7
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
-          MYSQL_ROOT_PASSWORD: ''
+          MYSQL_USER: 'travis'
+          MYSQL_PASSWORD: ''
           MYSQL_DATABASE: mp_test
         ports:
           - 3306/tcp
@@ -56,4 +57,4 @@ jobs:
     - name: Run test suite
       run: vendor/bin/phpunit
       env: 
-        DB: "${{ matrix.db }}"
+        DB: travis/${{ matrix.db }}
