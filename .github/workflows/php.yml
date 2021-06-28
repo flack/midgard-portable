@@ -16,21 +16,12 @@ jobs:
 
     strategy:
       matrix:
-        include:
-          - php: '7.2'
-          - php: '7.3'
-          - php: '7.4'
-          - php: '8.0'
-        db:
-          - 'mysql'
-          - 'sqlite'
+        php-versions: ['7.2', '7.3', '7.4', '8.0']
+        db: ['mysql', 'sqlite']
       fail-fast: false
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
 
     - name: Configure for MySQL
       if: "${{ matrix.db == 'mysql' }}"
@@ -42,7 +33,7 @@ jobs:
       with:
         coverage: "none"
         ini-values: date.timezone=Europe/Berlin
-        php-version: "${{ matrix.php }}"
+        php-version: "${{ matrix.php-versions }}"
         extensions: "${{ env.extensions }}"
 
     - name: Cache Composer packages
@@ -52,7 +43,7 @@ jobs:
         path: vendor
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
-          ${{ runner.os }}-php-${{ matrix.php }}
+          ${{ runner.os }}-php-${{ matrix.php-versions }}
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
