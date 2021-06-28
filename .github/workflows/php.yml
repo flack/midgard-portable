@@ -1,0 +1,62 @@
+name: PHP Composer
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: Ubuntu-20.04
+
+    env:
+      extensions: intl,mysql,sqlite
+
+    strategy:
+      matrix:
+        include:
+          - php: '7.2'
+          - php: '7.3'
+          - php: '7.4'
+          - php: '8.0'
+        db:
+          - 'mysql'
+          - 'sqlite'
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate --strict
+
+    - name: Configure for MySQL
+      if: "${{ matrix.db == 'mysql' }}"
+      run: |
+        mysql -e 'create database IF NOT EXISTS mp_test;'
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        coverage: "none"
+        ini-values: date.timezone=Europe/Berlin
+        php-version: "${{ matrix.php }}"
+        extensions: "${{ env.extensions }}"
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v2
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-${{ matrix.php }}
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Run test suite
+      run: vendor/bin/phpunit
+      env: ${{ matrix.db }}
