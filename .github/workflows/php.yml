@@ -46,7 +46,7 @@ jobs:
       run: |
         sudo /etc/init.d/mysql start
         mysql -h 127.0.0.1 -u root -proot -e 'create database IF NOT EXISTS mp_test;'
-        mysql -h 127.0.0.1 -u root -proot -e 'ALTER USER root IDENTIFIED WITH mysql_native_password BY 'root';'
+        mysql -h 127.0.0.1 -u root -proot -e 'ALTER USER root IDENTIFIED WITH mysql_native_password BY "root";'
       
     - name: Cache Composer packages
       id: composer-cache
