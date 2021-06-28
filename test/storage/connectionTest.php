@@ -5,7 +5,7 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
 
-namespace midgard\portable\test;
+namespace midgard\portable\test\connection;
 
 use midgard_connection;
 use PHPUnit\Framework\TestCase;

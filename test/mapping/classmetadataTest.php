@@ -5,7 +5,7 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  */
 
-namespace midgard\portable\test\schema;
+namespace midgard\portable\test\mapping;
 
 use \midgard\portable\test\testcase;
 
