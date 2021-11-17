@@ -97,6 +97,10 @@ abstract class mgdobject extends dbobject
     protected function load_parent(array $candidates) : ?dbobject
     {
         foreach ($candidates as $candidate) {
+            if (   is_string($this->$candidate)
+                && mgd_is_guid($this->$candidate)) {
+                return \midgard_object_class::get_object_by_guid($this->$candidate);
+            }
             if ($this->$candidate !== null) {
                 //Proxies become stale if the object itself is detached, so we have to re-fetch
                 if (   $this->$candidate instanceof Proxy
