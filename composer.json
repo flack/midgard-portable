@@ -14,7 +14,7 @@
         "doctrine/orm": "^2.9",
         "symfony/console": ">=3.0.0",
         "symfony/cache": ">=4.4.0",
-        "monolog/monolog": "^1.9.1",
+        "monolog/monolog": "^1.15 || ^2.0",
         "ext-xml": "*"
     },
     "minimum-stability": "dev",
