@@ -166,7 +166,7 @@ class manager
                         connection::log()->error('Naming collision in ' . $root_type->name . ': Field ' . $type->name . '.' . $property->name . ' cannot use column ' . $property->field);
                     }
                     if ($root_property->type !== $property->type) {
-                        connection::log()->warn('Naming collision in ' . $root_type->name . ': Field ' . $type->name . '.' . $property->name . ' cannot use type ' . $property->type);
+                        connection::log()->warning('Naming collision in ' . $root_type->name . ': Field ' . $type->name . '.' . $property->name . ' cannot use type ' . $property->type);
                     }
                     continue;
                 }
