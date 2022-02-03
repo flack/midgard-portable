@@ -44,7 +44,7 @@ class midgard_object_class
     private static function resolve_fqcn(string $classname) : string
     {
         $cm = connection::get_em()->getClassMetadata('midgard:' . $classname);
-        return $cm->name;
+        return $cm->getName();
     }
 
     public static function factory(?string $classname, $id = null) : ?dbobject
