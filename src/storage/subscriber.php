@@ -23,6 +23,7 @@ use Doctrine\DBAL\Event\SchemaColumnDefinitionEventArgs;
 use Doctrine\ORM\Tools\ToolEvents;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 class subscriber implements EventSubscriber
 {
@@ -47,6 +48,15 @@ class subscriber implements EventSubscriber
 
         foreach ($uow->getScheduledEntityDeletions() as $entity) {
             $this->on_remove($entity, $em);
+        }
+    }
+
+    public function postLoad(LifecycleEventArgs $args)
+    {
+        $entity = $args->getObject();
+        if ($entity instanceof dbobject) {
+            $om = $args->getObjectManager();
+            $entity->injectObjectManager($om, $om->getClassMetadata(get_class($entity)));
         }
     }
 
@@ -278,6 +288,7 @@ class subscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
+            Events::postLoad,
             Events::onFlush,
             dbal_events::onSchemaCreateTable, dbal_events::onSchemaColumnDefinition,
             ToolEvents::postGenerateSchemaTable

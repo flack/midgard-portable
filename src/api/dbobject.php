@@ -7,12 +7,11 @@
 namespace midgard\portable\api;
 
 use midgard\portable\storage\connection;
-use Doctrine\Persistence\ObjectManagerAware;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use midgard_datetime;
 
-abstract class dbobject implements ObjectManagerAware
+abstract class dbobject
 {
     protected $guid = '';
 
