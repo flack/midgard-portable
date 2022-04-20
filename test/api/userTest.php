@@ -20,9 +20,9 @@ class userTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
         $classes = [
-            $factory->getMetadataFor('midgard:midgard_user'),
-            $factory->getMetadataFor('midgard:midgard_person'),
-            $factory->getMetadataFor('midgard:midgard_repligard'),
+            $factory->getMetadataFor(self::$ns . '\\midgard_user'),
+            $factory->getMetadataFor(self::$ns . '\\midgard_person'),
+            $factory->getMetadataFor(self::$ns . '\\midgard_repligard'),
         ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
@@ -31,7 +31,7 @@ class userTest extends testcase
     public function test_create()
     {
         $classname = self::$ns . '\\midgard_user';
-        $initial = $this->count_results('midgard:midgard_user');
+        $initial = $this->count_results($classname);
 
         $user = new $classname;
         $stat = $user->create();
@@ -42,7 +42,7 @@ class userTest extends testcase
         $stat = $user->create();
         $this->assertTrue($stat);
         $this->assertEquals(MGD_ERR_OK, midgard_connection::get_instance()->get_error());
-        $this->assertEquals($initial + 1, $this->count_results('midgard:midgard_user'));
+        $this->assertEquals($initial + 1, $this->count_results($classname));
         $this->assertTrue(mgd_is_guid($user->guid));
 
         $stat = $user->create();
@@ -106,7 +106,7 @@ class userTest extends testcase
     public function test_delete()
     {
         $classname = self::$ns . '\\midgard_user';
-        $initial = $this->count_results('midgard:midgard_user');
+        $initial = $this->count_results($classname);
 
         $user = new $classname;
         $user->authtype = 'Legacy';
@@ -121,7 +121,7 @@ class userTest extends testcase
         $this->assert_api('delete', $user, MGD_ERR_INVALID_PROPERTY_VALUE);
         $this->assert_api('delete', $user2);
         $this->assertEquals('', $user->guid);
-        $this->assertEquals($initial, $this->count_results('midgard:midgard_user'));
+        $this->assertEquals($initial, $this->count_results($classname));
     }
 
     public function test_get_id()
@@ -256,7 +256,7 @@ class userTest extends testcase
         $user->create();
         self::$em->clear();
 
-        $loaded = self::$em->find('midgard:midgard_user', $user->id);
+        $loaded = self::$em->find($classname, $user->id);
 
         $this->assertEquals($person->guid, $loaded->get_person()->guid);
     }

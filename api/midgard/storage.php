@@ -33,7 +33,7 @@ class midgard_storage
             return false;
         }
 
-        $admin = $em->find('midgard:midgard_user', 1);
+        $admin = $em->find($ns . '\\midgard_user', 1);
 
         if ($admin === null) {
             $fqcn = $cm_person->getName();

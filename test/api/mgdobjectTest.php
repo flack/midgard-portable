@@ -476,7 +476,7 @@ class mgdobjectTest extends testcase
         $child->create();
         self::$em->clear();
 
-        $child = self::$em->find('midgard:midgard_topic', $child->id);
+        $child = self::$em->find($classname, $child->id);
         $parent = $child->get_parent();
 
         $this->assertInstanceOf($classname, $parent);
@@ -487,7 +487,7 @@ class mgdobjectTest extends testcase
 
         self::$em->clear();
 
-        $child = self::$em->find('midgard:midgard_topic', $child->id);
+        $child = self::$em->find($classname, $child->id);
         $parent = $child->get_parent();
 
         $this->assertNull($parent);

@@ -19,9 +19,9 @@ class midgard_replicatorTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $classes = [
             self::$em->getClassMetadata(self::$ns . '\\midgard_topic'),
-            self::$em->getClassMetadata('midgard:midgard_repligard'),
-            self::$em->getClassMetadata('midgard:midgard_article'),
-            self::$em->getClassMetadata('midgard:midgard_attachment')
+            self::$em->getClassMetadata(self::$ns . '\\midgard_repligard'),
+            self::$em->getClassMetadata(self::$ns . '\\midgard_article'),
+            self::$em->getClassMetadata(self::$ns . '\\midgard_attachment')
         ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);

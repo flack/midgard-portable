@@ -15,9 +15,9 @@ class parameterTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
         $classes = [
-            $factory->getMetadataFor('midgard:midgard_topic'),
-            $factory->getMetadataFor('midgard:midgard_parameter'),
-            $factory->getMetadataFor('midgard:midgard_repligard'),
+            $factory->getMetadataFor(self::$ns . '\\midgard_topic'),
+            $factory->getMetadataFor(self::$ns . '\\midgard_parameter'),
+            $factory->getMetadataFor(self::$ns . '\\midgard_repligard'),
         ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);

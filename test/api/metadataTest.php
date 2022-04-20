@@ -17,11 +17,11 @@ class metadataTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
         $classes = [
-            $factory->getMetadataFor('midgard:midgard_topic'),
-            $factory->getMetadataFor('midgard:midgard_article'),
-            $factory->getMetadataFor('midgard:midgard_user'),
-            $factory->getMetadataFor('midgard:midgard_person'),
-            $factory->getMetadataFor('midgard:midgard_repligard'),
+            $factory->getMetadataFor(self::$ns . '\\midgard_topic'),
+            $factory->getMetadataFor(self::$ns . '\\midgard_article'),
+            $factory->getMetadataFor(self::$ns . '\\midgard_user'),
+            $factory->getMetadataFor(self::$ns . '\\midgard_person'),
+            $factory->getMetadataFor(self::$ns . '\\midgard_repligard'),
         ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);

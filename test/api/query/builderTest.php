@@ -15,13 +15,13 @@ class midgard_query_builderTest extends testcase
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $classes = [
-            self::$em->getClassMetadata('midgard:midgard_topic'),
-            self::$em->getClassMetadata('midgard:midgard_parameter'),
-            self::$em->getClassMetadata('midgard:midgard_article'),
-            self::$em->getClassMetadata('midgard:midgard_language'),
-            self::$em->getClassMetadata('midgard:midgard_repligard'),
-            self::$em->getClassMetadata('midgard:midgard_person'),
-            self::$em->getClassMetadata('midgard:midgard_user')
+            self::$em->getClassMetadata(self::$ns . '\\midgard_topic'),
+            self::$em->getClassMetadata(self::$ns . '\\midgard_parameter'),
+            self::$em->getClassMetadata(self::$ns . '\\midgard_article'),
+            self::$em->getClassMetadata(self::$ns . '\\midgard_language'),
+            self::$em->getClassMetadata(self::$ns . '\\midgard_repligard'),
+            self::$em->getClassMetadata(self::$ns . '\\midgard_person'),
+            self::$em->getClassMetadata(self::$ns . '\\midgard_user')
         ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
