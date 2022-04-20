@@ -20,9 +20,9 @@ class userTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
         $classes = [
-            $factory->getMetadataFor(self::$ns . '\\midgard_user'),
-            $factory->getMetadataFor(self::$ns . '\\midgard_person'),
-            $factory->getMetadataFor(self::$ns . '\\midgard_repligard'),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_user')),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_person')),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_repligard')),
         ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
@@ -30,7 +30,7 @@ class userTest extends testcase
 
     public function test_create()
     {
-        $classname = self::$ns . '\\midgard_user';
+        $classname = connection::get_fqcn('midgard_user');
         $initial = $this->count_results($classname);
 
         $user = new $classname;
@@ -67,7 +67,7 @@ class userTest extends testcase
 
     public function test_update()
     {
-        $classname = self::$ns . '\\midgard_user';
+        $classname = connection::get_fqcn('midgard_user');
         $user = new $classname;
         $user->authtype = 'Legacy';
         $stat = $user->create();
@@ -105,7 +105,7 @@ class userTest extends testcase
 
     public function test_delete()
     {
-        $classname = self::$ns . '\\midgard_user';
+        $classname = connection::get_fqcn('midgard_user');
         $initial = $this->count_results($classname);
 
         $user = new $classname;
@@ -126,7 +126,7 @@ class userTest extends testcase
 
     public function test_get_id()
     {
-        $classname = self::$ns . '\\midgard_user';
+        $classname = connection::get_fqcn('midgard_user');
         $user = new $classname;
 
         //This checks the value with reflection internally and expects null
@@ -136,7 +136,7 @@ class userTest extends testcase
 
     public function test_set_guid()
     {
-        $classname = self::$ns . '\\midgard_user';
+        $classname = connection::get_fqcn('midgard_user');
         $user = new $classname;
         $user->authtype = 'Legacy';
         $user->login = uniqid();
@@ -150,7 +150,7 @@ class userTest extends testcase
 
     public function test_login()
     {
-        $classname = self::$ns . '\\midgard_user';
+        $classname = connection::get_fqcn('midgard_user');
 
         $user = new $classname;
         $stat = $user->login();
@@ -165,7 +165,7 @@ class userTest extends testcase
 
     public function test_is_admin()
     {
-        $classname = self::$ns . '\\midgard_user';
+        $classname = connection::get_fqcn('midgard_user');
 
         $user = new $classname;
         $this->assertFalse($user->is_admin());
@@ -175,7 +175,7 @@ class userTest extends testcase
 
     public function test_login_with_credentials()
     {
-        $classname = self::$ns . '\\midgard_user';
+        $classname = connection::get_fqcn('midgard_user');
 
         $user = new $classname;
         $user->login = uniqid();
@@ -194,7 +194,7 @@ class userTest extends testcase
 
     public function test_login_with_wrong_credentials()
     {
-        $classname = self::$ns . '\\midgard_user';
+        $classname = connection::get_fqcn('midgard_user');
 
         $user = new $classname;
         $user->login = uniqid();
@@ -211,7 +211,7 @@ class userTest extends testcase
 
     public function test_login_with_invalid_credentials()
     {
-        $classname = self::$ns . '\\midgard_user';
+        $classname = connection::get_fqcn('midgard_user');
 
         $user = new $classname;
         $user->login = uniqid();
@@ -228,7 +228,7 @@ class userTest extends testcase
 
     public function test_logout()
     {
-        $classname = self::$ns . '\\midgard_user';
+        $classname = connection::get_fqcn('midgard_user');
 
         $user = new $classname;
         $user->authtype = 'Legacy';
@@ -244,8 +244,8 @@ class userTest extends testcase
 
     public function test_get_person()
     {
-        $person_class = self::$ns . '\\midgard_person';
-        $classname = self::$ns . '\\midgard_user';
+        $person_class = connection::get_fqcn('midgard_person');
+        $classname = connection::get_fqcn('midgard_user');
 
         $person = new $person_class;
         $person->create();

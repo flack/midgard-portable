@@ -7,6 +7,7 @@
 
 namespace midgard\portable\test;
 use midgard_connection;
+use midgard\portable\storage\connection;
 
 class mgdobject_no_metadataTest extends testcase
 {
@@ -23,14 +24,14 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_construct()
     {
-        $classname = self::$ns . '\\midgard_no_metadata';
+        $classname = connection::get_fqcn('midgard_no_metadata');
         $topic = new $classname;
         $this->assertNull($topic->metadata);
     }
 
     public function test_load()
     {
-        $classname = self::$ns . '\\midgard_no_metadata';
+        $classname = connection::get_fqcn('midgard_no_metadata');
         $topic = new $classname;
         $topic->name = __FUNCTION__;
 
@@ -49,7 +50,7 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_create()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $initial = $this->count_results($classname);
 
         $topic = new $classname;
@@ -78,7 +79,7 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_update()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->create();
         $topic2 = new $classname;
@@ -98,7 +99,7 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_delete()
     {
-        $classname = self::$ns . '\\midgard_no_metadata';
+        $classname = connection::get_fqcn('midgard_no_metadata');
         $topic = new $classname;
         $topic->name = uniqid(__FUNCTION__);
         $this->assert_api('create', $topic);
@@ -108,7 +109,7 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_undelete()
     {
-        $classname = self::$ns . '\\midgard_no_metadata';
+        $classname = connection::get_fqcn('midgard_no_metadata');
         $con = midgard_connection::get_instance();
 
         $topic = new $classname;
@@ -122,7 +123,7 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_purge()
     {
-        $classname = self::$ns . '\\midgard_no_metadata';
+        $classname = connection::get_fqcn('midgard_no_metadata');
         $initial = $this->count_results($classname, true);
 
         $topic = new $classname;
@@ -141,7 +142,7 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_lock()
     {
-        $classname = self::$ns . '\\midgard_no_metadata';
+        $classname = connection::get_fqcn('midgard_no_metadata');
         $topic = new $classname;
         $topic->create();
 
@@ -150,7 +151,7 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_unlock()
     {
-        $classname = self::$ns . '\\midgard_no_metadata';
+        $classname = connection::get_fqcn('midgard_no_metadata');
         $topic = new $classname;
         $topic->create();
 
@@ -159,7 +160,7 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_approve()
     {
-        $classname = self::$ns . '\\midgard_no_metadata';
+        $classname = connection::get_fqcn('midgard_no_metadata');
         $topic = new $classname;
         $topic->create();
 
@@ -168,7 +169,7 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_unapprove()
     {
-        $classname = self::$ns . '\\midgard_no_metadata';
+        $classname = connection::get_fqcn('midgard_no_metadata');
         $topic = new $classname;
         $topic->create();
 

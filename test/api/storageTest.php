@@ -8,6 +8,7 @@
 namespace midgard\portable\test;
 
 use midgard_storage;
+use midgard\portable\storage\connection;
 
 class midgard_storageTest extends testcase
 {
@@ -21,7 +22,7 @@ class midgard_storageTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
         $classes = [
-            $factory->getMetadataFor(self::$ns . '\\midgard_user'),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_user')),
         ];
         $tool->dropSchema($classes);
     }
@@ -33,7 +34,7 @@ class midgard_storageTest extends testcase
 
         $stat = midgard_storage::create_base_storage();
         $this->assertTrue($stat);
-        $cm = self::$em->getMetadataFactory()->getMetadataFor(self::$ns . '\\midgard_user');
+        $cm = self::$em->getMetadataFactory()->getMetadataFor(connection::get_fqcn('midgard_user'));
         $this->assertInstanceOf('midgard\portable\mapping\classmetadata', $cm);
 
         $fqcn = $cm->fullyQualifiedClassName('midgard_user');
@@ -86,7 +87,7 @@ class midgard_storageTest extends testcase
         midgard_storage::create_base_storage();
         $this->assertTrue(midgard_storage::create_class_storage('midgard_topic'));
 
-        $cm = self::$em->getMetadataFactory()->getMetadataFor(self::$ns . '\\midgard_topic');
+        $cm = self::$em->getMetadataFactory()->getMetadataFor(connection::get_fqcn('midgard_topic'));
         $cm->mapField(['type' => 'string', 'fieldName' => 'testproperty', 'default' => '']);
 
         $this->assertTrue(midgard_storage::update_class_storage('midgard_topic'));

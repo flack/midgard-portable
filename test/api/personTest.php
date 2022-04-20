@@ -7,6 +7,8 @@
 
 namespace midgard\portable\test;
 
+use midgard\portable\storage\connection;
+
 class personTest extends testcase
 {
     public static function setupBeforeClass() : void
@@ -22,9 +24,9 @@ class personTest extends testcase
 
     public function test_membership()
     {
-        $person_class = self::$ns . '\\midgard_person';
-        $group_class = self::$ns . '\\midgard_group';
-        $member_class = self::$ns . '\\midgard_member';
+        $person_class = connection::get_fqcn('midgard_person');
+        $group_class = connection::get_fqcn('midgard_group');
+        $member_class = connection::get_fqcn('midgard_member');
         $person = new $person_class;
         $this->assertTrue($person->create());
         $grp = new $group_class;

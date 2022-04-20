@@ -22,7 +22,7 @@ class midgard_reflection_property
         $classname = ClassUtils::getRealClass($mgdschema_class);
         $cmf = connection::get_em()->getMetadataFactory();
         if (!$cmf->hasMetadataFor($classname)) {
-            $classname = 'midgard:' . $mgdschema_class;
+            $classname = connection::get_fqcn($mgdschema_class);
         }
         $this->cm = $cmf->getMetadataFor($classname);
     }

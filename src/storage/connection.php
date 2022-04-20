@@ -62,6 +62,8 @@ class connection
 
     private $user;
 
+    private $namespace;
+
     /**
      * @var \Doctrine\ORM\EntityManager
      */
@@ -72,9 +74,10 @@ class connection
      */
     protected static $instance;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, string $namespace)
     {
         $this->em = $em;
+        $this->namespace = $namespace;
     }
 
     public static function get_em() : EntityManager
@@ -96,6 +99,14 @@ class connection
             throw new \Exception('Not initialized');
         }
         self::$instance->user = $user;
+    }
+
+    public static function get_fqcn(string $classname) : string
+    {
+        if (self::$instance->namespace) {
+            return self::$instance->namespace . '\\' . $classname;
+        }
+        return $classname;
     }
 
     /**
@@ -182,7 +193,6 @@ class connection
         $config = \Doctrine\ORM\Tools\Setup::createConfiguration($dev_mode, $vardir . '/cache');
         $config->addFilter('softdelete', softdelete::class);
         $config->setMetadataDriverImpl($driver);
-        $config->addEntityNamespace('midgard', $driver->get_namespace());
         $config->setClassMetadataFactoryName(factory::class);
 
         if (!array_key_exists('charset', $db_config)) {
@@ -204,7 +214,7 @@ class connection
             $em->getConnection()->getConfiguration()->setSQLLogger(new sqllogger($logger));
         }
 
-        self::$instance = new static($em);
+        self::$instance = new static($em, $driver->get_namespace());
     }
 
     /**

@@ -7,6 +7,8 @@
 
 namespace midgard\portable\test;
 
+use midgard\portable\storage\connection;
+
 class metadataTest extends testcase
 {
     protected static $person;
@@ -17,11 +19,11 @@ class metadataTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
         $classes = [
-            $factory->getMetadataFor(self::$ns . '\\midgard_topic'),
-            $factory->getMetadataFor(self::$ns . '\\midgard_article'),
-            $factory->getMetadataFor(self::$ns . '\\midgard_user'),
-            $factory->getMetadataFor(self::$ns . '\\midgard_person'),
-            $factory->getMetadataFor(self::$ns . '\\midgard_repligard'),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_topic')),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_article')),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_user')),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_person')),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_repligard')),
         ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
@@ -30,7 +32,7 @@ class metadataTest extends testcase
 
     public function test_alternate_fieldname()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $topic->create();
@@ -46,7 +48,7 @@ class metadataTest extends testcase
 
     public function test_isset()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
 
         $this->assertTrue(isset($topic->metadata->published));
@@ -55,7 +57,7 @@ class metadataTest extends testcase
 
     public function test_create()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $topic->create();
@@ -73,7 +75,7 @@ class metadataTest extends testcase
 
     public function test_update()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $topic->create();
@@ -100,7 +102,7 @@ class metadataTest extends testcase
 
     public function test_delete()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $stat = $topic->create();

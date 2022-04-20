@@ -10,6 +10,7 @@ namespace midgard\portable\test;
 use midgard_object_class;
 use midgard_connection;
 use midgard\portable\api\error\exception;
+use midgard\portable\storage\connection;
 
 class classTest extends testcase
 {
@@ -19,11 +20,11 @@ class classTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
         $classes = [
-            $factory->getMetadataFor(self::$ns . '\\midgard_language'),
-            $factory->getMetadataFor(self::$ns . '\\midgard_topic'),
-            $factory->getMetadataFor(self::$ns . '\\midgard_article'),
-            $factory->getMetadataFor(self::$ns . '\\midgard_repligard'),
-            $factory->getMetadataFor(self::$ns . '\\midgard_no_metadata'),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_language')),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_topic')),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_article')),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_repligard')),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_no_metadata')),
         ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
@@ -31,7 +32,7 @@ class classTest extends testcase
 
     public function test_factory()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $object = midgard_object_class::factory('midgard_topic');
         $this->assertInstanceOf($classname, $object);
 
@@ -47,7 +48,7 @@ class classTest extends testcase
 
     public function test_get_object_by_guid()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $topic = new $classname;
         $topic->create();
@@ -66,7 +67,7 @@ class classTest extends testcase
 
     public function test_get_object_by_guid_deleted()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $this->assert_api('create', $topic);
         $this->assert_api('delete', $topic);
@@ -82,7 +83,7 @@ class classTest extends testcase
 
     public function test_get_object_by_guid_purged()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $this->assert_api('create', $topic);
         $this->assert_api('purge', $topic);
@@ -109,7 +110,7 @@ class classTest extends testcase
 
     public function test_get_object_by_guid_no_metadata()
     {
-        $classname = self::$ns . '\\midgard_no_metadata';
+        $classname = connection::get_fqcn('midgard_no_metadata');
 
         $topic = new $classname;
         $this->assert_api('create', $topic);
@@ -120,22 +121,22 @@ class classTest extends testcase
 
     public function test_get_property_up()
     {
-        $up = midgard_object_class::get_property_up(self::$ns . '\\midgard_topic');
+        $up = midgard_object_class::get_property_up(connection::get_fqcn('midgard_topic'));
         $this->assertEquals('up', $up);
     }
 
     public function test_get_property_parent()
     {
-        $parentfield = midgard_object_class::get_property_parent(self::$ns . '\\midgard_article');
+        $parentfield = midgard_object_class::get_property_parent(connection::get_fqcn('midgard_article'));
         $this->assertEquals('topic', $parentfield);
 
-        $parentfield = midgard_object_class::get_property_parent(self::$ns . '\\midgard_person');
+        $parentfield = midgard_object_class::get_property_parent(connection::get_fqcn('midgard_person'));
         $this->assertNull($parentfield);
     }
 
     public function test_undelete()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $con = midgard_connection::get_instance();
 
         // test undelete on invalid guid
@@ -186,9 +187,9 @@ class classTest extends testcase
 
     public function test_has_metadata()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
-        $u_classname = self::$ns . '\\midgard_user';
+        $u_classname = connection::get_fqcn('midgard_user');
         $user = new $u_classname;
 
         $this->assertTrue(midgard_object_class::has_metadata($classname));

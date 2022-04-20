@@ -16,8 +16,6 @@ use PHPUnit\Framework\TestCase as basecase;
 
 class testcase extends basecase
 {
-    public static $ns;
-
     public static $em;
 
     public static function setupBeforeClass() : void
@@ -51,14 +49,13 @@ class testcase extends basecase
         connection::initialize($driver, $db_config, true);
 
         self::$em = connection::get_em();
-        self::$ns = $ns;
         return $driver;
     }
 
     protected static function create_user()
     {
-        $person_class = self::$ns . '\\midgard_person';
-        $user_class = self::$ns . '\\midgard_user';
+        $person_class = connection::get_fqcn('midgard_person');
+        $user_class = connection::get_fqcn('midgard_user');
         $person = new $person_class;
         $person->create();
         $user = new $user_class;

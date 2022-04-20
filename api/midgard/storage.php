@@ -18,22 +18,21 @@ class midgard_storage
     public static function create_base_storage() : bool
     {
         $em = connection::get_em();
-        $ns = $em->getConfiguration()->getEntityNamespace("midgard");
 
-        $cm_repligard = $em->getClassMetadata($ns . '\\midgard_repligard');
+        $cm_repligard = $em->getClassMetadata(connection::get_fqcn('midgard_repligard'));
         if (!self::create_class_storage($cm_repligard->getName())) {
             return false;
         }
-        $cm_person = $em->getClassMetadata($ns . '\\midgard_person');
+        $cm_person = $em->getClassMetadata(connection::get_fqcn('midgard_person'));
         if (!self::create_class_storage($cm_person->getName())) {
             return false;
         }
-        $cm_user = $em->getClassMetadata($ns . '\\midgard_user');
+        $cm_user = $em->getClassMetadata(connection::get_fqcn('midgard_user'));
         if (!self::create_class_storage($cm_user->getName())) {
             return false;
         }
 
-        $admin = $em->find($ns . '\\midgard_user', 1);
+        $admin = $em->find(connection::get_fqcn('midgard_user'), 1);
 
         if ($admin === null) {
             $fqcn = $cm_person->getName();
@@ -100,7 +99,7 @@ class midgard_storage
             return $factory->getMetadataFor($classname);
         } catch (MappingException $e) {
             // add namespace
-            $classname = $em->getConfiguration()->getEntityNamespace("midgard") . '\\' . $classname;
+            $classname = connection::get_fqcn($classname);
             try {
                 return $factory->getMetadataFor($classname);
             } catch (MappingException $e) {

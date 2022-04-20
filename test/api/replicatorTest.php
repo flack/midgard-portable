@@ -10,6 +10,7 @@ namespace midgard\portable\test;
 use \SimpleXMLElement;
 use midgard_replicator;
 use midgard\portable\api\blob;
+use midgard\portable\storage\connection;
 
 class midgard_replicatorTest extends testcase
 {
@@ -18,10 +19,10 @@ class midgard_replicatorTest extends testcase
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $classes = [
-            self::$em->getClassMetadata(self::$ns . '\\midgard_topic'),
-            self::$em->getClassMetadata(self::$ns . '\\midgard_repligard'),
-            self::$em->getClassMetadata(self::$ns . '\\midgard_article'),
-            self::$em->getClassMetadata(self::$ns . '\\midgard_attachment')
+            self::$em->getClassMetadata(connection::get_fqcn('midgard_topic')),
+            self::$em->getClassMetadata(connection::get_fqcn('midgard_repligard')),
+            self::$em->getClassMetadata(connection::get_fqcn('midgard_article')),
+            self::$em->getClassMetadata(connection::get_fqcn('midgard_attachment'))
         ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
@@ -29,7 +30,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_serialize_nonpersistent()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $object = new $classname;
         $ret = midgard_replicator::serialize($object);
         $this->assertIsString($ret);
@@ -44,7 +45,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_serialize()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $object = new $classname;
         $this->assert_api('create', $object);
         $ret = midgard_replicator::serialize($object);
@@ -70,7 +71,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_serialize_child()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $parent = new $classname;
         $this->assert_api('create', $parent);
 
@@ -84,7 +85,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_serialize_blob()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $object = new $classname;
         $this->assert_api('create', $object);
         $att = $object->create_attachment('test', 'test');
@@ -99,7 +100,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_unserialize_nonpersistent()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $expected = new $classname;
         $ret = midgard_replicator::unserialize(file_get_contents(dirname(__DIR__) . '/__files/replicator/new_topic.xml'));
 
@@ -110,7 +111,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_unserialize()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $object = new $classname;
         $this->assert_api('create', $object);
         $ret = midgard_replicator::unserialize(midgard_replicator::serialize($object));
@@ -142,7 +143,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_unserialize_child()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $parent = new $classname;
         $this->assert_api('create', $parent);
 
@@ -155,7 +156,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_unserialize_blob()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $object = new $classname;
         $this->assert_api('create', $object);
         $att = $object->create_attachment('test', 'test');
@@ -170,7 +171,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_export_by_guid()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $object = new $classname;
 
         $this->assertFalse(midgard_replicator::export_by_guid($object->guid));
@@ -188,7 +189,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_import_object()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $object = new $classname;
 
         $this->assertFalse(midgard_replicator::import_object($object));
@@ -233,7 +234,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_import_object_purged()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $object = new $classname;
         $this->assert_api('create', $object);
         $this->assert_api('purge', $object);
@@ -246,7 +247,7 @@ class midgard_replicatorTest extends testcase
     public function test_import_from_xml()
     {
         $prefix = dirname(__DIR__) . '/__files/replicator/';
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         midgard_replicator::import_from_xml(file_get_contents($prefix . 'import_created_topic.xml'));
         $object = new $classname('c1f17ea68e9911e4a07b8f9cdafb00b500b5');
@@ -256,7 +257,7 @@ class midgard_replicatorTest extends testcase
     public function test_import_from_xml_invalid_link()
     {
         $prefix = dirname(__DIR__) . '/__files/replicator/';
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         midgard_replicator::import_from_xml(file_get_contents($prefix . 'import_invalid_link.xml'));
 
@@ -281,7 +282,7 @@ class midgard_replicatorTest extends testcase
     public function test_import_from_xml_blob()
     {
         $prefix = dirname(__DIR__) . '/__files/replicator/';
-        $classname = self::$ns . '\\midgard_attachment';
+        $classname = connection::get_fqcn('midgard_attachment');
 
         midgard_replicator::import_from_xml(file_get_contents($prefix . 'import_blob.xml'));
 

@@ -9,6 +9,7 @@ namespace midgard\portable\test;
 
 use midgard\portable\api\blob;
 use midgard_connection;
+use midgard\portable\storage\connection;
 
 class blobTest extends testcase
 {
@@ -26,7 +27,7 @@ class blobTest extends testcase
 
     public function test_construct()
     {
-        $classname = self::$ns . '\\midgard_attachment';
+        $classname = connection::get_fqcn('midgard_attachment');
         $att = new $classname;
 
         $blob = new blob($att);
@@ -35,7 +36,7 @@ class blobTest extends testcase
 
     public function test_get_handler()
     {
-        $classname = self::$ns . '\\midgard_attachment';
+        $classname = connection::get_fqcn('midgard_attachment');
         $att = new $classname;
 
         $blob = new blob($att);
@@ -47,11 +48,11 @@ class blobTest extends testcase
 
     public function test_get_path()
     {
-        $t_class = self::$ns . '\\midgard_topic';
+        $t_class = connection::get_fqcn('midgard_topic');
         $topic = new $t_class;
         $this->assert_api('create', $topic);
 
-        $classname = self::$ns . '\\midgard_attachment';
+        $classname = connection::get_fqcn('midgard_attachment');
         $att = new $classname;
         $att->location = '1/A/1ad4ec493ba13c329049de5d60ac8193';
         $att->name = uniqid();
@@ -62,7 +63,6 @@ class blobTest extends testcase
 
         $this->assertSame($prefix . '/1/A/1ad4ec493ba13c329049de5d60ac8193', $blob->get_path());
 
-        $classname = self::$ns . '\\midgard_attachment';
         $att = new $classname;
         $att->name = uniqid();
         $att->parentguid = $topic->guid;
@@ -78,7 +78,7 @@ class blobTest extends testcase
 
     public function test_exists()
     {
-        $classname = self::$ns . '\\midgard_attachment';
+        $classname = connection::get_fqcn('midgard_attachment');
         $att = new $classname;
 
         $blob = new blob($att);
@@ -90,7 +90,7 @@ class blobTest extends testcase
 
     public function test_read_content()
     {
-        $classname = self::$ns . '\\midgard_attachment';
+        $classname = connection::get_fqcn('midgard_attachment');
         $att = new $classname;
 
         $blob = new blob($att);
@@ -102,7 +102,7 @@ class blobTest extends testcase
 
     public function test_write_content()
     {
-        $classname = self::$ns . '\\midgard_attachment';
+        $classname = connection::get_fqcn('midgard_attachment');
         $att = new $classname;
 
         $blob = new blob($att);

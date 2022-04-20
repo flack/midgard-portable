@@ -25,14 +25,14 @@ class mgdobjectTest extends testcase
 
     public function test_construct()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $this->assertIsString($topic->name);
     }
 
     public function test_load()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->name = __FUNCTION__;
 
@@ -51,7 +51,7 @@ class mgdobjectTest extends testcase
 
     public function test_load_deleted()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $topic->create();
@@ -70,7 +70,7 @@ class mgdobjectTest extends testcase
 
     public function test_load_purged()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $this->assert_api('create', $topic);
@@ -100,7 +100,7 @@ class mgdobjectTest extends testcase
 
     public function test_load_separate_instances()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->create();
 
@@ -112,14 +112,14 @@ class mgdobjectTest extends testcase
 
     public function test_load_invalid_guid()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $this->expectException(\InvalidArgumentException::class);
         new $classname('xxx');
     }
 
     public function test_get_by_id()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $topic->create();
@@ -144,7 +144,7 @@ class mgdobjectTest extends testcase
 
     public function test_get_by_id_with_updates()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $topic->create();
@@ -170,14 +170,14 @@ class mgdobjectTest extends testcase
 
     public function test_load_unknown_id()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $this->expectException(exception::class);
         new $classname(999999999);
     }
 
     public function test_get_by_guid()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $topic->create();
@@ -211,7 +211,7 @@ class mgdobjectTest extends testcase
 
     public function test_create()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $initial = $this->count_results($classname);
 
         $topic = new $classname;
@@ -240,8 +240,8 @@ class mgdobjectTest extends testcase
 
     public function test_create_duplicate_parentfield()
     {
-        $sd_classname = self::$ns . '\\midgard_snippetdir';
-        $sn_classname = self::$ns . '\\midgard_snippet';
+        $sd_classname = connection::get_fqcn('midgard_snippetdir');
+        $sn_classname = connection::get_fqcn('midgard_snippet');
 
         $sd = new $sd_classname;
         $sd->name = __FUNCTION__;
@@ -264,7 +264,7 @@ class mgdobjectTest extends testcase
 
     public function test_create_invalid_guid_field()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;
@@ -275,7 +275,7 @@ class mgdobjectTest extends testcase
 
     public function test_update()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->create();
         $topic2 = new $classname;
@@ -295,7 +295,7 @@ class mgdobjectTest extends testcase
 
     public function test_update_invalid_guid_field()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $topic = new $classname;
         $this->assert_api('create', $topic);
@@ -306,7 +306,7 @@ class mgdobjectTest extends testcase
 
     public function test_update_circular_parent()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $topic = new $classname;
         $this->assert_api('create', $topic);
@@ -317,15 +317,14 @@ class mgdobjectTest extends testcase
 
     public function test_update_nonpersistent()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $this->assert_api('update', $topic, MGD_ERR_INTERNAL);
     }
 
     public function test_delete()
     {
-        $classname = self::$ns . '\\midgard_topic';
-
+        $classname = connection::get_fqcn('midgard_topic');
         $initial = $this->count_results($classname);
         $initial_all = $this->count_results($classname, true);
 
@@ -359,14 +358,14 @@ class mgdobjectTest extends testcase
 
     public function test_delete_nonpersistent()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $this->assert_api('delete', $topic, MGD_ERR_INVALID_PROPERTY_VALUE);
     }
 
     public function test_undelete()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $this->assert_api('create', $topic);
         $this->assert_api('delete', $topic);
@@ -379,7 +378,7 @@ class mgdobjectTest extends testcase
 
     public function test_list()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;
@@ -398,7 +397,7 @@ class mgdobjectTest extends testcase
 
     public function test_has_dependents()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;
@@ -415,7 +414,7 @@ class mgdobjectTest extends testcase
 
     public function test_delete_with_dependents()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;
@@ -432,7 +431,7 @@ class mgdobjectTest extends testcase
 
     public function test_purge_with_dependents()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;
@@ -449,7 +448,7 @@ class mgdobjectTest extends testcase
 
     public function test_purge()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $initial = $this->count_results($classname, true);
 
         $topic = new $classname;
@@ -468,7 +467,7 @@ class mgdobjectTest extends testcase
 
     public function test_get_parent()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->create();
         $child = new $classname;
@@ -495,8 +494,8 @@ class mgdobjectTest extends testcase
 
     public function test_childtype()
     {
-        $topic_class = self::$ns . '\\midgard_topic';
-        $article_class = self::$ns . '\\midgard_article';
+        $topic_class = connection::get_fqcn('midgard_topic');
+        $article_class = connection::get_fqcn('midgard_article');
         $topic = new $topic_class;
         $topic->create();
 
@@ -516,8 +515,8 @@ class mgdobjectTest extends testcase
      */
     public function test_associations()
     {
-        $classname = self::$ns . '\\midgard_snippetdir';
-        $sn_class = self::$ns . '\\midgard_snippet';
+        $classname = connection::get_fqcn('midgard_snippetdir');
+        $sn_class = connection::get_fqcn('midgard_snippet');
 
         $sd = new $classname;
         $sd->name = __FUNCTION__;
@@ -558,8 +557,8 @@ class mgdobjectTest extends testcase
 
     public function test_association_purge()
     {
-        $classname = self::$ns . '\\midgard_snippetdir';
-        $sn_class = self::$ns . '\\midgard_snippet';
+        $classname = connection::get_fqcn('midgard_snippetdir');
+        $sn_class = connection::get_fqcn('midgard_snippet');
 
         $sd = new $classname;
         $sd->name = __FUNCTION__;
@@ -577,7 +576,7 @@ class mgdobjectTest extends testcase
 
     public function test_parent_purge()
     {
-        $classname = self::$ns . '\\midgard_snippetdir';
+        $classname = connection::get_fqcn('midgard_snippetdir');
 
         $sd = new $classname;
         $sd->name = __FUNCTION__;
@@ -594,7 +593,7 @@ class mgdobjectTest extends testcase
 
     public function test_uniquenames()
     {
-        $classname = self::$ns . '\\midgard_snippetdir';
+        $classname = connection::get_fqcn('midgard_snippetdir');
         $sd = new $classname;
         $sd->name = __FUNCTION__;
         $sd->create();
@@ -625,7 +624,7 @@ class mgdobjectTest extends testcase
 
     public function test_get_by_path()
     {
-        $classname = self::$ns . '\\midgard_snippetdir';
+        $classname = connection::get_fqcn('midgard_snippetdir');
         $sd = new $classname;
         $sd->name = __FUNCTION__;
         $sd->create();
@@ -635,7 +634,7 @@ class mgdobjectTest extends testcase
         $sd2->name = __FUNCTION__;
         $sd2->create();
 
-        $s_classname = self::$ns . '\\midgard_snippet';
+        $s_classname = connection::get_fqcn('midgard_snippet');
         $sn = new $s_classname;
         $sn->snippetdir = $sd->id;
         $sn->name = __FUNCTION__ . '-snippet';
@@ -660,7 +659,7 @@ class mgdobjectTest extends testcase
 
     private function get_topic_with_parameter()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;
@@ -673,7 +672,7 @@ class mgdobjectTest extends testcase
 
     public function test_set_parameter()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;
@@ -684,7 +683,7 @@ class mgdobjectTest extends testcase
         $this->assertTrue($stat, "Failed to set parameter");
 
         // we should find a parameter with matching parent guid now
-        $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
+        $qb = new \midgard_query_builder(connection::get_fqcn('midgard_parameter'));
         $qb->add_constraint('parentguid', '=', $topic->guid);
         $results = $qb->execute();
         $this->assertCount(1, $results, "Unable to find parameter");
@@ -692,7 +691,7 @@ class mgdobjectTest extends testcase
 
     public function test_parameter()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;
@@ -702,7 +701,7 @@ class mgdobjectTest extends testcase
         $this->assertTrue($stat, "Failed to set parameter");
 
         // we should find a parameter with matching parent guid now
-        $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
+        $qb = new \midgard_query_builder(connection::get_fqcn('midgard_parameter'));
         $qb->add_constraint('parentguid', '=', $topic->guid);
         $results = $qb->execute();
         $this->assertCount(1, $results, "Unable to find parameter");
@@ -713,7 +712,7 @@ class mgdobjectTest extends testcase
         $stat = $topic->parameter("midcom.core", "test", null);
         $this->assertTrue($stat, "Failed to delete parameter");
 
-        $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
+        $qb = new \midgard_query_builder(connection::get_fqcn('midgard_parameter'));
         $qb->add_constraint('parentguid', '=', $topic->guid);
         $results = $qb->execute();
         $this->assertCount(0, $results, "Parameter not deleted");
@@ -722,7 +721,7 @@ class mgdobjectTest extends testcase
     public function test_get_parameter()
     {
         // try retrieving parameter from non persistent object
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->name = __FUNCTION__;
         $value = $topic->get_parameter("midcom.core", "test");
@@ -779,7 +778,7 @@ class mgdobjectTest extends testcase
 
     public function test_has_parameters()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;
@@ -866,7 +865,7 @@ class mgdobjectTest extends testcase
         $this->assertCount(1, $params);
 
         // we should find the deleted parameter if we include deleted
-        $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
+        $qb = new \midgard_query_builder(connection::get_fqcn('midgard_parameter'));
         $qb->add_constraint('parentguid', '=', $topic->guid);
         $qb->add_constraint('domain', '=', "midcom.core");
         $qb->include_deleted();
@@ -901,7 +900,7 @@ class mgdobjectTest extends testcase
         $this->assertCount(1, $params);
 
         // we should not even find the deleted parameter if we include deleted
-        $qb = new \midgard_query_builder(self::$ns . '\\midgard_parameter');
+        $qb = new \midgard_query_builder(connection::get_fqcn('midgard_parameter'));
         $qb->add_constraint('parentguid', '=', $topic->guid);
         $qb->add_constraint('domain', '=', "midcom.core");
         $qb->include_deleted();
@@ -911,21 +910,21 @@ class mgdobjectTest extends testcase
 
     public function test_new_collector()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $mc = $classname::new_collector('id', 1);
         $this->assertInstanceOf('midgard_collector', $mc);
     }
 
     public function test_new_query_builder()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $qb = $classname::new_query_builder();
         $this->assertInstanceOf('midgard_query_builder', $qb);
     }
 
     public function test_set_guid()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $guid = connection::generate_guid();
         $topic = new $classname;
         $topic->guid = $guid;
@@ -938,7 +937,7 @@ class mgdobjectTest extends testcase
 
     public function test_lock()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->create();
         $topic->title = 'This should not be saved'; // change AFTER create
@@ -962,7 +961,7 @@ class mgdobjectTest extends testcase
 
     public function test_unlock()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->create();
         connection::set_user(null);
@@ -989,7 +988,7 @@ class mgdobjectTest extends testcase
 
     public function test_approve()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->create();
         $topic->title = 'This should not be saved'; // change AFTER create
@@ -1013,7 +1012,7 @@ class mgdobjectTest extends testcase
 
     public function test_unapprove()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->create();
         connection::set_user(null);
@@ -1037,7 +1036,7 @@ class mgdobjectTest extends testcase
 
     public function test__debugInfo()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
 
         $metadata = new \stdClass;

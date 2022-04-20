@@ -8,6 +8,7 @@
 namespace midgard\portable\test;
 
 use Doctrine\ORM\UnitOfWork;
+use midgard\portable\storage\connection;
 
 class dbobjectTest extends testcase
 {
@@ -17,9 +18,9 @@ class dbobjectTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
         $classes = [
-            $factory->getMetadataFor(self::$ns . '\\midgard_language'),
-            $factory->getMetadataFor(self::$ns . '\\midgard_topic'),
-            $factory->getMetadataFor(self::$ns . '\\midgard_repligard'),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_language')),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_topic')),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_repligard')),
         ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
@@ -27,14 +28,14 @@ class dbobjectTest extends testcase
 
     public function test_get_empty_link_property()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $this->assertEquals(0, $topic->up);
     }
 
     public function test_set()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->title = null;
         $topic->code = null;
@@ -66,7 +67,7 @@ class dbobjectTest extends testcase
 
     public function test_set_nonexistent()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         $topic->nonexistent_property = 'xxx';
         $this->assertTrue(property_exists($topic, 'nonexistent_property'));
@@ -75,7 +76,7 @@ class dbobjectTest extends testcase
 
     public function test_get_id()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
         //This checks the value with reflection internally and expects null
         $this->assertSame(UnitOfWork::STATE_NEW, self::$em->getUnitOfWork()->getEntityState($topic));
@@ -84,7 +85,7 @@ class dbobjectTest extends testcase
 
     public function test_get()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $parent = new $classname;
         $parent->name = __FUNCTION__;
         $parent->create();
@@ -106,7 +107,7 @@ class dbobjectTest extends testcase
 
     public function test_get_default_date()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
 
         // This simulates data loaded from old Midgard 1 databases
@@ -120,7 +121,7 @@ class dbobjectTest extends testcase
 
     public function test_isset()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $topic = new $classname;
 
         $this->assertTrue(isset($topic->title));

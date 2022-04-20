@@ -61,7 +61,7 @@ class collection
 
     private function get_qb(string $guid) : midgard_query_builder
     {
-        $qb = new midgard_query_builder('midgard:' . $this->classname);
+        $qb = new midgard_query_builder(connection::get_fqcn($this->classname));
         $qb->add_constraint('parentguid', '=', $guid);
         return $qb;
     }

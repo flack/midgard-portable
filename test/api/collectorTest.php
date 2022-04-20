@@ -8,6 +8,8 @@
 namespace midgard\portable\test;
 
 
+use midgard\portable\storage\connection;
+
 class midgard_collectorTest extends testcase
 {
     protected static $_topic;
@@ -17,17 +19,17 @@ class midgard_collectorTest extends testcase
         parent::setupBeforeClass();
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $classes = [
-            self::$em->getClassMetadata(self::$ns . '\\midgard_topic'),
-            self::$em->getClassMetadata(self::$ns . '\\midgard_article'),
-            self::$em->getClassMetadata(self::$ns . '\\midgard_user'),
-            self::$em->getClassMetadata(self::$ns . '\\midgard_person'),
-            self::$em->getClassMetadata(self::$ns . '\\midgard_repligard'),
+            self::$em->getClassMetadata(connection::get_fqcn('midgard_topic')),
+            self::$em->getClassMetadata(connection::get_fqcn('midgard_article')),
+            self::$em->getClassMetadata(connection::get_fqcn('midgard_user')),
+            self::$em->getClassMetadata(connection::get_fqcn('midgard_person')),
+            self::$em->getClassMetadata(connection::get_fqcn('midgard_repligard')),
         ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
 
         // create topic
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         self::$_topic = new $classname;
         self::$_topic->name = uniqid("cT_mainTopic");
         self::$_topic->title = uniqid("cT_mainTopic");
@@ -37,8 +39,8 @@ class midgard_collectorTest extends testcase
 
     public function test_construct_with_association_id()
     {
-        $topic_class = self::$ns . '\\midgard_topic';
-        $article_class = self::$ns . '\\midgard_article';
+        $topic_class = connection::get_fqcn('midgard_topic');
+        $article_class = connection::get_fqcn('midgard_article');
 
         $topic = new $topic_class;
         $topic->name = __FUNCTION__;
@@ -61,7 +63,7 @@ class midgard_collectorTest extends testcase
 
     public function test_list_keys()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         // call without calling execute, this should return an empty array
         $mc = new \midgard_collector($classname, 'id', self::$_topic->id);
@@ -79,7 +81,7 @@ class midgard_collectorTest extends testcase
 
     public function test_add_value_property()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         // create child topic for main topic
         $child_topic = new $classname;
@@ -134,7 +136,7 @@ class midgard_collectorTest extends testcase
 
     public function test_add_value_property_twice()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $mc = new \midgard_collector($classname, 'up', 0);
         $this->assertTrue($mc->set_key_property("name"));
@@ -148,7 +150,7 @@ class midgard_collectorTest extends testcase
 
     public function test_add_value_property_nonexistant()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $mc = new \midgard_collector($classname, 'up', 0);
         $this->assertTrue($mc->set_key_property("name"));
@@ -163,7 +165,7 @@ class midgard_collectorTest extends testcase
 
     public function test_set_key_property()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         // create child topic for main topic
         $topic = new $classname;
@@ -179,8 +181,8 @@ class midgard_collectorTest extends testcase
 
     public function test_set_key_property_guid_link()
     {
-        $person_class = self::$ns . '\\midgard_person';
-        $user_class = self::$ns . '\\midgard_user';
+        $person_class = connection::get_fqcn('midgard_person');
+        $user_class = connection::get_fqcn('midgard_user');
 
         $person = new $person_class;
         $person->create();
@@ -200,7 +202,7 @@ class midgard_collectorTest extends testcase
 
     public function test_get()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $mc = new \midgard_collector($classname, 'id', self::$_topic->id);
         $mc->set_key_property("guid");
@@ -224,7 +226,7 @@ class midgard_collectorTest extends testcase
 
     public function test_get_subkey()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $mc = new \midgard_collector($classname, 'id', self::$_topic->id);
         $mc->add_value_property("name");
@@ -247,7 +249,7 @@ class midgard_collectorTest extends testcase
 
     public function test_aliased_fieldname()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
         $cm = self::$em->getClassMetadata($classname);
         $cm->midgard['field_aliases'] = ['id_alias' => 'id'];
 

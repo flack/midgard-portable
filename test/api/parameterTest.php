@@ -7,6 +7,8 @@
 
 namespace midgard\portable\test;
 
+use midgard\portable\storage\connection;
+
 class parameterTest extends testcase
 {
     public static function setupBeforeClass() : void
@@ -15,9 +17,9 @@ class parameterTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $factory = self::$em->getMetadataFactory();
         $classes = [
-            $factory->getMetadataFor(self::$ns . '\\midgard_topic'),
-            $factory->getMetadataFor(self::$ns . '\\midgard_parameter'),
-            $factory->getMetadataFor(self::$ns . '\\midgard_repligard'),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_topic')),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_parameter')),
+            $factory->getMetadataFor(connection::get_fqcn('midgard_repligard')),
         ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
@@ -25,7 +27,7 @@ class parameterTest extends testcase
 
     public function test_get_label()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;
@@ -41,7 +43,7 @@ class parameterTest extends testcase
 
     public function test_parameter_proxy()
     {
-        $classname = self::$ns . '\\midgard_topic';
+        $classname = connection::get_fqcn('midgard_topic');
 
         $topic = new $classname;
         $topic->name = __FUNCTION__;

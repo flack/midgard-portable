@@ -212,7 +212,7 @@ abstract class query
         if (!isset($this->join_tables[$targetclass])) {
             $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
             $c = $this->join_tables[$targetclass] . ".parentguid = " . $current_table . ".guid";
-            $this->qb->innerJoin("midgard:" . $targetclass, $this->join_tables[$targetclass], Join::WITH, $c);
+            $this->qb->innerJoin(connection::get_fqcn($targetclass), $this->join_tables[$targetclass], Join::WITH, $c);
         }
         return $this->join_tables[$targetclass];
     }
@@ -226,7 +226,7 @@ abstract class query
             // custom join
             if ($mrp->is_special_link($property)) {
                 $c = $this->join_tables[$targetclass] . "." . $mrp->get_link_target($property) . " = " . $current_table . "." . $property;
-                $this->qb->innerJoin("midgard:" . $targetclass, $this->join_tables[$targetclass], Join::WITH, $c);
+                $this->qb->innerJoin(connection::get_fqcn($targetclass), $this->join_tables[$targetclass], Join::WITH, $c);
             } else {
                 $this->qb->leftJoin($current_table . '.' . $property, $this->join_tables[$targetclass]);
             }
@@ -261,7 +261,7 @@ abstract class query
                 }
             }
             // mrp only gives us non-namespaced classnames, so we make it an alias
-            $targetclass = 'midgard:' . $targetclass;
+            $targetclass = connection::get_fqcn($targetclass);
         }
 
         $cm = connection::get_em()->getClassMetadata($targetclass);

@@ -8,6 +8,7 @@
 namespace midgard\portable\test;
 
 use midgard_connection;
+use midgard\portable\storage\connection;
 
 class attachmentTest extends testcase
 {
@@ -25,12 +26,12 @@ class attachmentTest extends testcase
 
     public function test_create()
     {
-        $classname = self::$ns . '\\midgard_attachment';
+        $classname = connection::get_fqcn('midgard_attachment');
         $att = new $classname;
 
         $this->assertFalse($att->create());
 
-        $t_classname = self::$ns . '\\midgard_topic';
+        $t_classname = connection::get_fqcn('midgard_topic');
         $topic = new $t_classname;
         $topic->create();
 
@@ -40,13 +41,13 @@ class attachmentTest extends testcase
 
     public function test_has_attachments()
     {
-        $t_classname = self::$ns . '\\midgard_topic';
+        $t_classname = connection::get_fqcn('midgard_topic');
         $topic = new $t_classname;
         $topic->create();
 
         $this->assertFalse($topic->has_attachments());
 
-        $classname = self::$ns . '\\midgard_attachment';
+        $classname = connection::get_fqcn('midgard_attachment');
         $att = new $classname;
         $att->parentguid = $topic->guid;
         $att->create();
@@ -56,13 +57,13 @@ class attachmentTest extends testcase
 
     public function test_list_attachments()
     {
-        $t_classname = self::$ns . '\\midgard_topic';
+        $t_classname = connection::get_fqcn('midgard_topic');
         $topic = new $t_classname;
         $topic->create();
 
         $this->assertEquals([], $topic->list_attachments());
 
-        $classname = self::$ns . '\\midgard_attachment';
+        $classname = connection::get_fqcn('midgard_attachment');
         $att = new $classname;
         $att->parentguid = $topic->guid;
         $att->create();
@@ -74,14 +75,14 @@ class attachmentTest extends testcase
 
     public function test_create_attachment()
     {
-        $t_classname = self::$ns . '\\midgard_topic';
+        $t_classname = connection::get_fqcn('midgard_topic');
         $topic = new $t_classname;
         $topic->create();
 
         $this->assertEquals([], $topic->list_attachments());
         $att = $topic->create_attachment('name');
         $this->assertEquals(MGD_ERR_OK, midgard_connection::get_instance()->get_error());
-        $this->assertInstanceOf(self::$ns . '\\midgard_attachment', $att);
+        $this->assertInstanceOf(connection::get_fqcn('midgard_attachment'), $att);
 
         $att = $topic->create_attachment('name');
         $this->assertEquals(MGD_ERR_OBJECT_NAME_EXISTS, midgard_connection::get_instance()->get_error());

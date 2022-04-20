@@ -68,7 +68,7 @@ class user extends dbobject
             || !array_key_exists('login', $properties)) {
             throw exception::invalid_property_value();
         }
-        $entity = connection::get_em()->getRepository('midgard:midgard_user')->findOneBy($properties);
+        $entity = connection::get_em()->getRepository(connection::get_fqcn('midgard_user'))->findOneBy($properties);
 
         if ($entity === null) {
             throw exception::not_exists();
@@ -109,7 +109,7 @@ class user extends dbobject
     {
         if (   $this->person_object === null
             && $this->person !== null) {
-            $this->person_object = connection::get_em()->getRepository('midgard:midgard_person')->findOneBy(['guid' => $this->person]);
+            $this->person_object = connection::get_em()->getRepository(connection::get_fqcn('midgard_person'))->findOneBy(['guid' => $this->person]);
         }
         return $this->person_object;
     }

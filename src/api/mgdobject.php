@@ -380,7 +380,7 @@ abstract class mgdobject extends dbobject
             && !empty($this->cm->midgard['childtypes'])) {
             foreach ($this->cm->midgard['childtypes'] as $typename => $parentfield) {
                 $qb = connection::get_em()->createQueryBuilder();
-                $qb->from('midgard:' . $typename, 'c')
+                $qb->from(connection::get_fqcn($typename), 'c')
                     ->where('c.' . $parentfield . ' = ?0')
                     ->setParameter(0, $this->id)
                     ->select("COUNT(c)");
@@ -445,7 +445,7 @@ abstract class mgdobject extends dbobject
         $field = $this->cm->midgard['unique_fields'][0];
 
         if (!empty($this->cm->midgard['parent'])) {
-            $parent_cm = connection::get_em()->getClassMetadata('midgard:' . $this->cm->midgard['parent']);
+            $parent_cm = connection::get_em()->getClassMetadata(connection::get_fqcn($this->cm->midgard['parent']));
             $parentclass = $this->cm->fullyQualifiedClassName($this->cm->midgard['parent']);
             $parentfield = $parent_cm->midgard['upfield'];
             $upfield = $this->cm->midgard['parentfield'];
@@ -560,7 +560,7 @@ abstract class mgdobject extends dbobject
         $qb = connection::get_em()->createQueryBuilder();
         $qb
             ->select('c.value')
-            ->from('midgard:midgard_parameter', 'c')
+            ->from(connection::get_fqcn('midgard_parameter'), 'c')
             ->where('c.domain = :domain AND c.name = :name AND c.parentguid = :parentguid')
             ->setParameters(['domain' => $domain, 'name' => $name, 'parentguid' => $this->guid]);
 
@@ -591,7 +591,7 @@ abstract class mgdobject extends dbobject
         try {
             // create new
             if (empty($params)) {
-                $parameter = $om->new_instance(connection::get_em()->getClassMetadata('midgard:midgard_parameter')->getName());
+                $parameter = $om->new_instance(connection::get_fqcn('midgard_parameter'));
                 $parameter->parentguid = $this->guid;
                 $parameter->domain = $domain;
                 $parameter->name = $name;
@@ -660,7 +660,7 @@ abstract class mgdobject extends dbobject
             return null;
         }
         $om = new objectmanager(connection::get_em());
-        $att = $om->new_instance(connection::get_em()->getClassMetadata('midgard:midgard_attachment')->getName());
+        $att = $om->new_instance(connection::get_fqcn('midgard_attachment'));
 
         $att->parentguid = $this->guid;
         $att->title = $title;

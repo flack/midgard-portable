@@ -70,7 +70,7 @@ class subscriber implements EventSubscriber
             }
 
             $om = new objectmanager($em);
-            $repligard_cm = $em->getClassMetadata('midgard:midgard_repligard');
+            $repligard_cm = $em->getClassMetadata(connection::get_fqcn('midgard_repligard'));
             $repligard_entry = $om->new_instance($repligard_cm->getName());
             $repligard_entry->typename = $cm->getReflectionClass()->getShortName();
             $repligard_entry->guid = $entity->guid;
@@ -129,7 +129,7 @@ class subscriber implements EventSubscriber
         }
 
         if ($check_repligard) {
-            $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(['guid' => $entity->guid]);
+            $repligard_entry = $em->getRepository(connection::get_fqcn('midgard_repligard'))->findOneBy(['guid' => $entity->guid]);
 
             if ($deleted) {
                 $repligard_entry->object_action = self::ACTION_DELETE;
@@ -137,20 +137,20 @@ class subscriber implements EventSubscriber
                 $repligard_entry->object_action = self::ACTION_UPDATE;
             }
             $em->persist($repligard_entry);
-            $em->getUnitOfWork()->computeChangeSet($em->getClassMetadata('midgard:midgard_repligard'), $repligard_entry);
+            $em->getUnitOfWork()->computeChangeSet($em->getClassMetadata(connection::get_fqcn('midgard_repligard')), $repligard_entry);
         }
     }
 
     private function on_remove(dbobject $entity, EntityManagerInterface $em)
     {
         if (!($entity instanceof repligard)) {
-            $repligard_entry = $em->getRepository('midgard:midgard_repligard')->findOneBy(['guid' => $entity->guid]);
+            $repligard_entry = $em->getRepository(connection::get_fqcn('midgard_repligard'))->findOneBy(['guid' => $entity->guid]);
             if (empty($repligard_entry)) {
                 connection::log()->error('No repligard entry found for GUID ' . $entity->guid);
             } else {
                 $repligard_entry->object_action = self::ACTION_PURGE;
                 $em->persist($repligard_entry);
-                $em->getUnitOfWork()->computeChangeSet($em->getClassMetadata('midgard:midgard_repligard'), $repligard_entry);
+                $em->getUnitOfWork()->computeChangeSet($em->getClassMetadata(connection::get_fqcn('midgard_repligard')), $repligard_entry);
             }
         }
     }

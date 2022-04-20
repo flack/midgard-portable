@@ -36,7 +36,7 @@ class midgard_replicator
         }
         $result = connection::get_em()
             ->createQueryBuilder()
-            ->from('midgard:midgard_repligard', 'c')
+            ->from(connection::get_fqcn('midgard_repligard'), 'c')
             ->select('c.typename', 'c.object_action')
             ->where('c.guid = ?0')
             ->setParameter(0, $guid)
@@ -50,7 +50,7 @@ class midgard_replicator
 
         $result = connection::get_em()
             ->createQueryBuilder()
-            ->update('midgard:' . $result['typename'], 'c')
+            ->update(connection::get_fqcn($result['typename']), 'c')
             ->set('c.metadata_exported', '?0')
             ->setParameter(0, new midgard_datetime)
             ->where('c.guid = ?1')
@@ -175,7 +175,7 @@ class midgard_replicator
                 }
                 $result = connection::get_em()
                     ->createQueryBuilder()
-                    ->delete('midgard:midgard_repligard', 'c')
+                    ->delete(connection::get_fqcn('midgard_repligard'), 'c')
                     ->where('c.guid = ?0')
                     ->setParameter(0, $object->guid)
                     ->getQuery()
@@ -281,7 +281,7 @@ class midgard_replicator
 
     private static function object_from_xml(SimpleXMLElement $node, bool $force) : dbobject
     {
-        $cm = connection::get_em()->getClassMetadata('midgard:' . $node->getName());
+        $cm = connection::get_em()->getClassMetadata(connection::get_fqcn($node->getName()));
         $classname = $cm->getName();
         $object = new $classname;
         $object->set_guid($node['guid']);
@@ -325,7 +325,7 @@ class midgard_replicator
     {
         $result = connection::get_em()
             ->createQueryBuilder()
-            ->from('midgard:midgard_repligard', 'c')
+            ->from(connection::get_fqcn('midgard_repligard'), 'c')
             ->select('c.object_action')
             ->where('c.guid = ?0')
             ->setParameter(0, $guid)

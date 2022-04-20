@@ -17,7 +17,7 @@ class midgard_object_class
     private static function resolve_classname(string $guid, bool $include_deleted = false) : string
     {
         $qb = connection::get_em()->createQueryBuilder();
-        $qb->from('midgard:midgard_repligard', 'r')
+        $qb->from(connection::get_fqcn('midgard_repligard'), 'r')
             ->select('r.typename, r.object_action')
             ->where('r.guid = ?1')
             ->setParameter(1, $guid);
@@ -43,7 +43,7 @@ class midgard_object_class
 
     private static function resolve_fqcn(string $classname) : string
     {
-        $cm = connection::get_em()->getClassMetadata('midgard:' . $classname);
+        $cm = connection::get_em()->getClassMetadata(connection::get_fqcn($classname));
         return $cm->getName();
     }
 
