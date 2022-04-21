@@ -67,7 +67,7 @@ class blobTest extends testcase
 
         $this->assertNotEquals($prefix . '/', $blob->get_path());
         $this->assertFileExists(dirname($blob->get_path()));
-        $this->assertFileNotExists($blob->get_path());
+        $this->assertFileDoesNotExist($blob->get_path());
         $this->assertEquals($blob->get_path(), $prefix . '/' . $att->location);
     }
 
