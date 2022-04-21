@@ -22,7 +22,7 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
 
     env:
-      extensions: intl,memcached,apcu
+      extensions: intl,memcached,apcu,mysql
 
     strategy:
       matrix:
