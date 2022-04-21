@@ -99,7 +99,7 @@ class testcase extends basecase
     {
         // delete all, no matter what
         self::$em->getFilters()->disable('softdelete');
-        $q = self::$em->createQuery('DELETE ' . $classname . ' c');
+        $q = self::$em->createQuery('DELETE ' . connection::get_fqcn($classname) . ' c');
         $count = $q->execute();
         self::$em->getFilters()->enable('softdelete');
         return $count;

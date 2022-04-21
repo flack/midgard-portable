@@ -117,7 +117,7 @@ class midgard_query_builderTest extends testcase
     {
         self::$em->clear();
         $classname = connection::get_fqcn('midgard_topic');
-        $this->purge_all($classname);
+        $this->purge_all('midgard_topic');
         $topics = $this->_create_topics(__FUNCTION__);
 
         // test order desc
@@ -150,8 +150,7 @@ class midgard_query_builderTest extends testcase
         // test order with guid link field
         self::$em->clear();
 
-        $classname = connection::get_fqcn('midgard_person');
-        $this->purge_all($classname);
+        $this->purge_all('midgard_person');
 
         $person = $this->make_object('midgard_person');
         $person->firstname = "John";
@@ -161,8 +160,7 @@ class midgard_query_builderTest extends testcase
         $person2->firstname = "Bob";
         $person2->create();
 
-        $classname = connection::get_fqcn('midgard_user');
-        $this->purge_all($classname);
+        $this->purge_all('midgard_user');
 
         $user = $this->make_object('midgard_user');
         $user->authtype = 'Legacy';
@@ -174,7 +172,7 @@ class midgard_query_builderTest extends testcase
         $user2->person = $person2->guid;
         $user2->create();
 
-        $qb = new \midgard_query_builder($classname);
+        $qb = new \midgard_query_builder(connection::get_fqcn('midgard_user'));
         $stat = $qb->add_order('person.firstname', 'ASC');
         $this->assertTrue($stat);
 
@@ -189,15 +187,14 @@ class midgard_query_builderTest extends testcase
     public function test_add_constraint_with_property()
     {
         self::$em->clear();
-        $classname = connection::get_fqcn('midgard_topic');
-        $this->purge_all($classname);
+        $this->purge_all('midgard_topic');
 
         $topic = $this->make_object('midgard_topic');
         $topic->name = "A_" . __FUNCTION__ . "testOne";
         $topic->extra = $topic->name;
         $topic->create();
 
-        $qb = new \midgard_query_builder($classname);
+        $qb = new \midgard_query_builder(connection::get_fqcn('midgard_topic'));
         $this->assertTrue($qb->add_constraint_with_property('name', '=', 'extra'));
         $results = $qb->execute();
 
@@ -209,7 +206,7 @@ class midgard_query_builderTest extends testcase
     {
         self::$em->clear();
         $classname = connection::get_fqcn('midgard_topic');
-        $this->purge_all($classname);
+        $this->purge_all('midgard_topic');
 
         // test single constraint
         $topic = $this->make_object('midgard_topic');
@@ -355,7 +352,7 @@ class midgard_query_builderTest extends testcase
     {
         self::$em->clear();
         $classname = connection::get_fqcn('midgard_topic');
-        $this->purge_all($classname);
+        $this->purge_all('midgard_topic');
         $topics = $this->_create_topics(__FUNCTION__);
 
         // get second entry
@@ -475,7 +472,7 @@ class midgard_query_builderTest extends testcase
     {
         self::$em->clear();
         $classname = connection::get_fqcn('midgard_topic');
-        $this->purge_all($classname);
+        $this->purge_all('midgard_topic');
         $topics = $this->_create_topics(__FUNCTION__);
         $orig_topic_count = count($topics);
 
@@ -516,7 +513,7 @@ class midgard_query_builderTest extends testcase
 
     public function test_empty_group()
     {
-        $this->purge_all(connection::get_fqcn('midgard_topic'));
+        $this->purge_all('midgard_topic');
         self::$em->clear();
 
         $qb = new \midgard_query_builder(connection::get_fqcn('midgard_topic'));
@@ -541,7 +538,7 @@ class midgard_query_builderTest extends testcase
     {
         self::$em->clear();
         $classname = connection::get_fqcn('midgard_topic');
-        $this->purge_all($classname);
+        $this->purge_all('midgard_topic');
         $topic = $this->make_object('midgard_topic');
         $topic->name = uniqid(__FUNCTION__);
         $stat = $topic->create();
@@ -561,7 +558,7 @@ class midgard_query_builderTest extends testcase
     {
         self::$em->clear();
         $classname = connection::get_fqcn('midgard_topic');
-        $this->purge_all($classname);
+        $this->purge_all('midgard_topic');
         $topics = $this->_create_topics(__FUNCTION__);
         self::$em->clear();
 
@@ -597,7 +594,7 @@ class midgard_query_builderTest extends testcase
     {
         self::$em->clear();
         $classname = connection::get_fqcn('midgard_topic');
-        $this->purge_all($classname);
+        $this->purge_all('midgard_topic');
         $topics = $this->_create_topics(__FUNCTION__);
 
         $article_class = connection::get_fqcn('midgard_article');
@@ -634,7 +631,7 @@ class midgard_query_builderTest extends testcase
     {
         self::$em->clear();
         $classname = connection::get_fqcn('midgard_topic');
-        $this->purge_all($classname);
+        $this->purge_all('midgard_topic');
 
         $topic = $this->make_object('midgard_topic');
         $topic->name = "A_" . __FUNCTION__ . "testOne";
@@ -671,7 +668,7 @@ class midgard_query_builderTest extends testcase
     {
         self::$em->clear();
         $classname = connection::get_fqcn('midgard_topic');
-        $this->purge_all($classname);
+        $this->purge_all('midgard_topic');
         $topics = $this->_create_topics(__FUNCTION__);
 
         $cm = self::$em->getClassMetadata($classname);
