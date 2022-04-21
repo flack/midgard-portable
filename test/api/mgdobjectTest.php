@@ -25,34 +25,31 @@ class mgdobjectTest extends testcase
 
     public function test_construct()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $this->assertIsString($topic->name);
     }
 
     public function test_load()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
 
         $this->assert_api('create', $topic);
         self::$em->clear();
 
-        $loaded = new $classname($topic->id);
+        $loaded = $this->make_object('midgard_topic', $topic->id);
         $this->assertEquals($topic->id, $loaded->id);
         $this->assertNotEquals('', $loaded->guid);
         $this->assertEquals($topic->name, $loaded->name);
 
-        $loaded2 = new $classname($topic->guid);
+        $loaded2 = $this->make_object('midgard_topic', $topic->guid);
         $this->assertEquals($topic->id, $loaded2->id);
         $this->assertEquals($topic->name, $loaded2->name);
     }
 
     public function test_load_deleted()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
         $this->assert_api('delete', $topic);
@@ -60,7 +57,7 @@ class mgdobjectTest extends testcase
         self::$em->clear();
         $e = null;
         try {
-            new $classname($topic->id);
+            $this->make_object('midgard_topic', $topic->id);
         } catch (exception $e) {
         }
 
@@ -71,7 +68,7 @@ class mgdobjectTest extends testcase
     public function test_load_purged()
     {
         $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $this->assert_api('create', $topic);
         $id = $topic->id;
@@ -80,7 +77,7 @@ class mgdobjectTest extends testcase
 
         $e = null;
         try {
-            new $classname($id);
+            $this->make_object('midgard_topic', $id);
         } catch (exception $e) {
         }
 
@@ -100,32 +97,30 @@ class mgdobjectTest extends testcase
 
     public function test_load_separate_instances()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
 
         $topic->name = __FUNCTION__;
 
-        $loaded = new $classname($topic->id);
+        $loaded = $this->make_object('midgard_topic', $topic->id);
         $this->assertEquals('', $loaded->name);
     }
 
     public function test_load_invalid_guid()
     {
-        $classname = connection::get_fqcn('midgard_topic');
         $this->expectException(\InvalidArgumentException::class);
-        new $classname('xxx');
+        $this->make_object('midgard_topic', 'xxx');
     }
 
     public function test_get_by_id()
     {
         $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
         self::$em->clear();
 
-        $loaded = new $classname;
+        $loaded = $this->make_object('midgard_topic');
         $stat = $loaded->get_by_id($topic->id);
         $this->assertTrue($stat);
         $this->assertEquals($topic->id, $loaded->id);
@@ -135,7 +130,7 @@ class mgdobjectTest extends testcase
         // Getting the reference now means we will get a proxy later from get_by_id
         $ref = self::$em->getReference($classname, $topic->id);
 
-        $loaded = new $classname;
+        $loaded = $this->make_object('midgard_topic');
         $stat = $loaded->get_by_id($topic->id);
         $this->assertTrue($stat);
         $this->assertEquals($topic->id, $loaded->id);
@@ -145,10 +140,10 @@ class mgdobjectTest extends testcase
     public function test_get_by_id_with_updates()
     {
         $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
-        $loaded = new $classname;
+        $loaded = $this->make_object('midgard_topic');
         $stat = $loaded->get_by_id($topic->id);
         $this->assertTrue($stat);
         $this->assertEquals($topic->name, $loaded->name);
@@ -170,23 +165,21 @@ class mgdobjectTest extends testcase
 
     public function test_load_unknown_id()
     {
-        $classname = connection::get_fqcn('midgard_topic');
         $this->expectException(exception::class);
-        new $classname(999999999);
+        $this->make_object('midgard_topic', 999999999);
     }
 
     public function test_get_by_guid()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
-        $topic2 = new $classname;
+        $topic2 = $this->make_object('midgard_topic');
         $topic2->name = __FUNCTION__;
         $topic2->create();
         self::$em->clear();
 
-        $loaded = new $classname;
+        $loaded = $this->make_object('midgard_topic');
         $stat = $loaded->get_by_guid($topic->guid);
         $this->assertTrue($stat);
         $this->assertSame($topic->id, $loaded->id);
@@ -199,7 +192,7 @@ class mgdobjectTest extends testcase
 
         $topic2->delete();
         $topic2->purge();
-        $loaded2 = new $classname($topic->guid);
+        $loaded2 = $this->make_object('midgard_topic', $topic->guid);
 
         $stat = $loaded2->get_by_guid($topic->guid);
         $this->assertTrue($stat);
@@ -211,27 +204,26 @@ class mgdobjectTest extends testcase
 
     public function test_create()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $initial = $this->count_results($classname);
+        $initial = $this->count_results('midgard_topic');
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
 
         $this->assert_api('create', $topic);
         $this->assertFalse(empty($topic->guid), 'GUID empty');
-        $this->assertEquals($initial + 1, $this->count_results($classname));
+        $this->assertEquals($initial + 1, $this->count_results('midgard_topic'));
         $this->assertGreaterThan($initial, $topic->id);
 
-        $topic2 = new $classname;
+        $topic2 = $this->make_object('midgard_topic');
         $topic2->up = $topic->id;
         $topic2->name = __FUNCTION__ . '-2';
         $stat = $topic2->create();
         $this->assertTrue($stat);
         $this->assert_api('create', $topic2, MGD_ERR_DUPLICATE);
-        $this->assertEquals($initial + 2, $this->count_results($classname));
+        $this->assertEquals($initial + 2, $this->count_results('midgard_topic'));
         $this->assertEquals($topic->id + 1, $topic2->id);
 
-        $topic3 = new $classname;
+        $topic3 = $this->make_object('midgard_topic');
         $topic3->up = $topic->id;
         $topic3->name = __FUNCTION__ . '-3';
         $stat = $topic3->create();
@@ -240,23 +232,20 @@ class mgdobjectTest extends testcase
 
     public function test_create_duplicate_parentfield()
     {
-        $sd_classname = connection::get_fqcn('midgard_snippetdir');
-        $sn_classname = connection::get_fqcn('midgard_snippet');
-
-        $sd = new $sd_classname;
+        $sd = $this->make_object('midgard_snippetdir');
         $sd->name = __FUNCTION__;
         $this->assert_api('create', $sd);
 
-        $sd2 = new $sd_classname;
+        $sd2 = $this->make_object('midgard_snippetdir');
         $sd2->name = __FUNCTION__ . '2';
         $this->assert_api('create', $sd2);
 
-        $sn = new $sn_classname;
+        $sn = $this->make_object('midgard_snippet');
         $sn->name = 'dummy';
         $sn->snippetdir = $sd->id;
         $this->assert_api('create', $sn);
 
-        $sn2 = new $sn_classname;
+        $sn2 = $this->make_object('midgard_snippet');
         $sn2->name = 'dummy';
         $sn2->snippetdir = $sd2->id;
         $this->assert_api('create', $sn2);
@@ -264,9 +253,7 @@ class mgdobjectTest extends testcase
 
     public function test_create_invalid_guid_field()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->guidField = 'xx';
 
@@ -275,10 +262,9 @@ class mgdobjectTest extends testcase
 
     public function test_update()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
-        $topic2 = new $classname;
+        $topic2 = $this->make_object('midgard_topic');
         $topic2->create();
 
         $topic->name = __FUNCTION__ . 'xxx';
@@ -287,7 +273,7 @@ class mgdobjectTest extends testcase
         $this->assertTrue($stat);
         self::$em->clear();
 
-        $loaded = new $classname($topic->id);
+        $loaded = $this->make_object('midgard_topic', $topic->id);
         $this->assertEquals($topic->name, $loaded->name);
         $this->assertEquals($topic2->id, $loaded->up, 'Wrong up ID');
         $this->assertEquals('', $loaded->title);
@@ -295,9 +281,7 @@ class mgdobjectTest extends testcase
 
     public function test_update_invalid_guid_field()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $this->assert_api('create', $topic);
         $topic->guidField = 'xx';
 
@@ -306,9 +290,7 @@ class mgdobjectTest extends testcase
 
     public function test_update_circular_parent()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $this->assert_api('create', $topic);
         $topic->up = $topic->id;
 
@@ -317,34 +299,33 @@ class mgdobjectTest extends testcase
 
     public function test_update_nonpersistent()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $this->assert_api('update', $topic, MGD_ERR_INTERNAL);
     }
 
     public function test_delete()
     {
         $classname = connection::get_fqcn('midgard_topic');
-        $initial = $this->count_results($classname);
-        $initial_all = $this->count_results($classname, true);
+        $initial = $this->count_results('midgard_topic');
+        $initial_all = $this->count_results('midgard_topic', true);
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $name = uniqid(__FUNCTION__);
         $topic->name = $name;
         $topic->create();
         $topic->name = uniqid(__FUNCTION__ . time());
         $stat = $topic->delete();
         $this->assertTrue($stat);
-        $this->verify_unpersisted_changes($classname, $topic->guid, "name", $name);
-        $this->assertEquals($initial, $this->count_results($classname));
+        $this->verify_unpersisted_changes('midgard_topic', $topic->guid, "name", $name);
+        $this->assertEquals($initial, $this->count_results('midgard_topic'));
 
-        $all = $this->count_results($classname, true);
+        $all = $this->count_results('midgard_topic', true);
         $this->assertEquals($initial_all + 1, $all);
 
         // delete a topic that is already deleted
         $this->assert_api('delete', $topic);
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
         $qb = new \midgard_query_builder($classname);
@@ -358,32 +339,29 @@ class mgdobjectTest extends testcase
 
     public function test_delete_nonpersistent()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $this->assert_api('delete', $topic, MGD_ERR_INVALID_PROPERTY_VALUE);
     }
 
     public function test_undelete()
     {
         $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $this->assert_api('create', $topic);
         $this->assert_api('delete', $topic);
 
         $stat = call_user_func_array($classname . "::undelete", [$topic->guid]);
         $this->assertTrue($stat);
-        $refreshed = new $classname($topic->id);
+        $refreshed = $this->make_object('midgard_topic', $topic->id);
         $this->assertFalse($refreshed->metadata->deleted);
     }
 
     public function test_list()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
-        $topic2 = new $classname;
+        $topic2 = $this->make_object('midgard_topic');
         $topic2->up = $topic->id;
         $topic2->name = __FUNCTION__;
         $topic2->create();
@@ -397,12 +375,10 @@ class mgdobjectTest extends testcase
 
     public function test_has_dependents()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
-        $topic2 = new $classname;
+        $topic2 = $this->make_object('midgard_topic');
         $topic2->up = $topic->id;
         $topic2->name = __FUNCTION__;
         $topic2->create();
@@ -414,12 +390,10 @@ class mgdobjectTest extends testcase
 
     public function test_delete_with_dependents()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
-        $topic2 = new $classname;
+        $topic2 = $this->make_object('midgard_topic');
         $topic2->up = $topic->id;
         $topic2->name = __FUNCTION__;
         $topic2->create();
@@ -431,12 +405,10 @@ class mgdobjectTest extends testcase
 
     public function test_purge_with_dependents()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
-        $topic2 = new $classname;
+        $topic2 = $this->make_object('midgard_topic');
         $topic2->up = $topic->id;
         $topic2->name = __FUNCTION__;
         $topic2->create();
@@ -448,18 +420,17 @@ class mgdobjectTest extends testcase
 
     public function test_purge()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $initial = $this->count_results($classname, true);
+        $initial = $this->count_results('midgard_topic', true);
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
         $id = $topic->id;
         $this->assert_api('purge', $topic);
-        $this->assertEquals($initial, $this->count_results($classname, true));
+        $this->assertEquals($initial, $this->count_results('midgard_topic', true));
         $this->assert_api('purge', $topic, MGD_ERR_NOT_EXISTS);
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__ . ' 2';
         $topic->create();
         $this->assertEquals($id + 1, $topic->id);
@@ -468,9 +439,9 @@ class mgdobjectTest extends testcase
     public function test_get_parent()
     {
         $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
-        $child = new $classname;
+        $child = $this->make_object('midgard_topic');
         $child->up = $topic->id;
         $child->create();
         self::$em->clear();
@@ -494,12 +465,10 @@ class mgdobjectTest extends testcase
 
     public function test_childtype()
     {
-        $topic_class = connection::get_fqcn('midgard_topic');
-        $article_class = connection::get_fqcn('midgard_article');
-        $topic = new $topic_class;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
 
-        $article = new $article_class;
+        $article = $this->make_object('midgard_article');
         $this->assert_api('create', $article, MGD_ERR_OBJECT_NO_PARENT);
         $article->topic = $topic->id;
         $this->assert_api('create', $article);
@@ -515,14 +484,11 @@ class mgdobjectTest extends testcase
      */
     public function test_associations()
     {
-        $classname = connection::get_fqcn('midgard_snippetdir');
-        $sn_class = connection::get_fqcn('midgard_snippet');
-
-        $sd = new $classname;
+        $sd = $this->make_object('midgard_snippetdir');
         $sd->name = __FUNCTION__;
         $this->assert_api('create', $sd);
 
-        $sn = new $sn_class;
+        $sn = $this->make_object('midgard_snippet');
         $sn->name = __FUNCTION__;
         $sn->snippetdir = $sd->id;
         //This somehow causes the snippetdir reference oid to become stale
@@ -531,7 +497,7 @@ class mgdobjectTest extends testcase
 
         $this->assert_api('create', $sn);
 
-        $sd2 = new $classname;
+        $sd2 = $this->make_object('midgard_snippetdir');
         $sd2->name = __FUNCTION__ . '2';
         $this->assert_api('create', $sd2);
 
@@ -557,14 +523,11 @@ class mgdobjectTest extends testcase
 
     public function test_association_purge()
     {
-        $classname = connection::get_fqcn('midgard_snippetdir');
-        $sn_class = connection::get_fqcn('midgard_snippet');
-
-        $sd = new $classname;
+        $sd = $this->make_object('midgard_snippetdir');
         $sd->name = __FUNCTION__;
         $this->assert_api('create', $sd);
 
-        $sn = new $sn_class;
+        $sn = $this->make_object('midgard_snippet');
         $sn->name = __FUNCTION__;
         $sn->snippetdir = $sd->id;
         $this->assert_api('create', $sn);
@@ -576,13 +539,11 @@ class mgdobjectTest extends testcase
 
     public function test_parent_purge()
     {
-        $classname = connection::get_fqcn('midgard_snippetdir');
-
-        $sd = new $classname;
+        $sd = $this->make_object('midgard_snippetdir');
         $sd->name = __FUNCTION__;
         $this->assert_api('create', $sd);
 
-        $sd2 = new $classname;
+        $sd2 = $this->make_object('midgard_snippetdir');
         $sd2->name = __FUNCTION__ . '2';
         $sd2->up = $sd->id;
         $this->assert_api('create', $sd2);
@@ -593,12 +554,11 @@ class mgdobjectTest extends testcase
 
     public function test_uniquenames()
     {
-        $classname = connection::get_fqcn('midgard_snippetdir');
-        $sd = new $classname;
+        $sd = $this->make_object('midgard_snippetdir');
         $sd->name = __FUNCTION__;
         $sd->create();
 
-        $sd2 = new $classname;
+        $sd2 = $this->make_object('midgard_snippetdir');
         $sd2->name = __FUNCTION__;
         $stat = $sd2->create();
         $this->assertFalse($stat, midgard_connection::get_instance()->get_error_string());
@@ -607,7 +567,7 @@ class mgdobjectTest extends testcase
 
         $this->assert_api('create', $sd2);
 
-        $sd3 = new $classname;
+        $sd3 = $this->make_object('midgard_snippetdir');
         $sd3->name = __FUNCTION__;
         $this->assert_api('create', $sd3, MGD_ERR_OBJECT_NAME_EXISTS);
 
@@ -615,32 +575,30 @@ class mgdobjectTest extends testcase
         $this->assert_api('create', $sd3);
 
         //Empty names don't trigger duplicate error for some reason
-        $sd4 = new $classname;
+        $sd4 = $this->make_object('midgard_snippetdir');
         $this->assert_api('create', $sd4);
 
-        $sd5 = new $classname;
+        $sd5 = $this->make_object('midgard_snippetdir');
         $this->assert_api('create', $sd5);
     }
 
     public function test_get_by_path()
     {
-        $classname = connection::get_fqcn('midgard_snippetdir');
-        $sd = new $classname;
+        $sd = $this->make_object('midgard_snippetdir');
         $sd->name = __FUNCTION__;
         $sd->create();
 
-        $sd2 = new $classname;
+        $sd2 = $this->make_object('midgard_snippetdir');
         $sd2->up = $sd->id;
         $sd2->name = __FUNCTION__;
         $sd2->create();
 
-        $s_classname = connection::get_fqcn('midgard_snippet');
-        $sn = new $s_classname;
+        $sn = $this->make_object('midgard_snippet');
         $sn->snippetdir = $sd->id;
         $sn->name = __FUNCTION__ . '-snippet';
         $sn->create();
 
-        $x = new $classname;
+        $x = $this->make_object('midgard_snippetdir');
         $this->assertTrue($x->get_by_path('/' . $sd->name));
         $this->assertEquals($sd->guid, $x->guid);
         $this->assertTrue($x->get_by_path('/' . $sd->name . '/' . $sd2->name));
@@ -652,16 +610,14 @@ class mgdobjectTest extends testcase
         $this->assertFalse($x->get_by_path('/' . $sd->name . '-notavailable/nonexistent'));
         $this->assertEquals('', $x->guid);
 
-        $x = new $s_classname;
+        $x = $this->make_object('midgard_snippet');
         $this->assertTrue($x->get_by_path('/' . $sd->name . '/' . $sn->name));
         $this->assertEquals($sn->guid, $x->guid);
     }
 
     private function get_topic_with_parameter()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
 
@@ -672,9 +628,7 @@ class mgdobjectTest extends testcase
 
     public function test_set_parameter()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
 
@@ -691,9 +645,7 @@ class mgdobjectTest extends testcase
 
     public function test_parameter()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
 
@@ -721,8 +673,7 @@ class mgdobjectTest extends testcase
     public function test_get_parameter()
     {
         // try retrieving parameter from non persistent object
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $value = $topic->get_parameter("midcom.core", "test");
         $this->assertFalse($value);
@@ -778,9 +729,7 @@ class mgdobjectTest extends testcase
 
     public function test_has_parameters()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
 
@@ -924,9 +873,8 @@ class mgdobjectTest extends testcase
 
     public function test_set_guid()
     {
-        $classname = connection::get_fqcn('midgard_topic');
         $guid = connection::generate_guid();
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->guid = $guid;
         $this->assertEquals('', $topic->guid);
         $topic->set_guid($guid);
@@ -937,8 +885,7 @@ class mgdobjectTest extends testcase
 
     public function test_lock()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
         $topic->title = 'This should not be saved'; // change AFTER create
         connection::set_user(null);
@@ -953,16 +900,15 @@ class mgdobjectTest extends testcase
         $this->assertEquals($person->guid, $topic->metadata->locker);
         $this->assertEquals(0, $topic->metadata->revision);
 
-        $loaded = new $classname($topic->id);
+        $loaded = $this->make_object('midgard_topic', $topic->id);
         $this->assertTrue($loaded->is_locked());
         $this->assertEquals($person->guid, $loaded->metadata->locker);
-        $this->verify_unpersisted_changes($classname, $topic->guid, "title", "");
+        $this->verify_unpersisted_changes('midgard_topic', $topic->guid, "title", "");
     }
 
     public function test_unlock()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
         connection::set_user(null);
 
@@ -979,7 +925,7 @@ class mgdobjectTest extends testcase
         $this->assertFalse($topic->is_locked());
         $this->assertFalse($topic->unlock());
 
-        $loaded = new $classname($topic->id);
+        $loaded = $this->make_object('midgard_topic', $topic->id);
         $this->assertFalse($loaded->is_locked());
         $this->assertEquals($locker, $loaded->metadata->locker);
         $this->assertEquals($locked, $loaded->metadata->locked);
@@ -988,8 +934,7 @@ class mgdobjectTest extends testcase
 
     public function test_approve()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
         $topic->title = 'This should not be saved'; // change AFTER create
         connection::set_user(null);
@@ -998,22 +943,21 @@ class mgdobjectTest extends testcase
 
         $person = self::create_user();
 
-        $topic = new $classname($topic->id);
+        $topic = $this->make_object('midgard_topic', $topic->id);
         $this->assertTrue($topic->approve());
         $this->assertTrue($topic->is_approved());
         $this->assertFalse($topic->approve());
         $this->assertEquals($person->guid, $topic->metadata->approver);
 
-        $loaded = new $classname($topic->id);
+        $loaded = $this->make_object('midgard_topic', $topic->id);
         $this->assertTrue($loaded->is_approved());
         $this->assertEquals($person->guid, $loaded->metadata->approver);
-        $this->verify_unpersisted_changes($classname, $topic->guid, "title", "");
+        $this->verify_unpersisted_changes('midgard_topic', $topic->guid, "title", "");
     }
 
     public function test_unapprove()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
         connection::set_user(null);
 
@@ -1028,7 +972,7 @@ class mgdobjectTest extends testcase
         $this->assertFalse($topic->is_approved());
         $this->assertFalse($topic->unapprove());
 
-        $loaded = new $classname($topic->id);
+        $loaded = $this->make_object('midgard_topic', $topic->id);
         $this->assertFalse($loaded->is_approved());
         $this->assertEquals($topic->metadata_approver, $loaded->metadata->approver);
         $this->assertEquals($topic->metadata_approved, $loaded->metadata->approved);
@@ -1036,8 +980,7 @@ class mgdobjectTest extends testcase
 
     public function test__debugInfo()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
 
         $metadata = new \stdClass;
         $metadata->creator = $topic->metadata->creator;

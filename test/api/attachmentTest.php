@@ -26,13 +26,11 @@ class attachmentTest extends testcase
 
     public function test_create()
     {
-        $classname = connection::get_fqcn('midgard_attachment');
-        $att = new $classname;
+        $att = $this->make_object('midgard_attachment');
 
         $this->assertFalse($att->create());
 
-        $t_classname = connection::get_fqcn('midgard_topic');
-        $topic = new $t_classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
 
         $att->parentguid = $topic->guid;
@@ -41,14 +39,12 @@ class attachmentTest extends testcase
 
     public function test_has_attachments()
     {
-        $t_classname = connection::get_fqcn('midgard_topic');
-        $topic = new $t_classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
 
         $this->assertFalse($topic->has_attachments());
 
-        $classname = connection::get_fqcn('midgard_attachment');
-        $att = new $classname;
+        $att = $this->make_object('midgard_attachment');
         $att->parentguid = $topic->guid;
         $att->create();
 
@@ -57,14 +53,12 @@ class attachmentTest extends testcase
 
     public function test_list_attachments()
     {
-        $t_classname = connection::get_fqcn('midgard_topic');
-        $topic = new $t_classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
 
         $this->assertEquals([], $topic->list_attachments());
 
-        $classname = connection::get_fqcn('midgard_attachment');
-        $att = new $classname;
+        $att = $this->make_object('midgard_attachment');
         $att->parentguid = $topic->guid;
         $att->create();
 
@@ -75,8 +69,7 @@ class attachmentTest extends testcase
 
     public function test_create_attachment()
     {
-        $t_classname = connection::get_fqcn('midgard_topic');
-        $topic = new $t_classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
 
         $this->assertEquals([], $topic->list_attachments());

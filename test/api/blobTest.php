@@ -9,7 +9,6 @@ namespace midgard\portable\test;
 
 use midgard\portable\api\blob;
 use midgard_connection;
-use midgard\portable\storage\connection;
 
 class blobTest extends testcase
 {
@@ -27,8 +26,7 @@ class blobTest extends testcase
 
     public function test_construct()
     {
-        $classname = connection::get_fqcn('midgard_attachment');
-        $att = new $classname;
+        $att = $this->make_object('midgard_attachment');
 
         $blob = new blob($att);
         $this->assertEquals('', $blob->content);
@@ -36,8 +34,7 @@ class blobTest extends testcase
 
     public function test_get_handler()
     {
-        $classname = connection::get_fqcn('midgard_attachment');
-        $att = new $classname;
+        $att = $this->make_object('midgard_attachment');
 
         $blob = new blob($att);
         $handle = $blob->get_handler();
@@ -48,12 +45,10 @@ class blobTest extends testcase
 
     public function test_get_path()
     {
-        $t_class = connection::get_fqcn('midgard_topic');
-        $topic = new $t_class;
+        $topic = $this->make_object('midgard_topic');
         $this->assert_api('create', $topic);
 
-        $classname = connection::get_fqcn('midgard_attachment');
-        $att = new $classname;
+        $att = $this->make_object('midgard_attachment');
         $att->location = '1/A/1ad4ec493ba13c329049de5d60ac8193';
         $att->name = uniqid();
         $att->parentguid = $topic->guid;
@@ -63,7 +58,7 @@ class blobTest extends testcase
 
         $this->assertSame($prefix . '/1/A/1ad4ec493ba13c329049de5d60ac8193', $blob->get_path());
 
-        $att = new $classname;
+        $att = $this->make_object('midgard_attachment');
         $att->name = uniqid();
         $att->parentguid = $topic->guid;
         $this->assert_api('create', $att);
@@ -78,10 +73,7 @@ class blobTest extends testcase
 
     public function test_exists()
     {
-        $classname = connection::get_fqcn('midgard_attachment');
-        $att = new $classname;
-
-        $blob = new blob($att);
+        $blob = new blob($this->make_object('midgard_attachment'));
         $this->assertFalse($blob->exists());
         $handle = $blob->get_handler();
         $this->assertIsResource($handle);
@@ -90,10 +82,7 @@ class blobTest extends testcase
 
     public function test_read_content()
     {
-        $classname = connection::get_fqcn('midgard_attachment');
-        $att = new $classname;
-
-        $blob = new blob($att);
+        $blob = new blob($this->make_object('midgard_attachment'));
         $this->assertNull($blob->read_content());
         $handle = $blob->get_handler();
         $this->assertIsResource($handle);
@@ -102,10 +91,7 @@ class blobTest extends testcase
 
     public function test_write_content()
     {
-        $classname = connection::get_fqcn('midgard_attachment');
-        $att = new $classname;
-
-        $blob = new blob($att);
+        $blob = new blob($this->make_object('midgard_attachment'));
         $this->assertNull($blob->read_content());
         $this->assertTrue($blob->write_content('X'));
         $this->assertSame('X', $blob->read_content());

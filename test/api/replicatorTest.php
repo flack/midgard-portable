@@ -17,21 +17,21 @@ class midgard_replicatorTest extends testcase
     public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
+
+        $classes = self::get_metadata([
+            'midgard_topic',
+            'midgard_repligard',
+            'midgard_article',
+            'midgard_attachment',
+        ]);
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
-        $classes = [
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_topic')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_repligard')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_article')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_attachment'))
-        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
     }
 
     public function test_serialize_nonpersistent()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $object = new $classname;
+        $object = $this->make_object('midgard_topic');
         $ret = midgard_replicator::serialize($object);
         $this->assertIsString($ret);
         $actual = new SimpleXMLElement($ret);
@@ -45,8 +45,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_serialize()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $object = new $classname;
+        $object = $this->make_object('midgard_topic');;
         $this->assert_api('create', $object);
         $ret = midgard_replicator::serialize($object);
         $actual = new SimpleXMLElement($ret);
@@ -71,11 +70,10 @@ class midgard_replicatorTest extends testcase
 
     public function test_serialize_child()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $parent = new $classname;
+        $parent = $this->make_object('midgard_topic');
         $this->assert_api('create', $parent);
 
-        $object = new $classname;
+        $object = $this->make_object('midgard_topic');
         $object->up = $parent->id;
         $this->assert_api('create', $object);
         $ret = midgard_replicator::serialize($object);
@@ -85,8 +83,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_serialize_blob()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $object = new $classname;
+        $object = $this->make_object('midgard_topic');
         $this->assert_api('create', $object);
         $att = $object->create_attachment('test', 'test');
         $blob = new blob($att);
@@ -100,8 +97,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_unserialize_nonpersistent()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $expected = new $classname;
+        $expected = $this->make_object('midgard_topic');
         $ret = midgard_replicator::unserialize(file_get_contents(dirname(__DIR__) . '/__files/replicator/new_topic.xml'));
 
         $this->assertCount(1, $ret);
@@ -111,8 +107,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_unserialize()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $object = new $classname;
+        $object = $this->make_object('midgard_topic');
         $this->assert_api('create', $object);
         $ret = midgard_replicator::unserialize(midgard_replicator::serialize($object));
         $this->assertEquals($object->guid, $ret[0]->guid);
@@ -143,11 +138,10 @@ class midgard_replicatorTest extends testcase
 
     public function test_unserialize_child()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $parent = new $classname;
+        $parent = $this->make_object('midgard_topic');
         $this->assert_api('create', $parent);
 
-        $object = new $classname;
+        $object = $this->make_object('midgard_topic');
         $object->up = $parent->id;
         $this->assert_api('create', $object);
         $ret = midgard_replicator::unserialize(midgard_replicator::serialize($object));
@@ -156,8 +150,7 @@ class midgard_replicatorTest extends testcase
 
     public function test_unserialize_blob()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $object = new $classname;
+        $object = $this->make_object('midgard_topic');
         $this->assert_api('create', $object);
         $att = $object->create_attachment('test', 'test');
         $blob = new blob($att);
@@ -171,15 +164,14 @@ class midgard_replicatorTest extends testcase
 
     public function test_export_by_guid()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $object = new $classname;
+        $object = $this->make_object('midgard_topic');
 
         $this->assertFalse(midgard_replicator::export_by_guid($object->guid));
         $this->assert_error(MGD_ERR_INVALID_PROPERTY_VALUE);
 
         $this->assert_api('create', $object);
         $this->assertTrue(midgard_replicator::export_by_guid($object->guid));
-        $refreshed = new $classname($object->id);
+        $refreshed = $this->make_object('midgard_topic', $object->id);
         $this->assertNotEquals((string) $refreshed->metadata->exported, (string) $object->metadata->exported);
 
         $this->assert_api('purge', $object);
@@ -190,7 +182,7 @@ class midgard_replicatorTest extends testcase
     public function test_import_object()
     {
         $classname = connection::get_fqcn('midgard_topic');
-        $object = new $classname;
+        $object = $this->make_object('midgard_topic');
 
         $this->assertFalse(midgard_replicator::import_object($object));
         $this->assert_error(MGD_ERR_INVALID_PROPERTY_VALUE);
@@ -207,7 +199,7 @@ class midgard_replicatorTest extends testcase
         $object->metadata->revised = new \midgard_datetime('now + 1 day');
         $this->assertTrue(midgard_replicator::import_object($object));
 
-        $refreshed = new $classname($object->id);
+        $refreshed = $this->make_object('midgard_topic', $object->id);
         $this->assertSame('test', $refreshed->title);
         $this->assertNotEquals((string) $refreshed->metadata->imported, (string) $object->metadata->imported);
 
@@ -216,7 +208,7 @@ class midgard_replicatorTest extends testcase
         $object->metadata->revised = new \midgard_datetime('now + 2 days');
         $this->assertTrue(midgard_replicator::import_object($object), \midgard_connection::get_instance()->get_error_string());
 
-        $refreshed = new $classname($object->id);
+        $refreshed = $this->make_object('midgard_topic', $object->id);
         $this->assertSame('test', $refreshed->title);
         $this->assertFalse($refreshed->metadata->deleted);
 
@@ -234,23 +226,20 @@ class midgard_replicatorTest extends testcase
 
     public function test_import_object_purged()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $object = new $classname;
+        $object = $this->make_object('midgard_topic');
         $this->assert_api('create', $object);
         $this->assert_api('purge', $object);
         $this->assertFalse(midgard_replicator::import_object($object), \midgard_connection::get_instance()->get_error_string());
         $this->assertTrue(midgard_replicator::import_object($object, true), \midgard_connection::get_instance()->get_error_string());
-        $refreshed = new $classname($object->guid);
+        $refreshed = $this->make_object('midgard_topic', $object->guid);
         $this->assertNotEquals($object->id, $refreshed->id);
     }
 
     public function test_import_from_xml()
     {
         $prefix = dirname(__DIR__) . '/__files/replicator/';
-        $classname = connection::get_fqcn('midgard_topic');
-
         midgard_replicator::import_from_xml(file_get_contents($prefix . 'import_created_topic.xml'));
-        $object = new $classname('c1f17ea68e9911e4a07b8f9cdafb00b500b5');
+        $object = $this->make_object('midgard_topic', 'c1f17ea68e9911e4a07b8f9cdafb00b500b5');
         $this->assertSame('test', $object->extra);
     }
 
@@ -275,7 +264,7 @@ class midgard_replicatorTest extends testcase
         $results = $qb->execute();
         $this->assertCount(1, $results);
 
-        $object = new $classname('c1f17ea68e9911e4a07b8f9cdafb00b500b4');
+        $object = $this->make_object('midgard_topic', 'c1f17ea68e9911e4a07b8f9cdafb00b500b4');
         $this->assertSame(0, $object->up);
     }
 
@@ -302,7 +291,7 @@ class midgard_replicatorTest extends testcase
         $results = $qb->execute();
         $this->assertCount(1, $results);
 
-        $att = new $classname('8708d5a091f011e49de5c7e771ceea9dea9d');
+        $att = $this->make_object('midgard_attachment', '8708d5a091f011e49de5c7e771ceea9dea9d');
         $blob = new blob($att);
         $this->assertSame('test', $blob->read_content());
     }

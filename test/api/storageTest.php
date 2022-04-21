@@ -20,10 +20,7 @@ class midgard_storageTest extends testcase
     private function clear_user_table()
     {
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
-        $factory = self::$em->getMetadataFactory();
-        $classes = [
-            $factory->getMetadataFor(connection::get_fqcn('midgard_user')),
-        ];
+        $classes = self::get_metadata(['midgard_user']);
         $tool->dropSchema($classes);
     }
 

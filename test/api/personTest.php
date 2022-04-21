@@ -7,8 +7,6 @@
 
 namespace midgard\portable\test;
 
-use midgard\portable\storage\connection;
-
 class personTest extends testcase
 {
     public static function setupBeforeClass() : void
@@ -24,23 +22,20 @@ class personTest extends testcase
 
     public function test_membership()
     {
-        $person_class = connection::get_fqcn('midgard_person');
-        $group_class = connection::get_fqcn('midgard_group');
-        $member_class = connection::get_fqcn('midgard_member');
-        $person = new $person_class;
+        $person = $this->make_object('midgard_person');
         $this->assertTrue($person->create());
-        $grp = new $group_class;
+        $grp = $this->make_object('midgard_group');
         $this->assertTrue($grp->create());
 
-        $member = new $member_class;
+        $member = $this->make_object('midgard_member');
         $member->uid = $person->id;
         $member->gid = $grp->id;
         $this->assertTrue($member->create());
 
         self::$em->clear();
 
-        $member = new $member_class($member->id);
-        $person = new $person_class($person->id);
+        $member = $this->make_object('midgard_member', $member->id);
+        $person = $this->make_object('midgard_person', $person->id);
         $this->assertEquals($person->id, $member->uid);
 
         $parent = $member->get_parent();
@@ -51,7 +46,7 @@ class personTest extends testcase
 
         $this->assertTrue($person->delete());
         $this->assertTrue($person->purge());
-        $member = new $member_class($member->id);
+        $member = $this->make_object('midgard_member', $member->id);
         $this->assert_api('delete', $member);
     }
 }

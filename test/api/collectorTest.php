@@ -17,14 +17,14 @@ class midgard_collectorTest extends testcase
     public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
+        $classes = self::get_metadata([
+            'midgard_topic',
+            'midgard_article',
+            'midgard_user',
+            'midgard_person',
+            'midgard_repligard',
+        ]);
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
-        $classes = [
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_topic')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_article')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_user')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_person')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_repligard')),
-        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
 
@@ -39,14 +39,13 @@ class midgard_collectorTest extends testcase
 
     public function test_construct_with_association_id()
     {
-        $topic_class = connection::get_fqcn('midgard_topic');
         $article_class = connection::get_fqcn('midgard_article');
 
-        $topic = new $topic_class;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
 
-        $article = new $article_class;
+        $article = $this->make_object('midgard_article');
         $article->name = __FUNCTION__;
         $article->topic = $topic->id;
         $article->create();
@@ -84,7 +83,7 @@ class midgard_collectorTest extends testcase
         $classname = connection::get_fqcn('midgard_topic');
 
         // create child topic for main topic
-        $child_topic = new $classname;
+        $child_topic = $this->make_object('midgard_topic');
         $child_topic->name = uniqid("cT_childTopic");
         $child_topic->title = uniqid("cT_childTopic");
         $child_topic->up = self::$_topic->id;
@@ -168,7 +167,7 @@ class midgard_collectorTest extends testcase
         $classname = connection::get_fqcn('midgard_topic');
 
         // create child topic for main topic
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
         $mc = new \midgard_collector($classname, 'id', $topic->id);
@@ -181,13 +180,12 @@ class midgard_collectorTest extends testcase
 
     public function test_set_key_property_guid_link()
     {
-        $person_class = connection::get_fqcn('midgard_person');
         $user_class = connection::get_fqcn('midgard_user');
 
-        $person = new $person_class;
+        $person = $this->make_object('midgard_person');
         $person->create();
 
-        $user = new $user_class;
+        $user = $this->make_object('midgard_user');
         $user->authtype = 'Legacy';
         $user->set_person($person);
         $user->create();

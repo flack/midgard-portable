@@ -18,20 +18,20 @@ class midgard_repligardTest extends testcase
     public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
+
+        $classes = self::get_metadata([
+            'midgard_topic',
+            'midgard_repligard',
+            'midgard_article',
+        ]);
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
-        $classes = [
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_topic')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_repligard')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_article'))
-        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
     }
 
     public function test_class()
     {
-        $classname = connection::get_fqcn('midgard_repligard');
-        $object = new $classname;
+        $object = $this->make_object('midgard_repligard');
         $this->assertInstanceOf(dbobject::class, $object);
         $this->assertNotInstanceOf(mgdobject::class, $object);
         $this->assertNotInstanceOf(metadata::class, $object);
@@ -39,9 +39,7 @@ class midgard_repligardTest extends testcase
 
     public function test_create()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
         self::$em->clear();
@@ -54,9 +52,7 @@ class midgard_repligardTest extends testcase
 
     public function test_update()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
         self::$em->clear();
 
@@ -73,9 +69,7 @@ class midgard_repligardTest extends testcase
 
     public function test_delete()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
         self::$em->clear();
 
@@ -91,9 +85,7 @@ class midgard_repligardTest extends testcase
 
     public function test_purge()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
         self::$em->clear();
 

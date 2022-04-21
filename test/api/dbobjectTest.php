@@ -15,28 +15,25 @@ class dbobjectTest extends testcase
     public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
+        $classes = self::get_metadata([
+            'midgard_language',
+            'midgard_topic',
+            'midgard_repligard',
+        ]);
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
-        $factory = self::$em->getMetadataFactory();
-        $classes = [
-            $factory->getMetadataFor(connection::get_fqcn('midgard_language')),
-            $factory->getMetadataFor(connection::get_fqcn('midgard_topic')),
-            $factory->getMetadataFor(connection::get_fqcn('midgard_repligard')),
-        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
     }
 
     public function test_get_empty_link_property()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $this->assertEquals(0, $topic->up);
     }
 
     public function test_set()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->title = null;
         $topic->code = null;
         $topic->score = null;
@@ -67,8 +64,7 @@ class dbobjectTest extends testcase
 
     public function test_set_nonexistent()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->nonexistent_property = 'xxx';
         $this->assertTrue(property_exists($topic, 'nonexistent_property'));
         $this->assertSame('xxx', $topic->nonexistent_property);
@@ -76,8 +72,7 @@ class dbobjectTest extends testcase
 
     public function test_get_id()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         //This checks the value with reflection internally and expects null
         $this->assertSame(UnitOfWork::STATE_NEW, self::$em->getUnitOfWork()->getEntityState($topic));
         $this->assertSame(0, $topic->id);
@@ -86,11 +81,11 @@ class dbobjectTest extends testcase
     public function test_get()
     {
         $classname = connection::get_fqcn('midgard_topic');
-        $parent = new $classname;
+        $parent = $this->make_object('midgard_topic');
         $parent->name = __FUNCTION__;
         $parent->create();
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->up = $parent->id;
         $topic->create();
         self::$em->clear();
@@ -107,8 +102,7 @@ class dbobjectTest extends testcase
 
     public function test_get_default_date()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
 
         // This simulates data loaded from old Midgard 1 databases
         $ref = new \ReflectionClass($topic);
@@ -121,8 +115,7 @@ class dbobjectTest extends testcase
 
     public function test_isset()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
 
         $this->assertTrue(isset($topic->title));
         $this->assertFalse(isset($topic->something));

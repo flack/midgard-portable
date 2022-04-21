@@ -24,53 +24,50 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_construct()
     {
-        $classname = connection::get_fqcn('midgard_no_metadata');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_no_metadata');
         $this->assertNull($topic->metadata);
     }
 
     public function test_load()
     {
-        $classname = connection::get_fqcn('midgard_no_metadata');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_no_metadata');
         $topic->name = __FUNCTION__;
 
         $this->assert_api('create', $topic);
         self::$em->clear();
 
-        $loaded = new $classname($topic->id);
+        $loaded = $this->make_object('midgard_no_metadata', $topic->id);
         $this->assertEquals($topic->id, $loaded->id);
         $this->assertNotEquals('', $loaded->guid);
         $this->assertEquals($topic->name, $loaded->name);
 
-        $loaded2 = new $classname($topic->guid);
+        $loaded2 = $this->make_object('midgard_no_metadata', $topic->guid);
         $this->assertEquals($topic->id, $loaded2->id);
         $this->assertEquals($topic->name, $loaded2->name);
     }
 
     public function test_create()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $initial = $this->count_results($classname);
+        $initial = $this->count_results('midgard_topic');
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
 
         $this->assert_api('create', $topic);
         $this->assertFalse(empty($topic->guid), 'GUID empty');
-        $this->assertEquals($initial + 1, $this->count_results($classname));
+        $this->assertEquals($initial + 1, $this->count_results('midgard_topic'));
         $this->assertGreaterThan($initial, $topic->id);
 
-        $topic2 = new $classname;
+        $topic2 = $this->make_object('midgard_topic');
         $topic2->up = $topic->id;
         $topic2->name = __FUNCTION__ . '-2';
         $stat = $topic2->create();
         $this->assertTrue($stat);
         $this->assert_api('create', $topic2, MGD_ERR_DUPLICATE);
-        $this->assertEquals($initial + 2, $this->count_results($classname));
+        $this->assertEquals($initial + 2, $this->count_results('midgard_topic'));
         $this->assertEquals($topic->id + 1, $topic2->id);
 
-        $topic3 = new $classname;
+        $topic3 = $this->make_object('midgard_topic');
         $topic3->up = $topic->id;
         $topic3->name = __FUNCTION__ . '-3';
         $stat = $topic3->create();
@@ -79,10 +76,9 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_update()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->create();
-        $topic2 = new $classname;
+        $topic2 = $this->make_object('midgard_topic');
         $topic2->create();
 
         $topic->name = __FUNCTION__ . 'xxx';
@@ -91,7 +87,7 @@ class mgdobject_no_metadataTest extends testcase
         $this->assertTrue($stat);
         self::$em->clear();
 
-        $loaded = new $classname($topic->id);
+        $loaded = $this->make_object('midgard_topic', $topic->id);
         $this->assertEquals($topic->name, $loaded->name);
         $this->assertEquals($topic2->id, $loaded->up, 'Wrong up ID');
         $this->assertEquals('', $loaded->title);
@@ -99,8 +95,7 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_delete()
     {
-        $classname = connection::get_fqcn('midgard_no_metadata');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_no_metadata');
         $topic->name = uniqid(__FUNCTION__);
         $this->assert_api('create', $topic);
 
@@ -112,7 +107,7 @@ class mgdobject_no_metadataTest extends testcase
         $classname = connection::get_fqcn('midgard_no_metadata');
         $con = midgard_connection::get_instance();
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_no_metadata');
         $topic->name = uniqid('t1' . time());
         $topic->create();
 
@@ -123,18 +118,17 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_purge()
     {
-        $classname = connection::get_fqcn('midgard_no_metadata');
-        $initial = $this->count_results($classname, true);
+        $initial = $this->count_results('midgard_no_metadata', true);
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_no_metadata');
         $topic->name = __FUNCTION__;
         $topic->create();
         $id = $topic->id;
         $this->assert_api('purge', $topic);
-        $this->assertEquals($initial, $this->count_results($classname, true));
+        $this->assertEquals($initial, $this->count_results('midgard_no_metadata', true));
         $this->assert_api('purge', $topic, MGD_ERR_NOT_EXISTS);
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_no_metadata');
         $topic->name = __FUNCTION__ . ' 2';
         $topic->create();
         $this->assertEquals($id + 1, $topic->id);
@@ -142,8 +136,7 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_lock()
     {
-        $classname = connection::get_fqcn('midgard_no_metadata');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_no_metadata');
         $topic->create();
 
         $this->assert_api('lock', $topic, MGD_ERR_NO_METADATA);
@@ -151,8 +144,7 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_unlock()
     {
-        $classname = connection::get_fqcn('midgard_no_metadata');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_no_metadata');
         $topic->create();
 
         $this->assert_api('unlock', $topic, MGD_ERR_NO_METADATA);
@@ -160,8 +152,7 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_approve()
     {
-        $classname = connection::get_fqcn('midgard_no_metadata');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_no_metadata');
         $topic->create();
 
         $this->assert_api('approve', $topic, MGD_ERR_NO_METADATA);
@@ -169,8 +160,7 @@ class mgdobject_no_metadataTest extends testcase
 
     public function test_unapprove()
     {
-        $classname = connection::get_fqcn('midgard_no_metadata');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_no_metadata');
         $topic->create();
 
         $this->assert_api('unapprove', $topic, MGD_ERR_NO_METADATA);

@@ -14,22 +14,20 @@ class parameterTest extends testcase
     public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
+
+        $classes = self::get_metadata([
+            'midgard_topic',
+            'midgard_parameter',
+            'midgard_repligard',
+        ]);
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
-        $factory = self::$em->getMetadataFactory();
-        $classes = [
-            $factory->getMetadataFor(connection::get_fqcn('midgard_topic')),
-            $factory->getMetadataFor(connection::get_fqcn('midgard_parameter')),
-            $factory->getMetadataFor(connection::get_fqcn('midgard_repligard')),
-        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
     }
 
     public function test_get_label()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
 
@@ -45,7 +43,7 @@ class parameterTest extends testcase
     {
         $classname = connection::get_fqcn('midgard_topic');
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
 

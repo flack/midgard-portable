@@ -15,16 +15,16 @@ class midgard_query_builderTest extends testcase
     public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
+        $classes = self::get_metadata([
+            'midgard_topic',
+            'midgard_parameter',
+            'midgard_article',
+            'midgard_language',
+            'midgard_repligard',
+            'midgard_person',
+            'midgard_user'
+        ]);
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
-        $classes = [
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_topic')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_parameter')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_article')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_language')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_repligard')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_person')),
-            self::$em->getClassMetadata(connection::get_fqcn('midgard_user'))
-        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
     }
@@ -37,19 +37,18 @@ class midgard_query_builderTest extends testcase
      */
     private function _create_topics($name_prefix)
     {
-        $classname = connection::get_fqcn('midgard_topic');
         $topics = [];
 
-        $topics[0] = new $classname;
+        $topics[0] = $this->make_object('midgard_topic');
         $topics[0]->name = 'A_' . $name_prefix . 'testOne';
         $topics[0]->create();
 
-        $topics[1] = new $classname;
+        $topics[1] = $this->make_object('midgard_topic');
         $topics[1]->up = $topics[0]->id;
         $topics[1]->name = 'B_' . $name_prefix . 'testTwo';
         $topics[1]->create();
 
-        $topics[2] = new $classname;
+        $topics[2] = $this->make_object('midgard_topic');
         $topics[2]->up = $topics[1]->id;
         $topics[2]->name = 'C_' . $name_prefix . 'testThree';
         $topics[2]->create();
@@ -62,7 +61,7 @@ class midgard_query_builderTest extends testcase
         $classname = connection::get_fqcn('midgard_topic');
         $topics = $this->_create_topics(__FUNCTION__);
         $this->assert_api('delete', $topics[2]);
-        $initial = $this->count_results($classname);
+        $initial = $this->count_results('midgard_topic');
         $found = 0;
 
         $qb = new \midgard_query_builder($classname);
@@ -76,9 +75,9 @@ class midgard_query_builderTest extends testcase
     public function test_execute()
     {
         $classname = connection::get_fqcn('midgard_topic');
-        $initial = $this->count_results($classname);
+        $initial = $this->count_results('midgard_topic');
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
         self::$em->clear();
@@ -97,7 +96,7 @@ class midgard_query_builderTest extends testcase
     {
         $classname = connection::get_fqcn('midgard_topic');
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');;
         $topic->name = __FUNCTION__;
         $topic->create();
         $topic->delete();
@@ -154,23 +153,23 @@ class midgard_query_builderTest extends testcase
         $classname = connection::get_fqcn('midgard_person');
         $this->purge_all($classname);
 
-        $person = new $classname;
+        $person = $this->make_object('midgard_person');
         $person->firstname = "John";
         $person->create();
 
-        $person2 = new $classname;
+        $person2 = $this->make_object('midgard_person');
         $person2->firstname = "Bob";
         $person2->create();
 
         $classname = connection::get_fqcn('midgard_user');
         $this->purge_all($classname);
 
-        $user = new $classname;
+        $user = $this->make_object('midgard_user');
         $user->authtype = 'Legacy';
         $user->person = $person->guid;
         $user->create();
 
-        $user2 = new $classname;
+        $user2 = $this->make_object('midgard_user');
         $user2->authtype = 'Legacy';
         $user2->person = $person2->guid;
         $user2->create();
@@ -193,7 +192,7 @@ class midgard_query_builderTest extends testcase
         $classname = connection::get_fqcn('midgard_topic');
         $this->purge_all($classname);
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = "A_" . __FUNCTION__ . "testOne";
         $topic->extra = $topic->name;
         $topic->create();
@@ -213,7 +212,7 @@ class midgard_query_builderTest extends testcase
         $this->purge_all($classname);
 
         // test single constraint
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = "A_" . __FUNCTION__ . "testOne";
         $topic->extra = "special";
         $topic->create();
@@ -227,7 +226,7 @@ class midgard_query_builderTest extends testcase
         $this->assertEquals($topic->id, $results[0]->id);
 
         // test metadata constraint
-        $topic2 = new $classname;
+        $topic2 = $this->make_object('midgard_topic');
         $topic2->name = "B_" . __FUNCTION__ . "testTwo";
         $topic2->metadata_revision = 7;
         $topic2->extra = "";
@@ -240,7 +239,7 @@ class midgard_query_builderTest extends testcase
         $this->assertEquals($topic2->id, $results[0]->id);
 
         // test constraint on join field
-        $topic3 = new $classname;
+        $topic3 = $this->make_object('midgard_topic');
         $topic3->name = "C_" . __FUNCTION__ . "testThee";
         $topic3->metadata_revision = 7;
         $topic3->extra = "special";
@@ -267,14 +266,13 @@ class midgard_query_builderTest extends testcase
         // test join
         // create two languages and link them to the topics
         // then we query for topics with a certain language id
-        $lang_classname = connection::get_fqcn('midgard_language');
-        $lang = new $lang_classname;
+        $lang = $this->make_object('midgard_language');
         $lang->name = "german";
         $lang->code = "de";
         $lang->metadata_revision = 7;
         $lang->create();
 
-        $lang2 = new $lang_classname;
+        $lang2 = $this->make_object('midgard_language');
         $lang2->name = "english";
         $lang2->code = "en";
         $lang2->create();
@@ -383,17 +381,17 @@ class midgard_query_builderTest extends testcase
     {
         $classname = connection::get_fqcn('midgard_topic');
         $extra = 'buildertest';
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__ . 'testOne';
         $topic->extra = $extra;
         $topic->create();
 
-        $topic2 = new $classname;
+        $topic2 = $this->make_object('midgard_topic');
         $topic2->name = __FUNCTION__ . 'testTwo';
         $topic2->extra = $extra;
         $topic2->create();
 
-        $topic3 = new $classname;
+        $topic3 = $this->make_object('midgard_topic');
         $topic3->name = __FUNCTION__ . 'testThree';
         $topic3->extra = $extra;
         $topic3->create();
@@ -544,7 +542,7 @@ class midgard_query_builderTest extends testcase
         self::$em->clear();
         $classname = connection::get_fqcn('midgard_topic');
         $this->purge_all($classname);
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = uniqid(__FUNCTION__);
         $stat = $topic->create();
         $this->assertTrue($stat);
@@ -604,7 +602,7 @@ class midgard_query_builderTest extends testcase
 
         $article_class = connection::get_fqcn('midgard_article');
 
-        $article = new $article_class;
+        $article = $this->make_object('midgard_article');
         $article->topic = $topics[2]->id;
         $article->create();
         self::$em->clear();
@@ -638,7 +636,7 @@ class midgard_query_builderTest extends testcase
         $classname = connection::get_fqcn('midgard_topic');
         $this->purge_all($classname);
 
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = "A_" . __FUNCTION__ . "testOne";
         $topic->extra = "special";
         $topic->create();
@@ -658,7 +656,7 @@ class midgard_query_builderTest extends testcase
         $this->assertTrue($stat);
         $this->assertEquals(0, $qb->count());
 
-        $topic2 = new $classname;
+        $topic2 = $this->make_object('midgard_topic');
         $topic2->name = "A_" . __FUNCTION__ . "testTwo";
         $topic2->up = $topic->id;
         $topic2->create();

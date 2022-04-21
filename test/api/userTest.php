@@ -17,23 +17,22 @@ class userTest extends testcase
     public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
+
+        $classes = self::get_metadata([
+            'midgard_user',
+            'midgard_person',
+            'midgard_repligard',
+        ]);
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
-        $factory = self::$em->getMetadataFactory();
-        $classes = [
-            $factory->getMetadataFor(connection::get_fqcn('midgard_user')),
-            $factory->getMetadataFor(connection::get_fqcn('midgard_person')),
-            $factory->getMetadataFor(connection::get_fqcn('midgard_repligard')),
-        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
     }
 
     public function test_create()
     {
-        $classname = connection::get_fqcn('midgard_user');
-        $initial = $this->count_results($classname);
+        $initial = $this->count_results('midgard_user');
 
-        $user = new $classname;
+        $user = $this->make_object('midgard_user');
         $stat = $user->create();
         $this->assertFalse($stat);
         $this->assertEquals(MGD_ERR_INVALID_PROPERTY_VALUE, midgard_connection::get_instance()->get_error());
@@ -42,21 +41,21 @@ class userTest extends testcase
         $stat = $user->create();
         $this->assertTrue($stat);
         $this->assertEquals(MGD_ERR_OK, midgard_connection::get_instance()->get_error());
-        $this->assertEquals($initial + 1, $this->count_results($classname));
+        $this->assertEquals($initial + 1, $this->count_results('midgard_user'));
         $this->assertTrue(mgd_is_guid($user->guid));
 
         $stat = $user->create();
         $this->assertFalse($stat);
         $this->assertEquals(MGD_ERR_INVALID_PROPERTY_VALUE, midgard_connection::get_instance()->get_error());
 
-        $user2 = new $classname;
+        $user2 = $this->make_object('midgard_user');;
         $user2->login = uniqid(__FUNCTION__);
         $user2->password = 'x';
         $user2->authtype = 'Legacy';
         $stat = $user2->create();
         $this->assertTrue($stat);
 
-        $user3 = new $classname;
+        $user3 = $this->make_object('midgard_user');;
         $user3->login = $user2->login;
         $user3->password = 'x';
         $user3->authtype = 'Legacy';
@@ -67,8 +66,7 @@ class userTest extends testcase
 
     public function test_update()
     {
-        $classname = connection::get_fqcn('midgard_user');
-        $user = new $classname;
+        $user = $this->make_object('midgard_user');
         $user->authtype = 'Legacy';
         $stat = $user->create();
 
@@ -79,10 +77,10 @@ class userTest extends testcase
 
         self::$em->clear();
         $tokens = ['authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password];
-        $loaded = new $classname($tokens);
+        $loaded = $this->make_object('midgard_user', $tokens);
         $this->assertEquals($loaded->login, $user->login);
 
-        $user2 = new $classname;
+        $user2 = $this->make_object('midgard_user');
         $user2->login = uniqid(__FUNCTION__);
         $user2->password = 'x';
         $user2->authtype = 'Legacy';
@@ -105,12 +103,11 @@ class userTest extends testcase
 
     public function test_delete()
     {
-        $classname = connection::get_fqcn('midgard_user');
-        $initial = $this->count_results($classname);
+        $initial = $this->count_results('midgard_user');
 
-        $user = new $classname;
+        $user = $this->make_object('midgard_user');
         $user->authtype = 'Legacy';
-        $user2 = new $classname;
+        $user2 = $this->make_object('midgard_user');
         $user2->authtype = 'Legacy';
         $this->assert_api('create', $user2);
 
@@ -121,13 +118,12 @@ class userTest extends testcase
         $this->assert_api('delete', $user, MGD_ERR_INVALID_PROPERTY_VALUE);
         $this->assert_api('delete', $user2);
         $this->assertEquals('', $user->guid);
-        $this->assertEquals($initial, $this->count_results($classname));
+        $this->assertEquals($initial, $this->count_results('midgard_user'));
     }
 
     public function test_get_id()
     {
-        $classname = connection::get_fqcn('midgard_user');
-        $user = new $classname;
+        $user = $this->make_object('midgard_user');
 
         //This checks the value with reflection internally and expects null
         $this->assertSame(UnitOfWork::STATE_NEW, self::$em->getUnitOfWork()->getEntityState($user));
@@ -136,8 +132,7 @@ class userTest extends testcase
 
     public function test_set_guid()
     {
-        $classname = connection::get_fqcn('midgard_user');
-        $user = new $classname;
+        $user = $this->make_object('midgard_user');
         $user->authtype = 'Legacy';
         $user->login = uniqid();
         $user->password = 'x';
@@ -150,9 +145,7 @@ class userTest extends testcase
 
     public function test_login()
     {
-        $classname = connection::get_fqcn('midgard_user');
-
-        $user = new $classname;
+        $user = $this->make_object('midgard_user');
         $stat = $user->login();
         $this->assertFalse($stat);
 
@@ -165,9 +158,7 @@ class userTest extends testcase
 
     public function test_is_admin()
     {
-        $classname = connection::get_fqcn('midgard_user');
-
-        $user = new $classname;
+        $user = $this->make_object('midgard_user');
         $this->assertFalse($user->is_admin());
         $user->usertype = 2;
         $this->assertTrue($user->is_admin());
@@ -175,9 +166,7 @@ class userTest extends testcase
 
     public function test_login_with_credentials()
     {
-        $classname = connection::get_fqcn('midgard_user');
-
-        $user = new $classname;
+        $user = $this->make_object('midgard_user');
         $user->login = uniqid();
         $user->password = 'x';
         $user->authtype = 'Legacy';
@@ -186,7 +175,7 @@ class userTest extends testcase
 
         $tokens = ['authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password];
 
-        $user2 = new $classname($tokens);
+        $user2 = $this->make_object('midgard_user', $tokens);
         $stat = $user2->login();
         $this->assertTrue($stat);
         $this->assertEquals($user->id, connection::get_user()->id);
@@ -194,9 +183,7 @@ class userTest extends testcase
 
     public function test_login_with_wrong_credentials()
     {
-        $classname = connection::get_fqcn('midgard_user');
-
-        $user = new $classname;
+        $user = $this->make_object('midgard_user');
         $user->login = uniqid();
         $user->password = 'x';
         $user->authtype = 'Legacy';
@@ -206,14 +193,12 @@ class userTest extends testcase
         $tokens = ['authtype' => $user->authtype, 'login' => $user->login, 'password' => $user->password . 'x'];
 
         $this->expectException(exception::class);
-        new $classname($tokens);
+        $this->make_object('midgard_user', $tokens);
     }
 
     public function test_login_with_invalid_credentials()
     {
-        $classname = connection::get_fqcn('midgard_user');
-
-        $user = new $classname;
+        $user = $this->make_object('midgard_user');
         $user->login = uniqid();
         $user->password = 'x';
         $user->authtype = 'Legacy';
@@ -223,14 +208,12 @@ class userTest extends testcase
         $tokens = ['authtype' => $user->authtype, 'password' => $user->password];
 
         $this->expectException(exception::class);
-        new $classname($tokens);
+        $this->make_object('midgard_user', $tokens);
     }
 
     public function test_logout()
     {
-        $classname = connection::get_fqcn('midgard_user');
-
-        $user = new $classname;
+        $user = $this->make_object('midgard_user');
         $user->authtype = 'Legacy';
         $stat = $user->logout();
         $this->assertFalse($stat);
@@ -244,13 +227,12 @@ class userTest extends testcase
 
     public function test_get_person()
     {
-        $person_class = connection::get_fqcn('midgard_person');
         $classname = connection::get_fqcn('midgard_user');
 
-        $person = new $person_class;
+        $person = $this->make_object('midgard_person');
         $person->create();
 
-        $user = new $classname;
+        $user = $this->make_object('midgard_user');
         $user->authtype = 'Legacy';
         $user->set_person($person);
         $user->create();

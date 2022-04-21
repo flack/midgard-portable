@@ -7,8 +7,6 @@
 
 namespace midgard\portable\test;
 
-use midgard\portable\storage\connection;
-
 class metadataTest extends testcase
 {
     protected static $person;
@@ -16,15 +14,15 @@ class metadataTest extends testcase
     public static function setupBeforeClass() : void
     {
         parent::setupBeforeClass();
+
+        $classes = self::get_metadata([
+            'midgard_topic',
+            'midgard_article',
+            'midgard_user',
+            'midgard_person',
+            'midgard_repligard',
+        ]);
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
-        $factory = self::$em->getMetadataFactory();
-        $classes = [
-            $factory->getMetadataFor(connection::get_fqcn('midgard_topic')),
-            $factory->getMetadataFor(connection::get_fqcn('midgard_article')),
-            $factory->getMetadataFor(connection::get_fqcn('midgard_user')),
-            $factory->getMetadataFor(connection::get_fqcn('midgard_person')),
-            $factory->getMetadataFor(connection::get_fqcn('midgard_repligard')),
-        ];
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
         self::$person = self::create_user();
@@ -32,8 +30,7 @@ class metadataTest extends testcase
 
     public function test_alternate_fieldname()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
 
@@ -42,14 +39,13 @@ class metadataTest extends testcase
         $topic->metadata->navnoentry = true;
         $this->assert_api('update', $topic);
 
-        $topic = new $classname($topic->guid);
+        $topic = $this->make_object('midgard_topic', $topic->guid);
         $this->assertTrue($topic->metadata->navnoentry);
     }
 
     public function test_isset()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
 
         $this->assertTrue(isset($topic->metadata->published));
         $this->assertFalse(isset($topic->metadata->something));
@@ -57,8 +53,7 @@ class metadataTest extends testcase
 
     public function test_create()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
 
@@ -69,14 +64,13 @@ class metadataTest extends testcase
 
         self::$em->clear();
 
-        $loaded = new $classname($topic->id);
+        $loaded = $this->make_object('midgard_topic', $topic->id);
         $this->assertEquals($topic->metadata->created->format('Y-m-d H:i:s'), $loaded->metadata->created->format('Y-m-d H:i:s'));
     }
 
     public function test_update()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $topic->create();
 
@@ -94,7 +88,7 @@ class metadataTest extends testcase
 
         self::$em->clear();
 
-        $loaded = new $classname($topic->id);
+        $loaded = $this->make_object('midgard_topic', $topic->id);
         $this->assertEquals($topic->metadata->revision, $loaded->metadata->revision);
         $this->assertEquals($person->guid, $loaded->metadata->revisor);
         $this->assertEquals(369, $topic->metadata->size);
@@ -102,8 +96,7 @@ class metadataTest extends testcase
 
     public function test_delete()
     {
-        $classname = connection::get_fqcn('midgard_topic');
-        $topic = new $classname;
+        $topic = $this->make_object('midgard_topic');
         $topic->name = __FUNCTION__;
         $stat = $topic->create();
         $this->assertTrue($stat, \midgard_connection::get_instance()->get_error_string());

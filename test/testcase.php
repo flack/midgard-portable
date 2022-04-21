@@ -52,6 +52,20 @@ class testcase extends basecase
         return $driver;
     }
 
+    /**
+     * @return \Doctrine\ORM\Mapping\ClassMetadata[]
+     */
+    protected static function get_metadata(array $classnames) : array
+    {
+        $factory = self::$em->getMetadataFactory();
+        $classes = [];
+
+        foreach ($classnames as $name) {
+            $classes[] = $factory->getMetadataFor(connection::get_fqcn($name));
+        }
+        return $classes;
+    }
+
     protected static function create_user()
     {
         $person_class = connection::get_fqcn('midgard_person');
@@ -64,6 +78,15 @@ class testcase extends basecase
         $user->create();
         $user->login();
         return $person;
+    }
+
+    protected function make_object(string $classname, $constructor_args = null) : dbobject
+    {
+        if ($classname == 'midgard_user' && $constructor_args === null) {
+            $constructor_args = [];
+        }
+        $classname = connection::get_fqcn($classname);
+        return new $classname($constructor_args);
     }
 
     /**
@@ -94,7 +117,7 @@ class testcase extends basecase
         if ($include_deleted) {
             self::$em->getFilters()->disable('softdelete');
         }
-        $count = self::$em->createQuery('SELECT COUNT(a) FROM ' . $classname . ' a')->getSingleScalarResult();
+        $count = self::$em->createQuery('SELECT COUNT(a) FROM ' . connection::get_fqcn($classname) . ' a')->getSingleScalarResult();
         if ($include_deleted) {
             self::$em->getFilters()->enable('softdelete');
         }
@@ -105,7 +128,7 @@ class testcase extends basecase
     protected function verify_unpersisted_changes($classname, $guid, $cmp_field, $cmp_value)
     {
         // make sure unpersisted changes has not been persisted
-        $qb = new \midgard_query_builder($classname);
+        $qb = new \midgard_query_builder(connection::get_fqcn($classname));
         $qb->include_deleted();
         $qb->add_constraint('guid', '=', $guid);
         $results = $qb->execute();
