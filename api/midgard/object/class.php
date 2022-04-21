@@ -41,18 +41,12 @@ class midgard_object_class
         return $result["typename"];
     }
 
-    private static function resolve_fqcn(string $classname) : string
-    {
-        $cm = connection::get_em()->getClassMetadata(connection::get_fqcn($classname));
-        return $cm->getName();
-    }
-
     public static function factory(?string $classname, $id = null) : ?dbobject
     {
         if ($classname === null) {
             return null;
         }
-        $classname = self::resolve_fqcn($classname);
+        $classname = connection::get_fqcn($classname);
         return new $classname($id);
     }
 
@@ -63,7 +57,7 @@ class midgard_object_class
         } catch (exception $e) {
             return false;
         }
-        $classname = self::resolve_fqcn($classname);
+        $classname = connection::get_fqcn($classname);
 
         $qb = new \midgard_query_builder($classname);
         $qb->include_deleted();

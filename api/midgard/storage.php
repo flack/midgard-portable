@@ -19,29 +19,26 @@ class midgard_storage
     {
         $em = connection::get_em();
 
-        $cm_repligard = $em->getClassMetadata(connection::get_fqcn('midgard_repligard'));
-        if (!self::create_class_storage($cm_repligard->getName())) {
+        if (!self::create_class_storage(connection::get_fqcn('midgard_repligard'))) {
             return false;
         }
-        $cm_person = $em->getClassMetadata(connection::get_fqcn('midgard_person'));
-        if (!self::create_class_storage($cm_person->getName())) {
+        if (!self::create_class_storage(connection::get_fqcn('midgard_person'))) {
             return false;
         }
-        $cm_user = $em->getClassMetadata(connection::get_fqcn('midgard_user'));
-        if (!self::create_class_storage($cm_user->getName())) {
+        if (!self::create_class_storage(connection::get_fqcn('midgard_user'))) {
             return false;
         }
 
         $admin = $em->find(connection::get_fqcn('midgard_user'), 1);
 
         if ($admin === null) {
-            $fqcn = $cm_person->getName();
+            $fqcn = connection::get_fqcn('midgard_person');
             $person = new $fqcn;
             $person->firstname = 'Midgard';
             $person->lastname = 'Administrator';
             $person->create();
 
-            $fqcn = $cm_user->getName();
+            $fqcn = connection::get_fqcn('midgard_user');
             $admin = new $fqcn;
             $admin->authtype = 'Legacy';
             $admin->authtypeid = 2;
