@@ -89,8 +89,9 @@ class schema extends Command
         $to_update = [];
         $to_create = [];
 
+        $sm = $em->getConnection()->createSchemaManager();
         foreach ($cms as $cm) {
-            if ($em->getConnection()->getSchemaManager()->tablesExist([$cm->getTableName()])) {
+            if ($sm->tablesExist([$cm->getTableName()])) {
                 $to_update[] = $cm;
             } else {
                 $to_create[] = $cm;
@@ -167,7 +168,7 @@ class schema extends Command
         $em = connection::get_em();
         $conn = $em->getConnection();
         $tool = new SchemaTool($em);
-        $from = $conn->getSchemaManager()->createSchema();
+        $from = $conn->createSchemaManager()->createSchema();
         $to = $tool->getSchemaFromMetadata($to_update);
 
         $diff = self::diff($from, $to, $delete);

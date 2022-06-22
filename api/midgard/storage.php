@@ -62,7 +62,7 @@ class midgard_storage
             return false;
         }
 
-        if (!$em->getConnection()->getSchemaManager()->tablesExist([$cm->getTableName()])) {
+        if (!$em->getConnection()->createSchemaManager()->tablesExist([$cm->getTableName()])) {
             $tool = new SchemaTool($em);
             $tool->createSchema([$cm]);
         }
@@ -120,7 +120,7 @@ class midgard_storage
         if ($cm === null) {
             return false;
         }
-        $sm = $em->getConnection()->getSchemaManager();
+        $sm = $em->getConnection()->createSchemaManager();
         if ($sm->tablesExist([$cm->getTableName()])) {
             $tool = new SchemaTool($em);
             $conn = $em->getConnection();
@@ -144,7 +144,7 @@ class midgard_storage
     {
         $em = connection::get_em();
         if ($cm = self::get_cm($em, $classname)) {
-            return $em->getConnection()->getSchemaManager()->tablesExist([$cm->getTableName()]);
+            return $em->getConnection()->createSchemaManager()->tablesExist([$cm->getTableName()]);
         }
         return false;
     }

@@ -56,7 +56,7 @@ class midgard_storageTest extends testcase
 
         $this->assertTrue(midgard_storage::create_class_storage('midgard_topic'));
         $this->assertTrue(midgard_storage::create_class_storage('midgard_topic'));
-        $this->assertTrue(self::$em->getConnection()->getSchemaManager()->tablesExist(['topic']));
+        $this->assertTrue(self::$em->getConnection()->createSchemaManager()->tablesExist(['topic']));
         $this->assertFalse(midgard_storage::create_class_storage('nonexistent'));
 
         // check duplicate tablenames
@@ -88,16 +88,17 @@ class midgard_storageTest extends testcase
         $cm->mapField(['type' => 'string', 'fieldName' => 'testproperty', 'default' => '']);
 
         $this->assertTrue(midgard_storage::update_class_storage('midgard_topic'));
-        $table = self::$em->getConnection()->getSchemaManager()->createSchema()->getTable('topic');
+        $sm = self::$em->getConnection()->createSchemaManager();
+        $table = $sm->createSchema()->getTable('topic');
         $this->assertTrue($table->hasColumn('testproperty'));
 
         //when removing the field from the schema, the column should stay in the DB
         unset($cm->fieldMappings['testproperty']);
         $this->assertTrue(midgard_storage::update_class_storage('midgard_topic'));
-        $table = self::$em->getConnection()->getSchemaManager()->createSchema()->getTable('topic');
+        $table = $sm->createSchema()->getTable('topic');
         $this->assertTrue($table->hasColumn('testproperty'));
 
-        $this->assertTrue(self::$em->getConnection()->getSchemaManager()->tablesExist(['midgard_user']));
+        $this->assertTrue($sm->tablesExist(['midgard_user']));
 
         // check duplicate tablenames
         self::prepare_dtn_connection();
