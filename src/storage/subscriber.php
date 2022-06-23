@@ -24,6 +24,8 @@ use Doctrine\ORM\Tools\ToolEvents;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 
 class subscriber implements EventSubscriber
 {
@@ -174,14 +176,14 @@ class subscriber implements EventSubscriber
         $modified = false;
 
         foreach ($columns as $name => &$config) {
-            if ($platform->getName() === 'sqlite') {
+            if ($platform instanceof SqlitePlatform) {
                 if (   !empty($config['comment'])
                     && $config['comment'] == 'BINARY') {
                     $modified = true;
                     $config['columnDefinition'] = $config['type']->getSQLDeclaration($config, $platform) . ' COLLATE BINARY' . $platform->getDefaultValueDeclarationSQL($config);
                 }
             }
-            if ($platform->getName() === 'mysql') {
+            if ($platform instanceof AbstractMySQLPlatform) {
                 if (!empty($config['comment'])) {
                     if ($config['comment'] == 'BINARY') {
                         $modified = true;

@@ -21,6 +21,7 @@ use midgard_connection;
 use midgard\portable\storage\filter\softdelete;
 use midgard\portable\mapping\factory;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\ORMSetup;
 
 class connection
 {
@@ -190,7 +191,7 @@ class connection
             require $entityfile;
         }
 
-        $config = \Doctrine\ORM\Tools\Setup::createConfiguration($dev_mode, $vardir . '/cache');
+        $config = ORMSetup::createConfiguration($dev_mode, $vardir . '/cache');
         $config->addFilter('softdelete', softdelete::class);
         $config->setMetadataDriverImpl($driver);
         $config->setClassMetadataFactoryName(factory::class);
