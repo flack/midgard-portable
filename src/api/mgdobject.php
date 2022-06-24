@@ -16,6 +16,7 @@ use Doctrine\ORM\Query;
 use midgard_connection;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\EntityNotFoundException;
 
 /**
  * @property metadata $metadata
@@ -125,23 +126,20 @@ abstract class mgdobject extends dbobject
         if ($entity === null) {
             throw exception::not_exists();
         }
-        // According to Doctrine documentation, proxies should be transparent, but in practice,
-        // there will be problems if we don't force-load
-        if (   $entity instanceof Proxy
-            && !$entity->__isInitialized()) {
+        // Normally, the proxy should be automatically loaded when accessing e.g. $entity->guid,
+        // because that triggers the proxy's magic __get method, which initializes. But since mgdobject
+        // is the entity's (grand)parent class, PHP rules dictate that we have access to
+        // its parents' protected variables. Hence, we need to load explicitly.
+        if ($entity instanceof Proxy && !$entity->__isInitialized()) {
             try {
                 $entity->__load();
-            } catch (\Doctrine\ORM\EntityNotFoundException $e) {
+            } catch (EntityNotFoundException $e) {
                 throw exception::object_purged();
             }
         }
         if ($entity instanceof metadata_interface && $entity->{metadata_interface::DELETED_FIELD}) {
             // This can happen when the "deleted" entity is still in EM's identity map
             throw exception::object_deleted();
-        }
-        if (empty($entity->guid)) {
-            // This can happen when a reference proxy to a purged entity is still in EM's identity map
-            throw exception::object_purged();
         }
 
         $this->populate_from_entity($entity);
