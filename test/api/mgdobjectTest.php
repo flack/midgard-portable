@@ -84,6 +84,10 @@ class mgdobjectTest extends testcase
         $this->assertInstanceOf('midgard_error_exception', $e);
         $this->assertEquals(MGD_ERR_NOT_EXISTS, midgard_connection::get_instance()->get_error());
 
+        if (extension_loaded('xdebug') && PHP_VERSION_ID >= 80000) {
+            $this->markTestIncomplete('Workaround for https://bugs.xdebug.org/view.php?id=2100');
+        }
+
         $e = null;
         try {
             $proxy = self::$em->getReference($classname, $id);
