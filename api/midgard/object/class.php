@@ -82,7 +82,6 @@ class midgard_object_class
             return false;
         }
 
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return true;
     }
 

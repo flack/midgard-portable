@@ -44,6 +44,7 @@ class objectmanager
         $this->em->persist($entity);
         $this->em->flush($entity);
         $this->em->detach($entity);
+        exception::ok();
     }
 
     public function update(dbobject $entity)
@@ -59,6 +60,7 @@ class objectmanager
         $this->em->flush($merged);
         $this->em->detach($merged);
         $this->copy_metadata($merged, $entity);
+        exception::ok();
     }
 
     /**
@@ -116,6 +118,7 @@ class objectmanager
         $this->em->detach($copy);
         $this->em->detach($entity);
         $this->copy_metadata($copy, $entity, 'delete');
+        exception::ok();
     }
 
     public function undelete(dbobject $entity)
@@ -139,6 +142,7 @@ class objectmanager
         $this->em->remove($entity);
         $this->em->flush($entity);
         $this->em->detach($entity);
+        exception::ok();
     }
 
     public function approve(dbobject $entity)
@@ -153,6 +157,7 @@ class objectmanager
         $this->em->flush($ref);
         $this->em->detach($entity);
         $this->copy_metadata($ref, $entity, 'approve');
+        exception::ok();
     }
 
     public function unapprove(dbobject $entity)
@@ -167,6 +172,7 @@ class objectmanager
         $this->em->flush($ref);
         $this->em->detach($entity);
         $this->copy_metadata($ref, $entity, 'approve');
+        exception::ok();
     }
 
     public function lock(dbobject $entity)
@@ -181,6 +187,7 @@ class objectmanager
         $this->em->flush($ref);
         $this->em->detach($entity);
         $this->copy_metadata($ref, $entity, 'lock');
+        exception::ok();
     }
 
     public function unlock(dbobject $entity)
@@ -192,6 +199,7 @@ class objectmanager
         $this->em->flush($ref);
         $this->em->detach($entity);
         $this->copy_metadata($ref, $entity, 'lock');
+        exception::ok();
     }
 
     public function new_instance(string $classname) : dbobject

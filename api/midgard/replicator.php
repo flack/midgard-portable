@@ -9,7 +9,6 @@ use midgard\portable\api\dbobject;
 use midgard\portable\api\attachment;
 use midgard\portable\storage\connection;
 use \midgard_datetime as midgard_datetime;
-use \midgard_connection as midgard_connection;
 use \SimpleXMLElement as SimpleXMLElement;
 use midgard\portable\storage\subscriber;
 use Doctrine\Persistence\Mapping\ClassMetadata;
@@ -31,7 +30,7 @@ class midgard_replicator
     public static function export_by_guid(string $guid) : bool
     {
         if (!mgd_is_guid($guid)) {
-            midgard_connection::get_instance()->set_error(exception::INVALID_PROPERTY_VALUE);
+            exception::invalid_property_value();
             return false;
         }
         $result = connection::get_em()
@@ -44,7 +43,7 @@ class midgard_replicator
             ->getSingleResult();
 
         if ($result['object_action'] === subscriber::ACTION_PURGE) {
-            midgard_connection::get_instance()->set_error(exception::OBJECT_PURGED);
+            exception::object_purged();
             return false;
         }
 
@@ -58,7 +57,7 @@ class midgard_replicator
             ->getQuery()
             ->execute();
 
-        midgard_connection::get_instance()->set_error(exception::OK);
+        exception::ok();
         return $result > 0;
     }
 
@@ -151,7 +150,7 @@ class midgard_replicator
     public static function import_object(dbobject $object, bool $force = false) : bool
     {
         if (!mgd_is_guid($object->guid)) {
-            midgard_connection::get_instance()->set_error(exception::INVALID_PROPERTY_VALUE);
+            exception::invalid_property_value();
             return false;
         }
 
@@ -194,7 +193,7 @@ class midgard_replicator
 
         if (   $dbobject->id > 0
             && $dbobject->metadata->revised->format('U') >= $object->metadata->revised->format('U')) {
-            midgard_connection::get_instance()->set_error(exception::OBJECT_IMPORTED);
+            exception::object_imported();
             return false;
         }
 

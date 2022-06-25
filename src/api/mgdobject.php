@@ -145,7 +145,7 @@ abstract class mgdobject extends dbobject
         $this->populate_from_entity($entity);
 
         connection::get_em()->detach($entity);
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+        exception::ok();
         return true;
     }
 
@@ -161,7 +161,7 @@ abstract class mgdobject extends dbobject
         $this->populate_from_entity($entity);
 
         connection::get_em()->detach($entity);
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
+        exception::ok();
         return true;
     }
 
@@ -186,8 +186,6 @@ abstract class mgdobject extends dbobject
             return false;
         }
 
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
-
         return $this->id != 0;
     }
 
@@ -207,7 +205,6 @@ abstract class mgdobject extends dbobject
             exception::internal($e);
             return false;
         }
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
 
         return true;
     }
@@ -219,7 +216,7 @@ abstract class mgdobject extends dbobject
     public function delete(bool $check_dependencies = true) : bool
     {
         if (empty($this->id)) {
-            midgard_connection::get_instance()->set_error(MGD_ERR_INVALID_PROPERTY_VALUE);
+            exception::invalid_property_value();
             return false;
         }
         if (   $check_dependencies
@@ -243,7 +240,6 @@ abstract class mgdobject extends dbobject
             return false;
         }
 
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return true;
     }
 
@@ -602,7 +598,6 @@ abstract class mgdobject extends dbobject
                 $parameter->value = $value;
                 $om->update($parameter);
             }
-            midgard_connection::get_instance()->set_error(MGD_ERR_OK);
             return true;
         } catch (\Exception $e) {
             exception::internal($e);
@@ -666,7 +661,6 @@ abstract class mgdobject extends dbobject
         $att->mimetype = $mimetype;
         try {
             $om->create($att);
-            midgard_connection::get_instance()->set_error(MGD_ERR_OK);
             return $att;
         } catch (\Exception $e) {
             exception::internal($e);
@@ -701,7 +695,6 @@ abstract class mgdobject extends dbobject
             exception::internal($e);
             return false;
         }
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
 
         return true;
     }
@@ -769,7 +762,6 @@ abstract class mgdobject extends dbobject
                 return false;
             }
         }
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
 
         return true;
     }

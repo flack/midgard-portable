@@ -134,7 +134,6 @@ class user extends dbobject
             return false;
         }
 
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return !empty($this->id);
     }
 
@@ -155,7 +154,6 @@ class user extends dbobject
             exception::internal($e);
             return false;
         }
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return true;
     }
 
@@ -174,7 +172,6 @@ class user extends dbobject
             return false;
         }
         $this->guid = '';
-        midgard_connection::get_instance()->set_error(MGD_ERR_OK);
         return true;
     }
 
