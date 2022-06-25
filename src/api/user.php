@@ -10,7 +10,6 @@ namespace midgard\portable\api;
 use midgard\portable\storage\connection;
 use midgard\portable\storage\objectmanager;
 use midgard\portable\api\error\exception;
-use midgard_connection;
 
 /**
  * @property integer $id
