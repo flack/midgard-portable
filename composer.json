@@ -11,8 +11,8 @@
     ],
     "require": {
         "php": ">=7.3",
-        "doctrine/orm": "^2.12",
-        "doctrine/dbal": "^3.1",
+        "doctrine/orm": "^2.13",
+        "doctrine/dbal": "^3.3",
         "symfony/console": ">=3.0.0",
         "symfony/cache": ">=4.4.0",
         "monolog/monolog": "^1.15 || ^2.0",

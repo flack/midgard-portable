@@ -142,7 +142,8 @@ class schema extends Command
      */
     public static function diff(dbal_schema $from, dbal_schema $to, bool $delete = false) : SchemaDiff
     {
-        $diff = (new Comparator)->compare($from, $to);
+        $platform = connection::get_em()->getConnection()->getDatabasePlatform();
+        $diff = (new Comparator($platform))->compareSchemas($from, $to);
 
         foreach ($diff->changedTables as $changed_table) {
             if (!empty($changed_table->renamedColumns)) {
