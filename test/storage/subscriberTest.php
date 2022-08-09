@@ -15,6 +15,8 @@ use Doctrine\DBAL\Schema\Table;
 use PHPUnit\Framework\TestCase;
 use midgard\portable\test\testcase as mgdcase;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 
 class subscriberTest extends TestCase
 {
@@ -35,10 +37,14 @@ class subscriberTest extends TestCase
         $subscriber = new subscriber;
         $subscriber->onSchemaCreateTable($event);
 
-        $pf_name = strtolower($platform->getName());
-        if (array_key_exists($pf_name, $expected)) {
-            $this->assertEquals($expected[$pf_name], $event->getSql());
-        } else {
+        $found = false;
+        foreach ($expected as $classname => $sql) {
+            if ($platform instanceof $classname) {
+                $found = true;
+                $this->assertEquals($sql, $event->getSql());
+            }
+        }
+        if (!$found) {
             $this->assertFalse($event->isDefaultPrevented());
         }
     }
@@ -65,8 +71,8 @@ class subscriberTest extends TestCase
                     ]
                 ],
                 [
-                    'sqlite' => ["CREATE TABLE dummy (password VARCHAR(13) COLLATE BINARY DEFAULT NULL)"],
-                    'mysql' => ["CREATE TABLE dummy (password VARCHAR(13) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT 'BINARY')"],
+                    SqlitePlatform::class => ["CREATE TABLE dummy (password VARCHAR(13) COLLATE BINARY DEFAULT NULL)"],
+                    AbstractMySQLPlatform::class => ["CREATE TABLE dummy (password VARCHAR(13) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT 'BINARY')"],
                 ]
             ],
             [
@@ -88,7 +94,7 @@ class subscriberTest extends TestCase
                     ]
                 ],
                 [
-                    'mysql' => ["CREATE TABLE dummy (settest set('auth') DEFAULT NULL COMMENT 'set(''auth'')')"],
+                    AbstractMySQLPlatform::class => ["CREATE TABLE dummy (settest set('auth') DEFAULT NULL COMMENT 'set(''auth'')')"],
                 ]
             ]
         ];
