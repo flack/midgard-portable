@@ -143,7 +143,8 @@ class schema extends Command
     public static function diff(dbal_schema $from, dbal_schema $to, bool $delete = false) : SchemaDiff
     {
         $platform = connection::get_em()->getConnection()->getDatabasePlatform();
-        $diff = (new Comparator($platform))->compareSchemas($from, $to);
+        $comparator = new Comparator($platform);
+        $diff = $comparator->compareSchemas($from, $to);
 
         foreach ($diff->changedTables as $changed_table) {
             if (!empty($changed_table->renamedColumns)) {
@@ -159,6 +160,12 @@ class schema extends Command
             }
             if (!$delete) {
                 $changed_table->removedColumns = [];
+            }
+            // workaround for https://github.com/doctrine/dbal/issues/5369
+            foreach ($changed_table->changedColumns as $name => $col_diff) {
+                if (!$comparator->diffColumn($col_diff->column, $col_diff->fromColumn)) {
+                    unset($changed_table->changedColumns[$name]);
+                }
             }
         }
         return $diff;
