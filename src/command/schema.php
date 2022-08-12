@@ -18,7 +18,6 @@ use Symfony\Component\Console\Question\Question;
 use midgard_storage;
 use midgard_connection;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\DBAL\Schema\Comparator;
 use Symfony\Component\Console\Input\InputOption;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\DBAL\Schema\Column;
