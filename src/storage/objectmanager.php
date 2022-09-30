@@ -77,7 +77,7 @@ class objectmanager
 
     private function kill_potential_proxies(dbobject $entity)
     {
-        $classname = ClassUtils::getRealClass(get_class($entity));
+        $classname = ClassUtils::getClass($entity);
         $cm = $this->em->getClassMetadata($classname);
         $changed_associations = $entity->__get_changed_associations();
 
@@ -99,7 +99,7 @@ class objectmanager
     public function delete(dbobject $entity)
     {
         //we might deal with a proxy here, so we translate the classname
-        $classname = ClassUtils::getRealClass(get_class($entity));
+        $classname = ClassUtils::getClass($entity);
         $copy = new $classname($entity->id);
 
         //workaround for possible oid collisions in UnitOfWork
