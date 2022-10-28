@@ -47,6 +47,9 @@ class midgard_object_class
             return null;
         }
         $classname = connection::get_fqcn($classname);
+        if (!class_exists($classname)) {
+            throw exception::invalid_object();
+        }
         return new $classname($id);
     }
 
