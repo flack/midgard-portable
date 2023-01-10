@@ -12,6 +12,13 @@ class property implements node
 {
     public $link;
 
+    /**
+     * For backward compatibility only
+     *
+     * @var string
+     */
+    public $reverse;
+
     public $noidlink;
 
     /**
