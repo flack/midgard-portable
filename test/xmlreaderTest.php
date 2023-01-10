@@ -34,12 +34,12 @@ class xmlreaderTest extends TestCase
         $this->assertArrayHasKey('id', $properties);
         $this->assertEquals('guid', $properties['guid']->type);
         $this->assertEquals('guid', $properties['guid']->dbtype);
-        $this->assertEquals(39, sizeof($properties));
+        $this->assertEquals(40, count($properties));
 
         $mixins = $type->get_mixins();
         $this->assertArrayHasKey('metadata', $mixins);
         $this->assertArrayHasKey('metadata_created', $mixins['metadata']->get_properties());
         $this->assertEquals('datetime', $mixins['metadata']->get_property('metadata_created')->type);
-        $this->assertEquals(1, sizeof($mixins));
+        $this->assertEquals(1, count($mixins));
     }
 }

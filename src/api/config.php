@@ -25,6 +25,7 @@ class config
     public $sharedir = '/usr/share/midgard2';
     public $vardir = '/var/lib/midgard2';
     public $cachedir = '/var/cache/midgard2';
+    public $tablecreate = false;
 
     public function read_file_at_path(string $path) : bool
     {

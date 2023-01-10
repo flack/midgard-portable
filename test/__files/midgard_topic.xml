@@ -32,6 +32,9 @@
         <property name="extra"    type="text">
             <description>Extra information about the topic</description>
         </property>
+        <property name="component"    type="string" index="yes">
+            <description>MidCOM component responsible for the topic</description>
+        </property>
         <property name="description" type="text">
             <description>Topic description</description>
         </property>

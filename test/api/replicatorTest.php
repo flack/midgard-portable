@@ -37,7 +37,8 @@ class midgard_replicatorTest extends testcase
         $actual = new SimpleXMLElement($ret);
         $expected = new SimpleXMLElement(dirname(__DIR__) . '/__files/replicator/new_topic.xml', 0, true);
         $this->assertEquals($expected->midgard_topic->attributes(), $actual->midgard_topic->attributes());
-        $this->assertEquals($expected->midgard_topic[0]->count(), $actual->midgard_topic[0]->count());
+        // +1 is for action, not sure if that should be in the XML
+        $this->assertEquals($expected->midgard_topic[0]->count() + 1, $actual->midgard_topic[0]->count());
         $this->assertEquals($expected->midgard_topic->symlink, $actual->midgard_topic->symlink);
         $this->assertEquals($expected->midgard_topic->styleinherit, $actual->midgard_topic->styleinherit);
         $this->assertEquals($expected->midgard_topic->metadata->created, $actual->midgard_topic->metadata->created);

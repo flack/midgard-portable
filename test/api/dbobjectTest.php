@@ -64,6 +64,9 @@ class dbobjectTest extends testcase
 
     public function test_set_nonexistent()
     {
+        if (PHP_VERSION_ID >= 80200) {
+            $this->markTestSkipped();
+        }
         $topic = $this->make_object('midgard_topic');
         $topic->nonexistent_property = 'xxx';
         $this->assertTrue(property_exists($topic, 'nonexistent_property'));

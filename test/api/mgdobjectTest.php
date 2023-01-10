@@ -1028,7 +1028,8 @@ class mgdobjectTest extends testcase
             'symlink' => $topic->symlink,
             'lang' => $topic->lang,
             'birthdate' => $topic->birthdate,
-            'metadata' => $metadata
+            'metadata' => $metadata,
+            'component' => ''
 
         ];
         $this->assertEquals($expected, $topic->__debugInfo());

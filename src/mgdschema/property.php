@@ -71,6 +71,13 @@ class property implements node
     public $unique = false;
 
     /**
+     * The field's default value
+     *
+     * @var mixed
+     */
+    public $default;
+
+    /**
      * Parent type
      *
      * @var type
