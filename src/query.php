@@ -254,7 +254,7 @@ abstract class query
 
                     if (   !$mrp->is_link($part)
                         && !$mrp->is_special_link($part)) {
-                        throw exception::ok();
+                        throw exception::invalid_property($part);
                     }
                     $targetclass = $mrp->get_link_name($part);
                     $current_table = $this->add_join($current_table, $mrp, $part);
@@ -271,7 +271,7 @@ abstract class query
 
         if (   !$cm->hasField($column)
             && !$cm->hasAssociation($column)) {
-            throw exception::ok();
+            throw exception::invalid_property($column);
         }
 
         return [

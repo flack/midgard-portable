@@ -173,9 +173,9 @@ class exception extends base_exception
         return new self($message, self::INVALID_PROPERTY_VALUE);
     }
 
-    public static function invalid_property() : self
+    public static function invalid_property(string $property) : self
     {
-        return new self(self::$messages[self::INVALID_PROPERTY], self::INVALID_PROPERTY);
+        return new self(self::$messages[self::INVALID_PROPERTY] . ': ' . $property, self::INVALID_PROPERTY);
     }
 
     public static function user_data(string $message = 'Unknown error') : self
