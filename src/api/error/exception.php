@@ -43,31 +43,30 @@ class exception extends base_exception
 
     private static $messages = [
         self::OK => "MGD_ERR_OK",
-        self::ACCESS_DENIED => "Access Denied.",
-        self::NO_METADATA => "Metadata class not defined.",
-        self::NOT_OBJECT => "Not Midgard Object.",
-        self::NOT_EXISTS => "Object does not exist.",
-        self::INVALID_NAME => "Invalid characters in object's name.",
-        self::DUPLICATE => "Object already exist.",
-        self::HAS_DEPENDANTS => "Object has dependants.",
-        self::RANGE => "Date range error.",
-        self::NOT_CONNECTED => "Not connected to the Midgard database.",
-        self::SG_NOTFOUND => "Sitegroup not found.",
-        self::INVALID_OBJECT => "Object not registered as Midgard Object.",
-        self::QUOTA => "Quota limit reached.",
-        self::INTERNAL => "Critical internal error. ",
-        self::OBJECT_NAME_EXISTS => "Object with such name exists in tree.",
-        self::OBJECT_NO_STORAGE => "Storage table not defined for object.",
-        self::OBJECT_NO_PARENT => "Parent object in tree not defined.",
-        self::INVALID_PROPERTY_VALUE => "Invalid property value.",
-        self::INVALID_PROPERTY => "Invalid property.",
-        self::USER_DATA => "",
-        self::OBJECT_DELETED => "Object deleted.",
-        self::OBJECT_PURGED => "Object purged.",
-        self::OBJECT_EXPORTED => "Object already exported.",
-        self::OBJECT_IMPORTED => "Object already imported.",
-        self::MISSED_DEPENDENCE => "Missed dependence for object.",
-        self::TREE_IS_CIRCULAR => "Circular reference found in object's tree.",
+        self::ACCESS_DENIED => "Access Denied",
+        self::NO_METADATA => "Metadata class not defined",
+        self::NOT_OBJECT => "Not Midgard Object",
+        self::NOT_EXISTS => "Object does not exist",
+        self::INVALID_NAME => "Invalid characters in object's name",
+        self::DUPLICATE => "Object already exists",
+        self::HAS_DEPENDANTS => "Object has dependants",
+        self::RANGE => "Date range error",
+        self::NOT_CONNECTED => "Not connected to the Midgard database",
+        self::SG_NOTFOUND => "Sitegroup not found",
+        self::INVALID_OBJECT => "Object not registered as Midgard Object",
+        self::QUOTA => "Quota limit reached",
+        self::INTERNAL => "Critical internal error",
+        self::OBJECT_NAME_EXISTS => "Object with this name exists in tree",
+        self::OBJECT_NO_STORAGE => "Storage table not defined for object",
+        self::OBJECT_NO_PARENT => "Parent object in tree not defined",
+        self::INVALID_PROPERTY_VALUE => "Invalid property value",
+        self::INVALID_PROPERTY => "Invalid property",
+        self::OBJECT_DELETED => "Object deleted",
+        self::OBJECT_PURGED => "Object purged",
+        self::OBJECT_EXPORTED => "Object already exported",
+        self::OBJECT_IMPORTED => "Object already imported",
+        self::MISSED_DEPENDENCE => "Missed dependence for object",
+        self::TREE_IS_CIRCULAR => "Circular reference found in object's tree",
         self::OBJECT_IS_LOCKED => "Object is locked",
     ];
 
@@ -147,7 +146,7 @@ class exception extends base_exception
     {
         $message = self::$messages[self::INTERNAL];
         connection::log()->critical($message, ['exception' => $exception]);
-        return new self($message . '. ' . $exception->getMessage(), self::INTERNAL, $exception);
+        return new self($message . ': ' . $exception->getMessage(), self::INTERNAL, $exception);
     }
 
     public static function object_name_exists() : self
@@ -175,7 +174,7 @@ class exception extends base_exception
 
     public static function invalid_property(string $property) : self
     {
-        return new self(self::$messages[self::INVALID_PROPERTY] . ': ' . $property, self::INVALID_PROPERTY);
+        return new self(self::$messages[self::INVALID_PROPERTY] . ' "' . $property . '"', self::INVALID_PROPERTY);
     }
 
     public static function user_data(string $message = 'Unknown error') : self

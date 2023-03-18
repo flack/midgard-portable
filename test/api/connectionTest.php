@@ -18,7 +18,7 @@ class connectionTest extends TestCase
         $connection = new midgard_connection;
         $this->assertEquals('MGD_ERR_OK', $connection->get_error_string());
         $connection->set_error(MGD_ERR_HAS_DEPENDANTS);
-        $this->assertEquals('Object has dependants.', $connection->get_error_string());
+        $this->assertEquals('Object has dependants', $connection->get_error_string());
     }
 
     public function test_set_loglevel()
