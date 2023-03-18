@@ -8,13 +8,11 @@
 use Doctrine\Common\Util\ClassUtils;
 use midgard\portable\storage\connection;
 use midgard\portable\mgdschema\translator;
+use midgard\portable\mapping\classmetadata;
 
 class midgard_reflection_property
 {
-    /**
-     * @var midgard\portable\mapping\classmetadata
-     */
-    private $cm;
+    private classmetadata $cm;
 
     public function __construct($mgdschema_class)
     {

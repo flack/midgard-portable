@@ -27,7 +27,7 @@ abstract class mgdobject extends dbobject
 
     public $action = ''; // <== does this need to do anything?
 
-    private $collections = [];
+    private array $collections = [];
 
     /**
      * @param mixed $id ID or GUID

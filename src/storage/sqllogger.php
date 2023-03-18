@@ -12,10 +12,7 @@ use Doctrine\DBAL\Logging\SQLLogger as base_logger;
 
 class sqllogger implements base_logger
 {
-    /**
-     * @var Logger
-     */
-    private $logger;
+    private Logger $logger;
 
     public function __construct(Logger $logger)
     {

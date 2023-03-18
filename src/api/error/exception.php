@@ -41,7 +41,7 @@ class exception extends base_exception
     const TREE_IS_CIRCULAR = -26;
     const OBJECT_IS_LOCKED = -27;
 
-    private static $messages = [
+    private static array $messages = [
         self::OK => "MGD_ERR_OK",
         self::ACCESS_DENIED => "Access Denied",
         self::NO_METADATA => "Metadata class not defined",

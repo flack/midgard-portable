@@ -15,9 +15,9 @@ namespace midgard\portable\api;
  */
 class person extends mgdobject
 {
-    private $id = 0;
+    private int $id = 0;
 
-    protected $guid = '';
+    protected string $guid = '';
 
     protected $firstname = '';
 

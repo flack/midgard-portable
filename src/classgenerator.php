@@ -20,26 +20,13 @@ use midgard\portable\api\metadata;
 
 class classgenerator
 {
-    /**
-     * @var string
-     */
-    private $output;
+    private string $output = '';
 
-    /**
-     * @var string
-     */
-    private $filename;
+    private string $filename;
 
-    /**
-     * @var manager
-     */
-    private $manager;
+    private manager $manager;
 
-    /**
-     *
-     * @var boolean
-     */
-    private $dev_mode = false;
+    private bool $dev_mode = false;
 
     public function __construct(manager $manager, string $filename, bool $dev_mode = false)
     {

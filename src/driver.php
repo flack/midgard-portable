@@ -18,7 +18,7 @@ use Doctrine\DBAL\Types\Types;
 
 class driver implements driver_interface
 {
-    private $dbtypemap = [
+    private array $dbtypemap = [
         'unsigned integer' => ['type' => Types::INTEGER, 'default' => 0], // <== UNSIGNED in Doctrine\DBAL\Schema\Column
         'integer' => ['type' => Types::INTEGER, 'default' => 0],
         'boolean' => ['type' => Types::BOOLEAN, 'default' => false],
@@ -33,28 +33,24 @@ class driver implements driver_interface
         'double' => ['type' => Types::FLOAT, 'default' => 0.0]
     ];
 
-    private $vardir;
+    private string $vardir;
 
-    private $types;
+    private ?array $types = null;
 
-    private $namespace;
+    private string $namespace;
 
-    private $manager;
+    private manager $manager;
 
     /**
      * keep track of the namespaces already in use and
      * remember the used manager instance for resolving types
-     *
-     * @var array
      */
-    private static $processed_namespaces = [];
+    private static array $processed_namespaces = [];
 
     /**
      * indicates whether the current namespace has been used before
-     *
-     * @var boolean
      */
-    private $is_fresh_namespace;
+    private bool $is_fresh_namespace;
 
     public function __construct(array $schemadirs, string $vardir, string $namespace = 'midgard\\portable\\entities')
     {

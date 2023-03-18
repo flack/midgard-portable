@@ -29,7 +29,7 @@ use Doctrine\DBAL\Schema\Schema as dbal_schema;
  */
 class schema extends Command
 {
-    public $connected = false;
+    public bool $connected = false;
 
     protected function configure()
     {

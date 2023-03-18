@@ -14,11 +14,7 @@ use SimpleXMLElement;
 
 class xmlreader
 {
-    /**
-     *
-     * @var array
-     */
-    private $mixins = [];
+    private array $mixins = [];
 
     /**
      * @return type[]

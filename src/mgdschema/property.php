@@ -23,10 +23,8 @@ class property implements node
 
     /**
      * DB column name (defaults to $this->name)
-     *
-     * @var string
      */
-    public $field;
+    public string $field;
 
     /**
      * Does this field point to a parent
@@ -37,10 +35,8 @@ class property implements node
 
     /**
      * Field name for MdgSchema object
-     *
-     * @var string
      */
-    public $name;
+    public string $name;
 
     /**
      * Helpttext
@@ -51,31 +47,23 @@ class property implements node
 
     /**
      * Should an index be created for the column
-     *
-     * @var boolean
      */
-    public $index = false;
+    public bool $index = false;
 
     /**
      * Field type as written in XML
-     *
-     * @var string
      */
-    public $type;
+    public string $type;
 
     /**
      * DB field type (defaults to $this->type)
-     *
-     * @var string
      */
-    public $dbtype;
+    public string $dbtype;
 
     /**
      * Are values unique?
-     *
-     * @var boolean
      */
-    public $unique = false;
+    public bool $unique = false;
 
     /**
      * The field's default value
@@ -86,10 +74,8 @@ class property implements node
 
     /**
      * Parent type
-     *
-     * @var type
      */
-    private $mgdschematype;
+    private type $mgdschematype;
 
     public function __construct(type $parent, string $name, string $type)
     {

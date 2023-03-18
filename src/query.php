@@ -15,41 +15,17 @@ use Doctrine\ORM\Query\Expr\Composite;
 
 abstract class query
 {
-    /**
-     *
-     * @var \Doctrine\ORM\QueryBuilder
-     */
-    protected $qb;
+    protected QueryBuilder $qb;
 
-    /**
-     *
-     * @var boolean
-     */
-    protected $include_deleted = false;
+    protected bool $include_deleted = false;
 
-    /**
-     *
-     * @var int
-     */
-    protected $parameters = 0;
+    protected int $parameters = 0;
 
-    /**
-     *
-     * @var string
-     */
-    protected $classname = null;
+    protected string $classname;
 
-    /**
-     *
-     * @var array
-     */
-    protected $groupstack = [];
+    protected array $groupstack = [];
 
-    /**
-     *
-     * @var array
-     */
-    protected $join_tables = [];
+    protected array $join_tables = [];
 
     public function __construct(string $class)
     {

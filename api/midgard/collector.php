@@ -12,18 +12,12 @@ class midgard_collector extends midgard_query_builder
 {
     /**
      * the results determined by execute
-     *
-     * @var array
      */
-    private $_results = null;
+    private ?array $_results = null;
 
-    /**
-     *
-     * @var string
-     */
-    private $key_property = "guid";
+    private string $key_property = "guid";
 
-    private $value_properties = [];
+    private array $value_properties = [];
 
     public function __construct(string $class, string $field = null, $value = null)
     {

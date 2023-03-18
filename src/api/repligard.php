@@ -16,7 +16,7 @@ use midgard\portable\storage\subscriber;
  */
 class repligard extends dbobject
 {
-    protected $id = 0;
+    protected int $id = 0;
 
     protected $typename = '';
 

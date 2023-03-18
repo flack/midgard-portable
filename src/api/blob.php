@@ -15,7 +15,7 @@ class blob
 
     public $content;
 
-    protected $attachment;
+    protected attachment $attachment;
 
     public function __construct(attachment $attachment, string $encoding = 'UTF-8')
     {

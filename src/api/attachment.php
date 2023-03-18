@@ -18,7 +18,7 @@ namespace midgard\portable\api;
  */
 class attachment extends mgdobject
 {
-    protected $guid = '';
+    protected string $guid = '';
 
     protected $name = '';
     protected $title = '';

@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping\ClassMetadata as base_metadata;
 
 class classmetadata extends base_metadata
 {
-    public $midgard = [
+    public array $midgard = [
         'parent' => null,
         'parentfield' => null,
         'upfield' => null,

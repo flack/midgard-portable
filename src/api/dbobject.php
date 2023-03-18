@@ -13,7 +13,7 @@ use midgard_datetime;
 
 abstract class dbobject
 {
-    protected $guid = '';
+    protected string $guid = '';
 
     /**
      * @var \midgard\portable\mapping\classmetadata
@@ -24,10 +24,8 @@ abstract class dbobject
      * Simple map of association fields changed during the object's lifetime
      *
      * We need this for some workarounds for proxy-related problems during changeset calculation
-     *
-     * @var array
      */
-    protected $changed_associations = [];
+    protected array $changed_associations = [];
 
     /**
      * {@inheritDoc}

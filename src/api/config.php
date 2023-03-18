@@ -8,24 +8,24 @@ namespace midgard\portable\api;
 
 class config
 {
-    public $dbtype = 'MySQL';
-    public $database = 'midgard';
+    public string $dbtype = 'MySQL';
+    public string $database = 'midgard';
     public $port = 0;
-    public $dbuser = '';
-    public $dbpass = '';
-    public $dbdir = '';
-    public $host = 'localhost';
-    public $logfilename = '';
-    public $loglevel = 'warn';
-    public $midgardusername = 'admin';
-    public $midgardpassword = 'password';
-    public $authtype = '';
-    public $pamfile = '';
-    public $blobdir = '/var/lib/midgard2/blobs';
-    public $sharedir = '/usr/share/midgard2';
-    public $vardir = '/var/lib/midgard2';
-    public $cachedir = '/var/cache/midgard2';
-    public $tablecreate = false;
+    public string $dbuser = '';
+    public string $dbpass = '';
+    public string $dbdir = '';
+    public string $host = 'localhost';
+    public string $logfilename = '';
+    public string $loglevel = 'warn';
+    public string $midgardusername = 'admin';
+    public string $midgardpassword = 'password';
+    public string $authtype = '';
+    public string $pamfile = '';
+    public string $blobdir = '/var/lib/midgard2/blobs';
+    public string $sharedir = '/usr/share/midgard2';
+    public string $vardir = '/var/lib/midgard2';
+    public string $cachedir = '/var/cache/midgard2';
+    public bool $tablecreate = false;
 
     public function read_file_at_path(string $path) : bool
     {

@@ -25,20 +25,15 @@ use Doctrine\ORM\ORMSetup;
 
 class connection
 {
-    /**
-     * @var Logger
-     */
-    private static $logger;
+    private static ?Logger $logger = null;
 
     /**
      * Loglevel translation table.
      *
      * The semantics of info and notice/message are unfortunately reversed between Monolog
      * and Midgard, so it looks a bit confusing..
-     *
-     * @var array
      */
-    private static $loglevels = [
+    private static array $loglevels = [
         'error' => Logger::ERROR,
         'warn' => Logger::WARNING,
         'warning' => Logger::WARNING,
@@ -49,31 +44,21 @@ class connection
 
     /**
      * Flag for automatically starting up during initialize
-     *
-     * @var boolean
      */
-    private static $autostart = true;
+    private static bool $autostart = true;
 
     /**
      * Initialization parameters
-     *
-     * @param array
      */
-    private static $parameters = [];
+    private static array $parameters = [];
 
-    private $user;
+    private ?user $user = null;
 
-    private $namespace;
+    private string $namespace;
 
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
-    protected $em;
+    protected EntityManager $em;
 
-    /**
-     * @var \midgard\portable\storage\connection
-     */
-    protected static $instance;
+    protected static ?self $instance = null;
 
     public function __construct(EntityManager $em, string $namespace)
     {

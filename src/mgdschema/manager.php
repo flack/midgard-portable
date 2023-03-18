@@ -15,28 +15,18 @@ class manager
     /**
      * @var type[]
      */
-    private $types;
+    private ?array $types = null;
 
     /**
      * @var string[]
      */
-    private $schemadirs;
+    private array $schemadirs;
 
-    /**
-     * @var string
-     */
-    private $namespace;
+    private string $namespace;
 
-    /**
-     * @var array
-     */
-    private $merged_types = [];
+    private array $merged_types = [];
 
-    /**
-     *
-     * @var array
-     */
-    private $child_classes = [];
+    private array $child_classes = [];
 
     public function __construct(array $schemadirs, string $namespace)
     {

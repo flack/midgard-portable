@@ -15,7 +15,7 @@ class type
 
     public $table;
 
-    public $extends = '\\midgard\\portable\\api\\mgdobject';
+    public string $extends = '\\midgard\\portable\\api\\mgdobject';
 
     public $primaryfield;
 
@@ -25,23 +25,23 @@ class type
 
     public $upfield;
 
-    public $has_metadata = true;
+    public bool $has_metadata = true;
 
-    public $subtypes = [];
+    public array $subtypes = [];
 
-    private $dbfields = [];
+    private array $dbfields = [];
 
-    public $field_aliases = [];
+    public array $field_aliases = [];
 
     /**
      * @var mixin[]
      */
-    protected $mixins = [];
+    protected array $mixins = [];
 
     /**
      * @var property[]
      */
-    private $properties = [];
+    private array $properties = [];
 
     public function __construct(SimpleXMLElement $attributes)
     {

@@ -35,9 +35,9 @@ namespace midgard\portable\api;
  */
 class metadata
 {
-    private $object;
+    private mgdobject $object;
 
-    public function __construct($object)
+    public function __construct(mgdobject $object)
     {
         $this->object = $object;
     }

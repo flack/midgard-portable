@@ -11,7 +11,7 @@ use midgard\portable\api\config;
 
 class configTest extends testcase
 {
-    private $directory;
+    private string $directory;
 
     public function setUp() : void
     {

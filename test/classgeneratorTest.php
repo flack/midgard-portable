@@ -13,7 +13,7 @@ use midgard\portable\storage\interfaces\metadata;
 
 class classgeneratorTest extends testcase
 {
-    private $directory;
+    private string $directory;
 
     public function setUp() : void
     {

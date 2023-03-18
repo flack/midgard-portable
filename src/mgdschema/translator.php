@@ -19,7 +19,7 @@ class translator
     const TYPE_TIMESTAMP = 139645924049440;
     const TYPE_GUID = 139645923896704;
 
-    private static $typemap = [
+    private static array $typemap = [
         'unsigned integer' => self::TYPE_UINT,
         'integer' => self::TYPE_INT,
         'boolean' => self::TYPE_BOOLEAN,

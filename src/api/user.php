@@ -28,11 +28,11 @@ class user extends dbobject
 
     protected $id;
 
-    protected $properties = [];
+    protected array $properties = [];
 
     protected $person;
 
-    protected $guid = '';
+    protected string $guid = '';
 
     protected $login = '';
 

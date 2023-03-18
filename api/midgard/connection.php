@@ -12,23 +12,19 @@ use midgard\portable\api\user;
 
 class midgard_connection
 {
-    /**
-     *
-     * @var config
-     */
-    public $config;
+    public ?config $config = null;
 
-    private static $instance;
+    private static ?self $instance = null;
 
-    private $error_code = exception::OK;
+    private int $error_code = exception::OK;
 
-    private $error_string;
+    private ?string $error_string = null;
 
     private $loglevel;
 
-    private $available_loglevels = ['error', 'warn', 'warning', 'info', 'message', 'debug'];
+    private array $available_loglevels = ['error', 'warn', 'warning', 'info', 'message', 'debug'];
 
-    private $replication_enabled = true;
+    private bool $replication_enabled = true;
 
     public static function get_instance() : self
     {
