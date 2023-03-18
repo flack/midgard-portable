@@ -10,7 +10,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    
+
     services:
       mysql:
         image: mysql:latest
@@ -26,7 +26,7 @@ jobs:
 
     strategy:
       matrix:
-        php: ['7.3', '7.4', '8.0', '8.1']
+        php: ['7.3', '7.4', '8.0', '8.1', '8.2']
         db: ['mysql', 'sqlite']
       fail-fast: false
 
@@ -45,7 +45,7 @@ jobs:
       if: "${{ matrix.db == 'mysql' }}"
       run: |
         mysql --host=localhost --port=${{ job.services.mysql.ports[3306] }} --protocol=TCP -u root -e 'create database IF NOT EXISTS mp_test;'
-      
+
     - name: Cache Composer packages
       id: composer-cache
       uses: actions/cache@v2
@@ -64,6 +64,6 @@ jobs:
       # so for now, we skip one of the 7.3 tasks
       if: "${{ matrix.db != 'mysql' || matrix.php != '7.3'}}"
       run: vendor/bin/phpunit
-      env: 
+      env:
         DB: travis/${{ matrix.db }}
         MYSQL_PORT: ${{ job.services.mysql.ports[3306] }}
