@@ -568,8 +568,8 @@ class midgard_query_builderTest extends testcase
 
         $qb = new \midgard_query_builder($classname);
         $qb->add_constraint('id', 'NOT IN', [$topics[0]->id, $topics[1]->id]);
-        $this->assertEquals(1, $qb->count());
         $results = $qb->execute();
+        $this->assertCount(1, $results);
         $this->assertEquals($topics[2]->id, $results[0]->id);
 
         $qb = new \midgard_query_builder($classname);
@@ -579,14 +579,14 @@ class midgard_query_builderTest extends testcase
 
         $qb = new \midgard_query_builder($classname);
         $qb->add_constraint('up', 'NOT IN', [$topics[0]->id, $topics[1]->id]);
-        $this->assertEquals(1, $qb->count());
         $results = $qb->execute();
+        $this->assertCount(1, $results);
         $this->assertEquals($topics[0]->id, $results[0]->id);
 
         $qb = new \midgard_query_builder($classname);
         $qb->add_constraint('up', 'IN', [$topics[0]->up]);
-        $this->assertEquals(1, $qb->count());
         $results = $qb->execute();
+        $this->assertCount(1, $results);
         $this->assertEquals($topics[0]->id, $results[0]->id);
     }
 
@@ -610,20 +610,20 @@ class midgard_query_builderTest extends testcase
 
         $qb = new \midgard_query_builder($classname);
         $qb->add_constraint('up', 'INTREE', $topics[1]->id);
-        $this->assertEquals(1, $qb->count());
         $results = $qb->execute();
+        $this->assertCount(1, $results);
         $this->assertEquals($topics[2]->id, $results[0]->id);
 
         $qb = new \midgard_query_builder($article_class);
         $qb->add_constraint('topic', 'INTREE', $topics[0]->id);
-        $this->assertEquals(1, $qb->count());
         $results = $qb->execute();
+        $this->assertCount(1, $results);
         $this->assertEquals($article->id, $results[0]->id);
 
         $qb = new \midgard_query_builder($article_class);
         $qb->add_constraint('topic.up', 'INTREE', $topics[0]->id);
-        $this->assertEquals(1, $qb->count());
         $results = $qb->execute();
+        $this->assertCount(1, $results);
         $this->assertEquals($article->id, $results[0]->id);
     }
 

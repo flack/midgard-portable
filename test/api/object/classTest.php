@@ -59,7 +59,7 @@ class classTest extends testcase
         } catch (exception $e) {
         }
         $this->assertInstanceOf('midgard_error_exception', $e);
-        $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
+        $this->assertEquals(MGD_ERR_NOT_EXISTS, midgard_connection::get_instance()->get_error());
     }
 
     public function test_get_object_by_guid_deleted()
@@ -74,7 +74,7 @@ class classTest extends testcase
         } catch (exception $e) {
         }
         $this->assertInstanceOf('midgard_error_exception', $e);
-        $this->assertEquals(MGD_ERR_OBJECT_DELETED, \midgard_connection::get_instance()->get_error());
+        $this->assertEquals(MGD_ERR_OBJECT_DELETED, midgard_connection::get_instance()->get_error());
     }
 
     public function test_get_object_by_guid_purged()
@@ -89,7 +89,7 @@ class classTest extends testcase
         } catch (exception $e) {
         }
         $this->assertInstanceOf('midgard_error_exception', $e);
-        $this->assertEquals(MGD_ERR_OBJECT_PURGED, \midgard_connection::get_instance()->get_error());
+        $this->assertEquals(MGD_ERR_OBJECT_PURGED, midgard_connection::get_instance()->get_error());
     }
 
     public function test_get_object_by_guid_invalid()
@@ -100,7 +100,7 @@ class classTest extends testcase
         } catch (exception $e) {
         }
         $this->assertInstanceOf('midgard_error_exception', $e);
-        $this->assertEquals(MGD_ERR_NOT_EXISTS, \midgard_connection::get_instance()->get_error());
+        $this->assertEquals(MGD_ERR_NOT_EXISTS, midgard_connection::get_instance()->get_error());
     }
 
     public function test_get_object_by_guid_no_metadata()
