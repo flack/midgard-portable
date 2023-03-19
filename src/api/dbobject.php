@@ -159,8 +159,6 @@ abstract class dbobject
 
     protected function initialize()
     {
-        if ($this->cm === null) {
-            $this->cm = connection::get_em()->getClassMetadata(get_class($this));
-        }
+        $this->cm ??= connection::get_em()->getClassMetadata(get_class($this));
     }
 }

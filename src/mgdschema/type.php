@@ -56,9 +56,7 @@ class type
 
     public function add_property(node $property, string $name = null)
     {
-        if ($name === null) {
-            $name = $property->name;
-        }
+        $name ??= $property->name;
 
         if ($property instanceof mixin) {
             $this->mixins[$name] = $property;

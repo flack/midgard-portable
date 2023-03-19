@@ -89,9 +89,7 @@ class driver implements driver_interface
 
     private function initialize()
     {
-        if ($this->types === null) {
-            $this->types = $this->manager->get_types();
-        }
+        $this->types ??= $this->manager->get_types();
     }
 
     /**
@@ -205,9 +203,7 @@ class driver implements driver_interface
             $metadata->mapField($mapping);
 
             if ($property->index) {
-                if (empty($metadata->table['indexes'])) {
-                    $metadata->table['indexes'] = [];
-                }
+                $metadata->table['indexes'] ??= [];
                 $metadata->table['indexes'][$type->name . '_' . $property->name . '_idx'] = ['columns' => [$property->field]];
             }
         }

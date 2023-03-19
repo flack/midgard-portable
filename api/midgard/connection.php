@@ -28,10 +28,7 @@ class midgard_connection
 
     public static function get_instance() : self
     {
-        if (self::$instance === null) {
-            self::$instance = new static;
-        }
-        return self::$instance;
+        return self::$instance ??= new static;
     }
 
     public function copy() : self
@@ -78,10 +75,7 @@ class midgard_connection
 
     public function get_error_string()
     {
-        if ($this->error_string === null) {
-            return exception::get_error_string($this->error_code);
-        }
-        return $this->error_string;
+        return $this->error_string ?? exception::get_error_string($this->error_code);
     }
 
     public function set_error_string(string $string)
