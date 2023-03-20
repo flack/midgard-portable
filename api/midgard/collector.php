@@ -124,21 +124,14 @@ class midgard_collector extends midgard_query_builder
     }
 
     /**
-     *
-     * @param string $key
      * @return array
      */
-    public function get($key)
+    public function get(string $key)
     {
         return $this->_results[$key] ?? false;
     }
 
-    /**
-     *
-     * @param string $key
-     * @param string $property
-     */
-    public function get_subkey($key, string $property)
+    public function get_subkey(string $key, string $property)
     {
         return $this->_results[$key][$property] ?? false;
     }

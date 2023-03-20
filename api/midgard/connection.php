@@ -62,18 +62,18 @@ class midgard_connection
         return is_object($this->config);
     }
 
-    public function get_error()
+    public function get_error() : int
     {
         return $this->error_code;
     }
 
-    public function set_error($errorcode)
+    public function set_error(int $errorcode)
     {
         $this->error_code = $errorcode;
         $this->error_string = null;
     }
 
-    public function get_error_string()
+    public function get_error_string() : string
     {
         return $this->error_string ?? exception::get_error_string($this->error_code);
     }

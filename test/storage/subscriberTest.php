@@ -23,7 +23,7 @@ class subscriberTest extends TestCase
     /**
      * @dataProvider provider_onSchemaCreateTable
      */
-    public function test_onSchemaCreateTable($columns, $expected)
+    public function test_onSchemaCreateTable(array $columns, array $expected)
     {
         mgdcase::prepare_connection('', null, uniqid(__CLASS__));
 

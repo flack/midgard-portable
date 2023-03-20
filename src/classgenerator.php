@@ -52,7 +52,7 @@ class classgenerator
         }
 
         $types = $this->manager->get_types();
-        uasort($types, function ($a, $b) {
+        uasort($types, function (type $a, type $b) {
             if (   !empty($a->extends)
                 && !empty($b->extends)) {
                 return strnatcmp($a->extends, $b->extends);
@@ -235,7 +235,7 @@ class classgenerator
         $this->write_annotations($type);
         $this->add_line('class ' . $type->name . ' extends ' . $type->extends);
         $mixins = $type->get_mixins();
-        $interfaces = array_filter(array_map(function ($name) {
+        $interfaces = array_filter(array_map(function (string $name) {
             if (interface_exists('\\midgard\\portable\\storage\\interfaces\\' . $name)) {
                 return '\\midgard\\portable\\storage\\interfaces\\' . $name;
             }

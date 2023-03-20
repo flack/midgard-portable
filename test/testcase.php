@@ -101,13 +101,7 @@ class testcase extends basecase
         return $count;
     }
 
-    /**
-     *
-     * @param string $classname
-     * @param boolean $include_deleted
-     * @return number the total number of records for this classname
-     */
-    protected function count_results($classname, $include_deleted = false)
+    protected function count_results(string $classname, bool $include_deleted = false) : int
     {
         self::$em->clear();
         if ($include_deleted) {
@@ -121,7 +115,7 @@ class testcase extends basecase
         return (int) $count;
     }
 
-    protected function verify_unpersisted_changes($classname, $guid, $cmp_field, $cmp_value)
+    protected function verify_unpersisted_changes(string $classname, string $guid, string $cmp_field, $cmp_value)
     {
         // make sure unpersisted changes has not been persisted
         $qb = new \midgard_query_builder(connection::get_fqcn($classname));
@@ -133,13 +127,13 @@ class testcase extends basecase
         $this->assertEquals($cmp_value, $loaded->{$cmp_field}, "This object change for field \"" . $cmp_field . "\" should have not been persisted!");
     }
 
-    protected function assert_api($function, dbobject $object, $expected_error = MGD_ERR_OK)
+    protected function assert_api(string $function, dbobject $object, int $expected_error = MGD_ERR_OK)
     {
         $this->assertEquals(($expected_error === MGD_ERR_OK), $object->$function(), $function . '() returned: ' . midgard_connection::get_instance()->get_error_string());
         $this->assert_error($expected_error);
     }
 
-    protected function assert_error($error_code)
+    protected function assert_error(int $error_code)
     {
         $this->assertEquals(exception::get_error_string($error_code), exception::get_error_string(midgard_connection::get_instance()->get_error()), 'Unexpected error code');
     }

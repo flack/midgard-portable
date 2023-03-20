@@ -14,7 +14,7 @@ class midgard_reflection_property
 {
     private classmetadata $cm;
 
-    public function __construct($mgdschema_class)
+    public function __construct(string $mgdschema_class)
     {
         // we might get a proxy class, so we need to translate
         $classname = ClassUtils::getRealClass($mgdschema_class);

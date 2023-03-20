@@ -45,7 +45,7 @@ class midgard_storageTest extends testcase
         $this->assertTrue(password_verify('password', $admin->password));
     }
 
-    private function assertCreateClassStorageSuccess($classname)
+    private function assertCreateClassStorageSuccess(string $classname)
     {
         $this->assertTrue(midgard_storage::create_class_storage($classname), 'Failed to create the class storage for ' . $classname);
     }
@@ -67,12 +67,12 @@ class midgard_storageTest extends testcase
         $this->assertCreateClassStorageSuccess('org_openpsa_contacts_list');
     }
 
-    private function assertUpdateClassStorageSuccess($classname)
+    private function assertUpdateClassStorageSuccess(string $classname)
     {
         $this->assertTrue(midgard_storage::update_class_storage($classname), 'Failed to update the class storage for ' . $classname);
     }
 
-    private function assertUpdateClassStorageFail($classname)
+    private function assertUpdateClassStorageFail(string $classname)
     {
         $this->assertFalse(midgard_storage::update_class_storage($classname), 'Without previous creation, the update of the class storage for ' . $classname . ' should fail');
     }
@@ -109,7 +109,7 @@ class midgard_storageTest extends testcase
         $this->assertUpdateClassStorageSuccess('org_openpsa_contacts_list');
     }
 
-    private function assertClassStorageExists($classname)
+    private function assertClassStorageExists(string $classname)
     {
         $this->assertTrue(midgard_storage::class_storage_exists($classname), 'We should have a class storage for ' . $classname);
     }

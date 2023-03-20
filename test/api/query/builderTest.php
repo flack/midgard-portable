@@ -31,11 +31,8 @@ class midgard_query_builderTest extends testcase
 
     /**
      * creates three topics for testing
-     *
-     * @param string $name_prefix
-     * @return array
      */
-    private function _create_topics($name_prefix)
+    private function _create_topics(string $name_prefix) : array
     {
         $topics = [];
 
