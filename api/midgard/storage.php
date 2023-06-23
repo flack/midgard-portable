@@ -124,10 +124,10 @@ class midgard_storage
         if ($sm->tablesExist([$cm->getTableName()])) {
             $tool = new SchemaTool($em);
             $conn = $em->getConnection();
-            $from = $sm->createSchema();
+            $from = $sm->introspectSchema();
             $to = $tool->getSchemaFromMetadata([$cm]);
             $diff = schema::diff($from, $to, false);
-            $sql = $diff->toSaveSql($conn->getDatabasePlatform());
+            $sql = $conn->getDatabasePlatform()->getAlterSchemaSQL($diff);
 
             foreach ($sql as $sql_line) {
                 $conn->executeQuery($sql_line);

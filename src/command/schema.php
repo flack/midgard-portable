@@ -160,6 +160,9 @@ class schema extends Command
                 $changed_table->removedColumns = [];
             }
         }
+        if (!$delete) {
+            $diff->removedTables = [];
+        }
         return $diff;
     }
 
@@ -168,16 +171,12 @@ class schema extends Command
         $em = connection::get_em();
         $conn = $em->getConnection();
         $tool = new SchemaTool($em);
-        $from = $conn->createSchemaManager()->createSchema();
+        $from = $conn->createSchemaManager()->introspectSchema();
         $to = $tool->getSchemaFromMetadata($to_update);
 
         $diff = self::diff($from, $to, $delete);
 
-        if ($delete) {
-            $sql = $diff->toSql($conn->getDatabasePlatform());
-        } else {
-            $sql = $diff->toSaveSql($conn->getDatabasePlatform());
-        }
+        $sql = $conn->getDatabasePlatform()->getAlterSchemaSQL($diff);
 
         if (empty($sql)) {
             return;
