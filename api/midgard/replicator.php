@@ -172,17 +172,13 @@ class midgard_replicator
                 if (!$force) {
                     return false;
                 }
-                $result = connection::get_em()
-                    ->createQueryBuilder()
-                    ->delete(connection::get_fqcn('midgard_repligard'), 'c')
-                    ->where('c.guid = ?0')
-                    ->setParameter(0, $object->guid)
-                    ->getQuery()
-                    ->execute();
-
-                if ($result == 0) {
+                if ($repligard_entry = connection::get_em()->getRepository(connection::get_fqcn('midgard_repligard'))->findOneBy(['guid' => $object->guid])) {
+                    connection::get_em()->remove($repligard_entry);
+                    connection::get_em()->flush($repligard_entry);
+                } else {
                     return false;
                 }
+
                 //fall-through
 
             default:
