@@ -22,7 +22,6 @@ use midgard\portable\storage\filter\softdelete;
 use midgard\portable\mapping\factory;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\ORMSetup;
-use Doctrine\DBAL\Logging\Connection as connection_logger;
 use Doctrine\DBAL\Logging\Middleware;
 
 class connection
