@@ -190,6 +190,7 @@ class connection
         $em->getEventManager()->addEventSubscriber(new subscriber);
 
         Type::overrideType(Types::DATETIME_MUTABLE, datetime::class);
+        Type::overrideType(Types::DATE_MUTABLE, datetime::class);
 
         $midgard = midgard_connection::get_instance();
         $level = self::$loglevels[$midgard->get_loglevel()];

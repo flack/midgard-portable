@@ -100,7 +100,7 @@ abstract class dbobject
                 $value = (boolean) $value;
             } elseif ($mapping['type'] === 'float') {
                 $value = (float) $value;
-            } elseif ($mapping['type'] === 'datetime') {
+            } elseif (in_array($mapping['type'], ['datetime', 'date'])) {
                 if (   \is_string($value)
                     && $value !== '0000-00-00 00:00:00') {
                     $value = new midgard_datetime($value);
