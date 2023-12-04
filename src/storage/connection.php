@@ -22,6 +22,8 @@ use midgard\portable\storage\filter\softdelete;
 use midgard\portable\mapping\factory;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\ORMSetup;
+use Doctrine\DBAL\Logging\Connection as connection_logger;
+use Doctrine\DBAL\Logging\Middleware;
 
 class connection
 {
@@ -181,25 +183,25 @@ class connection
         $config->setMetadataDriverImpl($driver);
         $config->setClassMetadataFactoryName(factory::class);
 
-        if (!array_key_exists('charset', $db_config)) {
-            $db_config['charset'] = 'utf8';
-        }
-
-        $em = \Doctrine\ORM\EntityManager::create($db_config, $config);
-        $em->getFilters()->enable('softdelete');
-        $em->getEventManager()->addEventSubscriber(new subscriber);
-
-        Type::overrideType(Types::DATETIME_MUTABLE, datetime::class);
-        Type::overrideType(Types::DATE_MUTABLE, datetime::class);
-
         $midgard = midgard_connection::get_instance();
         $level = self::$loglevels[$midgard->get_loglevel()];
         if ($level === Logger::DEBUG) {
             $logger = new Logger('doctrine');
             $logger->pushHandler(new StreamHandler($midgard->config->logfilename, $level));
-
-            $em->getConnection()->getConfiguration()->setSQLLogger(new sqllogger($logger));
+            $config->setMiddlewares([new Middleware($logger)]);
         }
+
+        if (!array_key_exists('charset', $db_config)) {
+            $db_config['charset'] = 'utf8';
+        }
+
+        $connection = \Doctrine\DBAL\DriverManager::getConnection($db_config, $config);
+        $em = new EntityManager($connection, $config);
+        $em->getFilters()->enable('softdelete');
+        $em->getEventManager()->addEventSubscriber(new subscriber);
+
+        Type::overrideType(Types::DATETIME_MUTABLE, datetime::class);
+        Type::overrideType(Types::DATE_MUTABLE, datetime::class);
 
         self::$instance = new static($em, $driver->get_namespace());
     }
