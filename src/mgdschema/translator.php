@@ -28,6 +28,7 @@ class translator
         //'varchar(80)' => self::TYPE_GUID, // <== true for all cases?
         'string' => self::TYPE_STRING,
         'datetime' => self::TYPE_TIMESTAMP,
+        'date' => self::TYPE_TIMESTAMP,
         'text' => self::TYPE_LONGTEXT,
         'longtext' => self::TYPE_LONGTEXT,
         'float' => self::TYPE_FLOAT

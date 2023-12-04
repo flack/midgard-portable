@@ -27,6 +27,7 @@ class driver implements driver_interface
         'varchar(80)' => ['type' => Types::STRING, 'length' => 80, 'default' => ''],
         'string' => ['type' => Types::STRING, 'length' => 255, 'default' => ''],
         'datetime' => ['type' => Types::DATETIME_MUTABLE, 'default' => '0001-01-01 00:00:00'],
+        'date' => ['type' => Types::DATE_MUTABLE, 'default' => '0001-01-01'],
         'text' => ['type' => Types::TEXT],
         'longtext' => ['type' => Types::TEXT],
         'float' => ['type' => Types::FLOAT, 'default' => 0.0],
