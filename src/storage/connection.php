@@ -200,7 +200,6 @@ class connection
         $em->getEventManager()->addEventSubscriber(new subscriber);
 
         Type::overrideType(Types::DATETIME_MUTABLE, datetime::class);
-        Type::overrideType(Types::DATE_MUTABLE, datetime::class);
 
         self::$instance = new static($em, $driver->get_namespace());
     }

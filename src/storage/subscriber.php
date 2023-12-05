@@ -165,10 +165,10 @@ class subscriber implements EventSubscriber
         }
         foreach ($cm->getFieldNames() as $name) {
             switch ($cm->fieldMappings[$name]['type']) {
-                case 'datetime':
+                case Types::DATETIME_MUTABLE:
                     $size += 19; // Y-m-d H:i:s
                     break;
-                case 'date':
+                case Types::DATE_MUTABLE:
                     $size += 10; // Y-m-d
                     break;
                 default:
