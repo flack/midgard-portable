@@ -164,7 +164,17 @@ class subscriber implements EventSubscriber
             $size += strlen($entity->$name);
         }
         foreach ($cm->getFieldNames() as $name) {
-            $size += strlen($entity->$name);
+            switch ($cm->fieldMappings[$name]['type']) {
+                case 'datetime':
+                    $size += 19; // Y-m-d H:i:s
+                    break;
+                case 'date':
+                    $size += 10; // Y-m-d
+                    break;
+                default:
+                    $size += strlen($entity->$name);
+                    break;
+            }
         }
         return $size;
     }
