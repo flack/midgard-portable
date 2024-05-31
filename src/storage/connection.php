@@ -55,7 +55,7 @@ class connection
 
     private ?user $user = null;
 
-    private string $namespace;
+    private readonly string $namespace;
 
     protected EntityManager $em;
 

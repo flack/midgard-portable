@@ -34,11 +34,11 @@ class driver implements driver_interface
         'double' => ['type' => Types::FLOAT, 'default' => 0.0]
     ];
 
-    private string $vardir;
+    private readonly string $vardir;
 
     private ?array $types = null;
 
-    private string $namespace;
+    private readonly string $namespace;
 
     private manager $manager;
 
@@ -51,7 +51,7 @@ class driver implements driver_interface
     /**
      * indicates whether the current namespace has been used before
      */
-    private bool $is_fresh_namespace;
+    private readonly bool $is_fresh_namespace;
 
     public function __construct(array $schemadirs, string $vardir, string $namespace = 'midgard\\portable\\entities')
     {

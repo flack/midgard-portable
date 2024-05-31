@@ -12,7 +12,7 @@ use midgard\portable\mapping\classmetadata;
 
 class midgard_reflection_property
 {
-    private classmetadata $cm;
+    private readonly classmetadata $cm;
 
     public function __construct(string $mgdschema_class)
     {

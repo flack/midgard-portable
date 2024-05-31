@@ -20,9 +20,9 @@ class manager
     /**
      * @var string[]
      */
-    private array $schemadirs;
+    private readonly array $schemadirs;
 
-    private string $namespace;
+    private readonly string $namespace;
 
     private array $merged_types = [];
 

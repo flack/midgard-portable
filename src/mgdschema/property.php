@@ -75,7 +75,7 @@ class property implements node
     /**
      * Parent type
      */
-    private type $mgdschematype;
+    private readonly type $mgdschematype;
 
     public function __construct(type $parent, string $name, string $type)
     {

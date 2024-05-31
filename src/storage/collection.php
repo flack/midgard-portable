@@ -11,7 +11,7 @@ use midgard_query_builder;
 
 class collection
 {
-    private string $classname;
+    private readonly string $classname;
 
     public function __construct(string $classname)
     {

@@ -18,7 +18,7 @@ use midgard_datetime;
 
 class objectmanager
 {
-    private EntityManager $em;
+    private readonly EntityManager $em;
 
     public function __construct(EntityManager $em)
     {

@@ -49,7 +49,7 @@ class subscriberTest extends TestCase
         }
     }
 
-    public function provider_onSchemaCreateTable()
+    public static function provider_onSchemaCreateTable()
     {
         return [
             [

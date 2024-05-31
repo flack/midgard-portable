@@ -22,9 +22,9 @@ class classgenerator
 {
     private string $output = '';
 
-    private string $filename;
+    private readonly string $filename;
 
-    private manager $manager;
+    private readonly manager $manager;
 
     private bool $dev_mode = false;
 

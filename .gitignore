@@ -8,4 +8,4 @@
 .settings
 .project
 
-.phpunit.result.cache
+.phpunit.cache
