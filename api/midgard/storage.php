@@ -94,12 +94,12 @@ class midgard_storage
         $factory = $em->getMetadataFactory();
         try {
             return $factory->getMetadataFor($classname);
-        } catch (MappingException $e) {
+        } catch (MappingException) {
             // add namespace
             $classname = connection::get_fqcn($classname);
             try {
                 return $factory->getMetadataFor($classname);
-            } catch (MappingException $e) {
+            } catch (MappingException) {
                 // check for merged classes (duplicate tablenames)
                 $classname = get_class(new $classname);
                 return $factory->getMetadataFor($classname);

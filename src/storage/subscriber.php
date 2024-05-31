@@ -164,17 +164,11 @@ class subscriber implements EventSubscriber
             $size += strlen($entity->$name);
         }
         foreach ($cm->getFieldNames() as $name) {
-            switch ($cm->fieldMappings[$name]['type']) {
-                case Types::DATETIME_MUTABLE:
-                    $size += 19; // Y-m-d H:i:s
-                    break;
-                case Types::DATE_MUTABLE:
-                    $size += 10; // Y-m-d
-                    break;
-                default:
-                    $size += strlen($entity->$name);
-                    break;
-            }
+            match ($cm->fieldMappings[$name]['type']) {
+                Types::DATETIME_MUTABLE => $size += 19, // Y-m-d H:i:s
+                Types::DATE_MUTABLE => $size += 10, // Y-m-d
+                default => $size += strlen($entity->$name),
+            };
         }
         return $size;
     }
@@ -199,7 +193,7 @@ class subscriber implements EventSubscriber
                         $modified = true;
                         $config['columnDefinition'] = $config['type']->getSQLDeclaration($config, $platform) . ' CHARACTER SET utf8 COLLATE utf8_bin' . $platform->getDefaultValueDeclarationSQL($config);
                     }
-                    if (substr(strtolower(trim($config['comment'])), 0, 3) == 'set') {
+                    if (str_starts_with(strtolower(trim($config['comment'])), 'set')) {
                         $modified = true;
                         $config['columnDefinition'] = $config['comment'] . $platform->getDefaultValueDeclarationSQL($config);
                     }

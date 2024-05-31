@@ -57,7 +57,7 @@ abstract class mgdobject extends dbobject
         if (property_exists($this, 'metadata')) {
             $metadata = new \stdClass;
             foreach ($this->cm->getFieldNames() as $name) {
-                if (strpos($name, 'metadata_') !== false) {
+                if (str_contains($name, 'metadata_')) {
                     $fieldname = str_replace('metadata_', '', $name);
                     $metadata->$fieldname = $this->__get($name);
                 }
@@ -133,7 +133,7 @@ abstract class mgdobject extends dbobject
         if ($entity instanceof Proxy && !$entity->__isInitialized()) {
             try {
                 $entity->__load();
-            } catch (EntityNotFoundException $e) {
+            } catch (EntityNotFoundException) {
                 throw exception::object_purged();
             }
         }
@@ -688,7 +688,7 @@ abstract class mgdobject extends dbobject
         try {
             $om = new objectmanager(connection::get_em());
             $om->purge($this);
-        } catch (\Doctrine\ORM\EntityNotFoundException $e) {
+        } catch (\Doctrine\ORM\EntityNotFoundException) {
             exception::not_exists();
             return false;
         } catch (\Exception $e) {

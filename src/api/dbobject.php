@@ -57,7 +57,7 @@ abstract class dbobject
         $this->initialize();
         $properties = array_merge($this->cm->getFieldNames(), $this->cm->getAssociationNames(), array_keys($this->cm->midgard['field_aliases']));
         $properties = array_filter($properties, function ($input) {
-            return strpos($input, 'metadata_') === false;
+            return !str_contains($input, 'metadata_');
         });
         $ret = [];
         foreach ($properties as $property) {

@@ -212,30 +212,30 @@ class driver implements driver_interface
 
     private function parse_dbtype(property $property) : array
     {
-        if (strpos($property->dbtype, 'varchar') === 0) {
+        if (str_starts_with($property->dbtype, 'varchar')) {
             $mapping = [
                 'type' => Types::STRING,
             ];
 
-            if (substr($property->dbtype, -1) == ')') {
+            if (str_ends_with($property->dbtype, ')')) {
                 $mapping['length'] = (int) substr($property->dbtype, 8, -1);
                 return $mapping;
             }
 
-            if (substr($property->dbtype, -8) == ') binary') {
+            if (str_ends_with($property->dbtype, ') binary')) {
                 // see http://www.doctrine-project.org/jira/browse/DDC-1817
                 $mapping['length'] = (int) substr($property->dbtype, 8, -1);
                 $mapping['comment'] = 'BINARY';
                 return $mapping;
             }
-        } elseif (strpos($property->dbtype, 'set') === 0) {
+        } elseif (str_starts_with($property->dbtype, 'set')) {
             // see http://docs.doctrine-project.org/en/latest/cookbook/mysql-enums.html
             if (!empty($this->dbtypemap[$property->type])) {
                 $mapping = $this->dbtypemap[$property->type];
                 $mapping['comment'] = $property->dbtype;
                 return $mapping;
             }
-        } elseif (strpos(strtolower($property->dbtype), 'decimal') === 0) {
+        } elseif (str_starts_with(strtolower($property->dbtype), 'decimal')) {
             $matches = [];
             preg_match('/DECIMAL\((\d+),(\d+)\)/i', $property->dbtype, $matches);
             return [

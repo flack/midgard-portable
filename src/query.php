@@ -58,7 +58,7 @@ abstract class query
             $targetclass = $this->classname;
             $fieldname = $name;
 
-            if (strpos($name, '.') !== false) {
+            if (str_contains($name, '.')) {
                 $parsed = $this->parse_constraint_name($name);
                 $fieldname = $parsed['column'];
                 $targetclass = $parsed['targetclass'];
@@ -91,7 +91,7 @@ abstract class query
         }
         try {
             $parsed = $this->parse_constraint_name($name);
-        } catch (exception $e) {
+        } catch (exception) {
             return false;
         }
 
@@ -218,7 +218,7 @@ abstract class query
         // metadata
         $name = str_replace('metadata.', 'metadata_', $name);
         $column = $name;
-        if (strpos($name, ".") !== false) {
+        if (str_contains($name, ".")) {
             $parts = explode('.', $name);
             $column = array_pop($parts);
             foreach ($parts as $part) {

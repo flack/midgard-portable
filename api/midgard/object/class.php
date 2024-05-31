@@ -24,7 +24,7 @@ class midgard_object_class
 
         try {
             $result = $qb->getQuery()->getSingleResult();
-        } catch (\Doctrine\ORM\NoResultException $e) {
+        } catch (\Doctrine\ORM\NoResultException) {
             throw exception::not_exists();
         }
 

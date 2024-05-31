@@ -14,7 +14,7 @@ class midgard_query_builder extends query
     {
         try {
             parent::add_constraint_with_property($name, $operator, $property);
-        } catch (exception $e) {
+        } catch (exception) {
             return false;
         }
         return true;
@@ -24,7 +24,7 @@ class midgard_query_builder extends query
     {
         try {
             parent::add_constraint($name, $operator, $value);
-        } catch (exception $e) {
+        } catch (exception) {
             return false;
         }
         return true;

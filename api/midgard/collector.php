@@ -47,7 +47,7 @@ class midgard_collector extends midgard_query_builder
         if (!isset($this->value_properties[$property])) {
             try {
                 $this->value_properties[$property] = $this->build_property_select($property);
-            } catch (exception $e) {
+            } catch (exception) {
                 return false;
             }
         }
@@ -59,8 +59,8 @@ class midgard_collector extends midgard_query_builder
         $parsed = $this->parse_constraint_name($property);
 
         // for properties like up.name
-        if (   strpos($property, ".") !== false
-            && !(strpos($property, "metadata") === 0)) {
+        if (   str_contains($property, ".")
+            && !(str_starts_with($property, "metadata"))) {
             return $parsed['name'] . " as " . str_replace(".", "_", $property);
         }
 
@@ -102,7 +102,7 @@ class midgard_collector extends midgard_query_builder
         foreach ($results as $result) {
             foreach ($result as $key => &$value) {
                 // for metadata fields remove the "metadata_" prefix
-                if (strpos($key, "metadata_") !== false) {
+                if (str_contains($key, "metadata_")) {
                     $result[str_replace("metadata_", "", $key)] = $value;
                     unset($result[$key]);
                 }

@@ -94,7 +94,7 @@ class midgard_replicator
             if ($name == 'guid') {
                 continue;
             }
-            if (strpos($name, 'metadata_') === 0) {
+            if (str_starts_with($name, 'metadata_')) {
                 $metadata[substr($name, 9)] = $object->$name;
             } else {
                 $node->addChild($name, self::convert_value($object->$name));
@@ -213,7 +213,7 @@ class midgard_replicator
             if ($name == 'id') {
                 continue;
             }
-            if (strpos($name, 'metadata_') === false) {
+            if (!str_contains($name, 'metadata_')) {
                 $dbobject->$name = $object->$name;
             }
         }
@@ -328,18 +328,13 @@ class midgard_replicator
             ->getScalarResult();
         $action = (empty($result)) ? 0 : (int) $result[0]['object_action'];
 
-        switch ($action) {
-            case subscriber::ACTION_CREATE:
-                return 'created';
-            case subscriber::ACTION_UPDATE:
-                return 'updated';
-            case subscriber::ACTION_DELETE:
-                return 'deleted';
-            case subscriber::ACTION_PURGE:
-                return 'purged';
-            default:
-                return 'none';
-        }
+        return match ($action) {
+            subscriber::ACTION_CREATE => 'created',
+            subscriber::ACTION_UPDATE => 'updated',
+            subscriber::ACTION_DELETE => 'deleted',
+            subscriber::ACTION_PURGE => 'purged',
+            default => 'none',
+        };
     }
 
     private static function convert_value($value)

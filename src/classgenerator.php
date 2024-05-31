@@ -216,7 +216,7 @@ class classgenerator
             $properties[$alias]->description = 'Alias for ' . $target;
         }
         foreach ($properties as $name => $property) {
-            if (strpos($property->name, 'metadata_') !== 0) {
+            if (!str_starts_with($property->name, 'metadata_')) {
                 $line = translator::to_phptype($property->type) . ' $' . $name;
                 if ($property->description) {
                     $line .= ' ' . trim($property->description);
