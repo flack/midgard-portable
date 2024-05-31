@@ -238,12 +238,11 @@ class driver implements driver_interface
         } elseif (strpos(strtolower($property->dbtype), 'decimal') === 0) {
             $matches = [];
             preg_match('/DECIMAL\((\d+),(\d+)\)/i', $property->dbtype, $matches);
-            $mapping = [
+            return [
                 'type' => Types::DECIMAL,
                 'precision' => $matches[1],
                 'scale' => $matches[2]
             ];
-            return $mapping;
         }
 
         throw new \Exception($property->get_parent()->name . ': ' . $property->name . ' ' . $property->dbtype . ' not implemented yet');

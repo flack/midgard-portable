@@ -72,11 +72,6 @@ class midgard_storageTest extends testcase
         $this->assertTrue(midgard_storage::update_class_storage($classname), 'Failed to update the class storage for ' . $classname);
     }
 
-    private function assertUpdateClassStorageFail(string $classname)
-    {
-        $this->assertFalse(midgard_storage::update_class_storage($classname), 'Without previous creation, the update of the class storage for ' . $classname . ' should fail');
-    }
-
     public function test_update_class_storage()
     {
         self::prepare_connection();

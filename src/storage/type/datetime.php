@@ -17,7 +17,6 @@ class datetime extends DateTimeType
 {
     /**
      * @param string $value
-     * @param AbstractPlatform $platform
      * @return DateTime|mixed|null
      * @throws ConversionException
      */

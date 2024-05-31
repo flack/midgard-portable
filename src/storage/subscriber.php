@@ -283,7 +283,6 @@ class subscriber implements EventSubscriber
      * each run since it doesn't detect that MyISAM tables don't support them
      *
      * @see https://github.com/doctrine/orm/issues/4270
-     * @param GenerateSchemaTableEventArgs $args
      */
     public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $args)
     {
