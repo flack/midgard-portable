@@ -706,17 +706,17 @@ abstract class mgdobject extends dbobject
 
     public static function new_query_builder() : \midgard_query_builder
     {
-        return new \midgard_query_builder(get_called_class());
+        return new \midgard_query_builder(static::class);
     }
 
     public static function new_collector(string $field, $value) : \midgard_collector
     {
-        return new \midgard_collector(get_called_class(), $field, $value);
+        return new \midgard_collector(static::class, $field, $value);
     }
 
     public static function new_reflection_property() : \midgard_reflection_property
     {
-        return new \midgard_reflection_property(get_called_class());
+        return new \midgard_reflection_property(static::class);
     }
 
     public function set_guid(string $guid)

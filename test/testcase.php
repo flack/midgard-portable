@@ -26,7 +26,7 @@ class testcase extends basecase
     public static function prepare_connection(string $directory = '', $tmpdir = null, $ns = null) : driver
     {
         $tmpdir ??= sys_get_temp_dir();
-        $ns ??= uniqid(get_called_class());
+        $ns ??= uniqid(static::class);
         $directories = [
             TESTDIR . '__files/' . $directory
         ];
