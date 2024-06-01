@@ -167,7 +167,9 @@ abstract class mgdobject extends dbobject
 
     public function create() : bool
     {
-        if (!empty($this->id)) {
+        $this->initialize();
+
+        if ($this->cm->getIdentifierValues($this)) {
             exception::duplicate();
             return false;
         }
@@ -185,13 +187,14 @@ abstract class mgdobject extends dbobject
             exception::internal($e);
             return false;
         }
-
-        return $this->id != 0;
+        return (bool) $this->cm->getIdentifierValues($this);
     }
 
     public function update() : bool
     {
-        if (empty($this->id)) {
+        $this->initialize();
+
+        if (!$this->cm->getIdentifierValues($this)) {
             midgard_connection::get_instance()->set_error(MGD_ERR_INTERNAL);
             return false;
         }
@@ -215,7 +218,9 @@ abstract class mgdobject extends dbobject
      */
     public function delete(bool $check_dependencies = true) : bool
     {
-        if (empty($this->id)) {
+        $this->initialize();
+
+        if (!$this->cm->getIdentifierValues($this)) {
             exception::invalid_property_value();
             return false;
         }
@@ -245,8 +250,6 @@ abstract class mgdobject extends dbobject
 
     private function is_unique() : bool
     {
-        $this->initialize();
-
         if (empty($this->cm->midgard['unique_fields'])) {
             return true;
         }
@@ -255,9 +258,10 @@ abstract class mgdobject extends dbobject
         $qb->from(get_class($this), 'c');
         $conditions = $qb->expr()->andX();
         $parameters = [];
-        if ($this->id) {
-            $parameters['id'] = $this->id;
-            $conditions->add($qb->expr()->neq('c.id', ':id'));
+        if ($identifier = $this->cm->getIdentifierValues($this)) {
+            $parameters = array_merge($parameters, $identifier);
+            $field = key($identifier);
+            $conditions->add($qb->expr()->neq('c.' . $field, ':' . $field));
         }
         $found = false;
         foreach ($this->cm->midgard['unique_fields'] as $field) {
@@ -302,8 +306,6 @@ abstract class mgdobject extends dbobject
 
     private function check_parent() : bool
     {
-        $this->initialize();
-
         if (   empty($this->cm->midgard['parentfield'])
             || empty($this->cm->midgard['parent'])) {
             return true;
@@ -318,8 +320,6 @@ abstract class mgdobject extends dbobject
 
     private function check_fields() : bool
     {
-        $this->initialize();
-
         foreach ($this->cm->fieldMappings as $name => $field) {
             if (   $field['midgard:midgard_type'] == translator::TYPE_GUID
                 && !empty($this->$name)
@@ -333,9 +333,10 @@ abstract class mgdobject extends dbobject
 
     private function check_upfield() : bool
     {
-        if (   !empty($this->id)
+        $identifier = $this->cm->getIdentifierValues($this);
+        if (   $identifier
             && !empty($this->cm->midgard['upfield'])
-            && $this->__get($this->cm->midgard['upfield']) === $this->id
+            && $this->__get($this->cm->midgard['upfield']) === reset($identifier)
             && $this->cm->getAssociationMapping($this->cm->midgard['upfield'])['targetEntity'] === $this->cm->getName()) {
             exception::tree_is_circular();
             return false;
@@ -361,10 +362,11 @@ abstract class mgdobject extends dbobject
         $stat = false;
 
         if (!empty($this->cm->midgard['upfield'])) {
+            $identifier = $this->cm->getIdentifierValues($this);
             $qb = connection::get_em()->createQueryBuilder();
             $qb->from(get_class($this), 'c')
                 ->where('c.' . $this->cm->midgard['upfield'] . ' = ?0')
-                ->setParameter(0, $this->id)
+                ->setParameter(0, (int) reset($identifier))
                 ->select("COUNT(c)");
             $results = (int) $qb->getQuery()->getSingleScalarResult();
             $stat = $results > 0;
@@ -373,10 +375,11 @@ abstract class mgdobject extends dbobject
         if (   !$stat
             && !empty($this->cm->midgard['childtypes'])) {
             foreach ($this->cm->midgard['childtypes'] as $typename => $parentfield) {
+                $identifier = $this->cm->getIdentifierValues($this);
                 $qb = connection::get_em()->createQueryBuilder();
                 $qb->from(connection::get_fqcn($typename), 'c')
                     ->where('c.' . $parentfield . ' = ?0')
-                    ->setParameter(0, $this->id)
+                    ->setParameter(0, (int) reset($identifier))
                     ->select("COUNT(c)");
 
                 $results = (int) $qb->getQuery()->getSingleScalarResult();
@@ -403,10 +406,11 @@ abstract class mgdobject extends dbobject
         $this->initialize();
 
         if (!empty($this->cm->midgard['upfield'])) {
+            $identifier = $this->cm->getIdentifierValues($this);
             $qb = connection::get_em()->createQueryBuilder();
             $qb->from(get_class($this), 'c')
                 ->where('c.' . $this->cm->midgard['upfield'] . ' = ?0')
-                ->setParameter(0, $this->id)
+                ->setParameter(0, (int) reset($identifier))
                 ->select("c");
             return $qb->getQuery()->getResult();
         }
@@ -458,10 +462,7 @@ abstract class mgdobject extends dbobject
             $qb->select("c.id");
             $up = (int) $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR);
             if ($up === 0) {
-                exception::not_exists();
-                $this->id = 0;
-                $this->set_guid('');
-                return false;
+                return $this->reset();
             }
         }
 
@@ -471,14 +472,21 @@ abstract class mgdobject extends dbobject
         $entity = $qb->getQuery()->getOneOrNullResult();
 
         if ($entity === null) {
-            exception::not_exists();
-            $this->id = 0;
-            $this->set_guid('');
-            return false;
+            return $this->reset();
         }
         $this->populate_from_entity($entity);
 
         return true;
+    }
+
+    private function reset() : bool
+    {
+        exception::not_exists();
+        foreach ($this->cm->getIdentifierFieldNames() as $field) {
+            $this->$field = 0;
+        }
+        $this->set_guid('');
+        return false;
     }
 
     protected function get_uniquefield_query(string $classname, string $field, string $part, string $upfield, int $up) : QueryBuilder
@@ -674,7 +682,7 @@ abstract class mgdobject extends dbobject
      */
     public function purge(bool $check_dependencies = true) : bool
     {
-        if (empty($this->id)) {
+        if (!$this->cm->getIdentifierValues($this)) {
             // This usually means that the object has been purged already
             exception::not_exists();
             return false;
@@ -753,7 +761,7 @@ abstract class mgdobject extends dbobject
             $action = 'un' . $action;
         }
 
-        if ($this->id) {
+        if ($this->cm->getIdentifierValues($this)) {
             try {
                 $om = new objectmanager(connection::get_em());
                 $om->{$action}($this);
