@@ -117,7 +117,7 @@ class schema extends Command
         $this->generate_proxyfiles($cms);
 
         $output->writeln('Done');
-        return 0;
+        return Command::SUCCESS;
     }
 
     private function generate_proxyfiles(array $cms)
