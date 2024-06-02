@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Schema xmlns="http://www.midgard-project.org/repligard/1.4">
+
+    <type name="midgard_topic" table="topic" links_as_entities="true">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="name"     type="string" index="yes">
+            <description>URL name of the topic</description>
+        </property>
+        <property name="code"     type="text">
+            <description>Executable PHP code for topic display</description>
+        </property>
+        <property name="up"       link="midgard_topic:id" type="unsigned integer" upfield="up">
+            <description>Topic the topic is under</description>
+        </property>
+        <property name="birthdate" type="datetime" >
+            <description>Datetime field for testing default value</description>
+        </property>
+        <property name="style"    type="string" index="yes">
+            <description>MidCOM style path for the topic</description>
+        </property>
+        <property name="styleInherit"    type="boolean" field="style_inherit" index="yes">
+            <description>Whether the MidCOM style should be inherited to subtopics</description>
+        </property>
+        <property name="symlink"    link="midgard_topic:id" type="unsigned integer" index="yes">
+            <description>MidCOM topic symlink</description>
+        </property>
+        <property name="title"    type="string">
+            <description>Title of the topic</description>
+        </property>
+        <property name="extra"    type="text">
+            <description>Extra information about the topic</description>
+        </property>
+        <property name="component"    type="string" index="yes">
+            <description>MidCOM component responsible for the topic</description>
+        </property>
+        <property name="description" type="text">
+            <description>Topic description</description>
+        </property>
+        <property name="lang"     type="unsigned integer" link="midgard_language:id">
+            <description>Language the article is in</description>
+        </property>
+        <property name="score"    type="integer">
+            <description>Arrangement score of the topic (legacy field)</description>
+        </property>
+        <property name="floatField"    type="float">
+            <description>Float field for testing conversion</description>
+        </property>
+        <property name="guidField"    type="guid">
+            <description>GUID field for testing conversion</description>
+        </property>
+    </type>
+
+</Schema>

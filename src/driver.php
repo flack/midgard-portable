@@ -142,6 +142,7 @@ class driver implements driver_interface
         $metadata->midgard['upfield'] = $type->upfield;
         $metadata->midgard['childtypes'] = $this->manager->get_child_classes($type->name);
         $metadata->midgard['field_aliases'] = $type->field_aliases;
+        $metadata->midgard['links_as_entities'] = $type->links_as_entities;
         $metadata->midgard['field_order'] = array_keys($properties);
 
         foreach ($properties as $name => $property) {

@@ -161,7 +161,11 @@ class subscriber implements EventSubscriber
     {
         $size = 0;
         foreach ($cm->getAssociationNames() as $name) {
-            $size += strlen($entity->$name);
+            if ($cm->midgard['links_as_entities']) {
+                $size += strlen($entity->$name?->id ?? '');
+            } else {
+                $size += strlen($entity->$name);
+            }
         }
         foreach ($cm->getFieldNames() as $name) {
             match ($cm->fieldMappings[$name]['type']) {

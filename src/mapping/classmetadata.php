@@ -17,7 +17,8 @@ class classmetadata extends base_metadata
         'unique_fields' => [],
         'childtypes' => [],
         'field_aliases' => [],
-        'field_order' => []
+        'field_order' => [],
+        'links_as_entities' => false
     ];
 
     public function __sleep()

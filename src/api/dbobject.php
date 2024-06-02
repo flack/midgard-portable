@@ -76,8 +76,11 @@ abstract class dbobject
             $field = $this->cm->midgard['field_aliases'][$field];
         }
         if ($this->cm->isSingleValuedAssociation($field)) {
-            // mgd api only allows setting links identifiers, doctrine wants objects,
-            // so it seems we need an expensive and pretty useless conversion..
+            if ($this->cm->midgard['links_as_entities']) {
+                $this->$field = $value;
+                return;
+            }
+            // legacy mgd api: only setting link identifier
             if (empty($value)) {
                 $value = null;
             } else {
@@ -126,8 +129,10 @@ abstract class dbobject
         }
 
         if ($this->cm->isSingleValuedAssociation($field)) {
-            // mgd api only allows returning link identifiers, doctrine has objects,
-            // so it seems we need a pretty useless conversion..
+            if ($this->cm->midgard['links_as_entities']) {
+                return $this->$field;
+            }
+            // legacy mgd api: Only return link identifiers
             if (is_object($this->$field)) {
                 return (int) $this->$field->id;
             }

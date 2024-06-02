@@ -27,6 +27,8 @@ class type
 
     public bool $has_metadata = true;
 
+    public bool $links_as_entities = false;
+
     public array $subtypes = [];
 
     private array $dbfields = [];
@@ -46,10 +48,13 @@ class type
     public function __construct(SimpleXMLElement $attributes)
     {
         foreach ($attributes as $name => $value) {
+            $value = (string) $value;
             if ($name == 'metadata') {
                 $this->has_metadata = ($value === 'true');
+            } elseif ($name == 'links_as_entities') {
+                $this->links_as_entities = ($value === 'true');
             } else {
-                $this->$name = (string) $value;
+                $this->$name = $value;
             }
         }
     }
