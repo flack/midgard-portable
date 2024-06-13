@@ -228,6 +228,7 @@ class mgdobjectTest extends testcase
         $this->assertEquals($topic->id + 1, $topic2->id);
 
         $topic3 = $this->make_object('midgard_topic');
+        $topic3->id = 0;
         $topic3->up = $topic->id;
         $topic3->name = __FUNCTION__ . '-3';
         $stat = $topic3->create();

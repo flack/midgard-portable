@@ -96,6 +96,9 @@ abstract class dbobject
                 $value = (string) $value;
             } elseif ($mapping['type'] === 'integer') {
                 $value = (int) $value;
+                if ($value === 0 && $this->cm->isIdentifier($field)) {
+                    $value = null;
+                }
             } elseif ($mapping['type'] === 'boolean') {
                 $value = (boolean) $value;
             } elseif ($mapping['type'] === 'float') {
