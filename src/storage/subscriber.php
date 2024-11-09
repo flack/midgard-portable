@@ -133,13 +133,13 @@ class subscriber implements EventSubscriber
         if ($check_repligard) {
             $repligard_entry = $em->getRepository(connection::get_fqcn('midgard_repligard'))->findOneBy(['guid' => $entity->guid]);
 
-            if ($deleted) {
-                $repligard_entry->object_action = self::ACTION_DELETE;
+            if (empty($repligard_entry)) {
+                connection::log()->error('No repligard entry found for GUID ' . $entity->guid);
             } else {
-                $repligard_entry->object_action = self::ACTION_UPDATE;
+                $repligard_entry->object_action = $deleted ? self::ACTION_DELETE : self::ACTION_UPDATE;
+                $em->persist($repligard_entry);
+                $em->getUnitOfWork()->computeChangeSet($em->getClassMetadata(connection::get_fqcn('midgard_repligard')), $repligard_entry);
             }
-            $em->persist($repligard_entry);
-            $em->getUnitOfWork()->computeChangeSet($em->getClassMetadata(connection::get_fqcn('midgard_repligard')), $repligard_entry);
         }
     }
 
