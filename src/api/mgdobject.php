@@ -529,7 +529,7 @@ abstract class mgdobject extends dbobject
         return !$this->get_collection('midgard_parameter')->is_empty($this->guid);
     }
 
-    public function list_parameters(string $domain = null) : array
+    public function list_parameters(?string $domain = null) : array
     {
         $constraints = [];
         if ($domain) {

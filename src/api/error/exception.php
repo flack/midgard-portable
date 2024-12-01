@@ -70,7 +70,7 @@ class exception extends base_exception
         self::OBJECT_IS_LOCKED => "Object is locked",
     ];
 
-    public function __construct($message = "Undefined error", $code = self::ERROR, base_exception $previous = null)
+    public function __construct($message = "Undefined error", $code = self::ERROR, ?base_exception $previous = null)
     {
         midgard_connection::get_instance()->set_error($code);
         midgard_connection::get_instance()->set_error_string($message);
@@ -164,7 +164,7 @@ class exception extends base_exception
         return new self(self::$messages[self::OBJECT_NO_PARENT], self::OBJECT_NO_PARENT);
     }
 
-    public static function invalid_property_value(string $message = null) : self
+    public static function invalid_property_value(?string $message = null) : self
     {
         $message ??= self::$messages[self::INVALID_PROPERTY_VALUE];
         return new self($message, self::INVALID_PROPERTY_VALUE);

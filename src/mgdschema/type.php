@@ -59,7 +59,7 @@ class type
         }
     }
 
-    public function add_property(node $property, string $name = null)
+    public function add_property(node $property, ?string $name = null)
     {
         $name ??= $property->name;
 

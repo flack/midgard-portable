@@ -80,7 +80,7 @@ class connection
         return self::$instance->user;
     }
 
-    public static function set_user(user $user = null)
+    public static function set_user(?user $user = null)
     {
         if (self::$instance === null) {
             throw new \Exception('Not initialized');

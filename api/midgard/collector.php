@@ -19,7 +19,7 @@ class midgard_collector extends midgard_query_builder
 
     private array $value_properties = [];
 
-    public function __construct(string $class, string $field = null, $value = null)
+    public function __construct(string $class, ?string $field = null, $value = null)
     {
         parent::__construct($class);
         if ($field) {
