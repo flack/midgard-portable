@@ -188,7 +188,9 @@ class schema extends Command
 
         foreach ($sql as $sql_line) {
             if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
+                $progress->clear();
                 $output->writeln(' Executing <info>' . $sql_line . '</info>');
+                $progress->display();
             }
             try {
                 $conn->executeQuery($sql_line);
@@ -196,7 +198,9 @@ class schema extends Command
                 if (!$force) {
                     throw $e;
                 }
+                $progress->clear();
                 $output->writeln('<error>' . $e->getMessage() . '</error>');
+                $progress->display();
             }
 
             $progress->advance();
