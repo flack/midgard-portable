@@ -538,8 +538,7 @@ class midgard_query_builderTest extends testcase
         $this->purge_all('midgard_topic');
         $topic = $this->make_object('midgard_topic');
         $topic->name = uniqid(__FUNCTION__);
-        $stat = $topic->create();
-        $this->assertTrue($stat);
+        $this->assert_api('create', $topic);
         self::$em->clear();
 
         $qb = new \midgard_query_builder($classname);
@@ -549,6 +548,34 @@ class midgard_query_builderTest extends testcase
         $qb = new \midgard_query_builder($classname);
         $qb->add_constraint('up', '>', 0);
         $this->assertEquals(0, $qb->count(), "We should not find any topics");
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('up', 'NOT IN', [0]);
+        $this->assertEquals(0, $qb->count(), "We should not find any topics");
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('up', '<', 1);
+        $this->assertEquals(1, $qb->count(), "We should find one topic");
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('up', '<=', 1);
+        $this->assertEquals(1, $qb->count(), "We should find one topic");
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('up', '>=', 0);
+        $this->assertEquals(1, $qb->count(), "We should find one topic");
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('up', '<>', 1);
+        $this->assertEquals(1, $qb->count(), "We should find one topic");
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('up', 'NOT IN', [1]);
+        $this->assertEquals(1, $qb->count(), "We should find one topic");
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('up', 'IN', [1, 0]);
+        $this->assertEquals(1, $qb->count(), "We should find one topic");
     }
 
     public function test_in_constraint()

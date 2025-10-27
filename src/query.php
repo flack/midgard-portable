@@ -266,35 +266,43 @@ abstract class query
             $expression = $operator . '( ?' . $this->parameters . ')';
         }
 
-        if (   $value === 0
-            || $value === null
-            || is_array($value)) {
-            $cm = connection::get_em()->getClassMetadata($parsed['targetclass']);
-            if ($cm->hasAssociation($parsed['column'])) {
-                $group = false;
-                // TODO: there seems to be no way to make Doctrine accept default values for association fields,
-                // so we need a silly workaround for existing DBs
-                if (in_array($operator, ['<>', '>'], true)) {
-                    $group = $this->qb->expr()->andX();
-                    $group->add($parsed['name'] . ' IS NOT NULL');
-                } elseif ($operator === 'IN') {
-                    if (array_search(0, $value) !== false) {
-                        $group = $this->qb->expr()->orX();
-                        $group->add($parsed['name'] . ' IS NULL');
-                    }
-                } elseif ($operator === 'NOT IN') {
-                    if (array_search(0, $value) === false) {
-                        $group = $this->qb->expr()->orX();
-                        $group->add($parsed['name'] . ' IS NULL');
-                    }
-                } else {
-                    $group = $this->qb->expr()->orX();
-                    $group->add($parsed['name'] . ' IS NULL');
-                }
-                if ($group) {
-                    $group->add($parsed['name'] . ' ' . $expression);
-                    return $group;
-                }
+        $cm = connection::get_em()->getClassMetadata($parsed['targetclass']);
+        if ($cm->hasAssociation($parsed['column'])) {
+            // There seems to be no way to make Doctrine accept default values for association fields,
+            // so we need a silly workaround for existing DBs to treat null and 0 as equivalent
+            $is_empty_value = $value === 0
+                || $value === null
+                || (is_array($value) && array_search(0, $value) !== false);
+
+            $add_null = false;
+
+            switch ($operator) {
+                case '=':
+                case 'IN':
+                    $add_null = $is_empty_value;
+                    break;
+                case '<>':
+                case 'NOT IN':
+                    $add_null = !$is_empty_value;
+                    break;
+                case '<':
+                    $add_null = $value > 0;
+                    break;
+                case '<=':
+                    $add_null = $value >= 0;
+                    break;
+                case '>':
+                    $add_null = $value < 0;
+                    break;
+                case '>=':
+                    $add_null = $value <= 0;
+                    break;
+            }
+
+            if ($add_null) {
+                return $this->qb->expr()->orX()
+                    ->add($parsed['name'] . ' IS NULL')
+                    ->add($parsed['name'] . ' ' . $expression);
             }
         }
 
