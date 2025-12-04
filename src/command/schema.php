@@ -31,7 +31,7 @@ class schema extends Command
 {
     public bool $connected = false;
 
-    protected function configure()
+    protected function configure() : void
     {
         $this->setName('schema')
             ->setDescription('(Re)generate mapping information from MgdSchema XMLs')
