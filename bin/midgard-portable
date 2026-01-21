@@ -19,5 +19,5 @@ use Symfony\Component\Console\Application;
 use midgard\portable\command;
 
 $console = new Application('midgard-portable', mgd_version());
-$console->add(new command\schema);
+$console->addCommands([new command\schema]);
 $console->run();
