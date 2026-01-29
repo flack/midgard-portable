@@ -103,7 +103,7 @@ abstract class dbobject
                     $value = null;
                 }
             } elseif ($mapping['type'] === 'boolean') {
-                $value = (boolean) $value;
+                $value = (bool) $value;
             } elseif ($mapping['type'] === 'float') {
                 $value = (float) $value;
             } elseif (in_array($mapping['type'], ['datetime', 'date'])) {

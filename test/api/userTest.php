@@ -93,7 +93,6 @@ class userTest extends testcase
         //incorrect guid - should not work
         $ref = new \ReflectionClass($user);
         $guid = $ref->getProperty('guid');
-        $guid->setAccessible(true);
         $guid->setValue($user, 'x');
 
         $this->assert_api('update', $user, MGD_ERR_INVALID_PROPERTY_VALUE);

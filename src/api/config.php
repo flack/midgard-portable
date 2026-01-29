@@ -58,7 +58,7 @@ class config
             }
             if (property_exists($this, $key)) {
                 if (is_bool($this->$key)) {
-                    $value = (boolean) $value;
+                    $value = (bool) $value;
                 }
                 $this->$key = $value;
             }
