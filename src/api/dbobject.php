@@ -94,8 +94,7 @@ abstract class dbobject
         } elseif ($this->cm->hasField($field)) {
             $mapping = $this->cm->getFieldMapping($field);
 
-            if (   $mapping['type'] === 'string'
-                || $mapping['type'] == 'text') {
+            if (in_array($mapping['type'], ['string', 'text'])) {
                 $value = (string) $value;
             } elseif ($mapping['type'] === 'integer') {
                 $value = (int) $value;

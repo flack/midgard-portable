@@ -270,34 +270,18 @@ abstract class query
         if ($cm->hasAssociation($parsed['column'])) {
             // There seems to be no way to make Doctrine accept default values for association fields,
             // so we need a silly workaround for existing DBs to treat null and 0 as equivalent
-            $is_empty_value = $value === 0
-                || $value === null
+            $is_empty_value = in_array($value, [0, null], true)
                 || (is_array($value) && array_search(0, $value) !== false);
 
-            $add_null = false;
-
-            switch ($operator) {
-                case '=':
-                case 'IN':
-                    $add_null = $is_empty_value;
-                    break;
-                case '<>':
-                case 'NOT IN':
-                    $add_null = !$is_empty_value;
-                    break;
-                case '<':
-                    $add_null = $value > 0;
-                    break;
-                case '<=':
-                    $add_null = $value >= 0;
-                    break;
-                case '>':
-                    $add_null = $value < 0;
-                    break;
-                case '>=':
-                    $add_null = $value <= 0;
-                    break;
-            }
+            $add_null = match($operator) {
+                '=', 'IN' => $is_empty_value,
+                '<>', 'NOT IN' => !$is_empty_value,
+                '<' => $value > 0,
+                '<=' => $value >= 0,
+                '>' => $value < 0,
+                '>=' => $value <= 0,
+                default => false
+            };
 
             if ($add_null) {
                 return $this->qb->expr()->orX()
