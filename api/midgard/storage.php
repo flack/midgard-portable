@@ -75,13 +75,7 @@ class midgard_storage
     private static function generate_proxyfile(ClassMetadata $cm)
     {
         $em = connection::get_em();
-        $generator = new ProxyGenerator($em->getConfiguration()->getProxyDir(), $em->getConfiguration()->getProxyNamespace());
-        $generator->setPlaceholder('baseProxyInterface', 'Doctrine\ORM\Proxy\Proxy');
-        $filename = $generator->getProxyFileName($cm->getName());
-        if (file_exists($filename)) {
-            unlink($filename);
-        }
-        $generator->generateProxyClass($cm, $filename);
+        $em->getProxyFactory()->generateProxyClasses([$cm]);
     }
 
     private static function get_cm(EntityManager $em, string $classname) : ?\Doctrine\ORM\Mapping\ClassMetadata

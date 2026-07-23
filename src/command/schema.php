@@ -19,7 +19,6 @@ use midgard_storage;
 use midgard_connection;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Input\InputOption;
-use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\SchemaDiff;
 use Doctrine\DBAL\Schema\Schema as dbal_schema;
@@ -49,7 +48,7 @@ class schema extends Command
                     $path = OPENPSA_PROJECT_BASEDIR . 'config/midgard-portable.inc.php';
                 } else {
                     $dialog = $this->getHelper('question');
-                    $path = $dialog->ask($input, $output, new Question('<question>Enter path to config file</question>'));
+                    $path = $dialog->ask($input, $output, new Question('<question>Enter path to config file</>'));
                 }
             }
             if (!file_exists($path)) {
@@ -98,7 +97,7 @@ class schema extends Command
         }
 
         if (!empty($to_create)) {
-            $output->writeln('Creating <info>' . count($to_create) . '</info> new tables');
+            $output->writeln('Creating <info>' . count($to_create) . '</> new tables');
             $tool = new SchemaTool($em);
             try {
                 $tool->createSchema($to_create);
@@ -106,33 +105,24 @@ class schema extends Command
                 if (!$force) {
                     throw $e;
                 }
-                $output->writeln('<error>' . $e->getMessage() . '</error>');
+                $output->writeln('<error>' . $e->getMessage() . '</>');
             }
         }
         if (!empty($to_update)) {
             $delete = $input->getOption('delete');
             $this->process_updates($to_update, $output, $force, $delete);
         }
-        $output->writeln('Generating proxies');
-        $this->generate_proxyfiles($cms);
+        $i = $this->generate_proxyfiles($cms);
+        $output->writeln('Generated <info>' . $i . '</> proxies');
 
         $output->writeln('Done');
         return Command::SUCCESS;
     }
 
-    private function generate_proxyfiles(array $cms)
+    private function generate_proxyfiles(array $cms) : int
     {
         $em = connection::get_em();
-        $generator = new ProxyGenerator($em->getConfiguration()->getProxyDir(), $em->getConfiguration()->getProxyNamespace());
-        $generator->setPlaceholder('baseProxyInterface', 'Doctrine\ORM\Proxy\Proxy');
-
-        foreach ($cms as $cm) {
-            $filename = $generator->getProxyFileName($cm->getName());
-            if (file_exists($filename)) {
-                unlink($filename);
-            }
-            $generator->generateProxyClass($cm, $filename);
-        }
+        return $em->getProxyFactory()->generateProxyClasses($cms);
     }
 
     /**
