@@ -6,7 +6,6 @@
  */
 
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Mapping\MappingException;
 use midgard\portable\storage\connection;

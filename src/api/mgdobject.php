@@ -14,7 +14,7 @@ use midgard\portable\mgdschema\translator;
 use midgard\portable\api\error\exception;
 use Doctrine\ORM\Query;
 use midgard_connection;
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Persistence\Proxy;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\EntityNotFoundException;
 
