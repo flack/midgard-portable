@@ -333,6 +333,37 @@ class midgard_query_builderTest extends testcase
         $this->assertCount(1, $results);
     }
 
+    public function test_add_constraint_double_join()
+    {
+        $classname_t = connection::get_fqcn('midgard_topic');
+        $topics = $this->_create_topics(__FUNCTION__);
+
+        $qb = new \midgard_query_builder($classname_t);
+        $qb->begin_group('OR');
+            $qb->add_constraint('up.guid', '=', $topics[0]->guid);
+            $qb->add_constraint('up.up.guid', '=', $topics[0]->guid);
+        $qb->end_group();
+
+        $results = $qb->execute();
+        $this->assertCount(2, $results);
+    }
+
+    public function test_add_constraint_double_collection_join()
+    {
+        $classname_t = connection::get_fqcn('midgard_topic');
+        $topics = $this->_create_topics(__FUNCTION__);
+        $topics[0]->set_parameter('test_domain', 'test', 'test1');
+        $topics[1]->set_parameter('test_domain', 'test', 'test2');
+
+        $qb = new \midgard_query_builder($classname_t);
+        $qb->add_constraint('parameter.value', '=', 'test2');
+        $qb->add_constraint('up.parameter.value', '=', 'test1');
+
+        $results = $qb->execute();
+        $this->assertCount(1, $results);
+        $this->assertEquals($topics[1]->guid, $results[0]->guid);
+    }
+
     public function test_limit()
     {
         $classname = connection::get_fqcn('midgard_topic');

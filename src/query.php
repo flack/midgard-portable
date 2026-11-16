@@ -185,29 +185,32 @@ abstract class query
 
     protected function add_collection_join(string $current_table, string $targetclass) : string
     {
-        if (!isset($this->join_tables[$targetclass])) {
-            $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
-            $c = $this->join_tables[$targetclass] . ".parentguid = " . $current_table . ".guid";
-            $this->qb->innerJoin(connection::get_fqcn($targetclass), $this->join_tables[$targetclass], Join::WITH, $c);
+        $key = $current_table . '.' . $targetclass;
+        if (!isset($this->join_tables[$key])) {
+            $this->join_tables[$key] = 'j' . count($this->join_tables);
+            $c = $this->join_tables[$key] . ".parentguid = " . $current_table . ".guid";
+            $this->qb->innerJoin(connection::get_fqcn($targetclass), $this->join_tables[$key], Join::WITH, $c);
         }
-        return $this->join_tables[$targetclass];
+        return $this->join_tables[$key];
     }
 
     protected function add_join(string $current_table, \midgard_reflection_property $mrp, string $property) : string
     {
-        $targetclass = $mrp->get_link_name($property);
-        if (!isset($this->join_tables[$targetclass])) {
-            $this->join_tables[$targetclass] = 'j' . count($this->join_tables);
+        $key = $current_table . '.' . $property;
+        if (!isset($this->join_tables[$key])) {
+            $alias = 'j' . count($this->join_tables);
+            $this->join_tables[$key] = $alias;
 
             // custom join
             if ($mrp->is_special_link($property)) {
-                $c = $this->join_tables[$targetclass] . "." . $mrp->get_link_target($property) . " = " . $current_table . "." . $property;
-                $this->qb->innerJoin(connection::get_fqcn($targetclass), $this->join_tables[$targetclass], Join::WITH, $c);
+                $targetclass = $mrp->get_link_name($property);
+                $c = $alias . "." . $mrp->get_link_target($property) . " = " . $current_table . "." . $property;
+                $this->qb->innerJoin(connection::get_fqcn($targetclass), $alias, Join::WITH, $c);
             } else {
-                $this->qb->leftJoin($current_table . '.' . $property, $this->join_tables[$targetclass]);
+                $this->qb->leftJoin($current_table . '.' . $property, $alias);
             }
         }
-        return $this->join_tables[$targetclass];
+        return $this->join_tables[$key];
     }
 
     protected function parse_constraint_name(string $name) : array
