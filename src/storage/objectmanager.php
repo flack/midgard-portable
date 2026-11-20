@@ -37,7 +37,7 @@ class objectmanager
         //workaround for possible oid collisions in UnitOfWork
         //see https://github.com/doctrine/orm/issues/3037
         if ($this->em->getUnitOfWork()->getEntityState($entity) != UnitOfWork::STATE_NEW) {
-            connection::log()->warning('oid collision during create detected, detaching ' . spl_object_hash($entity));
+            connection::log()->warning('oid collision during create detected, detaching ' . spl_object_id($entity));
             $this->em->detach($entity);
         }
 
@@ -105,7 +105,7 @@ class objectmanager
         //workaround for possible oid collisions in UnitOfWork
         //see https://github.com/doctrine/orm/issues/3037
         if ($this->em->getUnitOfWork()->getEntityState($copy) != UnitOfWork::STATE_DETACHED) {
-            connection::log()->warning('oid collision during delete detected, detaching ' . spl_object_hash($copy));
+            connection::log()->warning('oid collision during delete detected, detaching ' . spl_object_id($copy));
             $this->em->detach($copy);
         }
 
