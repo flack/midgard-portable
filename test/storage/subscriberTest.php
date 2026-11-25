@@ -12,6 +12,7 @@ use midgard\portable\storage\subscriber;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Event\SchemaCreateTableEventArgs;
 use Doctrine\DBAL\Schema\Table;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use midgard\portable\test\testcase as mgdcase;
 use Doctrine\DBAL\Types\Types;
@@ -20,9 +21,7 @@ use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 
 class subscriberTest extends TestCase
 {
-    /**
-     * @dataProvider provider_onSchemaCreateTable
-     */
+    #[DataProvider('provider_onSchemaCreateTable')]
     public function test_onSchemaCreateTable(array $columns, array $expected)
     {
         mgdcase::prepare_connection('', null, uniqid(__CLASS__));
