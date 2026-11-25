@@ -168,7 +168,7 @@ class schemaTest extends testcase
     {
         $this->run_command();
         $this->create_group();
-        $this->execute_sql('ALTER TABLE grp DROP COLUMN phone');
+        self::drop_column('grp', 'phone');
         $this->assertNotContains('phone', $this->get_columns('grp'));
 
         $output = $this->run_command();
@@ -181,7 +181,7 @@ class schemaTest extends testcase
     public function test_verbose()
     {
         $this->run_command();
-        $this->execute_sql('ALTER TABLE grp DROP COLUMN phone');
+        self::drop_column('grp', 'phone');
 
         $output = $this->run_command([], OutputInterface::VERBOSITY_VERBOSE);
         $this->assertMatchesRegularExpression('/Executing ALTER TABLE grp ADD (COLUMN )?phone/', $output);
@@ -235,7 +235,7 @@ class schemaTest extends testcase
     {
         $this->run_command();
         $this->create_group();
-        $this->execute_sql('ALTER TABLE grp RENAME COLUMN phone TO obsolete');
+        self::rename_column('grp', 'phone', 'obsolete');
 
         $this->run_command();
         $this->assertContains('phone', $this->get_columns('grp'));
@@ -248,7 +248,7 @@ class schemaTest extends testcase
     {
         $this->run_command();
         $this->create_group();
-        $this->execute_sql('ALTER TABLE grp RENAME COLUMN phone TO obsolete');
+        self::rename_column('grp', 'phone', 'obsolete');
 
         $this->run_command(['--delete' => true]);
         $this->assertNotContains('obsolete', $this->get_columns('grp'));
@@ -309,7 +309,7 @@ class schemaTest extends testcase
     public function test_update_error_force()
     {
         $this->prepare_update_error();
-        $this->execute_sql('ALTER TABLE member DROP COLUMN extra');
+        self::drop_column('member', 'extra');
 
         $output = $this->run_command(['--force' => true]);
         $this->assertStringContainsString('constraint violation', $output);

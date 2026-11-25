@@ -212,7 +212,7 @@ class subscriberTest extends TestCase
 
     public function test_add_column()
     {
-        $this->conn->executeStatement('ALTER TABLE ' . self::TABLE . ' DROP COLUMN info');
+        mgdcase::drop_column(self::TABLE, 'info');
         $this->update();
         $this->assertSame([], $this->get_pending_sql());
         if ($this->is_mysql()) {

@@ -12,6 +12,8 @@ use midgard\portable\api\dbobject;
 use midgard\portable\api\error\exception;
 use midgard\portable\storage\connection;
 use midgard_connection;
+use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Types\Type;
 use PHPUnit\Framework\TestCase as basecase;
 
 class testcase extends basecase
@@ -60,6 +62,42 @@ class testcase extends basecase
             $classes[] = $factory->getMetadataFor(connection::get_fqcn($name));
         }
         return $classes;
+    }
+
+    /**
+     * Changes tables through DBAL, since SQLite before 3.35 knows neither DROP COLUMN nor (before 3.25) RENAME COLUMN
+     */
+    private static function alter_table(string $name, callable $modify)
+    {
+        $sm = connection::get_em()->getConnection()->createSchemaManager();
+        $from = $sm->introspectTable($name);
+        $to = clone $from;
+        $modify($to);
+        $sm->alterTable($sm->createComparator()->compareTables($from, $to));
+    }
+
+    public static function drop_column(string $table, string $name)
+    {
+        self::alter_table($table, fn(Table $t) => $t->dropColumn($name));
+    }
+
+    /**
+     * Keeps definition and data
+     */
+    public static function rename_column(string $table, string $from, string $to)
+    {
+        self::alter_table($table, function (Table $t) use ($from, $to) {
+            $column = $t->getColumn($from);
+            $t->dropColumn($from);
+            // same definition, so that the comparator detects this as a rename
+            $t->addColumn($to, Type::lookupName($column->getType()), [
+                'length' => $column->getLength(),
+                'notnull' => $column->getNotnull(),
+                'default' => $column->getDefault(),
+                'comment' => $column->getComment(),
+                'platformOptions' => $column->getPlatformOptions(),
+            ]);
+        });
     }
 
     protected static function create_user()
