@@ -10,8 +10,10 @@ namespace midgard\portable\test;
 use midgard\portable\command\schema;
 use midgard\portable\driver;
 use midgard\portable\storage\connection;
+use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\Schema\DefaultSchemaManagerFactory;
 use Doctrine\ORM\Tools\ToolsException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -62,7 +64,9 @@ class schemaTest extends testcase
         }
         $dbname = $config['dbname'];
         unset($config['dbname']);
-        $conn = DriverManager::getConnection($config);
+        $configuration = new Configuration;
+        $configuration->setSchemaManagerFactory(new DefaultSchemaManagerFactory);
+        $conn = DriverManager::getConnection($config, $configuration);
         $conn->executeStatement('DROP DATABASE IF EXISTS ' . $dbname);
         if ($create) {
             $conn->executeStatement('CREATE DATABASE ' . $dbname);
