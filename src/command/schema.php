@@ -88,6 +88,9 @@ class schema extends Command
         $to_create = [];
 
         $sm = $em->getConnection()->createSchemaManager();
+        // This has to be read before creating new tables, since they are not part of $to_update,
+        // so --delete would consider them obsolete
+        $from = $sm->introspectSchema();
         foreach ($cms as $cm) {
             if ($sm->tablesExist([$cm->getTableName()])) {
                 $to_update[] = $cm;
@@ -110,7 +113,7 @@ class schema extends Command
         }
         if (!empty($to_update)) {
             $delete = $input->getOption('delete');
-            $this->process_updates($to_update, $output, $force, $delete);
+            $this->process_updates($from, $to_update, $output, $force, $delete);
         }
         $i = $this->generate_proxyfiles($cms);
         $output->writeln('Generated <info>' . $i . '</> proxies');
@@ -156,12 +159,11 @@ class schema extends Command
         return $diff;
     }
 
-    private function process_updates(array $to_update, OutputInterface $output, $force, $delete)
+    private function process_updates(dbal_schema $from, array $to_update, OutputInterface $output, $force, $delete)
     {
         $em = connection::get_em();
         $conn = $em->getConnection();
         $tool = new SchemaTool($em);
-        $from = $conn->createSchemaManager()->introspectSchema();
         $to = $tool->getSchemaFromMetadata($to_update);
 
         $diff = self::diff($from, $to, $delete);
