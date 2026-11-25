@@ -101,19 +101,43 @@ class manager
             $tablemap[$type->table][] = $type;
         }
 
-        foreach ($tablemap as $name => $types) {
+        foreach ($tablemap as $types) {
             if (count($types) == 1) {
                 $this->add_type($types[0]);
-                unset($tablemap[$name]);
+            } else {
+                $this->create_merged_types($types);
+            }
+        }
+        $this->resolve_merged_parents();
+    }
+
+    /**
+     * Replace merged types in parent/child relations with their root types
+     *
+     * This has to run after all types are merged, because parents and children can be in different groups,
+     * which might also depend on each other
+     */
+    private function resolve_merged_parents()
+    {
+        foreach ($this->types as $type) {
+            if ($type->parent) {
+                $type->parent = $this->merged_types[$type->parent] ?? $type->parent;
             }
         }
 
-        // We need to process those separately, to be sure the targets for rewriting links are present
-        while ($types = array_pop($tablemap)) {
-            if (!$this->create_merged_types($types)) {
-                array_push($types, $tablemap);
+        $child_classes = [];
+        foreach ($this->child_classes as $parent => $children) {
+            $parent = $this->merged_types[$parent] ?? $parent;
+            foreach ($children as $child => $parentfield) {
+                if (!isset($this->merged_types[$child])) {
+                    $child_classes[$parent][$child] = $parentfield;
+                } else {
+                    // if the root type has its own entry, it takes precedence
+                    $child_classes[$parent][$this->merged_types[$child]] ??= $parentfield;
+                }
             }
         }
+        $this->child_classes = $child_classes;
     }
 
     private function register_child_class(type $type)
@@ -129,7 +153,7 @@ class manager
      *
      * @param type[] $types
      */
-    private function create_merged_types(array $types) : bool
+    private function create_merged_types(array $types)
     {
         usort($types, function(type $a, type $b) {
             return strcasecmp($a->name, $b->name);
@@ -162,35 +186,9 @@ class manager
                 }
                 $root_type->add_property($property);
             }
-
-            if (isset($this->child_classes[$type->name])) {
-                foreach ($this->child_classes[$type->name] as $childname => $parentfield) {
-                    $child_type = $this->get_type_by_shortname($childname);
-                    if ($child_type === null) {
-                        return false;
-                    }
-
-                    $child_type->parent = $root_type->name;
-                    $this->register_child_class($child_type);
-                }
-                unset($this->child_classes[$type->name]);
-            }
             $this->merged_types[$type->name] = $root_type->name;
         }
         $this->add_type($root_type);
-        return true;
-    }
-
-    private function get_type_by_shortname(string $classname) : type
-    {
-        $fqcn = $this->get_fcqn($classname);
-        if (!isset($this->types[$fqcn])) {
-            if (!isset($this->merged_types[$classname])) {
-                return null;
-            }
-            $fqcn = $this->get_fcqn($this->merged_types[$classname]);
-        }
-        return $this->types[$fqcn];
     }
 
     private function add_type(type $type)
