@@ -8,6 +8,7 @@
 namespace midgard\portable\test;
 
 use midgard\portable\command\schema;
+use midgard\portable\storage\connection;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Command\Command;
@@ -26,5 +27,12 @@ class schemaTest extends testcase
         $this->assertDirectoryExists($vardir . 'blobs/0/0');
         $this->assertFileExists($vardir . 'mgdschema_classes.php');
         $this->assertTrue(class_exists(\schemaCommandTest\midgard_group::class));
+    }
+
+    protected function tearDown() : void
+    {
+        // the command disables this, so we need to reset here
+        connection::set_autostart(true);
+        parent::tearDown();
     }
 }
