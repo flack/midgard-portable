@@ -9,6 +9,9 @@ namespace midgard\portable\test;
 
 use midgard\portable\driver;
 use midgard\portable\classgenerator;
+use midgard\portable\mgdschema\property;
+use midgard\portable\mgdschema\type;
+use PHPUnit\Framework\Attributes\DataProvider;
 use midgard\portable\mapping\classmetadata;
 
 class driverTest extends testcase
@@ -51,10 +54,32 @@ class driverTest extends testcase
         $this->assertArrayHasKey('password', $metadata->fieldMappings);
 
         $mapping = $metadata->fieldMappings['password'];
-        $this->assertEquals("BINARY", $mapping["comment"]);
+        $this->assertEquals("BINARY", $mapping["options"]["comment"]);
 
         $mapping = $metadata->fieldMappings['info'];
-        $this->assertEquals("set('auth')", $mapping["comment"]);
+        $this->assertEquals("set('auth')", $mapping["options"]["comment"]);
+    }
+
+    #[DataProvider('provider_set_notation')]
+    public function test_set_notation(string $dbtype, string $expected)
+    {
+        $type = new type(new \SimpleXMLElement('<type name="test" table="test"/>'));
+        $property = new property($type, 'test', 'string');
+        $property->set('dbtype', $dbtype);
+
+        $driver = new driver([], sys_get_temp_dir(), uniqid(__CLASS__ . '\\' . __FUNCTION__));
+        $mapping = (new \ReflectionMethod($driver, 'parse_dbtype'))->invoke($driver, $property);
+        $this->assertSame($expected, $mapping['options']['comment']);
+    }
+
+    public static function provider_set_notation()
+    {
+        return [
+            ["set('a')", "set('a')"],
+            ["set('a','b')", "set('a','b')"],
+            ["set('a', 'b')", "set('a','b')"],
+            ["set ( 'a' , 'b c' ) ", "set('a','b c')"],
+        ];
     }
 
     public function test_duplicate_tablenames()

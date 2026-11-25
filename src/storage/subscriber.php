@@ -16,16 +16,16 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Events as dbal_events;
-use Doctrine\DBAL\Event\SchemaCreateTableEventArgs;
 use Doctrine\DBAL\Event\SchemaColumnDefinitionEventArgs;
 use Doctrine\ORM\Tools\ToolEvents;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
-use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 class subscriber implements EventSubscriber
 {
@@ -177,93 +177,17 @@ class subscriber implements EventSubscriber
         return $size;
     }
 
-    public function onSchemaCreateTable(SchemaCreateTableEventArgs $args)
-    {
-        $platform = $args->getPlatform();
-        $columns = $args->getColumns();
-        $modified = false;
-
-        foreach ($columns as $name => &$config) {
-            if ($platform instanceof SqlitePlatform) {
-                if (   !empty($config['comment'])
-                    && $config['comment'] == 'BINARY') {
-                    $modified = true;
-                    $config['columnDefinition'] = $config['type']->getSQLDeclaration($config, $platform) . ' COLLATE BINARY' . $platform->getDefaultValueDeclarationSQL($config);
-                }
-            }
-            if ($platform instanceof AbstractMySQLPlatform) {
-                if (!empty($config['comment'])) {
-                    if ($config['comment'] == 'BINARY') {
-                        $modified = true;
-                        $config['columnDefinition'] = $config['type']->getSQLDeclaration($config, $platform) . ' CHARACTER SET utf8 COLLATE utf8_bin' . $platform->getDefaultValueDeclarationSQL($config);
-                    }
-                    if (str_starts_with(strtolower(trim($config['comment'])), 'set')) {
-                        $modified = true;
-                        $config['columnDefinition'] = $config['comment'] . $platform->getDefaultValueDeclarationSQL($config);
-                    }
-                    if (!empty($config['columnDefinition']) && $platform->supportsInlineColumnComments()) {
-                        $config['columnDefinition'] .=  " COMMENT " . $platform->quoteStringLiteral($config['comment']);
-                    }
-                }
-            }
-        }
-
-        if (!$modified) {
-            return;
-        }
-
-        $args->preventDefault();
-
-        //The following is basically copied from the respective Doctrine function, since there seems to be no way
-        //to just modify columns and pass them back to the SchemaManager
-        $table = $args->getTable();
-        $options = $args->getOptions();
-
-        $queryFields = $platform->getColumnDeclarationListSQL($columns);
-
-        if (!empty($options['uniqueConstraints'])) {
-            foreach ($options['uniqueConstraints'] as $name => $definition) {
-                $queryFields .= ', ' . $platform->getUniqueConstraintDeclarationSQL($name, $definition);
-            }
-        }
-
-        if (!empty($options['foreignKeys'])) {
-            foreach ($options['foreignKeys'] as $foreignKey) {
-                $queryFields .= ', ' . $platform->getForeignKeyDeclarationSQL($foreignKey);
-            }
-        }
-
-        $name = str_replace('.', '__', $table->getName());
-        $args->addSql('CREATE TABLE ' . $name . ' (' . $queryFields . ')');
-
-        if (isset($options['alter']) && true === $options['alter']) {
-            return;
-        }
-
-        if (!empty($options['indexes'])) {
-            foreach ($options['indexes'] as $indexDef) {
-                $args->addSql($platform->getCreateIndexSQL($indexDef, $name));
-            }
-        }
-
-        if (!empty($options['unique'])) {
-            foreach ($options['unique'] as $indexDef) {
-                $args->addSql($platform->getCreateIndexSQL($indexDef, $name));
-            }
-        }
-    }
-
     /**
      * This function contains workarounds for reading existing Midgard databases
      *
-     * ENUM fields are converted to string for now (Like in the XML reader)
+     * ENUM/SET fields are converted to string for now (Like in the XML reader)
      */
     public function onSchemaColumnDefinition(SchemaColumnDefinitionEventArgs $args)
     {
         $column = array_change_key_case($args->getTableColumn(), CASE_LOWER);
         $type = strtok($column['type'], '()');
 
-        if ($type == 'enum') {
+        if (in_array($type, ['enum', 'set'])) {
             $options = [
                 'length' => 255,
                 'default' => $column['default'] ?? null,
@@ -276,15 +200,27 @@ class subscriber implements EventSubscriber
         }
     }
 
+    public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $args)
+    {
+        $table = $args->getClassTable();
+        $this->remove_foreign_keys($table);
+
+        $platform = connection::get_em()->getConnection()->getDatabasePlatform();
+        foreach ($table->getColumns() as $column) {
+            if ($column->getComment()) {
+                $this->apply_nonportable_dbtype($column, $platform);
+            }
+        }
+    }
+
     /**
      * This is mostly a workaround for the fact that SchemaTool wants to create FKs on
      * each run since it doesn't detect that MyISAM tables don't support them
      *
      * @see https://github.com/doctrine/orm/issues/4270
      */
-    public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $args)
+    private function remove_foreign_keys(Table $table)
     {
-        $table = $args->getClassTable();
         if (   !$table->hasOption('engine')
             || $table->getOption('engine') !== 'MyISAM') {
             return;
@@ -294,12 +230,39 @@ class subscriber implements EventSubscriber
         }
     }
 
+    /**
+     * The driver passes dbtypes Doctrine can't handle as comment
+     */
+    private function apply_nonportable_dbtype(Column $column, AbstractPlatform $platform)
+    {
+        $comment = $column->getComment();
+        $is_binary = $comment === 'BINARY';
+        if (!$is_binary && !str_starts_with($comment, 'set(')) {
+            return;
+        }
+
+        if (!($platform instanceof AbstractMySQLPlatform)) {
+            // Nothing to do, comparison is binary by default in SQLite, and SET doesn't exist
+            $column->setComment(null);
+            return;
+        }
+
+        $config = $column->toArray();
+        // BINARY selects the _bin collation for whichever charset the table uses
+        $definition = $is_binary ? $column->getType()->getSQLDeclaration($config, $platform) . ' BINARY' : $comment;
+        $definition .= $platform->getDefaultValueDeclarationSQL($config);
+        if ($column->getNotnull()) {
+            $definition .= ' NOT NULL';
+        }
+        $column->setColumnDefinition($definition . ' ' . $platform->getInlineColumnCommentSQL($comment));
+    }
+
     public function getSubscribedEvents()
     {
         return [
             Events::postLoad,
             Events::onFlush,
-            dbal_events::onSchemaCreateTable, dbal_events::onSchemaColumnDefinition,
+            dbal_events::onSchemaColumnDefinition,
             ToolEvents::postGenerateSchemaTable
         ];
     }

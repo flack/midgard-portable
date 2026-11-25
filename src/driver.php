@@ -226,14 +226,15 @@ class driver implements driver_interface
             if (str_ends_with($property->dbtype, ') binary')) {
                 // see http://www.doctrine-project.org/jira/browse/DDC-1817
                 $mapping['length'] = (int) substr($property->dbtype, 8, -1);
-                $mapping['comment'] = 'BINARY';
+                $mapping['options']['comment'] = 'BINARY';
                 return $mapping;
             }
         } elseif (str_starts_with($property->dbtype, 'set')) {
             // see http://docs.doctrine-project.org/en/latest/cookbook/mysql-enums.html
             if (!empty($this->dbtypemap[$property->type])) {
                 $mapping = $this->dbtypemap[$property->type];
-                $mapping['comment'] = $property->dbtype;
+                // use the same notation as MySQL, so that the comparison during schema updates works
+                $mapping['options']['comment'] = preg_replace(["/^set\s*\(\s*/", "/'\s*,\s*'/", "/\s*\)\s*$/"], ['set(', "','", ')'], $property->dbtype);
                 return $mapping;
             }
         } elseif (str_starts_with(strtolower($property->dbtype), 'decimal')) {

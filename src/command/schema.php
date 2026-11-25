@@ -134,6 +134,7 @@ class schema extends Command
      */
     public static function diff(dbal_schema $from, dbal_schema $to, bool $delete = false) : SchemaDiff
     {
+        self::normalize_binary_columns($from);
         $comparator = connection::get_em()->getConnection()->createSchemaManager()->createComparator();
         $diff = $comparator->compareSchemas($from, $to);
 
@@ -157,6 +158,29 @@ class schema extends Command
             $diff->removedTables = [];
         }
         return $diff;
+    }
+
+    /**
+     * Binary columns are identified by comment in the schema, but have a collation in the database. Its
+     * name depends on table charset and DB version, so we reduce it to the comment for comparing
+     */
+    private static function normalize_binary_columns(dbal_schema $schema)
+    {
+        foreach ($schema->getTables() as $table) {
+            foreach ($table->getColumns() as $column) {
+                if ($column->getComment() !== 'BINARY') {
+                    continue;
+                }
+                $options = $column->getPlatformOptions();
+                if (str_ends_with($options['collation'] ?? '', '_bin')) {
+                    unset($options['collation'], $options['charset']);
+                    $column->setPlatformOptions($options);
+                } else {
+                    // the collation got lost, so make sure that the column is updated
+                    $column->setComment(null);
+                }
+            }
+        }
     }
 
     private function process_updates(dbal_schema $from, array $to_update, OutputInterface $output, $force, $delete)
