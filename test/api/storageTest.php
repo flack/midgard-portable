@@ -84,13 +84,13 @@ class midgard_storageTest extends testcase
 
         $this->assertTrue(midgard_storage::update_class_storage('midgard_topic'));
         $sm = self::$em->getConnection()->createSchemaManager();
-        $table = $sm->createSchema()->getTable('topic');
+        $table = $sm->introspectSchema()->getTable('topic');
         $this->assertTrue($table->hasColumn('testproperty'));
 
         //when removing the field from the schema, the column should stay in the DB
         unset($cm->fieldMappings['testproperty']);
         $this->assertTrue(midgard_storage::update_class_storage('midgard_topic'));
-        $table = $sm->createSchema()->getTable('topic');
+        $table = $sm->introspectSchema()->getTable('topic');
         $this->assertTrue($table->hasColumn('testproperty'));
 
         $this->assertTrue($sm->tablesExist(['midgard_user']));

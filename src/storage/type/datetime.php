@@ -12,6 +12,7 @@ use DateTime as date_base;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\DateTimeType;
+use Doctrine\DBAL\Types\Types;
 
 class datetime extends DateTimeType
 {
@@ -27,7 +28,7 @@ class datetime extends DateTimeType
         }
         $val = date_base::createFromFormat($platform->getDateTimeFormatString(), $value);
         if (!$val) {
-            throw ConversionException::conversionFailed($value, $this->getName());
+            throw ConversionException::conversionFailed($value, Types::DATETIME_MUTABLE);
         }
         return new midgard_datetime($val->format('Y-m-d H:i:s'));
     }
