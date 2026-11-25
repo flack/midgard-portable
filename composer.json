@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "doctrine/orm": "^2.14",
         "doctrine/dbal": "^3.5",
         "symfony/console": ">=6.0.0",

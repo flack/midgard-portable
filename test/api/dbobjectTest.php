@@ -62,17 +62,6 @@ class dbobjectTest extends testcase
         $this->assertEquals('0001-01-01T00:00:00+00:00', (string) $topic->metadata_published);
     }
 
-    public function test_set_nonexistent()
-    {
-        if (PHP_VERSION_ID >= 80200) {
-            $this->markTestSkipped();
-        }
-        $topic = $this->make_object('midgard_topic');
-        $topic->nonexistent_property = 'xxx';
-        $this->assertTrue(property_exists($topic, 'nonexistent_property'));
-        $this->assertSame('xxx', $topic->nonexistent_property);
-    }
-
     public function test_get_id()
     {
         $topic = $this->make_object('midgard_topic');
