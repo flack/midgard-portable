@@ -15,6 +15,7 @@ use midgard_connection;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 use PHPUnit\Framework\TestCase as basecase;
+use midgard\portable\api\person;
 
 class testcase extends basecase
 {
@@ -100,7 +101,7 @@ class testcase extends basecase
         });
     }
 
-    protected static function create_user()
+    protected static function create_user() : person
     {
         $person_class = connection::get_fqcn('midgard_person');
         $user_class = connection::get_fqcn('midgard_user');

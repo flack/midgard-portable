@@ -7,9 +7,11 @@
 
 namespace midgard\portable\test;
 
+use midgard\portable\api\person;
+
 class metadataTest extends testcase
 {
-    protected static $person;
+    private person $person;
 
     public static function setupBeforeClass() : void
     {
@@ -25,7 +27,11 @@ class metadataTest extends testcase
         $tool = new \Doctrine\ORM\Tools\SchemaTool(self::$em);
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
-        self::$person = self::create_user();
+    }
+
+    protected function setUp() : void
+    {
+        $this->person = self::create_user();
     }
 
     public function test_alternate_fieldname()
@@ -59,7 +65,7 @@ class metadataTest extends testcase
 
         $this->assertNotEquals('0000-01-01 00:00:00', $topic->metadata->created->format('Y-m-d H:i:s'));
         $this->assertEquals($topic->metadata->created->format('Y-m-d H:i:s'), $topic->metadata->revised->format('Y-m-d H:i:s'));
-        $this->assertEquals(self::$person->guid, $topic->metadata->creator);
+        $this->assertEquals($this->person->guid, $topic->metadata->creator);
         $this->assertEquals($topic->metadata->creator, $topic->metadata->revisor);
 
         self::$em->clear();
