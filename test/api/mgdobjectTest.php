@@ -437,6 +437,12 @@ class mgdobjectTest extends testcase
         $this->assertEquals($id + 1, $topic->id);
     }
 
+    public function test_purge_nonpersistent()
+    {
+        $topic = $this->make_object('midgard_topic');
+        $this->assert_api('purge', $topic, MGD_ERR_NOT_EXISTS);
+    }
+
     public function test_get_parent()
     {
         $classname = connection::get_fqcn('midgard_topic');

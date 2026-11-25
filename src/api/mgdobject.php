@@ -682,6 +682,8 @@ abstract class mgdobject extends dbobject
      */
     public function purge(bool $check_dependencies = true) : bool
     {
+        $this->initialize();
+
         if (!$this->cm->getIdentifierValues($this)) {
             // This usually means that the object has been purged already
             exception::not_exists();
