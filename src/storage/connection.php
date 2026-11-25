@@ -13,12 +13,14 @@ use midgard\portable\api\user;
 use midgard\portable\api\config;
 use midgard\portable\api\error\exception;
 use midgard\portable\storage\type\datetime;
+use Doctrine\Common\EventManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\DBAL\Types\Type;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use midgard_connection;
 use midgard\portable\storage\filter\softdelete;
+use midgard\portable\storage\manager\factory as manager_factory;
 use midgard\portable\mapping\factory;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\ORMSetup;
@@ -181,6 +183,7 @@ class connection
         $config->addFilter('softdelete', softdelete::class);
         $config->setMetadataDriverImpl($driver);
         $config->setClassMetadataFactoryName(factory::class);
+        $config->setSchemaManagerFactory(new manager_factory);
 
         $midgard = midgard_connection::get_instance();
         $level = self::$loglevels[$midgard->get_loglevel()];
@@ -195,7 +198,7 @@ class connection
         }
 
         $connection = \Doctrine\DBAL\DriverManager::getConnection($db_config, $config);
-        $em = new EntityManager($connection, $config);
+        $em = new EntityManager($connection, $config, new EventManager);
         $em->getFilters()->enable('softdelete');
         $em->getEventManager()->addEventSubscriber(new subscriber);
 

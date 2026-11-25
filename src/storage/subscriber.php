@@ -17,9 +17,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Table;
-use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Events as dbal_events;
-use Doctrine\DBAL\Event\SchemaColumnDefinitionEventArgs;
 use Doctrine\ORM\Tools\ToolEvents;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\DBAL\Types\Types;
@@ -177,29 +174,6 @@ class subscriber implements EventSubscriber
         return $size;
     }
 
-    /**
-     * This function contains workarounds for reading existing Midgard databases
-     *
-     * ENUM/SET fields are converted to string for now (Like in the XML reader)
-     */
-    public function onSchemaColumnDefinition(SchemaColumnDefinitionEventArgs $args)
-    {
-        $column = array_change_key_case($args->getTableColumn(), CASE_LOWER);
-        $type = strtok($column['type'], '()');
-
-        if (in_array($type, ['enum', 'set'])) {
-            $options = [
-                'length' => 255,
-                'default' => $column['default'] ?? null,
-                'notnull' => $column['null'] != 'YES',
-                'comment' => $column['type']
-            ];
-
-            $args->preventDefault();
-            $args->setColumn(new Column($column['field'], Type::getType(Types::STRING), $options));
-        }
-    }
-
     public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $args)
     {
         $table = $args->getClassTable();
@@ -262,7 +236,6 @@ class subscriber implements EventSubscriber
         return [
             Events::postLoad,
             Events::onFlush,
-            dbal_events::onSchemaColumnDefinition,
             ToolEvents::postGenerateSchemaTable
         ];
     }
