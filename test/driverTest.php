@@ -39,7 +39,7 @@ class driverTest extends testcase
 
         $mapping = $metadata->fieldMappings['metadata_approved'];
         $this->assertEquals("datetime", $mapping["type"]);
-        $this->assertEquals("0001-01-01 00:00:00", $mapping["default"]);
+        $this->assertEquals("0001-01-01 00:00:00", $mapping["options"]["default"]);
     }
 
     public function test_load_nonportable_dbtypes()

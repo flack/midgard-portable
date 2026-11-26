@@ -19,19 +19,19 @@ use Doctrine\DBAL\Types\Types;
 class driver implements driver_interface
 {
     private array $dbtypemap = [
-        'unsigned integer' => ['type' => Types::INTEGER, 'default' => 0], // <== UNSIGNED in Doctrine\DBAL\Schema\Column
-        'integer' => ['type' => Types::INTEGER, 'default' => 0],
-        'boolean' => ['type' => Types::BOOLEAN, 'default' => false],
-        'bool' => ['type' => Types::BOOLEAN, 'default' => false],
-        'guid' => ['type' => Types::STRING, 'length' => 80, 'default' => ''],
-        'varchar(80)' => ['type' => Types::STRING, 'length' => 80, 'default' => ''],
-        'string' => ['type' => Types::STRING, 'length' => 255, 'default' => ''],
-        'datetime' => ['type' => Types::DATETIME_MUTABLE, 'default' => '0001-01-01 00:00:00'],
-        'date' => ['type' => Types::DATE_MUTABLE, 'default' => '0001-01-01'],
+        'unsigned integer' => ['type' => Types::INTEGER, 'options' => ['default' => 0]], // <== UNSIGNED in Doctrine\DBAL\Schema\Column
+        'integer' => ['type' => Types::INTEGER, 'options' => ['default' => 0]],
+        'boolean' => ['type' => Types::BOOLEAN, 'options' => ['default' => false]],
+        'bool' => ['type' => Types::BOOLEAN, 'options' => ['default' => false]],
+        'guid' => ['type' => Types::STRING, 'length' => 80, 'options' => ['default' => '']],
+        'varchar(80)' => ['type' => Types::STRING, 'length' => 80, 'options' => ['default' => '']],
+        'string' => ['type' => Types::STRING, 'length' => 255, 'options' => ['default' => '']],
+        'datetime' => ['type' => Types::DATETIME_MUTABLE, 'options' => ['default' => '0001-01-01 00:00:00']],
+        'date' => ['type' => Types::DATE_MUTABLE, 'options' => ['default' => '0001-01-01']],
         'text' => ['type' => Types::TEXT],
         'longtext' => ['type' => Types::TEXT],
-        'float' => ['type' => Types::FLOAT, 'default' => 0.0],
-        'double' => ['type' => Types::FLOAT, 'default' => 0.0]
+        'float' => ['type' => Types::FLOAT, 'options' => ['default' => 0.0]],
+        'double' => ['type' => Types::FLOAT, 'options' => ['default' => 0.0]]
     ];
 
     private readonly string $vardir;
@@ -192,7 +192,7 @@ class driver implements driver_interface
 
             if ($property->name == $type->primaryfield) {
                 $mapping['id'] = true;
-                unset($mapping['default']);
+                unset($mapping['options']['default']);
                 if ($mapping['type'] == Types::INTEGER) {
                     $metadata->setIdGeneratorType(CM::GENERATOR_TYPE_AUTO);
                 } else {
