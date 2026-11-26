@@ -14,6 +14,9 @@ use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Schema\DefaultSchemaManagerFactory;
+use Doctrine\DBAL\Schema\Schema as dbal_schema;
+use Doctrine\DBAL\Types\Types;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Doctrine\ORM\Tools\ToolsException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -166,6 +169,44 @@ class schemaTest extends testcase
             $this->assertStringNotContainsString('Executing', $output);
             $this->assertStringContainsString('Done', $output);
         }
+    }
+
+    private static function make_index_schema(string $charset, ?int $length, string $engine = 'MyISAM', bool $unique = false) : dbal_schema
+    {
+        $schema = new dbal_schema;
+        $table = $schema->createTable('grp');
+        $table->addOption('engine', $engine);
+        $table->addOption('charset', $charset);
+        $table->addColumn('name', Types::STRING, ['length' => 255]);
+        $options = $length === null ? [] : ['lengths' => [$length]];
+        if ($unique) {
+            $table->addUniqueIndex(['name'], 'midgard_group_name_idx', $options);
+        } else {
+            $table->addIndex(['name'], 'midgard_group_name_idx', [], $options);
+        }
+        return $schema;
+    }
+
+    public static function provider_truncated_index() : array
+    {
+        return [
+            'utf8mb4 truncated by MySQL' => ['utf8mb4', 250, 'MyISAM', false, true],
+            'utf8mb3 fits, so prefix is intentional' => ['utf8mb3', 250, 'MyISAM', false, false],
+            'wrong prefix length' => ['utf8mb4', 100, 'MyISAM', false, false],
+            'InnoDB' => ['utf8mb4', 250, 'InnoDB', false, false],
+            'unique' => ['utf8mb4', 250, 'MyISAM', true, false],
+        ];
+    }
+
+    #[DataProvider('provider_truncated_index')]
+    public function test_truncated_index(string $charset, int $length, string $engine, bool $unique, bool $expect_equal)
+    {
+        // running the command initializes the needed comparator as a side effect
+        $this->run_command();
+        $from = self::make_index_schema($charset, $length, $engine, $unique);
+        $to = self::make_index_schema($charset, null, $engine, $unique);
+
+        $this->assertSame($expect_equal, schema::diff($from, $to)->isEmpty());
     }
 
     public function test_add_column()
