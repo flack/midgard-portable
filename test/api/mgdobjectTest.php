@@ -588,6 +588,31 @@ class mgdobjectTest extends testcase
         $this->assert_api('create', $sd5);
     }
 
+    public function test_uniquenames_update()
+    {
+        $parent = $this->make_object('midgard_snippetdir');
+        $parent->name = __FUNCTION__;
+        $this->assert_api('create', $parent);
+
+        $sd = $this->make_object('midgard_snippetdir');
+        $sd->name = __FUNCTION__ . '-1';
+        $sd->up = $parent->id;
+        $this->assert_api('create', $sd);
+
+        $sd2 = $this->make_object('midgard_snippetdir');
+        $sd2->name = __FUNCTION__ . '-2';
+        $sd2->up = $parent->id;
+        $this->assert_api('create', $sd2);
+
+        $this->assert_api('update', $sd2);
+
+        $sd2->name = $sd->name;
+        $this->assert_api('update', $sd2, MGD_ERR_OBJECT_NAME_EXISTS);
+
+        $sd2->up = $sd->id;
+        $this->assert_api('update', $sd2);
+    }
+
     public function test_get_by_path()
     {
         $sd = $this->make_object('midgard_snippetdir');

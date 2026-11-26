@@ -198,6 +198,9 @@ abstract class mgdobject extends dbobject
             midgard_connection::get_instance()->set_error(MGD_ERR_INTERNAL);
             return false;
         }
+        if (!$this->is_unique()) {
+            return false;
+        }
         if (!$this->check_fields()) {
             return false;
         }
