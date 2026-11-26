@@ -8,6 +8,7 @@
 namespace midgard\portable\storage;
 
 use midgard\portable\storage\interfaces\metadata;
+use midgard\portable\storage\manager\comparator;
 use midgard\portable\api\dbobject;
 use midgard\portable\api\repligard;
 use Doctrine\Common\EventSubscriber;
@@ -183,6 +184,26 @@ class subscriber implements EventSubscriber
         foreach ($table->getColumns() as $column) {
             if ($column->getComment()) {
                 $this->apply_nonportable_dbtype($column, $platform);
+            }
+        }
+        if ($platform instanceof AbstractMySQLPlatform) {
+            self::limit_index_lengths($table);
+        }
+    }
+
+    /**
+     * Explicitly use the prefix length MySQL would pick for overlong MyISAM indexes in non-strict mode,
+     * since in strict mode, it refuses to create them
+     *
+     * @see comparator::get_truncated_length()
+     */
+    public static function limit_index_lengths(Table $table)
+    {
+        $default_charset = connection::get_em()->getConnection()->getParams()['charset'] ?? null;
+        foreach ($table->getIndexes() as $index) {
+            if (   empty($index->getOptions()['lengths'][0])
+                && $length = comparator::get_truncated_length($table, $index, $default_charset)) {
+                comparator::set_index_length($table, $index, $length);
             }
         }
     }

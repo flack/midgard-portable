@@ -9,13 +9,16 @@ namespace midgard\portable\test\connection;
 
 use midgard\portable\command\schema;
 use midgard\portable\storage\connection;
+use midgard\portable\storage\subscriber;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use midgard\portable\test\testcase as mgdcase;
 use midgard_storage;
 use Doctrine\DBAL\Connection as dbal_connection;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Tools\SchemaTool;
 
 class subscriberTest extends TestCase
@@ -227,5 +230,44 @@ class subscriberTest extends TestCase
         $this->update();
         $this->assertSame('utf8mb4_bin', $this->get_column('password')['Collation']);
         $this->assertSame([], $this->get_pending_sql());
+    }
+
+    public static function provider_limit_index_lengths() : array
+    {
+        return [
+            'utf8mb4 too long' => ['utf8mb4', 'MyISAM', false, null, 250],
+            'utf8mb3 fits' => ['utf8mb3', 'MyISAM', false, null, null],
+            'explicit length is kept' => ['utf8mb4', 'MyISAM', false, 100, 100],
+            'InnoDB' => ['utf8mb4', 'InnoDB', false, null, null],
+            'unique' => ['utf8mb4', 'MyISAM', true, null, null],
+        ];
+    }
+
+    private static function make_index_table(string $charset, ?int $length, string $engine = 'MyISAM', bool $unique = false) : Table
+    {
+        $table = new Table('grp');
+        $table->addOption('engine', $engine);
+        $table->addOption('charset', $charset);
+        $table->addColumn('name', Types::STRING, ['length' => 255]);
+        $options = $length === null ? [] : ['lengths' => [$length]];
+        if ($unique) {
+            $table->addUniqueIndex(['name'], 'grp_name_idx', $options);
+        } else {
+            $table->addIndex(['name'], 'grp_name_idx', [], $options);
+        }
+        return $table;
+    }
+
+    private static function get_index_length(Table $table) : ?int
+    {
+        return $table->getIndex('grp_name_idx')->getOptions()['lengths'][0] ?? null;
+    }
+
+    #[DataProvider('provider_limit_index_lengths')]
+    public function test_limit_index_lengths(string $charset, string $engine, bool $unique, ?int $length, ?int $expected)
+    {
+        $table = self::make_index_table($charset, $length, $engine, $unique);
+        subscriber::limit_index_lengths($table);
+        $this->assertSame($expected, self::get_index_length($table));
     }
 }

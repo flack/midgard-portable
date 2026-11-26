@@ -8,6 +8,8 @@
 namespace midgard\portable\storage\manager;
 
 use midgard\portable\storage\connection;
+use Doctrine\DBAL\Platforms\MySQL\CollationMetadataProvider\CachingCollationMetadataProvider;
+use Doctrine\DBAL\Platforms\MySQL\CollationMetadataProvider\ConnectionCollationMetadataProvider;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\MySQLSchemaManager;
 use Doctrine\DBAL\Types\Type;
@@ -64,5 +66,18 @@ class mysql extends MySQLSchemaManager
             $schema_config->setDefaultTableOptions($options);
         }
         return $schema_config;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function createComparator() : comparator
+    {
+        return new comparator(
+            $this->_platform,
+            new CachingCollationMetadataProvider(
+                new ConnectionCollationMetadataProvider($this->_conn)
+            )
+        );
     }
 }

@@ -135,7 +135,6 @@ class schema extends Command
     public static function diff(dbal_schema $from, dbal_schema $to, bool $delete = false) : SchemaDiff
     {
         self::normalize_binary_columns($from);
-        self::normalize_truncated_indexes($from, $to);
         $comparator = connection::get_em()->getConnection()->createSchemaManager()->createComparator();
         $diff = $comparator->compareSchemas($from, $to);
 
@@ -182,58 +181,6 @@ class schema extends Command
                 }
             }
         }
-    }
-
-    /**
-     * MyISAM keys are limited to 1000 bytes, so MySQL silently turns a non-unique index on e.g. a
-     * utf8mb4 varchar(255) into a prefix index. The mapping doesn't specify a length, so without
-     * this, the index would be dropped and recreated (and truncated again) on every run
-     */
-    private static function normalize_truncated_indexes(dbal_schema $from, dbal_schema $to)
-    {
-        foreach ($from->getTables() as $table) {
-            if (   !$table->hasOption('engine')
-                || strcasecmp($table->getOption('engine'), 'MyISAM') !== 0
-                || !$to->hasTable($table->getName())) {
-                continue;
-            }
-            $to_table = $to->getTable($table->getName());
-
-            foreach ($table->getIndexes() as $index) {
-                $columns = $index->getColumns();
-                $lengths = $index->hasOption('lengths') ? $index->getOption('lengths') : [];
-                if (   $index->isUnique()
-                    || count($columns) !== 1
-                    || empty($lengths[0])
-                    || !$to_table->hasIndex($index->getName())
-                    || !empty($to_table->getIndex($index->getName())->getOptions()['lengths'][0])) {
-                    continue;
-                }
-                $column = $table->getColumn($columns[0]);
-                $charset = $column->getPlatformOptions()['charset'] ?? ($table->hasOption('charset') ? $table->getOption('charset') : null);
-                $bytes = self::get_bytes_per_char($charset);
-                if (   $bytes === null
-                    || $column->getLength() * $bytes <= 1000
-                    || $lengths[0] !== intdiv(1000, $bytes)) {
-                    continue;
-                }
-                $options = $index->getOptions();
-                unset($options['lengths']);
-                $table->dropIndex($index->getName());
-                $table->addIndex($columns, $index->getName(), $index->getFlags(), $options);
-            }
-        }
-    }
-
-    private static function get_bytes_per_char(?string $charset) : ?int
-    {
-        return match (strtolower($charset ?? '')) {
-            'utf8mb4', 'utf16', 'utf16le', 'utf32' => 4,
-            'utf8', 'utf8mb3' => 3,
-            'ucs2' => 2,
-            'latin1', 'latin2', 'ascii', 'binary' => 1,
-            default => null
-        };
     }
 
     private function process_updates(dbal_schema $from, array $to_update, OutputInterface $output, $force, $delete)
