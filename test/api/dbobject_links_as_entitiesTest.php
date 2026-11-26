@@ -7,7 +7,6 @@
 
 namespace midgard\portable\test;
 
-use Doctrine\ORM\UnitOfWork;
 use midgard\portable\storage\connection;
 
 class dbobject_links_as_entitiesTest extends testcase

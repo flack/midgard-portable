@@ -155,7 +155,6 @@ class mgdobjectTest extends testcase
 
         $topic->name = __FUNCTION__ . '2';
         $topic->update();
-        $name = $topic->name;
 
         //If we load from IdentityMap and not from DB, we will get the pre-update value
         $stat = $loaded->get_by_id($topic->id);

@@ -90,7 +90,7 @@ class manager
         }
 
         $tablemap = [];
-        foreach ($types as $name => $type) {
+        foreach ($types as $type) {
             if ($type->parent) {
                 $this->register_child_class($type);
             }

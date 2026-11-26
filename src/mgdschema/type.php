@@ -29,8 +29,6 @@ class type
 
     public bool $links_as_entities = false;
 
-    public array $subtypes = [];
-
     private array $dbfields = [];
 
     public array $field_aliases = [];
