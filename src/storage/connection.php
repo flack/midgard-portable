@@ -194,7 +194,8 @@ class connection
         }
 
         if (!array_key_exists('charset', $db_config)) {
-            $db_config['charset'] = 'utf8';
+            // utf8 is an alias for utf8mb3 on MySQL, which can't handle 4-byte characters
+            $db_config['charset'] = in_array($db_config['driver'], ['pdo_mysql', 'mysqli'], true) ? 'utf8mb4' : 'utf8';
         }
 
         $connection = \Doctrine\DBAL\DriverManager::getConnection($db_config, $config);
