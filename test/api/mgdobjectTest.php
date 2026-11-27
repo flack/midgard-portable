@@ -632,6 +632,59 @@ class mgdobjectTest extends testcase
         $this->assert_api('purge', $sd); //this line would fail on InnoDB because of foreign key constraint violations
     }
 
+    public function test_undelete_child_of_purged_parent()
+    {
+        $classname = connection::get_fqcn('midgard_topic');
+        $parent = $this->make_object('midgard_topic');
+        $parent->name = uniqid(__FUNCTION__);
+        $this->assert_api('create', $parent);
+        $child = $this->make_object('midgard_topic');
+        $child->up = $parent->id;
+        $this->assert_api('create', $child);
+        $this->assert_api('delete', $child);
+        self::$em->clear();
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->include_deleted();
+        $qb->add_constraint('id', '=', $child->id);
+        $child = $qb->execute()[0];
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('id', '=', $parent->id);
+        // this is the same instance as the child's link proxy
+        $parent = $qb->execute()[0];
+
+        $this->assert_api('purge', $parent);
+        // The child's up link still points to the purged instance, which might trigger
+        // "A new entity was found through the relationship..."
+        $this->assertTrue($classname::undelete($child->guid), midgard_connection::get_instance()->get_error_string());
+    }
+
+    public function test_delete_with_purged_link()
+    {
+        $classname = connection::get_fqcn('midgard_topic');
+        $lang = $this->make_object('midgard_language');
+        $lang->name = uniqid(__FUNCTION__);
+        $this->assert_api('create', $lang);
+        $topic = $this->make_object('midgard_topic');
+        $topic->name = uniqid(__FUNCTION__);
+        $topic->lang = $lang->id;
+        $this->assert_api('create', $topic);
+        self::$em->clear();
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('id', '=', $topic->id);
+        $topic = $qb->execute()[0];
+        $qb = new \midgard_query_builder(connection::get_fqcn('midgard_language'));
+        $qb->add_constraint('id', '=', $lang->id);
+        // this is the same instance as the topic's link proxy
+        $lang = $qb->execute()[0];
+
+        $this->assert_api('purge', $lang);
+        // The link still points to the purged instance, which might trigger
+        // "A new entity was found through the relationship..."
+        $this->assert_api('delete', $topic);
+    }
+
     public function test_uniquenames()
     {
         $sd = $this->make_object('midgard_snippetdir');
