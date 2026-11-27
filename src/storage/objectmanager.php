@@ -48,10 +48,12 @@ class objectmanager
 
     public function update(dbobject $entity)
     {
-        // if entities are loaded by querybuilder, they are managed at this point already,
-        // which can in very rare (and very unreproducable) circumstances lead to the update
-        // getting lost silently (because originalEntityData somehow is empty), so we detach
-        // before doing anything else
+        // If the entity was loaded via QB, it is managed here already. We detach and merge
+        // to give the same behavior as saving objects loaded via constructor, i.e. we persist
+        // all fields, not only the ones changed in the object itself.
+        // Originally, this was added as a workaround to stale UnitOfWork state (see
+        // https://github.com/doctrine/orm/issues/3037), which was closed as fixed, but it's
+        // unclear if the fix was really exhaustive.
         $this->em->detach($entity);
         $merged = $this->em->merge($entity);
         $this->copy_associations($entity, $merged);

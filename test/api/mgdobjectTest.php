@@ -389,6 +389,47 @@ class mgdobjectTest extends testcase
         $this->assertSame($parent->name, (new $classname($parent->id))->name);
     }
 
+    /**
+     * Regression test for (one scenario of) doctrine/orm#3037
+     * (fixed in 2.15.4)
+     */
+    public function test_update_with_detached_link()
+    {
+        $classname = connection::get_fqcn('midgard_topic');
+        $parent = $this->make_object('midgard_topic');
+        $parent->name = uniqid(__FUNCTION__);
+        $this->assert_api('create', $parent);
+        $child = $this->make_object('midgard_topic');
+        $child->up = $parent->id;
+        $this->assert_api('create', $child);
+        self::$em->clear();
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('id', '=', $child->id);
+        $child = $qb->execute()[0];
+        // this initializes the child's link proxy
+        $this->assertSame($parent->name, $child->get_parent()->name);
+        // this detaches it (get_by_id() on the proxy)
+        $child->get_parent();
+        // and now the identity map gets a different instance
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('id', '=', $parent->id);
+        $qb->execute();
+
+        $child->name = uniqid(__FUNCTION__);
+        $this->assert_api('update', $child);
+
+        $uow = self::$em->getUnitOfWork();
+        $managed = [];
+        foreach ($uow->getIdentityMap() as $entities) {
+            foreach ($entities as $entity) {
+                $managed[spl_object_id($entity)] = true;
+            }
+        }
+        $states = (new \ReflectionProperty($uow, 'entityStates'))->getValue($uow);
+        $this->assertSame([], array_diff_key($states, $managed), 'UnitOfWork has state for objects outside the identity map');
+    }
+
     public function test_list()
     {
         $topic = $this->make_object('midgard_topic');
