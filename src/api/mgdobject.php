@@ -130,9 +130,10 @@ abstract class mgdobject extends dbobject
         // because that triggers the proxy's magic __get method, which initializes. But since mgdobject
         // is the entity's (grand)parent class, PHP rules dictate that we have access to
         // its parents' protected variables. Hence, we need to load explicitly.
-        if ($entity instanceof Proxy && !$entity->__isInitialized()) {
+        $uow = connection::get_em()->getUnitOfWork();
+        if ($uow->isUninitializedObject($entity)) {
             try {
-                $entity->__load();
+                $uow->initializeObject($entity);
             } catch (EntityNotFoundException) {
                 throw exception::object_purged();
             }
