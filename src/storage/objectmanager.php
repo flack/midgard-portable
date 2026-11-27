@@ -11,7 +11,6 @@ use midgard\portable\api\dbobject;
 use midgard\portable\api\error\exception;
 use midgard\portable\storage\interfaces\metadata;
 use Doctrine\ORM\EntityManager;
-use Doctrine\Persistence\Proxy;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Common\Util\ClassUtils;
 use midgard_datetime;
@@ -79,19 +78,11 @@ class objectmanager
     {
         $classname = ClassUtils::getClass($entity);
         $cm = $this->em->getClassMetadata($classname);
-        $changed_associations = $entity->__get_changed_associations();
 
         foreach ($cm->getAssociationNames() as $name) {
             if ($entity->$name === 0) {
                 //This is necessary to kill potential proxy objects pointing to purged entities
                 $entity->$name = 0;
-            } elseif (!isset($changed_associations[$name])) {
-                $value = $cm->getReflectionProperty($name)->getValue($entity);
-                if ($value instanceof Proxy) {
-                    //This makes sure that the associated entity doesn't end up in the changeset calculation
-                    $value->__isInitialized__ = false;
-                    continue;
-                }
             }
         }
     }

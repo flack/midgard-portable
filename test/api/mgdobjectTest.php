@@ -356,6 +356,39 @@ class mgdobjectTest extends testcase
         $this->assertFalse($refreshed->metadata->deleted);
     }
 
+    /**
+     * Loading the child first makes the parent's QB result a Doctrine proxy, which the child's
+     * delete()/undelete() must not invalidate, otherwise the parent's update gets lost silently
+     */
+    public function test_update_parent_after_child_delete()
+    {
+        $classname = connection::get_fqcn('midgard_topic');
+        $parent = $this->make_object('midgard_topic');
+        $parent->name = uniqid(__FUNCTION__);
+        $this->assert_api('create', $parent);
+        $child = $this->make_object('midgard_topic');
+        $child->up = $parent->id;
+        $this->assert_api('create', $child);
+        self::$em->clear();
+
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('id', '=', $child->id);
+        $child = $qb->execute()[0];
+        $qb = new \midgard_query_builder($classname);
+        $qb->add_constraint('id', '=', $parent->id);
+        $parent = $qb->execute()[0];
+
+        $this->assert_api('delete', $child);
+        $parent->name = uniqid(__FUNCTION__ . 'delete');
+        $this->assert_api('update', $parent);
+        $this->assertSame($parent->name, (new $classname($parent->id))->name);
+
+        $this->assertTrue($classname::undelete($child->guid));
+        $parent->name = uniqid(__FUNCTION__ . 'undelete');
+        $this->assert_api('update', $parent);
+        $this->assertSame($parent->name, (new $classname($parent->id))->name);
+    }
+
     public function test_list()
     {
         $topic = $this->make_object('midgard_topic');

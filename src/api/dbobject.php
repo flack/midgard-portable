@@ -21,13 +21,6 @@ abstract class dbobject
     protected $cm;
 
     /**
-     * Simple map of association fields changed during the object's lifetime
-     *
-     * We need this for some workarounds for proxy-related problems during changeset calculation
-     */
-    protected array $changed_associations = [];
-
-    /**
      * {@inheritDoc}
      */
     public function injectObjectManager(ObjectManager $objectmanager, ClassMetadata $classmetadata)
@@ -37,11 +30,6 @@ abstract class dbobject
         }
 
         $this->cm = $classmetadata;
-    }
-
-    public function __get_changed_associations() : array
-    {
-        return $this->changed_associations;
     }
 
     /**
@@ -84,10 +72,6 @@ abstract class dbobject
             if (empty($value)) {
                 $value = null;
             } else {
-                if (   !\is_object($this->$field)
-                    || $this->$field->id != $value) {
-                    $this->changed_associations[$field] = true;
-                }
                 $classname = $this->cm->getAssociationTargetClass($field);
                 $value = connection::get_em()->getReference($classname, $value);
             }
